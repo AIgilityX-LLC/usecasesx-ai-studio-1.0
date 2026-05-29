@@ -227,7 +227,7 @@ function TagBlock({ title, items }: { title: string; items: string[] }) {
         {items.map((t) => (
           <span
             key={t}
-            className="rounded-full bg-white px-3 py-1 text-xs font-medium ring-1 ring-foreground/10"
+            className="rounded border border-border bg-card px-2.5 py-1 text-xs font-medium text-foreground/80"
           >
             {t}
           </span>
