@@ -3,6 +3,7 @@ import { useState } from "react";
 export interface FacetState {
   industries: string[]; capabilities: string[]; businessFunctions: string[]; objectives: string[];
   maturity: string[]; valuePotential: string[]; complexity: string[]; riskLevel: string[]; timeToValue: string[];
+  sectors: string[]; tags: string[];
 }
 
 interface Props {
@@ -11,6 +12,8 @@ interface Props {
     capabilities: { slug: string; name: string }[];
     businessFunctions: { slug: string; name: string }[];
     objectives: { slug: string; name: string }[];
+    sectors?: { slug: string; name: string }[];
+    tags?: { slug: string; name: string }[];
   };
   value: Partial<FacetState>;
   onChange: (patch: Partial<FacetState>) => void;
