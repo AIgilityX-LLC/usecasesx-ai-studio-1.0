@@ -1,8 +1,10 @@
 import { createFileRoute, notFound, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { MOCK_USE_CASES, type MockUseCase } from "@/lib/usecasex.mock";
+import { MOCK_USE_CASES, assertMockReady, type MockUseCase } from "@/lib/usecasex.mock";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
+import { MissingDataFallback } from "@/components/MissingDataFallback";
+import { CompareToggle, CompareTray } from "@/components/usecasex/CompareTray";
 import { supabase } from "@/integrations/supabase/client";
 
 // -----------------------------------------------------------------------------
@@ -103,24 +105,23 @@ export const Route = createFileRoute("/ai-hub/usecasex/$slug")({
     ],
   }),
   loader: ({ params }) => {
+    const ready = assertMockReady();
+    if (!ready.ok) throw new Error(ready.reason);
     const c = getUseCaseBySlug(params.slug);
     if (!c) throw notFound();
     return c;
   },
   component: UseCaseDetailPage,
   errorComponent: ({ error }) => (
-    <div className="p-12 text-center text-destructive">{error.message}</div>
+    <MissingDataFallback title="Use case failed to load" reason={error.message} />
   ),
   notFoundComponent: () => (
-    <div className="p-12 text-center">
-      <p className="text-lg font-semibold text-foreground">Use case not found</p>
-      <Link
-        to="/ai-hub/usecasex/explore"
-        className="mt-4 inline-block text-primary hover:underline"
-      >
-        ← Back to Explore
-      </Link>
-    </div>
+    <MissingDataFallback
+      title="Use case not found"
+      reason="We couldn't find that use case. It may have been moved or unpublished."
+      backTo="/ai-hub/usecasex/explore"
+      backLabel="Back to Explore"
+    />
   ),
 });
 
@@ -190,9 +191,41 @@ function UseCaseDetailPage() {
                   </Badge>
                   <Badge>TTV · {c.timeToValue}</Badge>
                   <Badge>Maturity · {c.maturity}</Badge>
+                  {c.sector === "public" && <Badge tone="primary">Public Sector</Badge>}
+                </div>
+                {c.tags.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {c.tags.map((t: string) => (
+                      <Link
+                        key={t}
+                        to="/ai-hub/usecasex/explore"
+                        search={{ tags: [t] }}
+                        className="rounded-full bg-secondary/60 px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                      >
+                        #{t}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                <div className="mt-4">
+                  <CompareToggle slug={c.slug} />
                 </div>
               </div>
             </div>
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "Article",
+                  headline: c.title,
+                  description: c.summary,
+                  about: c.industry.name,
+                  keywords: c.tags.join(", "),
+                  datePublished: c.publishedAt,
+                }),
+              }}
+            />
           </div>
         </header>
 

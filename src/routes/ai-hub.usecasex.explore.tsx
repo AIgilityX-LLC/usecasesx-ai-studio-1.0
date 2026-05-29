@@ -1,12 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState, useDeferredValue, useEffect } from "react";
 import { z } from "zod";
-import { MOCK_TAX, filterAndSortMock, type MockFilters, type SortKey } from "@/lib/usecasex.mock";
+import { MOCK_TAX, assertMockReady, filterAndSortMock, type MockFilters, type SortKey } from "@/lib/usecasex.mock";
 import { UseCaseFilters, type FacetState } from "@/components/UseCaseFilters";
 import { MockUseCaseCard } from "@/components/MockUseCaseCard";
 import { EmptyState } from "@/components/EmptyState";
 import { CardSkeleton } from "@/components/LoadingSkeleton";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
+import { MissingDataFallback } from "@/components/MissingDataFallback";
+import { PresetBar } from "@/components/usecasex/PresetBar";
+import { CompareTray } from "@/components/usecasex/CompareTray";
 import { track } from "@/lib/usecasex.tracking";
 
 const sortValues = ["relevant", "value", "complexity", "risk", "ttv", "newest"] as const;
@@ -66,6 +69,7 @@ export const Route = createFileRoute("/ai-hub/usecasex/explore")({
 });
 
 function Page() {
+  const ready = assertMockReady();
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
   const [q, setQ] = useState(search.q ?? "");
@@ -173,6 +177,10 @@ function Page() {
     setLeadOpen(true);
   };
 
+  if (!ready.ok) {
+    return <MissingDataFallback reason={ready.reason} />;
+  }
+
   return (
     <>
       {/* Hero / search */}
@@ -220,6 +228,7 @@ function Page() {
 
           {/* Results */}
           <div className="flex-1">
+            <PresetBar currentSearch={search as Record<string, unknown>} />
             {/* Toolbar */}
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
               <p className="text-sm text-muted-foreground">
@@ -297,6 +306,7 @@ function Page() {
         cta="custom_use_case_request"
         sourcePage="usecasex-explore"
       />
+      <CompareTray />
     </>
   );
 }
