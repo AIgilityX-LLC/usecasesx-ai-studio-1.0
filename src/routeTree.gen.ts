@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubmitRouteImport } from './routes/submit'
+import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CasesSlugRouteImport } from './routes/cases.$slug'
@@ -17,6 +18,11 @@ import { Route as CasesSlugRouteImport } from './routes/cases.$slug'
 const SubmitRoute = SubmitRouteImport.update({
   id: '/submit',
   path: '/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExploreRoute = ExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -38,12 +44,14 @@ const CasesSlugRoute = CasesSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/explore': typeof ExploreRoute
   '/submit': typeof SubmitRoute
   '/cases/$slug': typeof CasesSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/explore': typeof ExploreRoute
   '/submit': typeof SubmitRoute
   '/cases/$slug': typeof CasesSlugRoute
 }
@@ -51,20 +59,22 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/explore': typeof ExploreRoute
   '/submit': typeof SubmitRoute
   '/cases/$slug': typeof CasesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/submit' | '/cases/$slug'
+  fullPaths: '/' | '/auth' | '/explore' | '/submit' | '/cases/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/submit' | '/cases/$slug'
-  id: '__root__' | '/' | '/auth' | '/submit' | '/cases/$slug'
+  to: '/' | '/auth' | '/explore' | '/submit' | '/cases/$slug'
+  id: '__root__' | '/' | '/auth' | '/explore' | '/submit' | '/cases/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  ExploreRoute: typeof ExploreRoute
   SubmitRoute: typeof SubmitRoute
   CasesSlugRoute: typeof CasesSlugRoute
 }
@@ -76,6 +86,13 @@ declare module '@tanstack/react-router' {
       path: '/submit'
       fullPath: '/submit'
       preLoaderRoute: typeof SubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explore': {
+      id: '/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -105,6 +122,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  ExploreRoute: ExploreRoute,
   SubmitRoute: SubmitRoute,
   CasesSlugRoute: CasesSlugRoute,
 }
