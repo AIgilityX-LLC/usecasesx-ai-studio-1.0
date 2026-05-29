@@ -215,6 +215,51 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          country: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          industry: string | null
+          main_ai_interest: string | null
+          organization: string | null
+          profile_completed: boolean
+          role: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          industry?: string | null
+          main_ai_interest?: string | null
+          organization?: string | null
+          profile_completed?: boolean
+          role?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          industry?: string | null
+          main_ai_interest?: string | null
+          organization?: string | null
+          profile_completed?: boolean
+          role?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       shortlists: {
         Row: {
           added_at: string
