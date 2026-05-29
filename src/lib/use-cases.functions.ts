@@ -35,7 +35,7 @@ const SELECT = `id, slug, title, summary, organization, organization_type, regio
   use_case_industries ( industries ( slug, name ) ),
   use_case_capabilities ( ai_capabilities ( slug, name ) ),
   use_case_business_functions ( business_functions ( slug, name ) ),
-  use_case_business_objectives ( business_objectives ( slug, name ) )`;
+  use_case_business_objectives ( business_objectives ( slug, name ) )` as string;
 
 export const listUseCases = createServerFn({ method: "GET" })
   .inputValidator((d) => ListInput.parse(d ?? {}))
@@ -74,11 +74,13 @@ export const listUseCases = createServerFn({ method: "GET" })
     const { data: rows, error } = await query.limit(data.limit);
     if (error) throw new Error(error.message);
 
-    const filtered = (rows ?? []).filter((r) => {
-      const inds = r.use_case_industries?.map((x) => x.industries?.slug).filter(Boolean) ?? [];
-      const caps = r.use_case_capabilities?.map((x) => x.ai_capabilities?.slug).filter(Boolean) ?? [];
-      const bfns = r.use_case_business_functions?.map((x) => x.business_functions?.slug).filter(Boolean) ?? [];
-      const objs = r.use_case_business_objectives?.map((x) => x.business_objectives?.slug).filter(Boolean) ?? [];
+    const filtered = (rows ?? []).filter((row) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const r = row as any;
+      const inds: string[] = r.use_case_industries?.map((x: any) => x.industries?.slug).filter(Boolean) ?? [];
+      const caps: string[] = r.use_case_capabilities?.map((x: any) => x.ai_capabilities?.slug).filter(Boolean) ?? [];
+      const bfns: string[] = r.use_case_business_functions?.map((x: any) => x.business_functions?.slug).filter(Boolean) ?? [];
+      const objs: string[] = r.use_case_business_objectives?.map((x: any) => x.business_objectives?.slug).filter(Boolean) ?? [];
       if (data.industries.length && !data.industries.some((s) => inds.includes(s))) return false;
       if (data.capabilities.length && !data.capabilities.some((s) => caps.includes(s))) return false;
       if (data.businessFunctions.length && !data.businessFunctions.some((s) => bfns.includes(s)))
