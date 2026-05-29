@@ -11,7 +11,7 @@ const searchSchema = z.object({
   q: z.string().optional(),
   industries: z.array(z.string()).optional(),
   capabilities: z.array(z.string()).optional(),
-  govFunctions: z.array(z.string()).optional(),
+  
   businessFunctions: z.array(z.string()).optional(),
   maturity: z.array(z.string()).optional(),
   sort: z.enum(["recent", "impact", "maturity"]).optional(),
