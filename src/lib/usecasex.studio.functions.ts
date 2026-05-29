@@ -6,6 +6,26 @@ import { z } from "zod";
 export const STUDIO_PROVIDERS = ["openai", "gemini", "conversx"] as const;
 export type StudioProvider = (typeof STUDIO_PROVIDERS)[number];
 
+export interface StudioDraft {
+  title: string;
+  summary: string;
+  problemStatement: string;
+  proposedSolution: string;
+  aiCapabilities: string[];
+  aiType: string;
+  businessFunction: string;
+  targetUsers: string[];
+  dataRequirements: string[];
+  roiAreas: string[];
+  valuePotential: string;
+  complexity: string;
+  riskLevel: string;
+  timeToValue: string;
+  governanceConsiderations: string[];
+  kpis: string[];
+  nextSteps: string[];
+}
+
 const PROVIDER_MODEL: Record<StudioProvider, string> = {
   openai: "openai/gpt-5-mini",
   gemini: "google/gemini-3-flash-preview",
