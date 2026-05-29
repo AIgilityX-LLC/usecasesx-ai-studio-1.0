@@ -130,7 +130,7 @@ function Page() {
 
   const removeChip = (key: ChipKey, value: string) => {
     if (key === "industries") {
-      update({ industries: effectiveIndustries.filter((x) => x !== value), industry: undefined });
+      update({ industries: effectiveIndustries.filter((x: string) => x !== value), industry: undefined });
       track("filter_used", { facet: key, value, action: "remove" });
       return;
     }
