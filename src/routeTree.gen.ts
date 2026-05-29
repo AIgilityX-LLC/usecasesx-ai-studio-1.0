@@ -18,6 +18,7 @@ import { Route as AiHubIndexRouteImport } from './routes/ai-hub.index'
 import { Route as CasesSlugRouteImport } from './routes/cases.$slug'
 import { Route as AiHubUsecasexRouteImport } from './routes/ai-hub.usecasex'
 import { Route as AiHubUsecasexIndexRouteImport } from './routes/ai-hub.usecasex.index'
+import { Route as AiHubUsecasexStudioRouteImport } from './routes/ai-hub.usecasex.studio'
 import { Route as AiHubUsecasexSavedRouteImport } from './routes/ai-hub.usecasex.saved'
 import { Route as AiHubUsecasexReportsRouteImport } from './routes/ai-hub.usecasex.reports'
 import { Route as AiHubUsecasexProfileRouteImport } from './routes/ai-hub.usecasex.profile'
@@ -72,6 +73,11 @@ const AiHubUsecasexRoute = AiHubUsecasexRouteImport.update({
 const AiHubUsecasexIndexRoute = AiHubUsecasexIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AiHubUsecasexRoute,
+} as any)
+const AiHubUsecasexStudioRoute = AiHubUsecasexStudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
   getParentRoute: () => AiHubUsecasexRoute,
 } as any)
 const AiHubUsecasexSavedRoute = AiHubUsecasexSavedRouteImport.update({
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/ai-hub/usecasex/profile': typeof AiHubUsecasexProfileRoute
   '/ai-hub/usecasex/reports': typeof AiHubUsecasexReportsRoute
   '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
+  '/ai-hub/usecasex/studio': typeof AiHubUsecasexStudioRoute
   '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
 }
 export interface FileRoutesByTo {
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/ai-hub/usecasex/profile': typeof AiHubUsecasexProfileRoute
   '/ai-hub/usecasex/reports': typeof AiHubUsecasexReportsRoute
   '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
+  '/ai-hub/usecasex/studio': typeof AiHubUsecasexStudioRoute
   '/ai-hub/usecasex': typeof AiHubUsecasexIndexRoute
 }
 export interface FileRoutesById {
@@ -186,6 +194,7 @@ export interface FileRoutesById {
   '/ai-hub/usecasex/profile': typeof AiHubUsecasexProfileRoute
   '/ai-hub/usecasex/reports': typeof AiHubUsecasexReportsRoute
   '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
+  '/ai-hub/usecasex/studio': typeof AiHubUsecasexStudioRoute
   '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
 }
 export interface FileRouteTypes {
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex/profile'
     | '/ai-hub/usecasex/reports'
     | '/ai-hub/usecasex/saved'
+    | '/ai-hub/usecasex/studio'
     | '/ai-hub/usecasex/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex/profile'
     | '/ai-hub/usecasex/reports'
     | '/ai-hub/usecasex/saved'
+    | '/ai-hub/usecasex/studio'
     | '/ai-hub/usecasex'
   id:
     | '__root__'
@@ -249,6 +260,7 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex/profile'
     | '/ai-hub/usecasex/reports'
     | '/ai-hub/usecasex/saved'
+    | '/ai-hub/usecasex/studio'
     | '/ai-hub/usecasex/'
   fileRoutesById: FileRoutesById
 }
@@ -324,6 +336,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/ai-hub/usecasex/'
       preLoaderRoute: typeof AiHubUsecasexIndexRouteImport
+      parentRoute: typeof AiHubUsecasexRoute
+    }
+    '/ai-hub/usecasex/studio': {
+      id: '/ai-hub/usecasex/studio'
+      path: '/studio'
+      fullPath: '/ai-hub/usecasex/studio'
+      preLoaderRoute: typeof AiHubUsecasexStudioRouteImport
       parentRoute: typeof AiHubUsecasexRoute
     }
     '/ai-hub/usecasex/saved': {
@@ -410,6 +429,7 @@ interface AiHubUsecasexRouteChildren {
   AiHubUsecasexProfileRoute: typeof AiHubUsecasexProfileRoute
   AiHubUsecasexReportsRoute: typeof AiHubUsecasexReportsRoute
   AiHubUsecasexSavedRoute: typeof AiHubUsecasexSavedRoute
+  AiHubUsecasexStudioRoute: typeof AiHubUsecasexStudioRoute
   AiHubUsecasexIndexRoute: typeof AiHubUsecasexIndexRoute
 }
 
@@ -425,6 +445,7 @@ const AiHubUsecasexRouteChildren: AiHubUsecasexRouteChildren = {
   AiHubUsecasexProfileRoute: AiHubUsecasexProfileRoute,
   AiHubUsecasexReportsRoute: AiHubUsecasexReportsRoute,
   AiHubUsecasexSavedRoute: AiHubUsecasexSavedRoute,
+  AiHubUsecasexStudioRoute: AiHubUsecasexStudioRoute,
   AiHubUsecasexIndexRoute: AiHubUsecasexIndexRoute,
 }
 

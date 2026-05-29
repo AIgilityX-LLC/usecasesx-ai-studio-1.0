@@ -62,10 +62,16 @@ export function ProDashboard({ profile }: Props) {
             {profile?.main_ai_interest ? ` · Focus: ${profile.main_ai_interest}` : ""}
           </p>
         </div>
-        <Link to="/ai-hub/usecasex/explore"
-          className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110">
-          Explore use cases →
-        </Link>
+        <div className="flex gap-2">
+          <Link to="/ai-hub/usecasex/studio"
+            className="rounded-lg border border-primary/40 bg-primary/10 px-4 py-2.5 text-sm font-bold text-foreground hover:bg-primary/20">
+            ✨ Open Studio
+          </Link>
+          <Link to="/ai-hub/usecasex/explore"
+            className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110">
+            Explore use cases →
+          </Link>
+        </div>
       </header>
 
       {/* 2. Tiles */}
