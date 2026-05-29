@@ -57,7 +57,7 @@ export const Route = createFileRoute("/explore")({
       {
         name: "description",
         content:
-          "Browse 100+ validated AI use cases. Filter by industry, business function, AI type, business objective, value, complexity, risk and time-to-value.",
+          "Browse 1000+ validated AI use cases. Filter by industry, business function, AI type, business objective, value, complexity, risk and time-to-value.",
       },
       { property: "og:title", content: "Explore AI Use Cases — UseCaseX™" },
       {
