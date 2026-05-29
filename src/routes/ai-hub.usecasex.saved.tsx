@@ -149,7 +149,7 @@ function SavedCard({
             <span className="text-2xl font-semibold tabular-nums">{score ? total : "—"}</span>
           </div>
           {score && (
-            <p className={`text-[11px] mt-1 text-${interp.tone}-600 dark:text-${interp.tone}-400`}>
+            <p className={`text-[11px] mt-1 ${interp.toneClass}`}>
               {interp.label}
             </p>
           )}
