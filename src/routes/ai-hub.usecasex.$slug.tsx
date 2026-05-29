@@ -1,8 +1,10 @@
 import { createFileRoute, notFound, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { MOCK_USE_CASES, type MockUseCase } from "@/lib/usecasex.mock";
+import { MOCK_USE_CASES, assertMockReady, type MockUseCase } from "@/lib/usecasex.mock";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
+import { MissingDataFallback } from "@/components/MissingDataFallback";
+import { CompareToggle, CompareTray } from "@/components/usecasex/CompareTray";
 import { supabase } from "@/integrations/supabase/client";
 
 // -----------------------------------------------------------------------------
