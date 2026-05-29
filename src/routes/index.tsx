@@ -275,7 +275,7 @@ function LandingPage() {
           />
           <div className="mt-10 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-5">
             {[
-              { n: "01", t: "Browse", d: "Explore 100+ validated AI use cases across 18 industries." },
+              { n: "01", t: "Browse", d: "Explore 1000+ validated AI use cases across 18+ industries." },
               { n: "02", t: "Filter", d: "Narrow by AI type, business objective, value, risk and time-to-value." },
               { n: "03", t: "Save", d: "Shortlist promising cases into your private workspace (Pro)." },
               { n: "04", t: "Score", d: "Run the AIgilityX scoring engine on your portfolio (Pro)." },
