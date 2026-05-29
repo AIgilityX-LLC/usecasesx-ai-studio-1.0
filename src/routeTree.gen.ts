@@ -19,6 +19,7 @@ import { Route as CasesSlugRouteImport } from './routes/cases.$slug'
 import { Route as AiHubUsecasexRouteImport } from './routes/ai-hub.usecasex'
 import { Route as AiHubUsecasexIndexRouteImport } from './routes/ai-hub.usecasex.index'
 import { Route as AiHubUsecasexSavedRouteImport } from './routes/ai-hub.usecasex.saved'
+import { Route as AiHubUsecasexReportsRouteImport } from './routes/ai-hub.usecasex.reports'
 import { Route as AiHubUsecasexProfileRouteImport } from './routes/ai-hub.usecasex.profile'
 import { Route as AiHubUsecasexProRouteImport } from './routes/ai-hub.usecasex.pro'
 import { Route as AiHubUsecasexPortfolioRouteImport } from './routes/ai-hub.usecasex.portfolio'
@@ -76,6 +77,11 @@ const AiHubUsecasexSavedRoute = AiHubUsecasexSavedRouteImport.update({
   path: '/saved',
   getParentRoute: () => AiHubUsecasexRoute,
 } as any)
+const AiHubUsecasexReportsRoute = AiHubUsecasexReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AiHubUsecasexRoute,
+} as any)
 const AiHubUsecasexProfileRoute = AiHubUsecasexProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/ai-hub/usecasex/portfolio': typeof AiHubUsecasexPortfolioRoute
   '/ai-hub/usecasex/pro': typeof AiHubUsecasexProRoute
   '/ai-hub/usecasex/profile': typeof AiHubUsecasexProfileRoute
+  '/ai-hub/usecasex/reports': typeof AiHubUsecasexReportsRoute
   '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
   '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
 }
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/ai-hub/usecasex/portfolio': typeof AiHubUsecasexPortfolioRoute
   '/ai-hub/usecasex/pro': typeof AiHubUsecasexProRoute
   '/ai-hub/usecasex/profile': typeof AiHubUsecasexProfileRoute
+  '/ai-hub/usecasex/reports': typeof AiHubUsecasexReportsRoute
   '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
   '/ai-hub/usecasex': typeof AiHubUsecasexIndexRoute
 }
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/ai-hub/usecasex/portfolio': typeof AiHubUsecasexPortfolioRoute
   '/ai-hub/usecasex/pro': typeof AiHubUsecasexProRoute
   '/ai-hub/usecasex/profile': typeof AiHubUsecasexProfileRoute
+  '/ai-hub/usecasex/reports': typeof AiHubUsecasexReportsRoute
   '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
   '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
 }
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex/portfolio'
     | '/ai-hub/usecasex/pro'
     | '/ai-hub/usecasex/profile'
+    | '/ai-hub/usecasex/reports'
     | '/ai-hub/usecasex/saved'
     | '/ai-hub/usecasex/'
   fileRoutesByTo: FileRoutesByTo
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex/portfolio'
     | '/ai-hub/usecasex/pro'
     | '/ai-hub/usecasex/profile'
+    | '/ai-hub/usecasex/reports'
     | '/ai-hub/usecasex/saved'
     | '/ai-hub/usecasex'
   id:
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex/portfolio'
     | '/ai-hub/usecasex/pro'
     | '/ai-hub/usecasex/profile'
+    | '/ai-hub/usecasex/reports'
     | '/ai-hub/usecasex/saved'
     | '/ai-hub/usecasex/'
   fileRoutesById: FileRoutesById
@@ -296,6 +308,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiHubUsecasexSavedRouteImport
       parentRoute: typeof AiHubUsecasexRoute
     }
+    '/ai-hub/usecasex/reports': {
+      id: '/ai-hub/usecasex/reports'
+      path: '/reports'
+      fullPath: '/ai-hub/usecasex/reports'
+      preLoaderRoute: typeof AiHubUsecasexReportsRouteImport
+      parentRoute: typeof AiHubUsecasexRoute
+    }
     '/ai-hub/usecasex/profile': {
       id: '/ai-hub/usecasex/profile'
       path: '/profile'
@@ -348,6 +367,7 @@ interface AiHubUsecasexRouteChildren {
   AiHubUsecasexPortfolioRoute: typeof AiHubUsecasexPortfolioRoute
   AiHubUsecasexProRoute: typeof AiHubUsecasexProRoute
   AiHubUsecasexProfileRoute: typeof AiHubUsecasexProfileRoute
+  AiHubUsecasexReportsRoute: typeof AiHubUsecasexReportsRoute
   AiHubUsecasexSavedRoute: typeof AiHubUsecasexSavedRoute
   AiHubUsecasexIndexRoute: typeof AiHubUsecasexIndexRoute
 }
@@ -359,6 +379,7 @@ const AiHubUsecasexRouteChildren: AiHubUsecasexRouteChildren = {
   AiHubUsecasexPortfolioRoute: AiHubUsecasexPortfolioRoute,
   AiHubUsecasexProRoute: AiHubUsecasexProRoute,
   AiHubUsecasexProfileRoute: AiHubUsecasexProfileRoute,
+  AiHubUsecasexReportsRoute: AiHubUsecasexReportsRoute,
   AiHubUsecasexSavedRoute: AiHubUsecasexSavedRoute,
   AiHubUsecasexIndexRoute: AiHubUsecasexIndexRoute,
 }
