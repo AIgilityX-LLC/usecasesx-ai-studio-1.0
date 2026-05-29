@@ -12,7 +12,7 @@ const useCaseQuery = (slug: string) =>
   });
 
 export const Route = createFileRoute("/cases/$slug")({
-  head: ({ loaderData }) => ({
+  head: ({ loaderData }: { loaderData?: { title: string; summary: string } }) => ({
     meta: loaderData
       ? [
           { title: `${loaderData.title} — AigilityX Hub` },

@@ -79,7 +79,7 @@ function ExplorePage() {
   const [qLocal, setQLocal] = useState(search.q ?? "");
 
   const updateSearch = (patch: Partial<z.infer<typeof searchSchema>>) => {
-    navigate({ search: (prev) => ({ ...prev, ...patch }) });
+    navigate({ search: (prev: z.infer<typeof searchSchema>) => ({ ...prev, ...patch }) });
   };
 
   const toggleFacet = (key: keyof z.infer<typeof searchSchema>, value: string) => {

@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
+// Google sign-in will be enabled via Lovable Cloud configure_social_auth in a follow-up.
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
@@ -55,11 +55,7 @@ function AuthPage() {
   };
 
   const onGoogle = async () => {
-    setError(null);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) setError(result.error.message ?? "Google sign-in failed");
+    setError("Google sign-in is being configured. Please use email/password for now.");
   };
 
   return (
