@@ -71,8 +71,13 @@ export const Route = createFileRoute("/ai-hub/usecasex/explore")({
 function Page() {
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
+  const ready = assertMockReady();
   const [q, setQ] = useState(search.q ?? "");
   const [leadOpen, setLeadOpen] = useState(false);
+
+  if (!ready.ok) {
+    return <MissingDataFallback reason={ready.reason} />;
+  }
 
   // Merge singular ?industry= into industries[] (single source of truth for filtering & chips).
   const effectiveIndustries = useMemo(() => {
