@@ -1,133 +1,113 @@
-# UseCaseX™ Final Version 1.0 — AI Hub Module Plan
+# UseCaseX™ Reliability + Feature Expansion
 
-## Goal
+This is a large multi-feature request. Below is a sequenced plan grouped by risk and dependency. Each section can be approved as-is or trimmed.
 
-Restructure the current app so UseCaseX™ becomes an **independent module inside the AIgilityX AI Hub**, with only **two user tiers** — Free/Lite (public) and Pro (free with registration). Remove the Enterprise tier. Add an API-ready extension layer (preview) that future platforms (SARPI, CyberX C3G, AdvisorX, FlowX, PrivacyX, AssureX, AI ROI Calculator, AuditX, RegulatorX, ComplyX, ARES, ConversX, SimulaX) can consume.
+---
 
-Visual direction: premium enterprise AI platform — white background, dark navy headings, electric blue CTAs, subtle cyan accents, clean cards, executive-friendly, mobile-responsive, Apple + Big4 consulting style.
+## 1. Safe fallback UI for missing mock/taxonomy data
 
-## Route Architecture
+- Create `src/components/MissingDataFallback.tsx` — friendly card with title, message, and "Back to AI Hub" link. Uses semantic tokens.
+- Add `assertMockReady()` helper in `src/lib/usecasex.mock.ts` that returns `{ ok, reason }` based on whether `MOCK_USE_CASES` and `MOCK_TAX` are non-empty arrays/objects.
+- Wire into:
+  - `/ai-hub/usecasex/explore`
+  - `/ai-hub/usecasex/$slug`
+  - `/ai-hub/usecasex/compare` (new)
+- When `assertMockReady()` fails, route renders the fallback instead of crashing. Also add `errorComponent` + `notFoundComponent` on each route.
+
+## 2. Harden `usecasex.mock.ts` exports
+
+- Move `MOCK_USE_CASES` and `MOCK_TAX` to be **declared and exported in a single statement near the top of the module body** so consumer files can never observe `undefined` from circular-import edge cases.
+- Add a tiny `__moduleSelfCheck()` at the bottom that throws a clear, actionable message if the arrays are empty (caught by the fallback in #1).
+- Add a unit-style runtime check on first import: `if (!Array.isArray(MOCK_USE_CASES)) throw …`.
+- Re-export everything via a barrel `src/lib/usecasex/index.ts` so app imports go through one path.
+
+## 3. Public use-case detail page
+
+Already exists at `src/routes/ai-hub.usecasex.$slug.tsx` — enhance it:
+- Render: title, summary, sector badge, maturity, impact (value potential), industry, business function, AI type, full tag chips (clickable → explore with filter), recommended platforms, citations/links block (mock for now, structured for future DB).
+- Add JSON-LD `Article` schema and full `head()` meta (title, description, og:image-less leaf).
+- "Related use cases" section (already present) — keep.
+- Add "Add to Compare" button that pushes the slug to the compare store (#5).
+
+## 4. Saved search presets (bookmarkable + shareable URLs)
+
+- Explore page already encodes filters in URL search params via Zod. Add:
+  - **Preset bar** above results: "Public Sector AI", "High Impact / Low Risk", "Agentic AI", "Defense Quick Wins", "Healthcare Clinical", "Compliance & Privacy", "Newest" — each is a `<Link to="/ai-hub/usecasex/explore" search={…}>`.
+  - **"Save this view"** button → stores `{name, search}` in `localStorage` under `usecasex.savedPresets`.
+  - **"Copy share link"** button → copies current URL with all filters to clipboard.
+  - **My presets** dropdown lists saved presets with delete + rename.
+
+## 5. Compare view
+
+- New route `src/routes/ai-hub.usecasex.compare.tsx` reading `?ids=slug1,slug2,slug3` (max 4).
+- New tiny zustand store `src/lib/usecasex.compare.store.ts` for transient selection + a "Compare (N)" floating button on Explore + Detail pages.
+- Layout: side-by-side cards comparing — sector, maturity, value potential, complexity, risk, time-to-value, AI type, platforms, tags. Differences highlighted.
+- "Recommended implementation steps" rendered from a static template keyed by `aiType` + `maturity` (until DB-backed).
+
+## 6. Admin taxonomy editor (sectors, tags, maturity levels)
+
+- New admin tab inside existing `/ai-hub/usecasex/admin` → "Taxonomy" (already listed). Build the editor UI:
+  - Three sub-panels: **Sectors**, **Tags**, **Maturity Levels**.
+  - Each: list + inline add + rename + soft-delete + display order.
+- **Storage**: new tables `taxonomy_sectors`, `taxonomy_tags`, `taxonomy_maturity_levels` (slug, name, description, sort_order, is_published, updated_by, updated_at) with RLS:
+  - Public SELECT where `is_published = true`.
+  - Admin/moderator ALL via `has_role()`.
+- "Publish changes" button flips `is_published` and bumps a `taxonomy_version` row in a `taxonomy_meta` table so the public API can advertise the version.
+- Public API endpoint `/api/public/usecasex/taxonomy` updated to merge DB taxonomy with mock-derived facets (DB wins on overlap).
+
+## 7. User feedback & ratings
+
+- New tables:
+  - `use_case_ratings(id, use_case_id, user_id, rating 1-5, created_at)` — unique `(use_case_id, user_id)`.
+  - `use_case_feedback(id, use_case_id, user_id, comment, sentiment, is_public, created_at)`.
+- RLS:
+  - Authenticated users can insert/update their own row.
+  - Public SELECT on aggregated view only.
+  - Admin/moderator read all, can hide abusive feedback.
+- View `use_case_rating_aggregates(use_case_id, avg_rating, rating_count)` exposed via:
+  - `/api/public/usecasex/use-cases` — `aggregate_rating` field on each row.
+  - `/api/public/usecasex/use-cases/$slug` — full aggregate + recent N public comments.
+- UI: 5-star widget + comment box on detail page (auth-gated with "Sign in to rate" CTA for anonymous).
+
+---
+
+## Technical notes
 
 ```text
-src/routes/
-  __root.tsx                                       (existing — keep)
-  index.tsx                                        → redirect to /ai-hub
-  auth.tsx                                         (existing — keep)
+New files
+  src/components/MissingDataFallback.tsx
+  src/components/usecasex/PresetBar.tsx
+  src/components/usecasex/SavedPresets.tsx
+  src/components/usecasex/CompareTray.tsx
+  src/components/usecasex/RatingWidget.tsx
+  src/lib/usecasex/index.ts            (barrel)
+  src/lib/usecasex.compare.store.ts
+  src/lib/usecasex.presets.ts          (localStorage helpers)
+  src/lib/usecasex.ratings.functions.ts (createServerFn)
+  src/lib/usecasex.taxonomy.functions.ts
+  src/routes/ai-hub.usecasex.compare.tsx
+  src/routes/ai-hub.usecasex.admin.taxonomy.tsx (or tab in existing admin)
 
-  ai-hub.tsx                                       → AI Hub layout (Outlet)
-  ai-hub.index.tsx                                 → /ai-hub  (Hub home)
-  ai-hub.usecasex.tsx                              → UseCaseX layout (Outlet, sub-nav)
-  ai-hub.usecasex.index.tsx                        → UseCaseX Home (Free/Lite landing)
-  ai-hub.usecasex.explore.tsx                      → Explore Use Cases (Lite)
-  ai-hub.usecasex.$slug.tsx                        → Use Case Detail (Lite)
-  ai-hub.usecasex.pro.tsx                          → Pro registration / upgrade page
-  ai-hub.usecasex.dashboard.tsx                    → Pro Dashboard
-  ai-hub.usecasex.saved.tsx                        → Saved Use Cases (Pro)
-  ai-hub.usecasex.portfolio.tsx                    → AI Opportunity Portfolio (Pro)
-  ai-hub.usecasex.reports.tsx                      → Reports (Pro)
-  ai-hub.usecasex.admin.tsx                        → Admin (role-gated, visible only to admins)
-  ai-hub.usecasex.api-integration-preview.tsx      → API + integration events preview
+Edits
+  src/lib/usecasex.mock.ts              (hardening + self-check)
+  src/routes/ai-hub.usecasex.$slug.tsx  (richer detail + compare CTA + ratings)
+  src/routes/ai-hub.usecasex.explore.tsx (preset bar + share link)
+  src/routes/api/public/usecasex/*.ts   (DB taxonomy merge + ratings)
+
+Migrations
+  taxonomy_sectors, taxonomy_tags, taxonomy_maturity_levels, taxonomy_meta
+  use_case_ratings, use_case_feedback
+  view: use_case_rating_aggregates
+  RLS + GRANTs for all
 ```
 
-**Removed / not created:** `/ai-hub/usecasex/enterprise`, `/ai-hub/usecasex/enterprise-preview`.
+## Suggested execution order
 
-**Legacy routes:** `cases.$slug.tsx`, `explore.tsx`, `submit.tsx` will be replaced by the new tree. We'll redirect `/` → `/ai-hub` and `/explore` → `/ai-hub/usecasex/explore` to keep deep links alive.
+1. #2 hardening + #1 fallback (unblocks current crash class)
+2. #3 detail page polish
+3. #4 presets + share link (frontend only)
+4. #5 compare view
+5. #7 ratings (migration → API → UI)
+6. #6 taxonomy editor (migration → admin UI → public API merge)
 
-## Navigation
-
-**AI Hub top nav (`AIHubNavbar`):**
-Home · AI Readiness · AI ROI Calculator · **UseCaseX** · AI Strategy Canvas · AI Governance Toolkit · Reports · Dashboard.
-Only UseCaseX and Home wire to real routes in v1.0; the rest render as "Coming soon" placeholders inside the Hub layout (keeps positioning consistent without dead links).
-
-**UseCaseX sub-nav (inside `ai-hub.usecasex.tsx` layout):**
-UseCaseX Home · Explore Use Cases · Pro Dashboard · Saved Use Cases · AI Opportunity Portfolio · Reports · API Integration Preview · **Admin** (only visible if `has_role(uid, 'admin')`).
-
-## Tier Behavior
-
-| Feature | Free / Lite (public) | Pro (free w/ registration) |
-|---|---|---|
-| Browse / search / filter | ✅ | ✅ |
-| View use case detail | ✅ | ✅ |
-| Lead capture modal | ✅ | n/a |
-| Lite PDF (after lead capture) | ✅ | ✅ |
-| Save use cases | ❌ → CTA "Sign up free" | ✅ |
-| Score use cases | ❌ | ✅ |
-| Portfolios | ❌ | ✅ |
-| Reports / Dashboard | ❌ | ✅ |
-| Admin | ❌ | role-gated |
-
-All Pro routes wrap their content in an "auth required" guard that redirects to `/auth?next=...`. Admin route additionally checks `user_roles.role = 'admin'`.
-
-## API / Integration Extension Layer
-
-`/ai-hub/usecasex/api-integration-preview` shows a static, executive-friendly preview of the planned public API and integration-event contract. Includes:
-
-- Stable query contract: `?source=usecasex&use_case_id=…&user_id=…&signature=…`
-- Endpoint table: `GET /api/public/usecasex/use-cases`, `GET /api/public/usecasex/use-cases/:slug`, `POST /api/public/usecasex/events`
-- 13 platform consumer cards (SARPI, CyberX C3G, AdvisorX, FlowX, PrivacyX, AssureX, AI ROI Calculator, AuditX, RegulatorX, ComplyX, ARES, ConversX, SimulaX) rendered via `PlatformBadge`
-- Sample payloads + cURL snippets
-
-The actual `api_keys` / `integration_events` tables and routes are NOT built in v1.0 — this page is a credible preview only, structured so the same code can later read from real endpoints.
-
-## Reusable Components
-
-Created under `src/components/`:
-
-- `AppShell.tsx` — outer page shell (background, footer)
-- `AIHubNavbar.tsx` — top nav for the Hub
-- `UseCaseXSubNav.tsx` — second-level nav for UseCaseX module
-- `UseCaseXHero.tsx` — landing hero with positioning headline
-- `IndustryFocusedSection.tsx` — industry grid
-- `UseCaseCard.tsx`
-- `UseCaseFilters.tsx`
-- `UseCaseDetail.tsx`
-- `LeadCaptureModal.tsx` (refactor of existing)
-- `CTAButtonGroup.tsx` — primary/secondary CTA cluster
-- `PlatformBadge.tsx` — branded chip for SARPI / CyberX C3G / etc.
-- `ScoreCard.tsx` — scoring tile (Pro)
-- `PortfolioCard.tsx` (Pro)
-- `ReportPreview.tsx` (Pro)
-- `AdminDataTable.tsx` (Admin)
-- `AdminUseCaseForm.tsx` (Admin)
-- `AnalyticsCard.tsx`
-- `EmptyState.tsx`
-- `LoadingSkeleton.tsx`
-
-## Data Strategy
-
-- All component data is fetched via a thin `src/lib/usecasex.data.ts` layer with typed mock data for now.
-- The layer's function signatures (`listUseCases`, `getUseCase`, `listIndustries`, `saveUseCase`, `getPortfolio`, etc.) match the existing Supabase server functions so the file can be swapped to live `createServerFn` calls without touching components.
-- Real DB writes (saved, portfolio, scores) remain TODO — Pro routes render their UIs against the mock layer and stub mutations with optimistic local state for v1.0.
-
-## Design System
-
-Update `src/styles.css` semantic tokens:
-
-- `--background: #ffffff` (light is now default)
-- `--foreground: navy 950` (dark navy headings)
-- `--primary: electric blue` (`oklch(0.58 0.22 255)`)
-- `--accent: cyan 400` (subtle)
-- `--card`, `--border`, `--muted` retuned to a clean executive palette
-- Existing dark/cyan video hero retired — replaced with white hero, navy headline, electric blue CTA, soft cyan ambient gradient.
-
-The previously-saved core memory ("dark navy hero with cyan accents") is now superseded; updated to reflect the executive white theme.
-
-## Implementation Order
-
-1. Update `styles.css` tokens to executive white/navy/electric blue.
-2. Build core layout primitives: `AppShell`, `AIHubNavbar`, `UseCaseXSubNav`, `EmptyState`, `LoadingSkeleton`, `CTAButtonGroup`, `PlatformBadge`.
-3. Build data layer `src/lib/usecasex.data.ts` (mock-first, Supabase-shaped).
-4. Build presentational components: `UseCaseXHero`, `IndustryFocusedSection`, `UseCaseCard`, `UseCaseFilters`, `UseCaseDetail`, `ScoreCard`, `PortfolioCard`, `ReportPreview`, `AnalyticsCard`, `AdminDataTable`, `AdminUseCaseForm`.
-5. Create the new route tree (`ai-hub.*`) and convert `/` to redirect to `/ai-hub`.
-6. Wire Pro auth guard + Admin role guard.
-7. Refactor existing `LeadCaptureModal`; retire `cases.$slug`, `explore`, `submit` routes (redirects).
-8. Final QA pass: mobile responsiveness, nav active states, Admin visibility, all 11 new routes load.
-
-## Out of Scope for v1.0
-
-- Real Pro persistence (save / score / portfolio writes) — UIs stubbed.
-- Real API keys + integration_events tables — preview page only.
-- Email-templated Lite PDF — keeps current generator.
-- 12 secondary Hub routes (AI Readiness, ROI, etc.) — "Coming soon" placeholders.
-
-After approval I'll execute steps 1–8 in order.
+Approve the whole plan, or tell me which subset to ship first (e.g. "just 1, 2, 3 now").
