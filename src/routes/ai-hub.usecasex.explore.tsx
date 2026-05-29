@@ -1,12 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState, useDeferredValue, useEffect } from "react";
 import { z } from "zod";
-import { MOCK_TAX, filterAndSortMock, type MockFilters, type SortKey } from "@/lib/usecasex.mock";
+import { MOCK_TAX, assertMockReady, filterAndSortMock, type MockFilters, type SortKey } from "@/lib/usecasex.mock";
 import { UseCaseFilters, type FacetState } from "@/components/UseCaseFilters";
 import { MockUseCaseCard } from "@/components/MockUseCaseCard";
 import { EmptyState } from "@/components/EmptyState";
 import { CardSkeleton } from "@/components/LoadingSkeleton";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
+import { MissingDataFallback } from "@/components/MissingDataFallback";
+import { PresetBar } from "@/components/usecasex/PresetBar";
+import { CompareTray } from "@/components/usecasex/CompareTray";
 import { track } from "@/lib/usecasex.tracking";
 
 const sortValues = ["relevant", "value", "complexity", "risk", "ttv", "newest"] as const;
