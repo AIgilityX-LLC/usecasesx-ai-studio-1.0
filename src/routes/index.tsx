@@ -285,8 +285,8 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* FEATURED — dark */}
-      <section className="bg-background border-b border-border/60">
+      {/* FEATURED — light */}
+      <section className="surface-light border-b border-border/60">
         <div className="mx-auto max-w-[1400px] px-6 py-16">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <SectionHeader
