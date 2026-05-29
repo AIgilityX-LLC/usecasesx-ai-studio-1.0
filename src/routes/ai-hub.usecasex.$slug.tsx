@@ -254,7 +254,7 @@ function UseCaseDetailPage() {
 
             <Section label="12 · Recommended AIgilityX Modules">
               <div className="grid gap-3 sm:grid-cols-2">
-                {c.platforms.map((p) => (
+                {c.platforms.map((p: { slug: string; name: string }) => (
                   <div
                     key={p.slug}
                     className="rounded-lg border border-border bg-card/60 p-4 transition hover:border-primary/40"
