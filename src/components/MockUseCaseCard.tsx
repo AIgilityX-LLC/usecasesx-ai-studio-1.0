@@ -75,7 +75,28 @@ export function MockUseCaseCard({
         <span className="rounded border border-border bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
           {c.objective}
         </span>
+        {c.sector === "public" && (
+          <span className="rounded border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+            Public Sector
+          </span>
+        )}
       </div>
+
+      {/* Tags */}
+      {c.tags && c.tags.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1">
+          {c.tags.slice(0, 4).map((t) => (
+            <Link
+              key={t}
+              to="/ai-hub/usecasex/explore"
+              search={{ tags: [t] }}
+              className="rounded-full bg-secondary/60 px-2 py-0.5 text-[10px] font-medium text-muted-foreground hover:bg-primary/10 hover:text-primary"
+            >
+              #{t}
+            </Link>
+          ))}
+        </div>
+      )}
 
       {/* Scoring grid */}
       <div className="mt-4 grid grid-cols-5 gap-2 border-t border-border pt-4">

@@ -23,6 +23,8 @@ const searchSchema = z.object({
   complexity: z.array(z.string()).optional(),
   riskLevel: z.array(z.string()).optional(),
   timeToValue: z.array(z.string()).optional(),
+  sectors: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional(),
   sort: z.enum(sortValues).optional(),
 });
 type Search = z.infer<typeof searchSchema>;
@@ -46,6 +48,8 @@ const FACET_LABELS: Record<string, string> = {
   complexity: "Complexity",
   riskLevel: "Risk",
   timeToValue: "Time to Value",
+  sectors: "Sector",
+  tags: "Tag",
 };
 
 export const Route = createFileRoute("/ai-hub/usecasex/explore")({
@@ -105,6 +109,8 @@ function Page() {
     riskLevel: search.riskLevel ?? [],
     maturity: search.maturity ?? [],
     timeToValue: search.timeToValue ?? [],
+    sectors: search.sectors ?? [],
+    tags: search.tags ?? [],
     sort: (search.sort as SortKey | undefined) ?? "relevant",
   };
 
@@ -115,7 +121,7 @@ function Page() {
   // Build active filter chips from all selected facets.
   type ChipKey = keyof FacetState;
   const chips: { key: ChipKey; value: string; label: string }[] = [];
-  const facetKeys: ChipKey[] = ["industries","capabilities","businessFunctions","objectives","maturity","valuePotential","complexity","riskLevel","timeToValue"];
+  const facetKeys: ChipKey[] = ["sectors","industries","capabilities","businessFunctions","objectives","maturity","valuePotential","complexity","riskLevel","timeToValue","tags"];
   for (const k of facetKeys) {
     const vals = k === "industries" ? effectiveIndustries : ((search as Record<string, string[] | undefined>)[k] ?? []);
     for (const v of vals) {
@@ -144,6 +150,7 @@ function Page() {
       industries: undefined, industry: undefined, capabilities: undefined, businessFunctions: undefined,
       objectives: undefined, maturity: undefined, valuePotential: undefined,
       complexity: undefined, riskLevel: undefined, timeToValue: undefined,
+      sectors: undefined, tags: undefined,
     });
     track("filter_used", { action: "clear_all" });
   };

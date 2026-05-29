@@ -5,6 +5,7 @@ export type Level = "Low" | "Medium" | "High";
 export type Risk = "Low" | "Medium" | "High" | "Critical";
 export type Maturity = "Beginner" | "Intermediate" | "Advanced";
 export type TTV = "Short" | "Medium" | "Long";
+export type Sector = "public" | "private" | "both";
 
 export interface MockPlatform { slug: string; name: string }
 
@@ -24,6 +25,9 @@ export interface MockUseCase {
   timeToValue: TTV;
   platforms: MockPlatform[];
   publishedAt: string; // ISO
+  // Derived after decoration:
+  sector: Sector;
+  tags: string[];
 }
 
 const P = {
@@ -44,7 +48,9 @@ const P = {
 
 const I = (slug: string, name: string) => ({ slug, name });
 
-export const MOCK_USE_CASES: MockUseCase[] = [
+type RawUseCase = Omit<MockUseCase, "sector" | "tags">;
+
+const RAW_USE_CASES: RawUseCase[] = [
   // 1. Defense
   { id: "1", slug: "defense-threat-intel-fusion",
     title: "Multi-source threat intelligence fusion",
@@ -288,6 +294,48 @@ export const MOCK_USE_CASES: MockUseCase[] = [
     platforms: [P.flowx, P.advisorx], publishedAt: "2026-04-29" },
 ];
 
+// ----- Sector + tag decoration -------------------------------------------
+
+const PUBLIC_SECTOR_INDUSTRIES = new Set<string>([
+  "defense", "government", "law-enforcement", "regulatory-compliance", "education", "healthcare",
+]);
+
+const slugifyTag = (s: string) =>
+  s.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+const KEYWORD_TAGS: { match: RegExp; tag: string }[] = [
+  { match: /fraud/i, tag: "fraud-detection" },
+  { match: /citizen|public/i, tag: "citizen-services" },
+  { match: /forecast/i, tag: "forecasting" },
+  { match: /chatbot|conversational|assistant/i, tag: "conversational-ai" },
+  { match: /document|ocr/i, tag: "document-ai" },
+  { match: /vision|image|x-?ray|drone|satellite/i, tag: "computer-vision" },
+  { match: /agent|agentic/i, tag: "agentic-ai" },
+  { match: /genai|generative/i, tag: "generative-ai" },
+  { match: /privacy|gdpr/i, tag: "privacy" },
+  { match: /compliance|regulator/i, tag: "compliance" },
+  { match: /risk|safety|critical/i, tag: "risk" },
+  { match: /supply|logistics|warehouse/i, tag: "supply-chain" },
+  { match: /clinical|patient|radiolog/i, tag: "clinical" },
+  { match: /trial|protocol/i, tag: "clinical-trials" },
+  { match: /tax|revenue/i, tag: "tax-revenue" },
+  { match: /maintenance|sensor/i, tag: "predictive-maintenance" },
+  { match: /personali[sz]/i, tag: "personalization" },
+];
+
+function decorate(c: RawUseCase): MockUseCase {
+  const sector: Sector = PUBLIC_SECTOR_INDUSTRIES.has(c.industry.slug)
+    ? (c.industry.slug === "healthcare" || c.industry.slug === "education" ? "both" : "public")
+    : "private";
+  const haystack = `${c.title} ${c.summary} ${c.businessFunction} ${c.aiType} ${c.objective}`;
+  const kw = KEYWORD_TAGS.filter((k) => k.match.test(haystack)).map((k) => k.tag);
+  const base = [slugifyTag(c.aiType), slugifyTag(c.objective), slugifyTag(c.businessFunction)];
+  const tags = Array.from(new Set([sector === "public" ? "public-sector" : null, ...kw, ...base].filter(Boolean) as string[]));
+  return { ...c, sector, tags };
+}
+
+export const MOCK_USE_CASES: MockUseCase[] = RAW_USE_CASES.map(decorate);
+
 // ----- Facet taxonomies derived from mock data ----------------------------
 
 function uniqueBy<T, K extends string>(arr: T[], key: (t: T) => K): { slug: string; name: string }[] {
@@ -302,6 +350,8 @@ function uniqueBy<T, K extends string>(arr: T[], key: (t: T) => K): { slug: stri
   return out.sort((a, b) => a.name.localeCompare(b.name));
 }
 
+const allTags = Array.from(new Set(MOCK_USE_CASES.flatMap((c) => c.tags))).sort();
+
 export const MOCK_TAX = {
   industries: uniqueBy(MOCK_USE_CASES, (c) => c.industry.slug as string).map((x) => ({
     slug: x.slug,
@@ -310,6 +360,12 @@ export const MOCK_TAX = {
   capabilities: uniqueBy(MOCK_USE_CASES, (c) => c.aiType),
   businessFunctions: uniqueBy(MOCK_USE_CASES, (c) => c.businessFunction),
   objectives: uniqueBy(MOCK_USE_CASES, (c) => c.objective),
+  sectors: [
+    { slug: "public", name: "Public Sector" },
+    { slug: "private", name: "Private Sector" },
+    { slug: "both", name: "Cross-Sector" },
+  ],
+  tags: allTags.map((t) => ({ slug: t, name: t.replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()) })),
 };
 
 // ----- Filter & sort -------------------------------------------------------
@@ -327,6 +383,8 @@ export interface MockFilters {
   riskLevel?: string[];
   maturity?: string[];
   timeToValue?: string[];
+  sectors?: string[];
+  tags?: string[];
   sort?: SortKey;
 }
 
@@ -351,9 +409,11 @@ export function filterAndSortMock(f: MockFilters): MockUseCase[] {
   const rsk = sel(f.riskLevel);
   const mat = sel(f.maturity);
   const ttv = sel(f.timeToValue);
+  const sct = sel(f.sectors);
+  const tgs = sel(f.tags);
 
   let out = MOCK_USE_CASES.filter((c) => {
-    if (q && !(includesInsensitive(c.title, q) || includesInsensitive(c.summary, q) || includesInsensitive(c.businessFunction, q) || includesInsensitive(c.aiType, q) || includesInsensitive(c.industry.name, q))) return false;
+    if (q && !(includesInsensitive(c.title, q) || includesInsensitive(c.summary, q) || includesInsensitive(c.businessFunction, q) || includesInsensitive(c.aiType, q) || includesInsensitive(c.industry.name, q) || c.tags.some((t) => t.includes(q)))) return false;
     if (inds && !inds.includes(c.industry.slug)) return false;
     if (caps && !caps.includes(c.aiType)) return false;
     if (bfns && !bfns.includes(c.businessFunction)) return false;
@@ -363,6 +423,8 @@ export function filterAndSortMock(f: MockFilters): MockUseCase[] {
     if (rsk && !rsk.includes(c.riskLevel)) return false;
     if (mat && !mat.includes(c.maturity)) return false;
     if (ttv && !ttv.includes(c.timeToValue)) return false;
+    if (sct && !sct.includes(c.sector)) return false;
+    if (tgs && !tgs.every((t) => c.tags.includes(t))) return false;
     return true;
   });
 

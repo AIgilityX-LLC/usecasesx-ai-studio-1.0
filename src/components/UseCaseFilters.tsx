@@ -3,6 +3,7 @@ import { useState } from "react";
 export interface FacetState {
   industries: string[]; capabilities: string[]; businessFunctions: string[]; objectives: string[];
   maturity: string[]; valuePotential: string[]; complexity: string[]; riskLevel: string[]; timeToValue: string[];
+  sectors: string[]; tags: string[];
 }
 
 interface Props {
@@ -11,6 +12,8 @@ interface Props {
     capabilities: { slug: string; name: string }[];
     businessFunctions: { slug: string; name: string }[];
     objectives: { slug: string; name: string }[];
+    sectors?: { slug: string; name: string }[];
+    tags?: { slug: string; name: string }[];
   };
   value: Partial<FacetState>;
   onChange: (patch: Partial<FacetState>) => void;
@@ -34,6 +37,9 @@ export function UseCaseFilters({ tax, value, onChange, onClear, activeCount }: P
           </button>
         )}
       </div>
+      {tax.sectors && tax.sectors.length > 0 && (
+        <Group title="Sector" options={tax.sectors} selected={value.sectors ?? []} onToggle={(s) => toggle("sectors", s)} />
+      )}
       <Group title="Industry" options={tax.industries} selected={value.industries ?? []} onToggle={(s) => toggle("industries", s)} />
       <Group title="AI Type" options={tax.capabilities} selected={value.capabilities ?? []} onToggle={(s) => toggle("capabilities", s)} />
       <Group title="Business Function" options={tax.businessFunctions} selected={value.businessFunctions ?? []} onToggle={(s) => toggle("businessFunctions", s)} />
@@ -53,6 +59,9 @@ export function UseCaseFilters({ tax, value, onChange, onClear, activeCount }: P
       <Group title="Time to Value" options={[
         { slug: "Short", name: "Short (< 3 months)" }, { slug: "Medium", name: "Medium (3–9 months)" }, { slug: "Long", name: "Long (9+ months)" },
       ]} selected={value.timeToValue ?? []} onToggle={(s) => toggle("timeToValue", s)} />
+      {tax.tags && tax.tags.length > 0 && (
+        <Group title="Tags" options={tax.tags} selected={value.tags ?? []} onToggle={(s) => toggle("tags", s)} />
+      )}
     </div>
   );
 }
