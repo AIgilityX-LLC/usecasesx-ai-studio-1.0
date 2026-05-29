@@ -315,8 +315,8 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* HOW IT WORKS — light */}
-      <section className="surface-light border-b border-border/60">
+      {/* HOW IT WORKS — dark */}
+      <section className="bg-background border-b border-border/60">
         <div className="mx-auto max-w-[1400px] px-6 py-16">
           <SectionHeader
             kicker="How it works"
