@@ -117,7 +117,7 @@ function Page() {
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {result.cases.map((c) => <UseCaseCard key={c.id} c={c} />)}
+                {result.cases.map((c) => <UseCaseCard key={c.id} c={c as any} />)}
               </div>
             )}
           </div>

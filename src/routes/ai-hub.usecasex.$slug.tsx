@@ -1,14 +1,14 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { getUseCaseBySlug } from "@/lib/use-cases.functions";
+import { getUseCase } from "@/lib/use-cases.functions";
 import { UseCaseDetail } from "@/components/UseCaseDetail";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 
 const caseQ = (slug: string) => queryOptions({
   queryKey: ["use-case", slug],
   queryFn: async () => {
-    const c = await getUseCaseBySlug({ data: { slug } });
+    const c = await getUseCase({ data: { slug } });
     if (!c) throw notFound();
     return c;
   },

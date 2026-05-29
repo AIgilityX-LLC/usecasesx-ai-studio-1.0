@@ -10,10 +10,11 @@ export function UseCaseDetail({ c, onLeadCapture }: {
     organization?: string | null; region?: string | null;
     maturity?: string | null; impact_score?: number | null; maturity_score?: number | null;
     business_problem?: string | null; ai_solution?: string | null; business_value?: string | null;
-    data_requirements?: string | null; kpis?: string | null; roi_areas?: string | null;
-    risk_governance?: string | null; platforms?: string | null;
+    data_requirements?: string | null; kpis?: string | string[] | null; roi_areas?: string | string[] | null;
+    risk_governance?: string | null; platforms?: string | string[] | null;
     use_case_industries?: Array<{ industries?: { name?: string } | null }> | null;
     use_case_capabilities?: Array<{ ai_capabilities?: { name?: string } | null }> | null;
+    [k: string]: any;
   };
   onLeadCapture?: () => void;
 }) {
