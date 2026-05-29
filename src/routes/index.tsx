@@ -228,12 +228,6 @@ function ExplorePage() {
                 onToggle={(v) => toggleFacet("businessFunctions", v)}
               />
               <FacetGroup
-                title="Business Function"
-                options={tax.businessFunctions}
-                selected={search.businessFunctions ?? []}
-                onToggle={(v) => toggleFacet("businessFunctions", v)}
-              />
-              <FacetGroup
                 title="Maturity"
                 options={[
                   { slug: "concept", name: "Concept" },
