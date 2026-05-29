@@ -272,7 +272,7 @@ function ScoreDialog({
         <div className="rounded-lg border bg-muted/40 p-4 flex items-center justify-between">
           <div>
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Total AIgilityX Score</p>
-            <p className={`text-sm mt-1 text-${interp.tone}-600 dark:text-${interp.tone}-400`}>{interp.label}</p>
+            <p className={`text-sm mt-1 ${interp.toneClass}`}>{interp.label}</p>
           </div>
           <div className="text-5xl font-semibold tabular-nums">{total}</div>
         </div>
