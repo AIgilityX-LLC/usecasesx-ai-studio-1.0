@@ -24,15 +24,15 @@ export const Route = createFileRoute("/ai-hub/usecasex/compare")({
 });
 
 function ComparePage() {
-  const { ids } = Route.useSearch();
+  const search = Route.useSearch() as { ids?: string };
   const ready = assertMockReady();
   if (!ready.ok) {
     return <MissingDataFallback reason={ready.reason} />;
   }
 
-  const slugs = (ids ?? "").split(",").map((s) => s.trim()).filter(Boolean).slice(0, compareStore.MAX);
-  const items = slugs
-    .map((s) => MOCK_USE_CASES.find((u) => u.slug === s))
+  const slugs: string[] = (search.ids ?? "").split(",").map((s: string) => s.trim()).filter(Boolean).slice(0, compareStore.MAX);
+  const items: MockUseCase[] = slugs
+    .map((s: string) => MOCK_USE_CASES.find((u: MockUseCase) => u.slug === s))
     .filter((x): x is MockUseCase => Boolean(x));
 
   if (items.length === 0) {
