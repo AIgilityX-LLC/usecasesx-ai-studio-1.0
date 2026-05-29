@@ -1,3 +1,5 @@
+import { Link } from "@tanstack/react-router";
+
 export function SiteFooter() {
   return (
     <footer className="mt-24 border-t border-border/60 bg-card/40">
@@ -5,52 +7,86 @@ export function SiteFooter() {
         <div className="grid gap-12 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">
-              AIgilityX Sovereign Hub
+              UseCaseX™ · AIgilityX AI Hub™
             </div>
             <h2 className="mb-3 text-2xl font-bold leading-tight text-foreground md:text-3xl">
-              The world's open registry of <span className="text-primary">governed AI in production</span>.
+              Explore 100+ AI Use Cases for Your Industry —{" "}
+              <span className="text-primary">find what to automate, govern, and scale next.</span>
             </h2>
             <p className="max-w-md text-sm text-muted-foreground">
-              Curated and contributor-submitted deployments across government, telecom, healthcare,
-              finance and energy — with maturity, impact, and evidence on every case.
+              The AI opportunity intelligence layer of AIgilityX — discover, save, score, prioritise,
+              and report AI use cases across industries and business functions.
             </p>
-            <a
-              href="/submit"
+            <Link
+              to="/auth"
               className="mt-6 inline-flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-5 py-2.5 text-sm font-bold text-primary hover:bg-primary/20"
             >
-              Become a contributor →
-            </a>
+              Create Free Pro Account →
+            </Link>
           </div>
           <FooterCol
-            title="Repository"
-            items={["All Use Cases", "By Industry", "By Capability", "By Country", "Compare"]}
+            title="Discover"
+            items={[
+              { label: "Explore Use Cases", href: "/explore" },
+              { label: "By Industry", href: "/explore" },
+              { label: "By AI Type", href: "/explore" },
+              { label: "By Business Function", href: "/explore" },
+              { label: "Featured", href: "/explore?sort=featured" },
+            ]}
           />
           <FooterCol
-            title="Platform"
-            items={["About the Hub", "Methodology", "API Access", "Data Exports", "Contact"]}
+            title="AIgilityX Platforms"
+            items={[
+              { label: "AdvisorX™", href: "https://hub.aigilityx.com" },
+              { label: "FlowX™", href: "https://hub.aigilityx.com" },
+              { label: "PrivacyX™", href: "https://hub.aigilityx.com" },
+              { label: "AssureX™", href: "https://hub.aigilityx.com" },
+              { label: "CyberX C3G™", href: "https://hub.aigilityx.com" },
+            ]}
           />
         </div>
         <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-border/60 pt-6 text-xs text-muted-foreground md:flex-row md:items-center">
-          <span>© 2026 AIgilityX. Sovereign AI Innovation Hub.</span>
-          <span className="font-mono uppercase tracking-widest">hub.aigilityx.com / repository</span>
+          <span>© 2026 AIgilityX. UseCaseX™ — AI Use Cases Repository Module.</span>
+          <span className="font-mono uppercase tracking-widest">hub.aigilityx.com / usecasex</span>
         </div>
       </div>
     </footer>
   );
 }
 
-function FooterCol({ title, items }: { title: string; items: string[] }) {
+function FooterCol({
+  title,
+  items,
+}: {
+  title: string;
+  items: Array<{ label: string; href: string }>;
+}) {
   return (
     <div>
       <h4 className="mb-4 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
         {title}
       </h4>
       <ul className="space-y-2 text-sm text-foreground/80">
-        {items.map((i) => (
-          <li key={i} className="hover:text-primary cursor-pointer">
-            {i}
-          </li>
-        ))}
+        {items.map((i) =>
+          i.href.startsWith("http") ? (
+            <li key={i.label}>
+              <a
+                href={i.href}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-primary"
+              >
+                {i.label}
+              </a>
+            </li>
+          ) : (
+            <li key={i.label}>
+              <a href={i.href} className="hover:text-primary">
+                {i.label}
+              </a>
+            </li>
+          ),
+        )}
       </ul>
     </div>
   );

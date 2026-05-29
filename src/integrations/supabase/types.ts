@@ -50,6 +50,24 @@ export type Database = {
         }
         Relationships: []
       }
+      business_objectives: {
+        Row: {
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       countries: {
         Row: {
           code: string
@@ -68,6 +86,42 @@ export type Database = {
           id?: string
           name?: string
           region?: string | null
+        }
+        Relationships: []
+      }
+      cta_events: {
+        Row: {
+          created_at: string
+          cta: string
+          id: string
+          session_id: string | null
+          source_page: string | null
+          target_platform: string | null
+          target_route: string | null
+          use_case_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          cta: string
+          id?: string
+          session_id?: string | null
+          source_page?: string | null
+          target_platform?: string | null
+          target_route?: string | null
+          use_case_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          cta?: string
+          id?: string
+          session_id?: string | null
+          source_page?: string | null
+          target_platform?: string | null
+          target_route?: string | null
+          use_case_id?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -107,6 +161,57 @@ export type Database = {
           id?: string
           name?: string
           slug?: string
+        }
+        Relationships: []
+      }
+      lead_captures: {
+        Row: {
+          company: string | null
+          country: string | null
+          created_at: string
+          cta: string | null
+          email: string
+          full_name: string
+          id: string
+          industry: string | null
+          interest_area: string | null
+          lead_status: string
+          notes: string | null
+          role: string | null
+          source_page: string | null
+          source_use_case: string | null
+        }
+        Insert: {
+          company?: string | null
+          country?: string | null
+          created_at?: string
+          cta?: string | null
+          email: string
+          full_name: string
+          id?: string
+          industry?: string | null
+          interest_area?: string | null
+          lead_status?: string
+          notes?: string | null
+          role?: string | null
+          source_page?: string | null
+          source_use_case?: string | null
+        }
+        Update: {
+          company?: string | null
+          country?: string | null
+          created_at?: string
+          cta?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          industry?: string | null
+          interest_area?: string | null
+          lead_status?: string
+          notes?: string | null
+          role?: string | null
+          source_page?: string | null
+          source_use_case?: string | null
         }
         Relationships: []
       }
@@ -165,6 +270,21 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      use_case_business_objectives: {
+        Row: {
+          objective_id: string
+          use_case_id: string
+        }
+        Insert: {
+          objective_id: string
+          use_case_id: string
+        }
+        Update: {
+          objective_id?: string
+          use_case_id?: string
+        }
+        Relationships: []
       }
       use_case_capabilities: {
         Row: {
@@ -355,73 +475,139 @@ export type Database = {
       }
       use_cases: {
         Row: {
+          ai_solution_concept: string | null
+          assurance_review_required: boolean
+          business_problem: string | null
+          business_value: string | null
+          complexity: string | null
           created_at: string
+          cyber_review_required: boolean
+          cybersecurity_notes: string | null
+          data_required: string | null
+          display_order: number
           effort_score: number | null
+          governance_notes: string | null
+          governance_required: boolean
           hero_image_url: string | null
           id: string
           impact_score: number | null
+          is_featured: boolean
+          kpis: string[] | null
           maturity: Database["public"]["Enums"]["maturity_stage"] | null
+          maturity_level: string | null
           maturity_score: number | null
           organization: string | null
           organization_type: string | null
           outcomes: string | null
+          privacy_notes: string | null
+          privacy_review_required: boolean
           problem: string | null
           published_at: string | null
+          recommended_platforms: string[] | null
           region: string | null
+          risk_level: string | null
           risk_score: number | null
+          roi_areas: string[] | null
+          show_on_landing: boolean
           slug: string
           solution: string | null
           status: Database["public"]["Enums"]["use_case_status"]
           submitted_by: string | null
           summary: string
+          time_to_value: string | null
           title: string
           updated_at: string
+          value_potential: string | null
         }
         Insert: {
+          ai_solution_concept?: string | null
+          assurance_review_required?: boolean
+          business_problem?: string | null
+          business_value?: string | null
+          complexity?: string | null
           created_at?: string
+          cyber_review_required?: boolean
+          cybersecurity_notes?: string | null
+          data_required?: string | null
+          display_order?: number
           effort_score?: number | null
+          governance_notes?: string | null
+          governance_required?: boolean
           hero_image_url?: string | null
           id?: string
           impact_score?: number | null
+          is_featured?: boolean
+          kpis?: string[] | null
           maturity?: Database["public"]["Enums"]["maturity_stage"] | null
+          maturity_level?: string | null
           maturity_score?: number | null
           organization?: string | null
           organization_type?: string | null
           outcomes?: string | null
+          privacy_notes?: string | null
+          privacy_review_required?: boolean
           problem?: string | null
           published_at?: string | null
+          recommended_platforms?: string[] | null
           region?: string | null
+          risk_level?: string | null
           risk_score?: number | null
+          roi_areas?: string[] | null
+          show_on_landing?: boolean
           slug: string
           solution?: string | null
           status?: Database["public"]["Enums"]["use_case_status"]
           submitted_by?: string | null
           summary: string
+          time_to_value?: string | null
           title: string
           updated_at?: string
+          value_potential?: string | null
         }
         Update: {
+          ai_solution_concept?: string | null
+          assurance_review_required?: boolean
+          business_problem?: string | null
+          business_value?: string | null
+          complexity?: string | null
           created_at?: string
+          cyber_review_required?: boolean
+          cybersecurity_notes?: string | null
+          data_required?: string | null
+          display_order?: number
           effort_score?: number | null
+          governance_notes?: string | null
+          governance_required?: boolean
           hero_image_url?: string | null
           id?: string
           impact_score?: number | null
+          is_featured?: boolean
+          kpis?: string[] | null
           maturity?: Database["public"]["Enums"]["maturity_stage"] | null
+          maturity_level?: string | null
           maturity_score?: number | null
           organization?: string | null
           organization_type?: string | null
           outcomes?: string | null
+          privacy_notes?: string | null
+          privacy_review_required?: boolean
           problem?: string | null
           published_at?: string | null
+          recommended_platforms?: string[] | null
           region?: string | null
+          risk_level?: string | null
           risk_score?: number | null
+          roi_areas?: string[] | null
+          show_on_landing?: boolean
           slug?: string
           solution?: string | null
           status?: Database["public"]["Enums"]["use_case_status"]
           submitted_by?: string | null
           summary?: string
+          time_to_value?: string | null
           title?: string
           updated_at?: string
+          value_potential?: string | null
         }
         Relationships: []
       }
