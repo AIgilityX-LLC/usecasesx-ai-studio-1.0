@@ -4,6 +4,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { listUseCases, listTaxonomies } from "@/lib/use-cases.functions";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import heroVideo from "@/assets/hero-bg.mp4.asset.json";
 
 const taxonomiesQuery = queryOptions({
   queryKey: ["taxonomies"],
@@ -122,22 +123,36 @@ function LandingPage() {
     <div className="min-h-screen bg-background font-sans text-foreground">
       <SiteHeader />
 
-      {/* HERO */}
-      <section className="relative overflow-hidden border-b border-border/60">
+      {/* HERO — dark, video background */}
+      <section className="relative overflow-hidden border-b border-border/60 bg-background">
+        <video
+          aria-hidden
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster=""
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-60"
+          src={heroVideo.url}
+        />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.18]"
+          className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage:
-              "linear-gradient(oklch(0.82 0.13 210 / 0.6) 1px, transparent 1px), linear-gradient(90deg, oklch(0.82 0.13 210 / 0.6) 1px, transparent 1px)",
-            backgroundSize: "56px 56px",
-            maskImage: "radial-gradient(ellipse at top, black 30%, transparent 75%)",
+            background:
+              "linear-gradient(180deg, oklch(0.14 0.05 252 / 0.55) 0%, oklch(0.14 0.05 252 / 0.85) 65%, oklch(0.14 0.05 252) 100%)",
           }}
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-32 left-1/2 h-[480px] w-[900px] -translate-x-1/2 rounded-full opacity-30 blur-3xl"
-          style={{ background: "radial-gradient(circle, oklch(0.82 0.13 210 / 0.5), transparent 70%)" }}
+          className="pointer-events-none absolute inset-0 opacity-[0.14] mix-blend-screen"
+          style={{
+            backgroundImage:
+              "linear-gradient(oklch(0.84 0.16 205 / 0.6) 1px, transparent 1px), linear-gradient(90deg, oklch(0.84 0.16 205 / 0.6) 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
+            maskImage: "radial-gradient(ellipse at top, black 30%, transparent 75%)",
+          }}
         />
         <div className="relative mx-auto max-w-[1400px] px-6 pb-20 pt-24">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
@@ -192,8 +207,8 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* INDUSTRIES */}
-      <section className="border-b border-border/60">
+      {/* INDUSTRIES — light */}
+      <section className="surface-light border-b border-border/60">
         <div className="mx-auto max-w-[1400px] px-6 py-16">
           <SectionHeader
             kicker="Explore by industry"
@@ -220,8 +235,8 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* FEATURED */}
-      <section className="border-b border-border/60">
+      {/* FEATURED — dark */}
+      <section className="bg-background border-b border-border/60">
         <div className="mx-auto max-w-[1400px] px-6 py-16">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <SectionHeader
@@ -250,8 +265,8 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section className="border-b border-border/60">
+      {/* HOW IT WORKS — light */}
+      <section className="surface-light border-b border-border/60">
         <div className="mx-auto max-w-[1400px] px-6 py-16">
           <SectionHeader
             kicker="How it works"
@@ -276,8 +291,8 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="border-b border-border/60">
+      {/* CTA — dark */}
+      <section className="bg-background border-b border-border/60">
         <div className="mx-auto max-w-[1400px] px-6 py-20">
           <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-card p-10 md:p-14">
             <div
