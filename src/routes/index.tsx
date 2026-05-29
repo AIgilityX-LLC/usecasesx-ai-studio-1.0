@@ -32,7 +32,7 @@ const casesQuery = (input: z.infer<typeof searchSchema>) =>
           q: input.q ?? "",
           industries: input.industries ?? [],
           capabilities: input.capabilities ?? [],
-          govFunctions: input.govFunctions ?? [],
+          
           businessFunctions: input.businessFunctions ?? [],
           maturity: input.maturity ?? [],
           sort: input.sort ?? "recent",
