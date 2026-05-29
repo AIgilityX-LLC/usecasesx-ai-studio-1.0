@@ -228,6 +228,7 @@ function Page() {
 
           {/* Results */}
           <div className="flex-1">
+            <PresetBar currentSearch={search as Record<string, unknown>} />
             {/* Toolbar */}
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
               <p className="text-sm text-muted-foreground">
