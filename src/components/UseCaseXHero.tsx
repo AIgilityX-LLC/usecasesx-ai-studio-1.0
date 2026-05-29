@@ -4,10 +4,15 @@ import { CTAButtonGroup } from "./CTAButtonGroup";
 
 const HERO_VIDEO = (heroVideoAsset as { url: string }).url;
 
-export function UseCaseXHero({ stats }: { stats?: { useCases: number; industries: number; aiTypes: number; objectives: number } }) {
+interface HeroStats {
+  useCases: number;
+  industries: number;
+  businessFunctions: number;
+}
+
+export function UseCaseXHero({ stats, onRequestStrategy }: { stats?: HeroStats; onRequestStrategy?: () => void }) {
   return (
     <section className="relative overflow-hidden border-b border-border surface-dark">
-      {/* Video background */}
       <video
         className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-40"
         src={HERO_VIDEO}
@@ -17,9 +22,7 @@ export function UseCaseXHero({ stats }: { stats?: { useCases: number; industries
         playsInline
         aria-hidden
       />
-      {/* Dark navy overlay */}
       <div aria-hidden className="absolute inset-0" style={{ background: "linear-gradient(180deg, oklch(0.18 0.05 258 / 0.85) 0%, oklch(0.18 0.05 258 / 0.78) 60%, oklch(0.18 0.05 258 / 0.92) 100%)" }} />
-      {/* Cyan ambient glow */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute -top-32 left-1/2 h-[420px] w-[820px] -translate-x-1/2 rounded-full opacity-40 blur-3xl"
           style={{ background: "radial-gradient(closest-side, oklch(0.78 0.13 215 / 0.55), transparent 70%)" }} />
@@ -42,25 +45,30 @@ export function UseCaseXHero({ stats }: { stats?: { useCases: number; industries
           18+ industries, 20+ AI types and 17+ business objectives. Built by{" "}
           <span className="font-semibold text-white">AIgilityX — the Sovereign AI Ecosystems.</span>
         </p>
+        <p className="mt-4 max-w-3xl text-base text-white/70 sm:text-lg">
+          Discover practical AI, GenAI, Agentic AI, and automation use cases across industries and business functions.
+          Compare value potential, complexity, risk, readiness, and ROI pathways — then move from idea to execution with AIgilityX.
+        </p>
 
         <div className="mt-8">
           <CTAButtonGroup ctas={[
-            { label: "Explore the Repository →", to: "/ai-hub/usecasex/explore" },
-            { label: "Get Pro — Free", to: "/ai-hub/usecasex/pro", variant: "secondary" },
-            { label: "API Integration ↗", to: "/ai-hub/usecasex/api-integration-preview", variant: "ghost" },
+            { label: "Explore AI Use Cases →", to: "/ai-hub/usecasex/explore" },
+            { label: "Create Free Pro Account", to: "/ai-hub/usecasex/pro", variant: "secondary" },
+            { label: "Request AI Strategy Session ↗", onClick: onRequestStrategy, variant: "ghost" },
           ]} />
         </div>
 
         {stats && (
-          <div className="mt-12 grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="mt-12 grid max-w-5xl grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
             {[
-              { v: stats.useCases.toLocaleString(), l: "AI Use Cases" },
+              { v: `${stats.useCases.toLocaleString()}+`, l: "AI Use Cases" },
               { v: `${stats.industries}+`, l: "Industries" },
-              { v: `${stats.aiTypes}+`, l: "AI Types" },
-              { v: `${stats.objectives}+`, l: "Objectives" },
+              { v: `${stats.businessFunctions}+`, l: "Business Functions" },
+              { v: "Free", l: "Pro Access" },
+              { v: "API-Ready", l: "Ecosystem Layer" },
             ].map((s) => (
               <div key={s.l} className="rounded-xl border border-white/10 bg-white/5 px-5 py-4 backdrop-blur">
-                <div className="font-mono text-2xl font-bold text-white">{s.v}</div>
+                <div className="font-mono text-xl font-bold text-white sm:text-2xl">{s.v}</div>
                 <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/60">{s.l}</div>
               </div>
             ))}
