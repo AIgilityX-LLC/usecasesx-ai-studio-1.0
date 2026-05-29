@@ -123,22 +123,36 @@ function LandingPage() {
     <div className="min-h-screen bg-background font-sans text-foreground">
       <SiteHeader />
 
-      {/* HERO */}
-      <section className="relative overflow-hidden border-b border-border/60">
+      {/* HERO — dark, video background */}
+      <section className="relative overflow-hidden border-b border-border/60 bg-background">
+        <video
+          aria-hidden
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster=""
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-60"
+          src={heroVideo.url}
+        />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.18]"
+          className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage:
-              "linear-gradient(oklch(0.82 0.13 210 / 0.6) 1px, transparent 1px), linear-gradient(90deg, oklch(0.82 0.13 210 / 0.6) 1px, transparent 1px)",
-            backgroundSize: "56px 56px",
-            maskImage: "radial-gradient(ellipse at top, black 30%, transparent 75%)",
+            background:
+              "linear-gradient(180deg, oklch(0.14 0.05 252 / 0.55) 0%, oklch(0.14 0.05 252 / 0.85) 65%, oklch(0.14 0.05 252) 100%)",
           }}
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-32 left-1/2 h-[480px] w-[900px] -translate-x-1/2 rounded-full opacity-30 blur-3xl"
-          style={{ background: "radial-gradient(circle, oklch(0.82 0.13 210 / 0.5), transparent 70%)" }}
+          className="pointer-events-none absolute inset-0 opacity-[0.14] mix-blend-screen"
+          style={{
+            backgroundImage:
+              "linear-gradient(oklch(0.84 0.16 205 / 0.6) 1px, transparent 1px), linear-gradient(90deg, oklch(0.84 0.16 205 / 0.6) 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
+            maskImage: "radial-gradient(ellipse at top, black 30%, transparent 75%)",
+          }}
         />
         <div className="relative mx-auto max-w-[1400px] px-6 pb-20 pt-24">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
