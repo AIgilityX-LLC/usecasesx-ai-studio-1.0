@@ -1,70 +1,133 @@
-# UseCaseX™ — Build out the full module
+# UseCaseX™ Final Version 1.0 — AI Hub Module Plan
 
-Phase A (rebrand, taxonomy, schema, hydration fix) is already live. This plan covers everything you just listed, sequenced so each milestone is shippable on its own.
+## Goal
 
-## Phase B — Free / Lite discovery (next up)
+Restructure the current app so UseCaseX™ becomes an **independent module inside the AIgilityX AI Hub**, with only **two user tiers** — Free/Lite (public) and Pro (free with registration). Remove the Enterprise tier. Add an API-ready extension layer (preview) that future platforms (SARPI, CyberX C3G, AdvisorX, FlowX, PrivacyX, AssureX, AI ROI Calculator, AuditX, RegulatorX, ComplyX, ARES, ConversX, SimulaX) can consume.
 
-- **Landing** `/` — hero with PRD positioning line, industry tile grid (18), featured use cases strip, "How it works" (Browse → Filter → Save → Score → Export), CTA band → register Pro / explore.
-- **Explore** `/explore` — keep current dense library, add facets: AI Type, Business Objective, Value Potential, Complexity, Risk Level, Time to Value (in addition to Industry / Function / Maturity). Sort: recent, impact, maturity, featured.
-- **Detail** `/cases/:slug` — restructured into PRD sections: Business Problem · AI Solution Concept · Business Value · Data Required · KPIs · ROI Areas · Risk & Governance · Recommended Platforms. CTA strip → AdvisorX / FlowX / PrivacyX / AssureX (all logged to `cta_events`).
-- **Lead Capture** modal — gates Lite PDF download + "Talk to AIgilityX" CTA. Writes to `lead_captures` (name, email, company, role, country, industry, interest, source).
-- **Lite PDF** export — single use case, branded one-pager (problem, solution, value, KPIs, risk, CTA QR back to hub).
+Visual direction: premium enterprise AI platform — white background, dark navy headings, electric blue CTAs, subtle cyan accents, clean cards, executive-friendly, mobile-responsive, Apple + Big4 consulting style.
 
-## Phase C — Pro (registered) experience
-
-- **Auth** — email/password + Google sign-in. Routes: `/login`, `/register`, `/forgot-password`, `/reset-password`. `_authenticated` layout gate.
-- **Profiles** — auto-created on signup (display name, company, role, industry, country, plan = `lite|pro`).
-- **Workspace** — save use cases, add private notes, assign priority + status (`draft → shortlisted → ready_for_pilot → in_pilot → scaled`), group into portfolios.
-- **Scoring engine** — per PRD formula:
-  `total = strategic*0.20 + value*0.25 + feasibility*0.20 + risk_inv*0.15 + readiness*0.10 + ttv_inv*0.10`
-  stored per (user, use_case) so each user has their own scores.
-- **Pro Dashboard** — KPI tiles (saved, scored, quick wins, high-risk), charts by Industry / Function / AI Type / Maturity, top opportunities, recent activity.
-- **Pro Report** — multi-use-case portfolio PDF (cover, exec summary, scoring matrix, per-case detail).
-
-## Phase D — Admin panel
-
-- `/admin` gated by `admin`/`moderator` roles (already in `user_roles`).
-- **Taxonomies CMS** — CRUD for industries, functions, AI types, objectives.
-- **Use Cases CMS** — full PRD form (Identification / Classification / Strategic / Risk & Governance / Publishing), workflow `draft → review → approved → published → archived`, `use_case_audit_log`.
-- **AI-assisted intake** — paste a paragraph, Lovable AI Gateway (`google/gemini-2.5-flash`) drafts structured use case fields. Admin reviews + edits.
-- **Bulk CSV import** for use cases + taxonomies.
-- **Leads inbox** — `lead_captures` table view, status (`new → contacted → qualified → won → lost`), CSV export.
-- **Analytics** — views, CTA clicks, top searched filters, top platforms hit.
-
-## Phase E — API-Ready extension + CTA hooks
-
-- **Public API** under `/api/public/usecasex/`:
-  - `GET /use-cases` (filters, paginated)
-  - `GET /use-cases/:slug`
-  - `GET /taxonomies`
-  - API-key auth + per-key rate limiting; `api_keys` + `integration_events` tables.
-- **CTA hook routes** — outbound deep links with stable query contract `?source=usecasex&use_case_id=…&user_id=…&signature=…` for:
-  - **SARPI™** (Strategic AI Roadmap & Portfolio Intelligence) — sends scored portfolio
-  - **CyberX C3G™** (Cybersecurity / Compliance / Controls / Governance) — sends use case + risk + governance fields
-  - AdvisorX™, FlowX™, PrivacyX™, AssureX™, AuditX™, RegulatorX™, ComplyX™, ARES™, ConversX™, SimulaX™, AI ROI Calculator™
-- All clicks captured in `cta_events`; outbound payloads logged in `integration_events`.
-
-## Technical section
-
-Schema additions per phase:
-- B: none (Phase A already added `lead_captures` + `cta_events`).
-- C: `profiles`, `user_saved_use_cases`, `user_scores`, `user_portfolios`, `user_portfolio_items`. RLS scoped to `auth.uid()`. Google OAuth via `configure_social_auth`.
-- D: `use_case_audit_log`, optional `taxonomy_audit_log`.
-- E: `api_keys` (hashed, per-user, scoped), `integration_events` (source, target_platform, use_case_id, payload, status).
-
-Server logic: `createServerFn` for all app-internal reads/writes (RLS via `requireSupabaseAuth`); server routes only for `/api/public/usecasex/*` and webhook-style hook endpoints. PDFs generated server-side with a Worker-compatible library (pdf-lib).
-
-UI: existing Sovereign / Institutional dark palette preserved across every new surface. shadcn + Tailwind tokens only.
-
-AI: Lovable AI Gateway (`LOVABLE_API_KEY` already provisioned) — no extra keys.
-
-## Proposed execution order
+## Route Architecture
 
 ```text
-Phase B  Free/Lite discovery + Lead Capture + Lite PDF
-Phase C  Auth + Pro workspace + Scoring + Pro Dashboard + Pro Report
-Phase D  Admin panel (CMS + AI intake + leads + analytics)
-Phase E  Public API + CTA hooks (SARPI, CyberX C3G, ...)
+src/routes/
+  __root.tsx                                       (existing — keep)
+  index.tsx                                        → redirect to /ai-hub
+  auth.tsx                                         (existing — keep)
+
+  ai-hub.tsx                                       → AI Hub layout (Outlet)
+  ai-hub.index.tsx                                 → /ai-hub  (Hub home)
+  ai-hub.usecasex.tsx                              → UseCaseX layout (Outlet, sub-nav)
+  ai-hub.usecasex.index.tsx                        → UseCaseX Home (Free/Lite landing)
+  ai-hub.usecasex.explore.tsx                      → Explore Use Cases (Lite)
+  ai-hub.usecasex.$slug.tsx                        → Use Case Detail (Lite)
+  ai-hub.usecasex.pro.tsx                          → Pro registration / upgrade page
+  ai-hub.usecasex.dashboard.tsx                    → Pro Dashboard
+  ai-hub.usecasex.saved.tsx                        → Saved Use Cases (Pro)
+  ai-hub.usecasex.portfolio.tsx                    → AI Opportunity Portfolio (Pro)
+  ai-hub.usecasex.reports.tsx                      → Reports (Pro)
+  ai-hub.usecasex.admin.tsx                        → Admin (role-gated, visible only to admins)
+  ai-hub.usecasex.api-integration-preview.tsx      → API + integration events preview
 ```
 
-I'll ship **Phase B end-to-end first**, then pause for you to test before C. Each phase is ~1 substantive build. If you want me to chain B→C without stopping, say "go straight through C".
+**Removed / not created:** `/ai-hub/usecasex/enterprise`, `/ai-hub/usecasex/enterprise-preview`.
+
+**Legacy routes:** `cases.$slug.tsx`, `explore.tsx`, `submit.tsx` will be replaced by the new tree. We'll redirect `/` → `/ai-hub` and `/explore` → `/ai-hub/usecasex/explore` to keep deep links alive.
+
+## Navigation
+
+**AI Hub top nav (`AIHubNavbar`):**
+Home · AI Readiness · AI ROI Calculator · **UseCaseX** · AI Strategy Canvas · AI Governance Toolkit · Reports · Dashboard.
+Only UseCaseX and Home wire to real routes in v1.0; the rest render as "Coming soon" placeholders inside the Hub layout (keeps positioning consistent without dead links).
+
+**UseCaseX sub-nav (inside `ai-hub.usecasex.tsx` layout):**
+UseCaseX Home · Explore Use Cases · Pro Dashboard · Saved Use Cases · AI Opportunity Portfolio · Reports · API Integration Preview · **Admin** (only visible if `has_role(uid, 'admin')`).
+
+## Tier Behavior
+
+| Feature | Free / Lite (public) | Pro (free w/ registration) |
+|---|---|---|
+| Browse / search / filter | ✅ | ✅ |
+| View use case detail | ✅ | ✅ |
+| Lead capture modal | ✅ | n/a |
+| Lite PDF (after lead capture) | ✅ | ✅ |
+| Save use cases | ❌ → CTA "Sign up free" | ✅ |
+| Score use cases | ❌ | ✅ |
+| Portfolios | ❌ | ✅ |
+| Reports / Dashboard | ❌ | ✅ |
+| Admin | ❌ | role-gated |
+
+All Pro routes wrap their content in an "auth required" guard that redirects to `/auth?next=...`. Admin route additionally checks `user_roles.role = 'admin'`.
+
+## API / Integration Extension Layer
+
+`/ai-hub/usecasex/api-integration-preview` shows a static, executive-friendly preview of the planned public API and integration-event contract. Includes:
+
+- Stable query contract: `?source=usecasex&use_case_id=…&user_id=…&signature=…`
+- Endpoint table: `GET /api/public/usecasex/use-cases`, `GET /api/public/usecasex/use-cases/:slug`, `POST /api/public/usecasex/events`
+- 13 platform consumer cards (SARPI, CyberX C3G, AdvisorX, FlowX, PrivacyX, AssureX, AI ROI Calculator, AuditX, RegulatorX, ComplyX, ARES, ConversX, SimulaX) rendered via `PlatformBadge`
+- Sample payloads + cURL snippets
+
+The actual `api_keys` / `integration_events` tables and routes are NOT built in v1.0 — this page is a credible preview only, structured so the same code can later read from real endpoints.
+
+## Reusable Components
+
+Created under `src/components/`:
+
+- `AppShell.tsx` — outer page shell (background, footer)
+- `AIHubNavbar.tsx` — top nav for the Hub
+- `UseCaseXSubNav.tsx` — second-level nav for UseCaseX module
+- `UseCaseXHero.tsx` — landing hero with positioning headline
+- `IndustryFocusedSection.tsx` — industry grid
+- `UseCaseCard.tsx`
+- `UseCaseFilters.tsx`
+- `UseCaseDetail.tsx`
+- `LeadCaptureModal.tsx` (refactor of existing)
+- `CTAButtonGroup.tsx` — primary/secondary CTA cluster
+- `PlatformBadge.tsx` — branded chip for SARPI / CyberX C3G / etc.
+- `ScoreCard.tsx` — scoring tile (Pro)
+- `PortfolioCard.tsx` (Pro)
+- `ReportPreview.tsx` (Pro)
+- `AdminDataTable.tsx` (Admin)
+- `AdminUseCaseForm.tsx` (Admin)
+- `AnalyticsCard.tsx`
+- `EmptyState.tsx`
+- `LoadingSkeleton.tsx`
+
+## Data Strategy
+
+- All component data is fetched via a thin `src/lib/usecasex.data.ts` layer with typed mock data for now.
+- The layer's function signatures (`listUseCases`, `getUseCase`, `listIndustries`, `saveUseCase`, `getPortfolio`, etc.) match the existing Supabase server functions so the file can be swapped to live `createServerFn` calls without touching components.
+- Real DB writes (saved, portfolio, scores) remain TODO — Pro routes render their UIs against the mock layer and stub mutations with optimistic local state for v1.0.
+
+## Design System
+
+Update `src/styles.css` semantic tokens:
+
+- `--background: #ffffff` (light is now default)
+- `--foreground: navy 950` (dark navy headings)
+- `--primary: electric blue` (`oklch(0.58 0.22 255)`)
+- `--accent: cyan 400` (subtle)
+- `--card`, `--border`, `--muted` retuned to a clean executive palette
+- Existing dark/cyan video hero retired — replaced with white hero, navy headline, electric blue CTA, soft cyan ambient gradient.
+
+The previously-saved core memory ("dark navy hero with cyan accents") is now superseded; updated to reflect the executive white theme.
+
+## Implementation Order
+
+1. Update `styles.css` tokens to executive white/navy/electric blue.
+2. Build core layout primitives: `AppShell`, `AIHubNavbar`, `UseCaseXSubNav`, `EmptyState`, `LoadingSkeleton`, `CTAButtonGroup`, `PlatformBadge`.
+3. Build data layer `src/lib/usecasex.data.ts` (mock-first, Supabase-shaped).
+4. Build presentational components: `UseCaseXHero`, `IndustryFocusedSection`, `UseCaseCard`, `UseCaseFilters`, `UseCaseDetail`, `ScoreCard`, `PortfolioCard`, `ReportPreview`, `AnalyticsCard`, `AdminDataTable`, `AdminUseCaseForm`.
+5. Create the new route tree (`ai-hub.*`) and convert `/` to redirect to `/ai-hub`.
+6. Wire Pro auth guard + Admin role guard.
+7. Refactor existing `LeadCaptureModal`; retire `cases.$slug`, `explore`, `submit` routes (redirects).
+8. Final QA pass: mobile responsiveness, nav active states, Admin visibility, all 11 new routes load.
+
+## Out of Scope for v1.0
+
+- Real Pro persistence (save / score / portfolio writes) — UIs stubbed.
+- Real API keys + integration_events tables — preview page only.
+- Email-templated Lite PDF — keeps current generator.
+- 12 secondary Hub routes (AI Readiness, ROI, etc.) — "Coming soon" placeholders.
+
+After approval I'll execute steps 1–8 in order.

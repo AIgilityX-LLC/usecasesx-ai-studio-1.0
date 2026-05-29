@@ -12,8 +12,15 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AiHubRouteImport } from './routes/ai-hub'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AiHubIndexRouteImport } from './routes/ai-hub.index'
 import { Route as CasesSlugRouteImport } from './routes/cases.$slug'
+import { Route as AiHubUsecasexRouteImport } from './routes/ai-hub.usecasex'
+import { Route as AiHubUsecasexIndexRouteImport } from './routes/ai-hub.usecasex.index'
+import { Route as AiHubUsecasexProRouteImport } from './routes/ai-hub.usecasex.pro'
+import { Route as AiHubUsecasexExploreRouteImport } from './routes/ai-hub.usecasex.explore'
+import { Route as AiHubUsecasexSlugRouteImport } from './routes/ai-hub.usecasex.$slug'
 
 const SubmitRoute = SubmitRouteImport.update({
   id: '/submit',
@@ -30,23 +37,65 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiHubRoute = AiHubRouteImport.update({
+  id: '/ai-hub',
+  path: '/ai-hub',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AiHubIndexRoute = AiHubIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AiHubRoute,
 } as any)
 const CasesSlugRoute = CasesSlugRouteImport.update({
   id: '/cases/$slug',
   path: '/cases/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiHubUsecasexRoute = AiHubUsecasexRouteImport.update({
+  id: '/usecasex',
+  path: '/usecasex',
+  getParentRoute: () => AiHubRoute,
+} as any)
+const AiHubUsecasexIndexRoute = AiHubUsecasexIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AiHubUsecasexRoute,
+} as any)
+const AiHubUsecasexProRoute = AiHubUsecasexProRouteImport.update({
+  id: '/pro',
+  path: '/pro',
+  getParentRoute: () => AiHubUsecasexRoute,
+} as any)
+const AiHubUsecasexExploreRoute = AiHubUsecasexExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
+  getParentRoute: () => AiHubUsecasexRoute,
+} as any)
+const AiHubUsecasexSlugRoute = AiHubUsecasexSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => AiHubUsecasexRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai-hub': typeof AiHubRouteWithChildren
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
   '/submit': typeof SubmitRoute
+  '/ai-hub/usecasex': typeof AiHubUsecasexRouteWithChildren
   '/cases/$slug': typeof CasesSlugRoute
+  '/ai-hub/': typeof AiHubIndexRoute
+  '/ai-hub/usecasex/$slug': typeof AiHubUsecasexSlugRoute
+  '/ai-hub/usecasex/explore': typeof AiHubUsecasexExploreRoute
+  '/ai-hub/usecasex/pro': typeof AiHubUsecasexProRoute
+  '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,25 +103,73 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreRoute
   '/submit': typeof SubmitRoute
   '/cases/$slug': typeof CasesSlugRoute
+  '/ai-hub': typeof AiHubIndexRoute
+  '/ai-hub/usecasex/$slug': typeof AiHubUsecasexSlugRoute
+  '/ai-hub/usecasex/explore': typeof AiHubUsecasexExploreRoute
+  '/ai-hub/usecasex/pro': typeof AiHubUsecasexProRoute
+  '/ai-hub/usecasex': typeof AiHubUsecasexIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai-hub': typeof AiHubRouteWithChildren
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
   '/submit': typeof SubmitRoute
+  '/ai-hub/usecasex': typeof AiHubUsecasexRouteWithChildren
   '/cases/$slug': typeof CasesSlugRoute
+  '/ai-hub/': typeof AiHubIndexRoute
+  '/ai-hub/usecasex/$slug': typeof AiHubUsecasexSlugRoute
+  '/ai-hub/usecasex/explore': typeof AiHubUsecasexExploreRoute
+  '/ai-hub/usecasex/pro': typeof AiHubUsecasexProRoute
+  '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/explore' | '/submit' | '/cases/$slug'
+  fullPaths:
+    | '/'
+    | '/ai-hub'
+    | '/auth'
+    | '/explore'
+    | '/submit'
+    | '/ai-hub/usecasex'
+    | '/cases/$slug'
+    | '/ai-hub/'
+    | '/ai-hub/usecasex/$slug'
+    | '/ai-hub/usecasex/explore'
+    | '/ai-hub/usecasex/pro'
+    | '/ai-hub/usecasex/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/explore' | '/submit' | '/cases/$slug'
-  id: '__root__' | '/' | '/auth' | '/explore' | '/submit' | '/cases/$slug'
+  to:
+    | '/'
+    | '/auth'
+    | '/explore'
+    | '/submit'
+    | '/cases/$slug'
+    | '/ai-hub'
+    | '/ai-hub/usecasex/$slug'
+    | '/ai-hub/usecasex/explore'
+    | '/ai-hub/usecasex/pro'
+    | '/ai-hub/usecasex'
+  id:
+    | '__root__'
+    | '/'
+    | '/ai-hub'
+    | '/auth'
+    | '/explore'
+    | '/submit'
+    | '/ai-hub/usecasex'
+    | '/cases/$slug'
+    | '/ai-hub/'
+    | '/ai-hub/usecasex/$slug'
+    | '/ai-hub/usecasex/explore'
+    | '/ai-hub/usecasex/pro'
+    | '/ai-hub/usecasex/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiHubRoute: typeof AiHubRouteWithChildren
   AuthRoute: typeof AuthRoute
   ExploreRoute: typeof ExploreRoute
   SubmitRoute: typeof SubmitRoute
@@ -102,12 +199,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai-hub': {
+      id: '/ai-hub'
+      path: '/ai-hub'
+      fullPath: '/ai-hub'
+      preLoaderRoute: typeof AiHubRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/ai-hub/': {
+      id: '/ai-hub/'
+      path: '/'
+      fullPath: '/ai-hub/'
+      preLoaderRoute: typeof AiHubIndexRouteImport
+      parentRoute: typeof AiHubRoute
     }
     '/cases/$slug': {
       id: '/cases/$slug'
@@ -116,11 +227,77 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CasesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai-hub/usecasex': {
+      id: '/ai-hub/usecasex'
+      path: '/usecasex'
+      fullPath: '/ai-hub/usecasex'
+      preLoaderRoute: typeof AiHubUsecasexRouteImport
+      parentRoute: typeof AiHubRoute
+    }
+    '/ai-hub/usecasex/': {
+      id: '/ai-hub/usecasex/'
+      path: '/'
+      fullPath: '/ai-hub/usecasex/'
+      preLoaderRoute: typeof AiHubUsecasexIndexRouteImport
+      parentRoute: typeof AiHubUsecasexRoute
+    }
+    '/ai-hub/usecasex/pro': {
+      id: '/ai-hub/usecasex/pro'
+      path: '/pro'
+      fullPath: '/ai-hub/usecasex/pro'
+      preLoaderRoute: typeof AiHubUsecasexProRouteImport
+      parentRoute: typeof AiHubUsecasexRoute
+    }
+    '/ai-hub/usecasex/explore': {
+      id: '/ai-hub/usecasex/explore'
+      path: '/explore'
+      fullPath: '/ai-hub/usecasex/explore'
+      preLoaderRoute: typeof AiHubUsecasexExploreRouteImport
+      parentRoute: typeof AiHubUsecasexRoute
+    }
+    '/ai-hub/usecasex/$slug': {
+      id: '/ai-hub/usecasex/$slug'
+      path: '/$slug'
+      fullPath: '/ai-hub/usecasex/$slug'
+      preLoaderRoute: typeof AiHubUsecasexSlugRouteImport
+      parentRoute: typeof AiHubUsecasexRoute
+    }
   }
 }
 
+interface AiHubUsecasexRouteChildren {
+  AiHubUsecasexSlugRoute: typeof AiHubUsecasexSlugRoute
+  AiHubUsecasexExploreRoute: typeof AiHubUsecasexExploreRoute
+  AiHubUsecasexProRoute: typeof AiHubUsecasexProRoute
+  AiHubUsecasexIndexRoute: typeof AiHubUsecasexIndexRoute
+}
+
+const AiHubUsecasexRouteChildren: AiHubUsecasexRouteChildren = {
+  AiHubUsecasexSlugRoute: AiHubUsecasexSlugRoute,
+  AiHubUsecasexExploreRoute: AiHubUsecasexExploreRoute,
+  AiHubUsecasexProRoute: AiHubUsecasexProRoute,
+  AiHubUsecasexIndexRoute: AiHubUsecasexIndexRoute,
+}
+
+const AiHubUsecasexRouteWithChildren = AiHubUsecasexRoute._addFileChildren(
+  AiHubUsecasexRouteChildren,
+)
+
+interface AiHubRouteChildren {
+  AiHubUsecasexRoute: typeof AiHubUsecasexRouteWithChildren
+  AiHubIndexRoute: typeof AiHubIndexRoute
+}
+
+const AiHubRouteChildren: AiHubRouteChildren = {
+  AiHubUsecasexRoute: AiHubUsecasexRouteWithChildren,
+  AiHubIndexRoute: AiHubIndexRoute,
+}
+
+const AiHubRouteWithChildren = AiHubRoute._addFileChildren(AiHubRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiHubRoute: AiHubRouteWithChildren,
   AuthRoute: AuthRoute,
   ExploreRoute: ExploreRoute,
   SubmitRoute: SubmitRoute,
