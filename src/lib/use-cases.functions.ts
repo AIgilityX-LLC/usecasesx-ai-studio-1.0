@@ -43,7 +43,7 @@ export const listUseCases = createServerFn({ method: "GET" })
         `title.ilike.${term},summary.ilike.${term},organization.ilike.${term}`,
       );
     }
-    if (data.maturity.length) query = query.in("maturity", data.maturity);
+    if (data.maturity.length) query = query.in("maturity", data.maturity as Array<"concept" | "prototype" | "pilot" | "production" | "scaled">);
 
     if (data.sort === "impact")
       query = query.order("impact_score", { ascending: false, nullsFirst: false });
