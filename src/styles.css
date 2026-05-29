@@ -107,11 +107,19 @@
   --shadow-card: 0 1px 3px oklch(0.18 0.05 258 / 0.06), 0 1px 2px oklch(0.18 0.05 258 / 0.04);
 }
 
-/* Light surface helper (kept for compatibility with existing components) */
+/* Surface helpers for alternating section backgrounds */
 .surface-light {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: oklch(1 0 0);
+  color: var(--navy-950);
 }
+.surface-dark {
+  background-color: var(--navy-950);
+  color: oklch(0.98 0.005 258);
+}
+.surface-dark .text-muted-foreground { color: oklch(0.78 0.02 258); }
+.surface-dark .text-foreground { color: oklch(0.98 0.005 258); }
+.surface-dark .border-border { border-color: oklch(1 0 0 / 0.08); }
+.surface-dark .bg-card { background-color: oklch(0.24 0.05 258); }
 
 
 
