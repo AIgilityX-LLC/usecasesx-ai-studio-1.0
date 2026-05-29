@@ -17,6 +17,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AiHubIndexRouteImport } from './routes/ai-hub.index'
 import { Route as CasesSlugRouteImport } from './routes/cases.$slug'
 import { Route as AiHubUsecasexRouteImport } from './routes/ai-hub.usecasex'
+import { Route as AiHubUsecasexIndexRouteImport } from './routes/ai-hub.usecasex.index'
+import { Route as AiHubUsecasexProRouteImport } from './routes/ai-hub.usecasex.pro'
+import { Route as AiHubUsecasexExploreRouteImport } from './routes/ai-hub.usecasex.explore'
+import { Route as AiHubUsecasexSlugRouteImport } from './routes/ai-hub.usecasex.$slug'
 
 const SubmitRoute = SubmitRouteImport.update({
   id: '/submit',
@@ -58,6 +62,26 @@ const AiHubUsecasexRoute = AiHubUsecasexRouteImport.update({
   path: '/usecasex',
   getParentRoute: () => AiHubRoute,
 } as any)
+const AiHubUsecasexIndexRoute = AiHubUsecasexIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AiHubUsecasexRoute,
+} as any)
+const AiHubUsecasexProRoute = AiHubUsecasexProRouteImport.update({
+  id: '/pro',
+  path: '/pro',
+  getParentRoute: () => AiHubUsecasexRoute,
+} as any)
+const AiHubUsecasexExploreRoute = AiHubUsecasexExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
+  getParentRoute: () => AiHubUsecasexRoute,
+} as any)
+const AiHubUsecasexSlugRoute = AiHubUsecasexSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => AiHubUsecasexRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -65,18 +89,25 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
   '/submit': typeof SubmitRoute
-  '/ai-hub/usecasex': typeof AiHubUsecasexRoute
+  '/ai-hub/usecasex': typeof AiHubUsecasexRouteWithChildren
   '/cases/$slug': typeof CasesSlugRoute
   '/ai-hub/': typeof AiHubIndexRoute
+  '/ai-hub/usecasex/$slug': typeof AiHubUsecasexSlugRoute
+  '/ai-hub/usecasex/explore': typeof AiHubUsecasexExploreRoute
+  '/ai-hub/usecasex/pro': typeof AiHubUsecasexProRoute
+  '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
   '/submit': typeof SubmitRoute
-  '/ai-hub/usecasex': typeof AiHubUsecasexRoute
   '/cases/$slug': typeof CasesSlugRoute
   '/ai-hub': typeof AiHubIndexRoute
+  '/ai-hub/usecasex/$slug': typeof AiHubUsecasexSlugRoute
+  '/ai-hub/usecasex/explore': typeof AiHubUsecasexExploreRoute
+  '/ai-hub/usecasex/pro': typeof AiHubUsecasexProRoute
+  '/ai-hub/usecasex': typeof AiHubUsecasexIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -85,9 +116,13 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
   '/submit': typeof SubmitRoute
-  '/ai-hub/usecasex': typeof AiHubUsecasexRoute
+  '/ai-hub/usecasex': typeof AiHubUsecasexRouteWithChildren
   '/cases/$slug': typeof CasesSlugRoute
   '/ai-hub/': typeof AiHubIndexRoute
+  '/ai-hub/usecasex/$slug': typeof AiHubUsecasexSlugRoute
+  '/ai-hub/usecasex/explore': typeof AiHubUsecasexExploreRoute
+  '/ai-hub/usecasex/pro': typeof AiHubUsecasexProRoute
+  '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -100,15 +135,22 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex'
     | '/cases/$slug'
     | '/ai-hub/'
+    | '/ai-hub/usecasex/$slug'
+    | '/ai-hub/usecasex/explore'
+    | '/ai-hub/usecasex/pro'
+    | '/ai-hub/usecasex/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/explore'
     | '/submit'
-    | '/ai-hub/usecasex'
     | '/cases/$slug'
     | '/ai-hub'
+    | '/ai-hub/usecasex/$slug'
+    | '/ai-hub/usecasex/explore'
+    | '/ai-hub/usecasex/pro'
+    | '/ai-hub/usecasex'
   id:
     | '__root__'
     | '/'
@@ -119,6 +161,10 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex'
     | '/cases/$slug'
     | '/ai-hub/'
+    | '/ai-hub/usecasex/$slug'
+    | '/ai-hub/usecasex/explore'
+    | '/ai-hub/usecasex/pro'
+    | '/ai-hub/usecasex/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -188,16 +234,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiHubUsecasexRouteImport
       parentRoute: typeof AiHubRoute
     }
+    '/ai-hub/usecasex/': {
+      id: '/ai-hub/usecasex/'
+      path: '/'
+      fullPath: '/ai-hub/usecasex/'
+      preLoaderRoute: typeof AiHubUsecasexIndexRouteImport
+      parentRoute: typeof AiHubUsecasexRoute
+    }
+    '/ai-hub/usecasex/pro': {
+      id: '/ai-hub/usecasex/pro'
+      path: '/pro'
+      fullPath: '/ai-hub/usecasex/pro'
+      preLoaderRoute: typeof AiHubUsecasexProRouteImport
+      parentRoute: typeof AiHubUsecasexRoute
+    }
+    '/ai-hub/usecasex/explore': {
+      id: '/ai-hub/usecasex/explore'
+      path: '/explore'
+      fullPath: '/ai-hub/usecasex/explore'
+      preLoaderRoute: typeof AiHubUsecasexExploreRouteImport
+      parentRoute: typeof AiHubUsecasexRoute
+    }
+    '/ai-hub/usecasex/$slug': {
+      id: '/ai-hub/usecasex/$slug'
+      path: '/$slug'
+      fullPath: '/ai-hub/usecasex/$slug'
+      preLoaderRoute: typeof AiHubUsecasexSlugRouteImport
+      parentRoute: typeof AiHubUsecasexRoute
+    }
   }
 }
 
+interface AiHubUsecasexRouteChildren {
+  AiHubUsecasexSlugRoute: typeof AiHubUsecasexSlugRoute
+  AiHubUsecasexExploreRoute: typeof AiHubUsecasexExploreRoute
+  AiHubUsecasexProRoute: typeof AiHubUsecasexProRoute
+  AiHubUsecasexIndexRoute: typeof AiHubUsecasexIndexRoute
+}
+
+const AiHubUsecasexRouteChildren: AiHubUsecasexRouteChildren = {
+  AiHubUsecasexSlugRoute: AiHubUsecasexSlugRoute,
+  AiHubUsecasexExploreRoute: AiHubUsecasexExploreRoute,
+  AiHubUsecasexProRoute: AiHubUsecasexProRoute,
+  AiHubUsecasexIndexRoute: AiHubUsecasexIndexRoute,
+}
+
+const AiHubUsecasexRouteWithChildren = AiHubUsecasexRoute._addFileChildren(
+  AiHubUsecasexRouteChildren,
+)
+
 interface AiHubRouteChildren {
-  AiHubUsecasexRoute: typeof AiHubUsecasexRoute
+  AiHubUsecasexRoute: typeof AiHubUsecasexRouteWithChildren
   AiHubIndexRoute: typeof AiHubIndexRoute
 }
 
 const AiHubRouteChildren: AiHubRouteChildren = {
-  AiHubUsecasexRoute: AiHubUsecasexRoute,
+  AiHubUsecasexRoute: AiHubUsecasexRouteWithChildren,
   AiHubIndexRoute: AiHubIndexRoute,
 }
 
