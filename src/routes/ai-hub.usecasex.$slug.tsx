@@ -191,7 +191,46 @@ function UseCaseDetailPage() {
                   </Badge>
                   <Badge>TTV · {c.timeToValue}</Badge>
                   <Badge>Maturity · {c.maturity}</Badge>
+                  {c.sector === "public" && <Badge tone="primary">Public Sector</Badge>}
                 </div>
+                {c.tags.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {c.tags.map((t) => (
+                      <Link
+                        key={t}
+                        to="/ai-hub/usecasex/explore"
+                        search={{ tags: [t] }}
+                        className="rounded-full bg-secondary/60 px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                      >
+                        #{t}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                <div className="mt-4">
+                  <CompareToggle slug={c.slug} />
+                </div>
+              </div>
+            </div>
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "Article",
+                  headline: c.title,
+                  description: c.summary,
+                  about: c.industry.name,
+                  keywords: c.tags.join(", "),
+                  datePublished: c.publishedAt,
+                }),
+              }}
+            />
+          </div>
+        </header>
+
+        {/* placeholder-replaced-marker */}
+        <div style={{ display: "none" }} aria-hidden />
               </div>
             </div>
           </div>
