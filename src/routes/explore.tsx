@@ -122,7 +122,7 @@ function ExplorePage() {
             UseCaseX™ · Explore
           </div>
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Explore <span className="text-primary">100+ AI Use Cases</span> for your industry
+            <span className="text-primary">Global AI Use Cases Repository</span>
           </h1>
           <p className="mt-3 max-w-2xl text-muted-foreground">
             Find what to automate, govern, and scale next. Filter by industry, AI type, business
