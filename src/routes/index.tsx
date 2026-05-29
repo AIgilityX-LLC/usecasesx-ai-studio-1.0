@@ -171,7 +171,7 @@ function ExplorePage() {
               { v: result.total.toString().padStart(3, "0"), l: "Use Cases" },
               { v: tax.industries.length.toString().padStart(2, "0"), l: "Industries" },
               { v: tax.capabilities.length.toString().padStart(2, "0"), l: "Capabilities" },
-              { v: tax.countries?.length ? tax.countries.length.toString().padStart(2, "0") : "—", l: "Countries" },
+              { v: tax.govFunctions.length.toString().padStart(2, "0"), l: "Gov Functions" },
             ].map((s) => (
               <div key={s.l} className="bg-card px-5 py-4">
                 <div className="font-mono text-2xl font-bold text-primary">{s.v}</div>
