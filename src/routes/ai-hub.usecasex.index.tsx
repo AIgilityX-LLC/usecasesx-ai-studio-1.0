@@ -62,7 +62,7 @@ function Page() {
             <Link to="/ai-hub/usecasex/explore" className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline">See all →</Link>
           </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {featured.cases.slice(0, 6).map((c) => <UseCaseCard key={c.id} c={c} />)}
+            {featured.cases.slice(0, 6).map((c) => <UseCaseCard key={c.id} c={c as any} />)}
           </div>
         </div>
       </section>
