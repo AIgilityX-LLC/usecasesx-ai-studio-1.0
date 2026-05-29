@@ -150,6 +150,7 @@ function Page() {
       industries: undefined, industry: undefined, capabilities: undefined, businessFunctions: undefined,
       objectives: undefined, maturity: undefined, valuePotential: undefined,
       complexity: undefined, riskLevel: undefined, timeToValue: undefined,
+      sectors: undefined, tags: undefined,
     });
     track("filter_used", { action: "clear_all" });
   };
