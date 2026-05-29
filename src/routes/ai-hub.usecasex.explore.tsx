@@ -121,7 +121,7 @@ function Page() {
   // Build active filter chips from all selected facets.
   type ChipKey = keyof FacetState;
   const chips: { key: ChipKey; value: string; label: string }[] = [];
-  const facetKeys: ChipKey[] = ["industries","capabilities","businessFunctions","objectives","maturity","valuePotential","complexity","riskLevel","timeToValue"];
+  const facetKeys: ChipKey[] = ["sectors","industries","capabilities","businessFunctions","objectives","maturity","valuePotential","complexity","riskLevel","timeToValue","tags"];
   for (const k of facetKeys) {
     const vals = k === "industries" ? effectiveIndustries : ((search as Record<string, string[] | undefined>)[k] ?? []);
     for (const v of vals) {
