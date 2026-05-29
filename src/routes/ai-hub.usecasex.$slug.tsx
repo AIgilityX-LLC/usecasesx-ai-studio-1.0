@@ -105,24 +105,23 @@ export const Route = createFileRoute("/ai-hub/usecasex/$slug")({
     ],
   }),
   loader: ({ params }) => {
+    const ready = assertMockReady();
+    if (!ready.ok) throw new Error(ready.reason);
     const c = getUseCaseBySlug(params.slug);
     if (!c) throw notFound();
     return c;
   },
   component: UseCaseDetailPage,
   errorComponent: ({ error }) => (
-    <div className="p-12 text-center text-destructive">{error.message}</div>
+    <MissingDataFallback title="Use case failed to load" reason={error.message} />
   ),
   notFoundComponent: () => (
-    <div className="p-12 text-center">
-      <p className="text-lg font-semibold text-foreground">Use case not found</p>
-      <Link
-        to="/ai-hub/usecasex/explore"
-        className="mt-4 inline-block text-primary hover:underline"
-      >
-        ← Back to Explore
-      </Link>
-    </div>
+    <MissingDataFallback
+      title="Use case not found"
+      reason="We couldn't find that use case. It may have been moved or unpublished."
+      backTo="/ai-hub/usecasex/explore"
+      backLabel="Back to Explore"
+    />
   ),
 });
 
