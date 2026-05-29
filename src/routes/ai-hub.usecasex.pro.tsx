@@ -1,59 +1,190 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { CTAButtonGroup } from "@/components/CTAButtonGroup";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { trackCTAEvent } from "@/lib/usecasex.tracking";
 
 export const Route = createFileRoute("/ai-hub/usecasex/pro")({
   head: () => ({
     meta: [
-      { title: "Get UseCaseX™ Pro — Free with Registration" },
-      { name: "description", content: "Save use cases, score them with the AIgilityX engine, and build AI Opportunity Portfolios. Pro is free with registration." },
+      { title: "UseCaseX™ Pro — Free with Registration" },
+      { name: "description", content: "Build Your AI Opportunity Portfolio. Save, score, prioritize, and report AI use cases — free with registration." },
     ],
   }),
   component: ProPage,
 });
 
+const FEATURES = [
+  { t: "Save use cases", d: "Bookmark high-potential opportunities to your private workspace." },
+  { t: "Add notes & priority", d: "Annotate and rank every saved use case for your context." },
+  { t: "Score opportunities", d: "Strategic · Value · Feasibility · Risk · Readiness · TTV." },
+  { t: "Build AI portfolios", d: "Group use cases into themed AI Opportunity Portfolios." },
+  { t: "Generate executive reports", d: "Board-ready PDFs with KPIs, scoring and roadmap." },
+  { t: "Trigger AIgilityX pathways", d: "Hand-off to SARPI, CyberX, AdvisorX, FlowX, PrivacyX, AssureX." },
+];
+
+async function routeAfterAuth(navigate: ReturnType<typeof useNavigate>) {
+  const { data: userData } = await supabase.auth.getUser();
+  const user = userData?.user;
+  if (!user) return;
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("profile_completed")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (profile?.profile_completed) {
+    navigate({ to: "/ai-hub/usecasex/dashboard", replace: true });
+  } else {
+    navigate({ to: "/ai-hub/usecasex/profile", replace: true });
+  }
+}
+
 function ProPage() {
+  const navigate = useNavigate();
+  const [mode, setMode] = useState<"signin" | "signup" | "magic">("signup");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [err, setErr] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
+        void routeAfterAuth(navigate);
+      }
+    });
+    return () => data.subscription.unsubscribe();
+  }, [navigate]);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErr(null);
+    setInfo(null);
+    setLoading(true);
+    try {
+      if (mode === "signin") {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        trackCTAEvent("pro_signin", { source_page: "usecasex-pro" });
+      } else if (mode === "signup") {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: `${window.location.origin}/ai-hub/usecasex/profile` },
+        });
+        if (error) throw error;
+        setInfo("Check your inbox to confirm your email, then sign in to continue.");
+        trackCTAEvent("pro_signup", { source_page: "usecasex-pro" });
+      } else {
+        const { error } = await supabase.auth.signInWithOtp({
+          email,
+          options: { emailRedirectTo: `${window.location.origin}/ai-hub/usecasex/profile` },
+        });
+        if (error) throw error;
+        setInfo("Magic link sent. Check your inbox to continue.");
+        trackCTAEvent("pro_magic_link", { source_page: "usecasex-pro" });
+      }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Authentication failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section className="border-b border-border bg-background">
-      <div className="mx-auto max-w-[1100px] px-6 py-16">
-        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">UseCaseX™ Pro</div>
-        <h1 className="mt-2 max-w-3xl text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          Turn the repository into <span className="text-primary">your AI roadmap</span>.
-        </h1>
-        <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-          Save use cases, score them with the AIgilityX engine, build AI Opportunity Portfolios, and generate board-ready reports.
-          <span className="font-semibold text-foreground"> Pro is free with registration.</span>
-        </p>
-        <div className="mt-6">
-          <CTAButtonGroup ctas={[
-            { label: "Create your free Pro account →", to: "/auth" },
-            { label: "Browse first", to: "/ai-hub/usecasex/explore", variant: "secondary" },
-          ]} />
-        </div>
+      <div className="mx-auto max-w-[1180px] px-6 py-16">
+        <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr]">
+          {/* Left */}
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">UseCaseX™ Pro · Free with registration</div>
+            <h1 className="mt-3 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+              Build Your <span className="text-primary">AI Opportunity Portfolio</span>
+            </h1>
+            <p className="mt-4 max-w-xl text-lg text-muted-foreground">
+              Save, score, prioritize, and report AI use cases — free with registration.
+            </p>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {[
-            { t: "Save use cases", d: "Bookmark high-potential use cases to a private workspace." },
-            { t: "Score with AIgilityX", d: "Strategic · Value · Feasibility · Risk · Readiness · TTV." },
-            { t: "Build portfolios", d: "Group use cases into AI Opportunity Portfolios per objective." },
-            { t: "Export Pro reports", d: "Board-ready PDFs with KPIs, scoring, and roadmap." },
-          ].map((f) => (
-            <div key={f.t} className="rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)]">
-              <div className="grid h-9 w-9 place-items-center rounded-md bg-primary/10 text-primary">✓</div>
-              <h3 className="mt-3 text-base font-bold text-foreground">{f.t}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{f.d}</p>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              {FEATURES.map((f) => (
+                <div key={f.t} className="rounded-xl border border-border bg-card p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-primary/10 text-xs font-bold text-primary">✓</div>
+                    <div>
+                      <h3 className="text-sm font-semibold text-foreground">{f.t}</h3>
+                      <p className="mt-1 text-xs text-muted-foreground">{f.d}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        <div className="mt-12 rounded-2xl border border-primary/20 bg-primary/5 p-8">
-          <div className="grid items-center gap-6 md:grid-cols-3">
-            <div className="md:col-span-2">
-              <h2 className="text-xl font-bold text-foreground sm:text-2xl">Ready in 60 seconds — no credit card.</h2>
-              <p className="mt-1 text-muted-foreground">Sign up with email or Google. Your workspace, saved cases and portfolios stay private to your account.</p>
+            <p className="mt-6 text-xs text-muted-foreground">
+              UseCaseX Pro is free with registration. By creating an account you agree to our terms and privacy policy.
+            </p>
+          </div>
+
+          {/* Right — Auth card */}
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
+              <div className="flex gap-1 rounded-lg bg-secondary p-1 text-xs font-semibold">
+                {(["signup", "signin", "magic"] as const).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => { setMode(m); setErr(null); setInfo(null); }}
+                    className={`flex-1 rounded-md px-3 py-2 transition ${mode === m ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    {m === "signup" ? "Create account" : m === "signin" ? "Sign in" : "Magic link"}
+                  </button>
+                ))}
+              </div>
+
+              <h2 className="mt-5 text-xl font-bold text-foreground">
+                {mode === "signup" ? "Create your free Pro account" : mode === "signin" ? "Welcome back" : "Email me a magic link"}
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {mode === "signup"
+                  ? "60 seconds. No credit card."
+                  : mode === "signin"
+                  ? "Access your saved use cases and portfolios."
+                  : "We'll send a one-tap sign-in link."}
+              </p>
+
+              <form onSubmit={submit} className="mt-5 space-y-3">
+                <input
+                  type="email"
+                  required
+                  placeholder="you@organization.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none"
+                />
+                {mode !== "magic" ? (
+                  <input
+                    type="password"
+                    required
+                    minLength={8}
+                    placeholder="Password (8+ characters)"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none"
+                  />
+                ) : null}
+                {err ? <p className="text-sm text-destructive">{err}</p> : null}
+                {info ? <p className="text-sm text-primary">{info}</p> : null}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-bold text-primary-foreground hover:brightness-110 disabled:opacity-50"
+                >
+                  {loading ? "…" : mode === "signup" ? "Create my free Pro account →" : mode === "signin" ? "Sign in →" : "Send magic link →"}
+                </button>
+              </form>
+
+              <p className="mt-4 text-center text-xs text-muted-foreground">
+                <Link to="/ai-hub/usecasex/explore" className="hover:text-foreground">← Browse use cases first</Link>
+              </p>
             </div>
-            <Link to="/auth" className="rounded-md bg-primary px-5 py-3 text-center text-sm font-bold text-primary-foreground hover:brightness-110">
-              Create my free Pro account →
-            </Link>
           </div>
         </div>
       </div>
