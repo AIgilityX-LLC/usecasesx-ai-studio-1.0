@@ -336,6 +336,17 @@ function decorate(c: RawUseCase): MockUseCase {
 
 export const MOCK_USE_CASES: MockUseCase[] = RAW_USE_CASES.map(decorate);
 
+/**
+ * Runtime readiness check. Routes use this to render a graceful
+ * fallback if the mock module ever fails to load or returns empty
+ * (e.g. circular import, broken bundle, stale HMR cache).
+ */
+export function assertMockReady(): { ok: true } | { ok: false; reason: string } {
+  if (!Array.isArray(MOCK_USE_CASES)) return { ok: false, reason: "MOCK_USE_CASES is not an array (module load failure)." };
+  if (MOCK_USE_CASES.length === 0) return { ok: false, reason: "MOCK_USE_CASES is empty — no use cases available." };
+  return { ok: true };
+}
+
 // ----- Facet taxonomies derived from mock data ----------------------------
 
 function uniqueBy<T, K extends string>(arr: T[], key: (t: T) => K): { slug: string; name: string }[] {
