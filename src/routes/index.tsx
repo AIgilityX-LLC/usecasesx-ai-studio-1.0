@@ -207,8 +207,58 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* INDUSTRIES — light */}
+      {/* ABOUT — light */}
       <section className="surface-light border-b border-border/60">
+        <div className="mx-auto max-w-[1400px] px-6 py-20">
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+            <div className="lg:col-span-5">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+                About UseCaseX™
+              </div>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                The <span className="text-primary">AI Use Cases Repository</span> for sovereign enterprises.
+              </h2>
+            </div>
+            <div className="space-y-5 text-base leading-relaxed text-muted-foreground lg:col-span-7">
+              <p>
+                <span className="font-bold text-foreground">UseCaseX™</span> is the global, curated repository of
+                validated AI use cases — designed to help executives, public sector leaders and AI teams discover
+                what to automate, govern and scale next.
+              </p>
+              <p>
+                Spanning <span className="font-bold text-foreground">1000+ use cases</span> across{" "}
+                <span className="font-bold text-foreground">18+ industries</span>,{" "}
+                <span className="font-bold text-foreground">20+ AI types</span> and{" "}
+                <span className="font-bold text-foreground">17+ business objectives</span>, every entry is
+                structured against the AIgilityX framework: business problem, AI solution, value, data, KPIs, ROI,
+                risk and governance.
+              </p>
+              <p>
+                Built by <span className="font-bold text-foreground">AIgilityX</span> — the Sovereign AI Ecosystems
+                — UseCaseX™ connects directly into the AI Hub: shortlist with Pro, score with the AIgilityX engine,
+                and hand off to <span className="text-primary">AdvisorX™</span>,{" "}
+                <span className="text-primary">FlowX™</span>, <span className="text-primary">SARPI™</span> and{" "}
+                <span className="text-primary">CyberX C3G™</span> for delivery.
+              </p>
+              <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-3">
+                {[
+                  { k: "Curated", v: "Validated entries, structured to PRD." },
+                  { k: "Sovereign", v: "Built for regulated & public sector." },
+                  { k: "Actionable", v: "From discovery to deployment." },
+                ].map((b) => (
+                  <div key={b.k} className="bg-card p-5">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">{b.k}</div>
+                    <div className="mt-2 text-sm text-foreground">{b.v}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* INDUSTRIES — dark */}
+      <section className="bg-background border-b border-border/60">
         <div className="mx-auto max-w-[1400px] px-6 py-16">
           <SectionHeader
             kicker="Explore by industry"
