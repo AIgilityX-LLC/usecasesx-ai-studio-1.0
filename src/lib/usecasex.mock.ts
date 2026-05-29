@@ -5,6 +5,7 @@ export type Level = "Low" | "Medium" | "High";
 export type Risk = "Low" | "Medium" | "High" | "Critical";
 export type Maturity = "Beginner" | "Intermediate" | "Advanced";
 export type TTV = "Short" | "Medium" | "Long";
+export type Sector = "public" | "private" | "both";
 
 export interface MockPlatform { slug: string; name: string }
 
@@ -24,6 +25,9 @@ export interface MockUseCase {
   timeToValue: TTV;
   platforms: MockPlatform[];
   publishedAt: string; // ISO
+  // Derived after decoration:
+  sector: Sector;
+  tags: string[];
 }
 
 const P = {
