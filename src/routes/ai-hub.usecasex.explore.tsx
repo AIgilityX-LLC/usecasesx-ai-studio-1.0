@@ -177,6 +177,10 @@ function Page() {
     setLeadOpen(true);
   };
 
+  if (!ready.ok) {
+    return <MissingDataFallback reason={ready.reason} />;
+  }
+
   return (
     <>
       {/* Hero / search */}
