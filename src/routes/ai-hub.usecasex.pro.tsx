@@ -65,7 +65,7 @@ function ProPage() {
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        trackCTAEvent({ cta: "pro_signin", source_page: "usecasex-pro" });
+        trackCTAEvent("pro_signin", { source_page: "usecasex-pro" });
       } else if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
           email,
@@ -74,7 +74,7 @@ function ProPage() {
         });
         if (error) throw error;
         setInfo("Check your inbox to confirm your email, then sign in to continue.");
-        trackCTAEvent({ cta: "pro_signup", source_page: "usecasex-pro" });
+        trackCTAEvent("pro_signup", { source_page: "usecasex-pro" });
       } else {
         const { error } = await supabase.auth.signInWithOtp({
           email,
@@ -82,7 +82,7 @@ function ProPage() {
         });
         if (error) throw error;
         setInfo("Magic link sent. Check your inbox to continue.");
-        trackCTAEvent({ cta: "pro_magic_link", source_page: "usecasex-pro" });
+        trackCTAEvent("pro_magic_link", { source_page: "usecasex-pro" });
       }
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Authentication failed");
