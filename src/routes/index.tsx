@@ -11,7 +11,7 @@ const searchSchema = z.object({
   q: z.string().optional(),
   industries: z.array(z.string()).optional(),
   capabilities: z.array(z.string()).optional(),
-  govFunctions: z.array(z.string()).optional(),
+  
   businessFunctions: z.array(z.string()).optional(),
   maturity: z.array(z.string()).optional(),
   sort: z.enum(["recent", "impact", "maturity"]).optional(),
@@ -32,7 +32,7 @@ const casesQuery = (input: z.infer<typeof searchSchema>) =>
           q: input.q ?? "",
           industries: input.industries ?? [],
           capabilities: input.capabilities ?? [],
-          govFunctions: input.govFunctions ?? [],
+          
           businessFunctions: input.businessFunctions ?? [],
           maturity: input.maturity ?? [],
           sort: input.sort ?? "recent",
@@ -171,7 +171,7 @@ function ExplorePage() {
               { v: result.total.toString().padStart(3, "0"), l: "Use Cases" },
               { v: tax.industries.length.toString().padStart(2, "0"), l: "Industries" },
               { v: tax.capabilities.length.toString().padStart(2, "0"), l: "Capabilities" },
-              { v: tax.govFunctions.length.toString().padStart(2, "0"), l: "Gov Functions" },
+              { v: tax.businessFunctions.length.toString().padStart(2, "0"), l: "Business Fns" },
             ].map((s) => (
               <div key={s.l} className="bg-card px-5 py-4">
                 <div className="font-mono text-2xl font-bold text-primary">{s.v}</div>
@@ -199,7 +199,6 @@ function ExplorePage() {
                       updateSearch({
                         industries: undefined,
                         capabilities: undefined,
-                        govFunctions: undefined,
                         businessFunctions: undefined,
                         maturity: undefined,
                       })
@@ -221,12 +220,6 @@ function ExplorePage() {
                 options={tax.capabilities}
                 selected={search.capabilities ?? []}
                 onToggle={(v) => toggleFacet("capabilities", v)}
-              />
-              <FacetGroup
-                title="Government Function"
-                options={tax.govFunctions}
-                selected={search.govFunctions ?? []}
-                onToggle={(v) => toggleFacet("govFunctions", v)}
               />
               <FacetGroup
                 title="Business Function"
@@ -354,19 +347,19 @@ type CardCase = Awaited<ReturnType<typeof listUseCases>>["cases"][number];
 function CaseCard({ c }: { c: CardCase }) {
   const initials = useMemo(
     () =>
-      (c.organization ?? c.title)
+      ((c.organization ?? c.title) as string)
         .split(/\s+/)
-        .map((w) => w[0])
+        .map((w: string) => w[0])
         .slice(0, 2)
         .join("")
         .toUpperCase(),
     [c.organization, c.title],
   );
 
-  const capabilities = (c.use_case_capabilities ?? [])
+  const capabilities = ((c.use_case_capabilities ?? []) as Array<{ ai_capabilities?: { name?: string } }>)
     .map((x) => x.ai_capabilities?.name)
     .filter(Boolean) as string[];
-  const industries = (c.use_case_industries ?? [])
+  const industries = ((c.use_case_industries ?? []) as Array<{ industries?: { name?: string } }>)
     .map((x) => x.industries?.name)
     .filter(Boolean) as string[];
 
