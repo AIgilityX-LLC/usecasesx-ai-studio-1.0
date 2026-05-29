@@ -383,6 +383,8 @@ export interface MockFilters {
   riskLevel?: string[];
   maturity?: string[];
   timeToValue?: string[];
+  sectors?: string[];
+  tags?: string[];
   sort?: SortKey;
 }
 
@@ -407,9 +409,11 @@ export function filterAndSortMock(f: MockFilters): MockUseCase[] {
   const rsk = sel(f.riskLevel);
   const mat = sel(f.maturity);
   const ttv = sel(f.timeToValue);
+  const sct = sel(f.sectors);
+  const tgs = sel(f.tags);
 
   let out = MOCK_USE_CASES.filter((c) => {
-    if (q && !(includesInsensitive(c.title, q) || includesInsensitive(c.summary, q) || includesInsensitive(c.businessFunction, q) || includesInsensitive(c.aiType, q) || includesInsensitive(c.industry.name, q))) return false;
+    if (q && !(includesInsensitive(c.title, q) || includesInsensitive(c.summary, q) || includesInsensitive(c.businessFunction, q) || includesInsensitive(c.aiType, q) || includesInsensitive(c.industry.name, q) || c.tags.some((t) => t.includes(q)))) return false;
     if (inds && !inds.includes(c.industry.slug)) return false;
     if (caps && !caps.includes(c.aiType)) return false;
     if (bfns && !bfns.includes(c.businessFunction)) return false;
@@ -419,6 +423,8 @@ export function filterAndSortMock(f: MockFilters): MockUseCase[] {
     if (rsk && !rsk.includes(c.riskLevel)) return false;
     if (mat && !mat.includes(c.maturity)) return false;
     if (ttv && !ttv.includes(c.timeToValue)) return false;
+    if (sct && !sct.includes(c.sector)) return false;
+    if (tgs && !tgs.every((t) => c.tags.includes(t))) return false;
     return true;
   });
 
