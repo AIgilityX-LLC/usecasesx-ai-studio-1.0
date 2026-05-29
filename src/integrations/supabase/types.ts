@@ -14,16 +14,460 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_capabilities: {
+        Row: {
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      business_functions: {
+        Row: {
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      countries: {
+        Row: {
+          code: string
+          id: string
+          name: string
+          region: string | null
+        }
+        Insert: {
+          code: string
+          id?: string
+          name: string
+          region?: string | null
+        }
+        Update: {
+          code?: string
+          id?: string
+          name?: string
+          region?: string | null
+        }
+        Relationships: []
+      }
+      gov_functions: {
+        Row: {
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      industries: {
+        Row: {
+          description: string | null
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      shortlists: {
+        Row: {
+          added_at: string
+          use_case_id: string
+          user_id: string
+        }
+        Insert: {
+          added_at?: string
+          use_case_id: string
+          user_id: string
+        }
+        Update: {
+          added_at?: string
+          use_case_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shortlists_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      use_case_business_functions: {
+        Row: {
+          business_function_id: string
+          use_case_id: string
+        }
+        Insert: {
+          business_function_id: string
+          use_case_id: string
+        }
+        Update: {
+          business_function_id?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "use_case_business_functions_business_function_id_fkey"
+            columns: ["business_function_id"]
+            isOneToOne: false
+            referencedRelation: "business_functions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "use_case_business_functions_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      use_case_capabilities: {
+        Row: {
+          capability_id: string
+          use_case_id: string
+        }
+        Insert: {
+          capability_id: string
+          use_case_id: string
+        }
+        Update: {
+          capability_id?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "use_case_capabilities_capability_id_fkey"
+            columns: ["capability_id"]
+            isOneToOne: false
+            referencedRelation: "ai_capabilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "use_case_capabilities_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      use_case_countries: {
+        Row: {
+          country_id: string
+          use_case_id: string
+        }
+        Insert: {
+          country_id: string
+          use_case_id: string
+        }
+        Update: {
+          country_id?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "use_case_countries_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "use_case_countries_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      use_case_gov_functions: {
+        Row: {
+          gov_function_id: string
+          use_case_id: string
+        }
+        Insert: {
+          gov_function_id: string
+          use_case_id: string
+        }
+        Update: {
+          gov_function_id?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "use_case_gov_functions_gov_function_id_fkey"
+            columns: ["gov_function_id"]
+            isOneToOne: false
+            referencedRelation: "gov_functions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "use_case_gov_functions_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      use_case_industries: {
+        Row: {
+          industry_id: string
+          use_case_id: string
+        }
+        Insert: {
+          industry_id: string
+          use_case_id: string
+        }
+        Update: {
+          industry_id?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "use_case_industries_industry_id_fkey"
+            columns: ["industry_id"]
+            isOneToOne: false
+            referencedRelation: "industries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "use_case_industries_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      use_case_links: {
+        Row: {
+          id: string
+          kind: string | null
+          label: string
+          url: string
+          use_case_id: string
+        }
+        Insert: {
+          id?: string
+          kind?: string | null
+          label: string
+          url: string
+          use_case_id: string
+        }
+        Update: {
+          id?: string
+          kind?: string | null
+          label?: string
+          url?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "use_case_links_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      use_case_metrics: {
+        Row: {
+          id: string
+          label: string
+          sort_order: number | null
+          unit: string | null
+          use_case_id: string
+          value: string
+        }
+        Insert: {
+          id?: string
+          label: string
+          sort_order?: number | null
+          unit?: string | null
+          use_case_id: string
+          value: string
+        }
+        Update: {
+          id?: string
+          label?: string
+          sort_order?: number | null
+          unit?: string | null
+          use_case_id?: string
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "use_case_metrics_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      use_cases: {
+        Row: {
+          created_at: string
+          effort_score: number | null
+          hero_image_url: string | null
+          id: string
+          impact_score: number | null
+          maturity: Database["public"]["Enums"]["maturity_stage"] | null
+          maturity_score: number | null
+          organization: string | null
+          organization_type: string | null
+          outcomes: string | null
+          problem: string | null
+          published_at: string | null
+          region: string | null
+          risk_score: number | null
+          slug: string
+          solution: string | null
+          status: Database["public"]["Enums"]["use_case_status"]
+          submitted_by: string | null
+          summary: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          effort_score?: number | null
+          hero_image_url?: string | null
+          id?: string
+          impact_score?: number | null
+          maturity?: Database["public"]["Enums"]["maturity_stage"] | null
+          maturity_score?: number | null
+          organization?: string | null
+          organization_type?: string | null
+          outcomes?: string | null
+          problem?: string | null
+          published_at?: string | null
+          region?: string | null
+          risk_score?: number | null
+          slug: string
+          solution?: string | null
+          status?: Database["public"]["Enums"]["use_case_status"]
+          submitted_by?: string | null
+          summary: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          effort_score?: number | null
+          hero_image_url?: string | null
+          id?: string
+          impact_score?: number | null
+          maturity?: Database["public"]["Enums"]["maturity_stage"] | null
+          maturity_score?: number | null
+          organization?: string | null
+          organization_type?: string | null
+          outcomes?: string | null
+          problem?: string | null
+          published_at?: string | null
+          region?: string | null
+          risk_score?: number | null
+          slug?: string
+          solution?: string | null
+          status?: Database["public"]["Enums"]["use_case_status"]
+          submitted_by?: string | null
+          summary?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "contributor" | "viewer"
+      maturity_stage:
+        | "concept"
+        | "prototype"
+        | "pilot"
+        | "production"
+        | "scaled"
+      use_case_status: "draft" | "review" | "published" | "archived"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +594,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "contributor", "viewer"],
+      maturity_stage: ["concept", "prototype", "pilot", "production", "scaled"],
+      use_case_status: ["draft", "review", "published", "archived"],
+    },
   },
 } as const
