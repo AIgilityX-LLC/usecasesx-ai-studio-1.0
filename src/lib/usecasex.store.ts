@@ -149,12 +149,12 @@ export function computeTotalScore(s: ScoreDimensions | undefined): number {
   return Math.round(total);
 }
 
-export function interpretScore(total: number): { label: string; tone: "emerald" | "blue" | "amber" | "orange" | "red" } {
-  if (total >= 80) return { label: "High-priority quick win or strategic use case", tone: "emerald" };
-  if (total >= 60) return { label: "Strong candidate requiring planning", tone: "blue" };
-  if (total >= 40) return { label: "Medium priority; readiness improvement needed", tone: "amber" };
-  if (total >= 20) return { label: "Low priority or high complexity", tone: "orange" };
-  return { label: "Not recommended now", tone: "red" };
+export function interpretScore(total: number): { label: string; toneClass: string } {
+  if (total >= 80) return { label: "High-priority quick win or strategic use case", toneClass: "text-emerald-600 dark:text-emerald-400" };
+  if (total >= 60) return { label: "Strong candidate requiring planning", toneClass: "text-blue-600 dark:text-blue-400" };
+  if (total >= 40) return { label: "Medium priority; readiness improvement needed", toneClass: "text-amber-600 dark:text-amber-400" };
+  if (total >= 20) return { label: "Low priority or high complexity", toneClass: "text-orange-600 dark:text-orange-400" };
+  return { label: "Not recommended now", toneClass: "text-red-600 dark:text-red-400" };
 }
 
 export function defaultScore(): ScoreDimensions {
