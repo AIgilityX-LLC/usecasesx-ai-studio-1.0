@@ -83,17 +83,17 @@ const allCountQuery = queryOptions({
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "UseCaseX™ — Explore 100+ AI Use Cases for your industry" },
+      { title: "UseCaseX™ — Global AI Use Cases Repository" },
       {
         name: "description",
         content:
-          "AIgilityX UseCaseX™ — explore 100+ validated AI use cases across 18 industries. Find what to automate, govern, and scale next.",
+          "AIgilityX UseCaseX™ — 1000+ validated AI use cases across 18+ industries, 20+ AI types and 17+ business objectives. Built by AIgilityX, the Sovereign AI Ecosystems.",
       },
-      { property: "og:title", content: "UseCaseX™ — AI Use Cases Repository" },
+      { property: "og:title", content: "UseCaseX™ — Global AI Use Cases Repository" },
       {
         property: "og:description",
         content:
-          "Explore 100+ AI use cases across 18 industries. Filter by AI type, business objective, value and risk. Built by AIgilityX.",
+          "Explore 1000+ AI use cases across 18+ industries. Filter by AI type, business objective, value and risk. Built by AIgilityX.",
       },
     ],
   }),
@@ -160,11 +160,11 @@ function LandingPage() {
             UseCaseX™ · AI Use Cases Repository
           </div>
           <h1 className="max-w-5xl text-[44px] font-bold leading-[1.05] tracking-tight sm:text-6xl">
-            Explore <span className="text-primary">100+ AI Use Cases</span> for your industry
+            <span className="text-primary">Global AI Use Cases Repository</span>
           </h1>
           <p className="mt-5 max-w-3xl text-lg text-muted-foreground">
-            Find what to automate, govern, and scale next — across 18 industries, 20 AI types and
-            17 business objectives. Built by AIgilityX, the Sovereign AI specialists.
+            Find what to automate, govern, and scale next — 1000+ AI Use Cases across 18+ industries, 
+            20+ AI types and 17+ business objectives. Built by AIgilityX, the Sovereign AI Ecosystems.
           </p>
 
           <div className="mt-9 flex flex-wrap items-center gap-3">
@@ -275,7 +275,7 @@ function LandingPage() {
           />
           <div className="mt-10 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-5">
             {[
-              { n: "01", t: "Browse", d: "Explore 100+ validated AI use cases across 18 industries." },
+              { n: "01", t: "Browse", d: "Explore 1000+ validated AI use cases across 18+ industries." },
               { n: "02", t: "Filter", d: "Narrow by AI type, business objective, value, risk and time-to-value." },
               { n: "03", t: "Save", d: "Shortlist promising cases into your private workspace (Pro)." },
               { n: "04", t: "Score", d: "Run the AIgilityX scoring engine on your portfolio (Pro)." },
