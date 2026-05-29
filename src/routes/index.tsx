@@ -83,17 +83,17 @@ const allCountQuery = queryOptions({
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "UseCaseX™ — Explore 100+ AI Use Cases for your industry" },
+      { title: "UseCaseX™ — Global AI Use Cases Repository" },
       {
         name: "description",
         content:
-          "AIgilityX UseCaseX™ — explore 100+ validated AI use cases across 18 industries. Find what to automate, govern, and scale next.",
+          "AIgilityX UseCaseX™ — 1000+ validated AI use cases across 18+ industries, 20+ AI types and 17+ business objectives. Built by AIgilityX, the Sovereign AI Ecosystems.",
       },
-      { property: "og:title", content: "UseCaseX™ — AI Use Cases Repository" },
+      { property: "og:title", content: "UseCaseX™ — Global AI Use Cases Repository" },
       {
         property: "og:description",
         content:
-          "Explore 100+ AI use cases across 18 industries. Filter by AI type, business objective, value and risk. Built by AIgilityX.",
+          "Explore 1000+ AI use cases across 18+ industries. Filter by AI type, business objective, value and risk. Built by AIgilityX.",
       },
     ],
   }),
