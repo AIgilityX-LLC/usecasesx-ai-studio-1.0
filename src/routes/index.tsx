@@ -4,6 +4,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { listUseCases, listTaxonomies } from "@/lib/use-cases.functions";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import heroVideo from "@/assets/hero-bg.mp4.asset.json";
 
 const taxonomiesQuery = queryOptions({
   queryKey: ["taxonomies"],
