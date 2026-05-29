@@ -89,7 +89,7 @@ export const listUseCases = createServerFn({ method: "GET" })
       return true;
     });
 
-    return { cases: filtered, total: filtered.length };
+    return { cases: filtered as Array<Record<string, any>>, total: filtered.length };
   });
 
 export const getUseCase = createServerFn({ method: "GET" })
