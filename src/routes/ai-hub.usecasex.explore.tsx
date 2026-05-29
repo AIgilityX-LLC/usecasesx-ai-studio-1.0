@@ -306,6 +306,7 @@ function Page() {
         cta="custom_use_case_request"
         sourcePage="usecasex-explore"
       />
+      <CompareTray />
     </>
   );
 }
