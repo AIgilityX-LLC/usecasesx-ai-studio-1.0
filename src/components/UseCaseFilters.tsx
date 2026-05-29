@@ -37,6 +37,9 @@ export function UseCaseFilters({ tax, value, onChange, onClear, activeCount }: P
           </button>
         )}
       </div>
+      {tax.sectors && tax.sectors.length > 0 && (
+        <Group title="Sector" options={tax.sectors} selected={value.sectors ?? []} onToggle={(s) => toggle("sectors", s)} />
+      )}
       <Group title="Industry" options={tax.industries} selected={value.industries ?? []} onToggle={(s) => toggle("industries", s)} />
       <Group title="AI Type" options={tax.capabilities} selected={value.capabilities ?? []} onToggle={(s) => toggle("capabilities", s)} />
       <Group title="Business Function" options={tax.businessFunctions} selected={value.businessFunctions ?? []} onToggle={(s) => toggle("businessFunctions", s)} />
