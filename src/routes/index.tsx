@@ -160,11 +160,11 @@ function LandingPage() {
             UseCaseX™ · AI Use Cases Repository
           </div>
           <h1 className="max-w-5xl text-[44px] font-bold leading-[1.05] tracking-tight sm:text-6xl">
-            Explore <span className="text-primary">100+ AI Use Cases</span> for your industry
+            <span className="text-primary">Global AI Use Cases Repository</span>
           </h1>
           <p className="mt-5 max-w-3xl text-lg text-muted-foreground">
-            Find what to automate, govern, and scale next — across 18 industries, 20 AI types and
-            17 business objectives. Built by AIgilityX, the Sovereign AI specialists.
+            Find what to automate, govern, and scale next — 1000+ AI Use Cases across 18+ industries, 
+            20+ AI types and 17+ business objectives. Built by AIgilityX, the Sovereign AI Ecosystems.
           </p>
 
           <div className="mt-9 flex flex-wrap items-center gap-3">
