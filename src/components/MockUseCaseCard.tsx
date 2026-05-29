@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import type { MockUseCase, Level, Risk } from "@/lib/usecasex.mock";
-import { PlatformBadge } from "./PlatformBadge";
+import type { MockUseCase, Risk } from "@/lib/usecasex.mock";
 
 function tone(kind: "value" | "complexity" | "risk" | "maturity" | "ttv", v: string): string {
   // Returns a soft semantic background+text combo for compact pills.
@@ -120,8 +119,6 @@ export function MockUseCaseCard({
         <span className="text-[10px] font-medium text-muted-foreground">{c.industry.name}</span>
       </div>
 
-      {/* Suppress unused-export warning for PlatformBadge import without using it */}
-      <span className="sr-only">{PlatformBadge.name}</span>
     </article>
   );
 }
