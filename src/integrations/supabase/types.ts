@@ -284,7 +284,22 @@ export type Database = {
           objective_id?: string
           use_case_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "use_case_business_objectives_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "business_objectives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "use_case_business_objectives_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       use_case_capabilities: {
         Row: {
