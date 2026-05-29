@@ -109,6 +109,8 @@ function Page() {
     riskLevel: search.riskLevel ?? [],
     maturity: search.maturity ?? [],
     timeToValue: search.timeToValue ?? [],
+    sectors: search.sectors ?? [],
+    tags: search.tags ?? [],
     sort: (search.sort as SortKey | undefined) ?? "relevant",
   };
 
