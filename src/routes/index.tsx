@@ -199,7 +199,7 @@ function ExplorePage() {
                       updateSearch({
                         industries: undefined,
                         capabilities: undefined,
-                        govFunctions: undefined,
+                        businessFunctions: undefined,
                         businessFunctions: undefined,
                         maturity: undefined,
                       })
