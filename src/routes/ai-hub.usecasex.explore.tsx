@@ -48,6 +48,8 @@ const FACET_LABELS: Record<string, string> = {
   complexity: "Complexity",
   riskLevel: "Risk",
   timeToValue: "Time to Value",
+  sectors: "Sector",
+  tags: "Tag",
 };
 
 export const Route = createFileRoute("/ai-hub/usecasex/explore")({
