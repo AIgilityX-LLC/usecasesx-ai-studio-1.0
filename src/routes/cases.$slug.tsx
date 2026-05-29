@@ -76,34 +76,43 @@ function CaseDetail() {
         </Link>
 
         {/* Hero */}
-        <div className="overflow-hidden rounded-3xl bg-foreground text-background">
-          <div className="grid gap-0 md:grid-cols-5">
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-card">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-[0.15]"
+            style={{
+              backgroundImage:
+                "linear-gradient(oklch(0.82 0.13 210 / 0.5) 1px, transparent 1px), linear-gradient(90deg, oklch(0.82 0.13 210 / 0.5) 1px, transparent 1px)",
+              backgroundSize: "48px 48px",
+            }}
+          />
+          <div className="relative grid gap-0 md:grid-cols-5">
             <div className="p-10 md:col-span-3">
               <div className="mb-6 flex items-center gap-3">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
+                <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
                   Featured Deployment
                 </span>
-                <div className="h-px flex-1 bg-white/10" />
+                <div className="h-px flex-1 bg-border" />
               </div>
-              <h1 className="mb-4 text-3xl font-bold md:text-4xl">{c.title}</h1>
+              <h1 className="mb-4 text-3xl font-bold leading-tight md:text-4xl">{c.title}</h1>
               {c.organization ? (
-                <p className="mb-6 text-sm font-medium uppercase tracking-wide text-white/60">
+                <p className="mb-6 text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
                   {c.organization}
                   {c.organization_type ? ` · ${c.organization_type}` : ""}
                   {c.region ? ` · ${c.region}` : ""}
                 </p>
               ) : null}
-              <p className="mb-8 max-w-2xl text-white/80">{c.summary}</p>
+              <p className="mb-8 max-w-2xl text-foreground/80">{c.summary}</p>
 
               {metrics.length > 0 && (
-                <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+                <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
                   {metrics.slice(0, 4).map((m) => (
-                    <div key={m.id}>
-                      <span className="block font-mono text-2xl font-bold text-accent">
+                    <div key={m.id} className="border-l-2 border-primary/40 pl-3">
+                      <span className="block font-mono text-2xl font-bold text-primary">
                         {m.value}
                         {m.unit ?? ""}
                       </span>
-                      <span className="text-xs uppercase tracking-wide text-white/50">
+                      <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
                         {m.label}
                       </span>
                     </div>
@@ -112,26 +121,39 @@ function CaseDetail() {
               )}
             </div>
 
-            <div className="hidden md:col-span-2 md:block">
-              <div className="flex h-full items-center justify-center bg-foreground/80 p-8">
-                <div className="grid w-full grid-cols-2 gap-3 text-xs">
-                  {(["maturity", "impact", "effort", "risk"] as const).map((k) => {
-                    const score = c[`${k}_score` as const] as number | null;
-                    return (
-                      <div key={k} className="rounded-xl bg-white/5 p-4">
-                        <div className="text-[10px] uppercase tracking-wider text-white/50">
-                          {k}
-                        </div>
-                        <div className="mt-2 flex items-end gap-1">
-                          <span className="text-2xl font-bold">{score ?? "—"}</span>
-                          {score ? (
-                            <span className="text-xs text-white/40">/5</span>
-                          ) : null}
-                        </div>
+            <div className="border-t border-border md:col-span-2 md:border-l md:border-t-0">
+              <div className="grid h-full grid-cols-2 gap-px bg-border">
+                {(["maturity", "impact", "effort", "risk"] as const).map((k) => {
+                  const score = c[`${k}_score` as const] as number | null;
+                  return (
+                    <div key={k} className="bg-card p-5">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                        {k}
                       </div>
-                    );
-                  })}
-                </div>
+                      <div className="mt-3 flex items-end gap-1">
+                        <span className="font-mono text-3xl font-bold text-primary">
+                          {score ?? "—"}
+                        </span>
+                        {score ? (
+                          <span className="pb-1 text-xs text-muted-foreground">/5</span>
+                        ) : null}
+                      </div>
+                      {score ? (
+                        <div className="mt-3 flex gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <div
+                              key={i}
+                              className={
+                                "h-1 flex-1 rounded-sm " +
+                                (i < score ? "bg-primary" : "bg-border")
+                              }
+                            />
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
