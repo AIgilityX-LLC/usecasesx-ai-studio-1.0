@@ -30,6 +30,7 @@ import { Route as AiHubUsecasexApiIntegrationPreviewRouteImport } from './routes
 import { Route as AiHubUsecasexAdminRouteImport } from './routes/ai-hub.usecasex.admin'
 import { Route as AiHubUsecasexSlugRouteImport } from './routes/ai-hub.usecasex.$slug'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
+import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
 import { Route as ApiPublicUsecasexUseCasesSlugRouteImport } from './routes/api/public/usecasex/use-cases.$slug'
 
 const SubmitRoute = SubmitRouteImport.update({
@@ -139,6 +140,12 @@ const ApiPublicUsecasexUseCasesRoute =
     path: '/api/public/usecasex/use-cases',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicUsecasexTaxonomyRoute =
+  ApiPublicUsecasexTaxonomyRouteImport.update({
+    id: '/api/public/usecasex/taxonomy',
+    path: '/api/public/usecasex/taxonomy',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicUsecasexUseCasesSlugRoute =
   ApiPublicUsecasexUseCasesSlugRouteImport.update({
     id: '/$slug',
@@ -167,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
   '/ai-hub/usecasex/studio': typeof AiHubUsecasexStudioRoute
   '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
+  '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
 }
@@ -189,6 +197,7 @@ export interface FileRoutesByTo {
   '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
   '/ai-hub/usecasex/studio': typeof AiHubUsecasexStudioRoute
   '/ai-hub/usecasex': typeof AiHubUsecasexIndexRoute
+  '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
 }
@@ -214,6 +223,7 @@ export interface FileRoutesById {
   '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
   '/ai-hub/usecasex/studio': typeof AiHubUsecasexStudioRoute
   '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
+  '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
 }
@@ -240,6 +250,7 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex/saved'
     | '/ai-hub/usecasex/studio'
     | '/ai-hub/usecasex/'
+    | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/api/public/usecasex/use-cases/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -262,6 +273,7 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex/saved'
     | '/ai-hub/usecasex/studio'
     | '/ai-hub/usecasex'
+    | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/api/public/usecasex/use-cases/$slug'
   id:
@@ -286,6 +298,7 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex/saved'
     | '/ai-hub/usecasex/studio'
     | '/ai-hub/usecasex/'
+    | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/api/public/usecasex/use-cases/$slug'
   fileRoutesById: FileRoutesById
@@ -297,6 +310,7 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   SubmitRoute: typeof SubmitRoute
   CasesSlugRoute: typeof CasesSlugRoute
+  ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
 }
 
@@ -449,6 +463,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicUsecasexUseCasesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/usecasex/taxonomy': {
+      id: '/api/public/usecasex/taxonomy'
+      path: '/api/public/usecasex/taxonomy'
+      fullPath: '/api/public/usecasex/taxonomy'
+      preLoaderRoute: typeof ApiPublicUsecasexTaxonomyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/usecasex/use-cases/$slug': {
       id: '/api/public/usecasex/use-cases/$slug'
       path: '/$slug'
@@ -527,6 +548,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRoute,
   SubmitRoute: SubmitRoute,
   CasesSlugRoute: CasesSlugRoute,
+  ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
   ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRouteWithChildren,
 }
 export const routeTree = rootRouteImport
