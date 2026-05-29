@@ -23,6 +23,8 @@ const searchSchema = z.object({
   complexity: z.array(z.string()).optional(),
   riskLevel: z.array(z.string()).optional(),
   timeToValue: z.array(z.string()).optional(),
+  sectors: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional(),
   sort: z.enum(sortValues).optional(),
 });
 type Search = z.infer<typeof searchSchema>;
