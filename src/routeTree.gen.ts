@@ -29,6 +29,7 @@ import { Route as AiHubUsecasexDashboardRouteImport } from './routes/ai-hub.usec
 import { Route as AiHubUsecasexApiIntegrationPreviewRouteImport } from './routes/ai-hub.usecasex.api-integration-preview'
 import { Route as AiHubUsecasexAdminRouteImport } from './routes/ai-hub.usecasex.admin'
 import { Route as AiHubUsecasexSlugRouteImport } from './routes/ai-hub.usecasex.$slug'
+import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
 
 const SubmitRoute = SubmitRouteImport.update({
   id: '/submit',
@@ -131,6 +132,12 @@ const AiHubUsecasexSlugRoute = AiHubUsecasexSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => AiHubUsecasexRoute,
 } as any)
+const ApiPublicUsecasexUseCasesRoute =
+  ApiPublicUsecasexUseCasesRouteImport.update({
+    id: '/api/public/usecasex/use-cases',
+    path: '/api/public/usecasex/use-cases',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -153,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
   '/ai-hub/usecasex/studio': typeof AiHubUsecasexStudioRoute
   '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
+  '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -173,6 +181,7 @@ export interface FileRoutesByTo {
   '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
   '/ai-hub/usecasex/studio': typeof AiHubUsecasexStudioRoute
   '/ai-hub/usecasex': typeof AiHubUsecasexIndexRoute
+  '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -196,6 +205,7 @@ export interface FileRoutesById {
   '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
   '/ai-hub/usecasex/studio': typeof AiHubUsecasexStudioRoute
   '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
+  '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -220,6 +230,7 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex/saved'
     | '/ai-hub/usecasex/studio'
     | '/ai-hub/usecasex/'
+    | '/api/public/usecasex/use-cases'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -240,6 +251,7 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex/saved'
     | '/ai-hub/usecasex/studio'
     | '/ai-hub/usecasex'
+    | '/api/public/usecasex/use-cases'
   id:
     | '__root__'
     | '/'
@@ -262,6 +274,7 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex/saved'
     | '/ai-hub/usecasex/studio'
     | '/ai-hub/usecasex/'
+    | '/api/public/usecasex/use-cases'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -271,6 +284,7 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRoute
   SubmitRoute: typeof SubmitRoute
   CasesSlugRoute: typeof CasesSlugRoute
+  ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -415,6 +429,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiHubUsecasexSlugRouteImport
       parentRoute: typeof AiHubUsecasexRoute
     }
+    '/api/public/usecasex/use-cases': {
+      id: '/api/public/usecasex/use-cases'
+      path: '/api/public/usecasex/use-cases'
+      fullPath: '/api/public/usecasex/use-cases'
+      preLoaderRoute: typeof ApiPublicUsecasexUseCasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -472,7 +493,18 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRoute,
   SubmitRoute: SubmitRoute,
   CasesSlugRoute: CasesSlugRoute,
+  ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
