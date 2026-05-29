@@ -48,10 +48,55 @@ function Page() {
   return (
     <>
       <UseCaseXHero stats={{ useCases: Math.max(all.total, 1000), industries: Math.max(tax.industries.length, 18), aiTypes: Math.max(tax.capabilities.length, 20), objectives: Math.max(tax.objectives.length, 17) }} />
-      <IndustryFocusedSection />
 
-      {/* Featured */}
-      <section className="border-b border-border bg-background">
+      {/* About UseCaseX™ — LIGHT */}
+      <section className="border-b border-border surface-light">
+        <div className="mx-auto max-w-[1400px] px-6 py-20">
+          <div className="grid gap-10 md:grid-cols-[1.1fr_1fr] md:items-center">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">About UseCaseX™</div>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                The AI Use Cases Repository for sovereign enterprises.
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                UseCaseX™ is the AIgilityX module that turns AI ambition into an actionable backlog.
+                Browse 1000+ curated, sovereignty-aware use cases across regulated industries — each one
+                mapped to a clear business problem, AI capability, value pattern and delivery platform.
+              </p>
+              <p className="mt-3 text-muted-foreground">
+                Use it stand-alone, or as the discovery layer that feeds the rest of the AIgilityX
+                ecosystem — SARPI™, CyberX C3G™, AdvisorX™, FlowX™ and more.
+              </p>
+              <div className="mt-6">
+                <CTAButtonGroup ctas={[
+                  { label: "Explore the Repository →", to: "/ai-hub/usecasex/explore" },
+                  { label: "Why UseCaseX™ Pro", to: "/ai-hub/usecasex/pro", variant: "ghost" },
+                ]} />
+              </div>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3 md:grid-cols-1">
+              {[
+                { tag: "Curated", body: "Each use case is reviewed for business clarity, AI fit and delivery realism — not just an idea list." },
+                { tag: "Sovereign", body: "Built around regulated industries with explicit governance, risk and data-residency framing." },
+                { tag: "Actionable", body: "PRD-ready blocks — problem, solution, value, KPIs, ROI areas, platforms — to move from idea to delivery." },
+              ].map((b) => (
+                <div key={b.tag} className="rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-card)]">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">{b.tag}</div>
+                  <p className="mt-2 text-sm text-foreground/85">{b.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Industries — DARK */}
+      <div className="surface-dark border-b border-border">
+        <IndustryFocusedSection />
+      </div>
+
+      {/* Featured — LIGHT */}
+      <section className="border-b border-border surface-light">
         <div className="mx-auto max-w-[1400px] px-6 py-16">
           <div className="flex items-end justify-between gap-4">
             <div className="max-w-2xl">
@@ -67,11 +112,11 @@ function Page() {
         </div>
       </section>
 
-      {/* Free vs Pro */}
-      <section className="border-b border-border bg-secondary/40">
-        <div className="mx-auto max-w-[1400px] px-6 py-16">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Two ways to use UseCaseX™</div>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Free / Lite — or Pro (also free with registration)</h2>
+      {/* Free vs Pro — DARK */}
+      <section className="border-b border-border surface-dark">
+        <div className="mx-auto max-w-[1400px] px-6 py-20">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[oklch(0.85_0.13_215)]">Two ways to use UseCaseX™</div>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Free / Lite — or Pro (also free with registration)</h2>
           <div className="mt-8 grid gap-5 md:grid-cols-2">
             <Tier name="Free / Lite" tag="No login required" features={[
               "Browse, search and filter 1000+ use cases",
@@ -89,19 +134,61 @@ function Page() {
         </div>
       </section>
 
-      {/* Integration extension */}
-      <section className="border-b border-border bg-background">
-        <div className="mx-auto max-w-[1400px] px-6 py-16">
+      {/* How it Works — LIGHT */}
+      <section className="border-b border-border surface-light">
+        <div className="mx-auto max-w-[1400px] px-6 py-20">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">How it Works</div>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">From discovery to delivery — in four steps.</h2>
+          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {[
+              { n: "01", t: "Discover", d: "Search and filter 1000+ use cases by industry, AI type, business objective, value potential and risk." },
+              { n: "02", t: "Qualify", d: "Open any use case to see the PRD-ready blocks — problem, AI solution, value, data, KPIs, ROI, risk." },
+              { n: "03", t: "Score", d: "In Pro, score each use case with the AIgilityX engine across strategy, value, feasibility, risk and readiness." },
+              { n: "04", t: "Portfolio", d: "Bundle scored use cases into an AI Opportunity Portfolio and generate executive reports." },
+            ].map((s) => (
+              <div key={s.n} className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
+                <div className="font-mono text-xs font-bold text-primary">{s.n}</div>
+                <div className="mt-2 text-lg font-semibold text-foreground">{s.t}</div>
+                <p className="mt-2 text-sm text-muted-foreground">{s.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Integration extension — DARK */}
+      <section className="border-b border-border surface-dark">
+        <div className="mx-auto max-w-[1400px] px-6 py-20">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="max-w-2xl">
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Sovereign AI Ecosystems</div>
-              <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">API-ready for the full AIgilityX platform.</h2>
-              <p className="mt-2 text-muted-foreground">UseCaseX™ data flows into SARPI™, CyberX C3G™, AdvisorX™ and 10+ other platforms via a stable API + integration-event contract.</p>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[oklch(0.85_0.13_215)]">Sovereign AI Ecosystems</div>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">API-ready for the full AIgilityX platform.</h2>
+              <p className="mt-2 text-white/70">UseCaseX™ data flows into SARPI™, CyberX C3G™, AdvisorX™ and 10+ other platforms via a stable API + integration-event contract.</p>
             </div>
-            <Link to="/ai-hub/usecasex/api-integration-preview" className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline">See the API preview →</Link>
+            <Link to="/ai-hub/usecasex/api-integration-preview" className="text-[11px] font-bold uppercase tracking-widest text-[oklch(0.85_0.13_215)] hover:underline">See the API preview →</Link>
           </div>
           <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {PARTNER_PLATFORMS.map((p) => <PlatformBadge key={p.slug} name={p.name} category={p.category} color={p.color as "navy"|"blue"|"cyan"} />)}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA — LIGHT */}
+      <section className="surface-light">
+        <div className="mx-auto max-w-[1100px] px-6 py-24 text-center">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Start now — free</div>
+          <h2 className="mt-2 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+            Find your next AI use case in the world's most actionable repository.
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+            1000+ curated, sovereignty-aware use cases. Browse free. Upgrade to Pro — also free — to score,
+            save and assemble your AI Opportunity Portfolio.
+          </p>
+          <div className="mt-8 flex justify-center">
+            <CTAButtonGroup ctas={[
+              { label: "Explore the Repository →", to: "/ai-hub/usecasex/explore" },
+              { label: "Get Pro — Free", to: "/ai-hub/usecasex/pro", variant: "secondary" },
+            ]} />
           </div>
         </div>
       </section>
