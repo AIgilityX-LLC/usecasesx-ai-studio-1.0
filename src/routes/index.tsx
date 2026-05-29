@@ -341,8 +341,8 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* CTA — dark */}
-      <section className="bg-background border-b border-border/60">
+      {/* CTA — light */}
+      <section className="surface-light border-b border-border/60">
         <div className="mx-auto max-w-[1400px] px-6 py-20">
           <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-card p-10 md:p-14">
             <div
