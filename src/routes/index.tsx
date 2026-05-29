@@ -200,7 +200,6 @@ function ExplorePage() {
                         industries: undefined,
                         capabilities: undefined,
                         businessFunctions: undefined,
-                        businessFunctions: undefined,
                         maturity: undefined,
                       })
                     }
