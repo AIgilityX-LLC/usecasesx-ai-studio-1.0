@@ -25,6 +25,7 @@ import { Route as AiHubUsecasexProRouteImport } from './routes/ai-hub.usecasex.p
 import { Route as AiHubUsecasexPortfolioRouteImport } from './routes/ai-hub.usecasex.portfolio'
 import { Route as AiHubUsecasexExploreRouteImport } from './routes/ai-hub.usecasex.explore'
 import { Route as AiHubUsecasexDashboardRouteImport } from './routes/ai-hub.usecasex.dashboard'
+import { Route as AiHubUsecasexApiIntegrationPreviewRouteImport } from './routes/ai-hub.usecasex.api-integration-preview'
 import { Route as AiHubUsecasexAdminRouteImport } from './routes/ai-hub.usecasex.admin'
 import { Route as AiHubUsecasexSlugRouteImport } from './routes/ai-hub.usecasex.$slug'
 
@@ -108,6 +109,12 @@ const AiHubUsecasexDashboardRoute = AiHubUsecasexDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AiHubUsecasexRoute,
 } as any)
+const AiHubUsecasexApiIntegrationPreviewRoute =
+  AiHubUsecasexApiIntegrationPreviewRouteImport.update({
+    id: '/api-integration-preview',
+    path: '/api-integration-preview',
+    getParentRoute: () => AiHubUsecasexRoute,
+  } as any)
 const AiHubUsecasexAdminRoute = AiHubUsecasexAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -130,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/ai-hub/': typeof AiHubIndexRoute
   '/ai-hub/usecasex/$slug': typeof AiHubUsecasexSlugRoute
   '/ai-hub/usecasex/admin': typeof AiHubUsecasexAdminRoute
+  '/ai-hub/usecasex/api-integration-preview': typeof AiHubUsecasexApiIntegrationPreviewRoute
   '/ai-hub/usecasex/dashboard': typeof AiHubUsecasexDashboardRoute
   '/ai-hub/usecasex/explore': typeof AiHubUsecasexExploreRoute
   '/ai-hub/usecasex/portfolio': typeof AiHubUsecasexPortfolioRoute
@@ -148,6 +156,7 @@ export interface FileRoutesByTo {
   '/ai-hub': typeof AiHubIndexRoute
   '/ai-hub/usecasex/$slug': typeof AiHubUsecasexSlugRoute
   '/ai-hub/usecasex/admin': typeof AiHubUsecasexAdminRoute
+  '/ai-hub/usecasex/api-integration-preview': typeof AiHubUsecasexApiIntegrationPreviewRoute
   '/ai-hub/usecasex/dashboard': typeof AiHubUsecasexDashboardRoute
   '/ai-hub/usecasex/explore': typeof AiHubUsecasexExploreRoute
   '/ai-hub/usecasex/portfolio': typeof AiHubUsecasexPortfolioRoute
@@ -169,6 +178,7 @@ export interface FileRoutesById {
   '/ai-hub/': typeof AiHubIndexRoute
   '/ai-hub/usecasex/$slug': typeof AiHubUsecasexSlugRoute
   '/ai-hub/usecasex/admin': typeof AiHubUsecasexAdminRoute
+  '/ai-hub/usecasex/api-integration-preview': typeof AiHubUsecasexApiIntegrationPreviewRoute
   '/ai-hub/usecasex/dashboard': typeof AiHubUsecasexDashboardRoute
   '/ai-hub/usecasex/explore': typeof AiHubUsecasexExploreRoute
   '/ai-hub/usecasex/portfolio': typeof AiHubUsecasexPortfolioRoute
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
     | '/ai-hub/'
     | '/ai-hub/usecasex/$slug'
     | '/ai-hub/usecasex/admin'
+    | '/ai-hub/usecasex/api-integration-preview'
     | '/ai-hub/usecasex/dashboard'
     | '/ai-hub/usecasex/explore'
     | '/ai-hub/usecasex/portfolio'
@@ -209,6 +220,7 @@ export interface FileRouteTypes {
     | '/ai-hub'
     | '/ai-hub/usecasex/$slug'
     | '/ai-hub/usecasex/admin'
+    | '/ai-hub/usecasex/api-integration-preview'
     | '/ai-hub/usecasex/dashboard'
     | '/ai-hub/usecasex/explore'
     | '/ai-hub/usecasex/portfolio'
@@ -229,6 +241,7 @@ export interface FileRouteTypes {
     | '/ai-hub/'
     | '/ai-hub/usecasex/$slug'
     | '/ai-hub/usecasex/admin'
+    | '/ai-hub/usecasex/api-integration-preview'
     | '/ai-hub/usecasex/dashboard'
     | '/ai-hub/usecasex/explore'
     | '/ai-hub/usecasex/portfolio'
@@ -362,6 +375,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiHubUsecasexDashboardRouteImport
       parentRoute: typeof AiHubUsecasexRoute
     }
+    '/ai-hub/usecasex/api-integration-preview': {
+      id: '/ai-hub/usecasex/api-integration-preview'
+      path: '/api-integration-preview'
+      fullPath: '/ai-hub/usecasex/api-integration-preview'
+      preLoaderRoute: typeof AiHubUsecasexApiIntegrationPreviewRouteImport
+      parentRoute: typeof AiHubUsecasexRoute
+    }
     '/ai-hub/usecasex/admin': {
       id: '/ai-hub/usecasex/admin'
       path: '/admin'
@@ -382,6 +402,7 @@ declare module '@tanstack/react-router' {
 interface AiHubUsecasexRouteChildren {
   AiHubUsecasexSlugRoute: typeof AiHubUsecasexSlugRoute
   AiHubUsecasexAdminRoute: typeof AiHubUsecasexAdminRoute
+  AiHubUsecasexApiIntegrationPreviewRoute: typeof AiHubUsecasexApiIntegrationPreviewRoute
   AiHubUsecasexDashboardRoute: typeof AiHubUsecasexDashboardRoute
   AiHubUsecasexExploreRoute: typeof AiHubUsecasexExploreRoute
   AiHubUsecasexPortfolioRoute: typeof AiHubUsecasexPortfolioRoute
@@ -395,6 +416,8 @@ interface AiHubUsecasexRouteChildren {
 const AiHubUsecasexRouteChildren: AiHubUsecasexRouteChildren = {
   AiHubUsecasexSlugRoute: AiHubUsecasexSlugRoute,
   AiHubUsecasexAdminRoute: AiHubUsecasexAdminRoute,
+  AiHubUsecasexApiIntegrationPreviewRoute:
+    AiHubUsecasexApiIntegrationPreviewRoute,
   AiHubUsecasexDashboardRoute: AiHubUsecasexDashboardRoute,
   AiHubUsecasexExploreRoute: AiHubUsecasexExploreRoute,
   AiHubUsecasexPortfolioRoute: AiHubUsecasexPortfolioRoute,
@@ -432,3 +455,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
