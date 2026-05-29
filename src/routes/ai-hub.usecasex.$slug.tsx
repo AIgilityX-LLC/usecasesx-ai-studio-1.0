@@ -229,13 +229,6 @@ function UseCaseDetailPage() {
           </div>
         </header>
 
-        {/* placeholder-replaced-marker */}
-        <div style={{ display: "none" }} aria-hidden />
-              </div>
-            </div>
-          </div>
-        </header>
-
         {/* -------- Body + Sidebar -------- */}
         <div className="mx-auto grid max-w-[1320px] gap-10 px-6 py-12 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="space-y-10">
