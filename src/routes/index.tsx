@@ -347,19 +347,19 @@ type CardCase = Awaited<ReturnType<typeof listUseCases>>["cases"][number];
 function CaseCard({ c }: { c: CardCase }) {
   const initials = useMemo(
     () =>
-      (c.organization ?? c.title)
+      ((c.organization ?? c.title) as string)
         .split(/\s+/)
-        .map((w) => w[0])
+        .map((w: string) => w[0])
         .slice(0, 2)
         .join("")
         .toUpperCase(),
     [c.organization, c.title],
   );
 
-  const capabilities = (c.use_case_capabilities ?? [])
+  const capabilities = ((c.use_case_capabilities ?? []) as Array<{ ai_capabilities?: { name?: string } }>)
     .map((x) => x.ai_capabilities?.name)
     .filter(Boolean) as string[];
-  const industries = (c.use_case_industries ?? [])
+  const industries = ((c.use_case_industries ?? []) as Array<{ industries?: { name?: string } }>)
     .map((x) => x.industries?.name)
     .filter(Boolean) as string[];
 
