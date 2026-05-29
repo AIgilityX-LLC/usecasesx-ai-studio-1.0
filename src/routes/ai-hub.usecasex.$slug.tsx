@@ -195,7 +195,7 @@ function UseCaseDetailPage() {
                 </div>
                 {c.tags.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-1.5">
-                    {c.tags.map((t) => (
+                    {c.tags.map((t: string) => (
                       <Link
                         key={t}
                         to="/ai-hub/usecasex/explore"
