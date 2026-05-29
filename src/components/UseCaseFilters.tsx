@@ -39,21 +39,19 @@ export function UseCaseFilters({ tax, value, onChange, onClear, activeCount }: P
       <Group title="Business Function" options={tax.businessFunctions} selected={value.businessFunctions ?? []} onToggle={(s) => toggle("businessFunctions", s)} />
       <Group title="Business Objective" options={tax.objectives} selected={value.objectives ?? []} onToggle={(s) => toggle("objectives", s)} />
       <Group title="Maturity" options={[
-        { slug: "concept", name: "Concept" }, { slug: "prototype", name: "Prototype" },
-        { slug: "pilot", name: "Pilot" }, { slug: "production", name: "Production" }, { slug: "scaled", name: "Scaled" },
+        { slug: "Beginner", name: "Beginner" }, { slug: "Intermediate", name: "Intermediate" }, { slug: "Advanced", name: "Advanced" },
       ]} selected={value.maturity ?? []} onToggle={(s) => toggle("maturity", s)} />
       <Group title="Value Potential" options={[
-        { slug: "low", name: "Low" }, { slug: "medium", name: "Medium" },
-        { slug: "high", name: "High" }, { slug: "transformational", name: "Transformational" },
+        { slug: "Low", name: "Low" }, { slug: "Medium", name: "Medium" }, { slug: "High", name: "High" },
       ]} selected={value.valuePotential ?? []} onToggle={(s) => toggle("valuePotential", s)} />
       <Group title="Complexity" options={[
-        { slug: "low", name: "Low" }, { slug: "medium", name: "Medium" }, { slug: "high", name: "High" },
+        { slug: "Low", name: "Low" }, { slug: "Medium", name: "Medium" }, { slug: "High", name: "High" },
       ]} selected={value.complexity ?? []} onToggle={(s) => toggle("complexity", s)} />
       <Group title="Risk Level" options={[
-        { slug: "low", name: "Low" }, { slug: "medium", name: "Medium" }, { slug: "high", name: "High" },
+        { slug: "Low", name: "Low" }, { slug: "Medium", name: "Medium" }, { slug: "High", name: "High" }, { slug: "Critical", name: "Critical" },
       ]} selected={value.riskLevel ?? []} onToggle={(s) => toggle("riskLevel", s)} />
       <Group title="Time to Value" options={[
-        { slug: "short", name: "< 3 months" }, { slug: "medium", name: "3–9 months" }, { slug: "long", name: "9+ months" },
+        { slug: "Short", name: "Short (< 3 months)" }, { slug: "Medium", name: "Medium (3–9 months)" }, { slug: "Long", name: "Long (9+ months)" },
       ]} selected={value.timeToValue ?? []} onToggle={(s) => toggle("timeToValue", s)} />
     </div>
   );
