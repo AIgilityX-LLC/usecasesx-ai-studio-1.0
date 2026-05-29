@@ -294,6 +294,48 @@ const RAW_USE_CASES: RawUseCase[] = [
     platforms: [P.flowx, P.advisorx], publishedAt: "2026-04-29" },
 ];
 
+// ----- Sector + tag decoration -------------------------------------------
+
+const PUBLIC_SECTOR_INDUSTRIES = new Set<string>([
+  "defense", "government", "law-enforcement", "regulatory-compliance", "education", "healthcare",
+]);
+
+const slugifyTag = (s: string) =>
+  s.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+const KEYWORD_TAGS: { match: RegExp; tag: string }[] = [
+  { match: /fraud/i, tag: "fraud-detection" },
+  { match: /citizen|public/i, tag: "citizen-services" },
+  { match: /forecast/i, tag: "forecasting" },
+  { match: /chatbot|conversational|assistant/i, tag: "conversational-ai" },
+  { match: /document|ocr/i, tag: "document-ai" },
+  { match: /vision|image|x-?ray|drone|satellite/i, tag: "computer-vision" },
+  { match: /agent|agentic/i, tag: "agentic-ai" },
+  { match: /genai|generative/i, tag: "generative-ai" },
+  { match: /privacy|gdpr/i, tag: "privacy" },
+  { match: /compliance|regulator/i, tag: "compliance" },
+  { match: /risk|safety|critical/i, tag: "risk" },
+  { match: /supply|logistics|warehouse/i, tag: "supply-chain" },
+  { match: /clinical|patient|radiolog/i, tag: "clinical" },
+  { match: /trial|protocol/i, tag: "clinical-trials" },
+  { match: /tax|revenue/i, tag: "tax-revenue" },
+  { match: /maintenance|sensor/i, tag: "predictive-maintenance" },
+  { match: /personali[sz]/i, tag: "personalization" },
+];
+
+function decorate(c: RawUseCase): MockUseCase {
+  const sector: Sector = PUBLIC_SECTOR_INDUSTRIES.has(c.industry.slug)
+    ? (c.industry.slug === "healthcare" || c.industry.slug === "education" ? "both" : "public")
+    : "private";
+  const haystack = `${c.title} ${c.summary} ${c.businessFunction} ${c.aiType} ${c.objective}`;
+  const kw = KEYWORD_TAGS.filter((k) => k.match.test(haystack)).map((k) => k.tag);
+  const base = [slugifyTag(c.aiType), slugifyTag(c.objective), slugifyTag(c.businessFunction)];
+  const tags = Array.from(new Set([sector === "public" ? "public-sector" : null, ...kw, ...base].filter(Boolean) as string[]));
+  return { ...c, sector, tags };
+}
+
+export const MOCK_USE_CASES: MockUseCase[] = RAW_USE_CASES.map(decorate);
+
 // ----- Facet taxonomies derived from mock data ----------------------------
 
 function uniqueBy<T, K extends string>(arr: T[], key: (t: T) => K): { slug: string; name: string }[] {
@@ -308,6 +350,8 @@ function uniqueBy<T, K extends string>(arr: T[], key: (t: T) => K): { slug: stri
   return out.sort((a, b) => a.name.localeCompare(b.name));
 }
 
+const allTags = Array.from(new Set(MOCK_USE_CASES.flatMap((c) => c.tags))).sort();
+
 export const MOCK_TAX = {
   industries: uniqueBy(MOCK_USE_CASES, (c) => c.industry.slug as string).map((x) => ({
     slug: x.slug,
@@ -316,6 +360,12 @@ export const MOCK_TAX = {
   capabilities: uniqueBy(MOCK_USE_CASES, (c) => c.aiType),
   businessFunctions: uniqueBy(MOCK_USE_CASES, (c) => c.businessFunction),
   objectives: uniqueBy(MOCK_USE_CASES, (c) => c.objective),
+  sectors: [
+    { slug: "public", name: "Public Sector" },
+    { slug: "private", name: "Private Sector" },
+    { slug: "both", name: "Cross-Sector" },
+  ],
+  tags: allTags.map((t) => ({ slug: t, name: t.replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()) })),
 };
 
 // ----- Filter & sort -------------------------------------------------------
