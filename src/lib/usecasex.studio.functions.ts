@@ -141,7 +141,7 @@ export const draftUseCase = createServerFn({ method: "POST" })
       if (!argsRaw) {
         return { ok: false as const, error: "No structured response returned.", draft: null };
       }
-      let draft: Record<string, unknown>;
+      let draft: StudioDraft;
       try {
         draft = typeof argsRaw === "string" ? JSON.parse(argsRaw) : argsRaw;
       } catch {
