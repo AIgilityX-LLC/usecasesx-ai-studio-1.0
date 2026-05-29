@@ -48,7 +48,9 @@ const P = {
 
 const I = (slug: string, name: string) => ({ slug, name });
 
-export const MOCK_USE_CASES: MockUseCase[] = [
+type RawUseCase = Omit<MockUseCase, "sector" | "tags">;
+
+const RAW_USE_CASES: RawUseCase[] = [
   // 1. Defense
   { id: "1", slug: "defense-threat-intel-fusion",
     title: "Multi-source threat intelligence fusion",
