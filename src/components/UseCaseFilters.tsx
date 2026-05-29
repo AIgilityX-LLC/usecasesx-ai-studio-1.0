@@ -59,6 +59,9 @@ export function UseCaseFilters({ tax, value, onChange, onClear, activeCount }: P
       <Group title="Time to Value" options={[
         { slug: "Short", name: "Short (< 3 months)" }, { slug: "Medium", name: "Medium (3–9 months)" }, { slug: "Long", name: "Long (9+ months)" },
       ]} selected={value.timeToValue ?? []} onToggle={(s) => toggle("timeToValue", s)} />
+      {tax.tags && tax.tags.length > 0 && (
+        <Group title="Tags" options={tax.tags} selected={value.tags ?? []} onToggle={(s) => toggle("tags", s)} />
+      )}
     </div>
   );
 }
