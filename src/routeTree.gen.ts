@@ -12,8 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AiHubRouteImport } from './routes/ai-hub'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AiHubIndexRouteImport } from './routes/ai-hub.index'
 import { Route as CasesSlugRouteImport } from './routes/cases.$slug'
+import { Route as AiHubUsecasexRouteImport } from './routes/ai-hub.usecasex'
 
 const SubmitRoute = SubmitRouteImport.update({
   id: '/submit',
@@ -30,49 +33,97 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiHubRoute = AiHubRouteImport.update({
+  id: '/ai-hub',
+  path: '/ai-hub',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AiHubIndexRoute = AiHubIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AiHubRoute,
 } as any)
 const CasesSlugRoute = CasesSlugRouteImport.update({
   id: '/cases/$slug',
   path: '/cases/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiHubUsecasexRoute = AiHubUsecasexRouteImport.update({
+  id: '/usecasex',
+  path: '/usecasex',
+  getParentRoute: () => AiHubRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai-hub': typeof AiHubRouteWithChildren
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
   '/submit': typeof SubmitRoute
+  '/ai-hub/usecasex': typeof AiHubUsecasexRoute
   '/cases/$slug': typeof CasesSlugRoute
+  '/ai-hub/': typeof AiHubIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
   '/submit': typeof SubmitRoute
+  '/ai-hub/usecasex': typeof AiHubUsecasexRoute
   '/cases/$slug': typeof CasesSlugRoute
+  '/ai-hub': typeof AiHubIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai-hub': typeof AiHubRouteWithChildren
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
   '/submit': typeof SubmitRoute
+  '/ai-hub/usecasex': typeof AiHubUsecasexRoute
   '/cases/$slug': typeof CasesSlugRoute
+  '/ai-hub/': typeof AiHubIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/explore' | '/submit' | '/cases/$slug'
+  fullPaths:
+    | '/'
+    | '/ai-hub'
+    | '/auth'
+    | '/explore'
+    | '/submit'
+    | '/ai-hub/usecasex'
+    | '/cases/$slug'
+    | '/ai-hub/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/explore' | '/submit' | '/cases/$slug'
-  id: '__root__' | '/' | '/auth' | '/explore' | '/submit' | '/cases/$slug'
+  to:
+    | '/'
+    | '/auth'
+    | '/explore'
+    | '/submit'
+    | '/ai-hub/usecasex'
+    | '/cases/$slug'
+    | '/ai-hub'
+  id:
+    | '__root__'
+    | '/'
+    | '/ai-hub'
+    | '/auth'
+    | '/explore'
+    | '/submit'
+    | '/ai-hub/usecasex'
+    | '/cases/$slug'
+    | '/ai-hub/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiHubRoute: typeof AiHubRouteWithChildren
   AuthRoute: typeof AuthRoute
   ExploreRoute: typeof ExploreRoute
   SubmitRoute: typeof SubmitRoute
@@ -102,12 +153,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai-hub': {
+      id: '/ai-hub'
+      path: '/ai-hub'
+      fullPath: '/ai-hub'
+      preLoaderRoute: typeof AiHubRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/ai-hub/': {
+      id: '/ai-hub/'
+      path: '/'
+      fullPath: '/ai-hub/'
+      preLoaderRoute: typeof AiHubIndexRouteImport
+      parentRoute: typeof AiHubRoute
     }
     '/cases/$slug': {
       id: '/cases/$slug'
@@ -116,11 +181,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CasesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai-hub/usecasex': {
+      id: '/ai-hub/usecasex'
+      path: '/usecasex'
+      fullPath: '/ai-hub/usecasex'
+      preLoaderRoute: typeof AiHubUsecasexRouteImport
+      parentRoute: typeof AiHubRoute
+    }
   }
 }
 
+interface AiHubRouteChildren {
+  AiHubUsecasexRoute: typeof AiHubUsecasexRoute
+  AiHubIndexRoute: typeof AiHubIndexRoute
+}
+
+const AiHubRouteChildren: AiHubRouteChildren = {
+  AiHubUsecasexRoute: AiHubUsecasexRoute,
+  AiHubIndexRoute: AiHubIndexRoute,
+}
+
+const AiHubRouteWithChildren = AiHubRoute._addFileChildren(AiHubRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiHubRoute: AiHubRouteWithChildren,
   AuthRoute: AuthRoute,
   ExploreRoute: ExploreRoute,
   SubmitRoute: SubmitRoute,
@@ -129,3 +214,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
