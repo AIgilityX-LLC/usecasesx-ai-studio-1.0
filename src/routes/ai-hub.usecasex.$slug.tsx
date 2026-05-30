@@ -367,6 +367,8 @@ function UseCaseDetailPage() {
                 </CtaBtn>
               </div>
             </section>
+
+            <RatingWidget slug={c.slug} />
           </div>
 
           {/* -------- Right sidebar: Execution Path -------- */}
