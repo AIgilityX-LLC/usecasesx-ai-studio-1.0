@@ -40,8 +40,8 @@ function PortfolioPage() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data.user) {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
         navigate({ to: "/ai-hub/usecasex/pro", replace: true });
         return;
       }

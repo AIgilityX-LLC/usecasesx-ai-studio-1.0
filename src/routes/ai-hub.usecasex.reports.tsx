@@ -71,12 +71,12 @@ function ReportsPage() {
 
   useEffect(() => {
     (async () => {
-      const { data: u } = await supabase.auth.getUser();
-      if (!u.user) { navigate({ to: "/ai-hub/usecasex/pro", replace: true }); return; }
+      const { data: s } = await supabase.auth.getSession();
+      if (!s.session) { navigate({ to: "/ai-hub/usecasex/pro", replace: true }); return; }
       const { data: p } = await supabase
         .from("profiles")
         .select("full_name, organization, role, industry, profile_completed")
-        .eq("user_id", u.user.id)
+        .eq("user_id", s.session.user.id)
         .maybeSingle();
       if (!p?.profile_completed) { navigate({ to: "/ai-hub/usecasex/profile", replace: true }); return; }
       setProfile(p);
