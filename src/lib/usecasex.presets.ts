@@ -23,9 +23,19 @@ function read(): SavedPreset[] {
   }
 }
 
+let cachedSnapshot: SavedPreset[] | null = null;
+function getSnapshot(): SavedPreset[] {
+  if (cachedSnapshot === null) cachedSnapshot = read();
+  return cachedSnapshot;
+}
+function invalidate() {
+  cachedSnapshot = null;
+}
+
 function write(next: SavedPreset[]) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(KEY, JSON.stringify(next));
+  invalidate();
   listeners.forEach((l) => l());
 }
 
@@ -57,7 +67,7 @@ export const presetsStore = {
 
 import { useSyncExternalStore } from "react";
 export function useSavedPresets() {
-  return useSyncExternalStore(presetsStore.subscribe, presetsStore.get, () => [] as SavedPreset[]);
+  return useSyncExternalStore(presetsStore.subscribe, getSnapshot, () => [] as SavedPreset[]);
 }
 
 // Built-in shareable presets shown in the bar above results.
