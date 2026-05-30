@@ -5,6 +5,7 @@ const KEY = "usecasex.compare.slugs";
 const MAX = 4;
 type Listener = () => void;
 const listeners = new Set<Listener>();
+const EMPTY_COMPARE: string[] = [];
 
 function read(): string[] {
   if (typeof window === "undefined") return [];
@@ -21,17 +22,31 @@ function read(): string[] {
 function write(next: string[]) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(KEY, JSON.stringify(next.slice(0, MAX)));
+  invalidate();
   listeners.forEach((l) => l());
+}
+
+let cachedSnapshot: string[] | null = null;
+function getSnapshot(): string[] {
+  if (cachedSnapshot === null) cachedSnapshot = read();
+  return cachedSnapshot;
+}
+
+function invalidate() {
+  cachedSnapshot = null;
 }
 
 export const compareStore = {
   MAX,
-  get: read,
+  get: getSnapshot,
   subscribe(l: Listener) {
     listeners.add(l);
     if (typeof window !== "undefined") {
       const onStorage = (e: StorageEvent) => {
-        if (e.key === KEY) l();
+        if (e.key === KEY) {
+          invalidate();
+          l();
+        }
       };
       window.addEventListener("storage", onStorage);
       return () => {
@@ -63,5 +78,5 @@ export const compareStore = {
 
 import { useSyncExternalStore } from "react";
 export function useCompare() {
-  return useSyncExternalStore(compareStore.subscribe, compareStore.get, () => []);
+  return useSyncExternalStore(compareStore.subscribe, getSnapshot, () => EMPTY_COMPARE);
 }
