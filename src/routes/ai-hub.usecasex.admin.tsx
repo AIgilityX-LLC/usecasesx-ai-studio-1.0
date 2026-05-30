@@ -691,7 +691,7 @@ function TaxonomyEditor({ table, title }: { table: string; title: string }) {
   const load = async () => {
     setLoading(true);
     const { data } = await supabase.from(table as any).select("*").order("sort_order").order("name");
-    setRows((data as TaxRow[]) ?? []);
+    setRows(((data as unknown) as TaxRow[]) ?? []);
     setLoading(false);
   };
   useEffect(() => { load(); }, [table]);
