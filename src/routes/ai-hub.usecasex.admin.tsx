@@ -223,12 +223,12 @@ function UseCasesTab() {
                     </Button>
                     <Button variant="ghost" size="icon" title="Edit" onClick={() => setEditing(u)}><Pencil className="w-4 h-4" /></Button>
                     <Button variant="ghost" size="icon" title="Duplicate" onClick={() => { store.duplicate(u.id); trackCTAEvent("admin_duplicated", { id: u.id }); }}><Copy className="w-4 h-4" /></Button>
-                    {u.status !== "Published" && (
+                    {u.status !== "Published" && canPublish && (
                       <Button variant="ghost" size="icon" title="Publish" onClick={() => { store.setStatus(u.id, "Published", "Published"); trackCTAEvent("admin_published", { id: u.id }); }}>
                         <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                       </Button>
                     )}
-                    {u.status === "Published" && (
+                    {u.status === "Published" && canPublish && (
                       <ConfirmAction
                         title="Unpublish use case?"
                         desc="It will no longer appear in the public catalogue."
@@ -237,13 +237,15 @@ function UseCasesTab() {
                         trigger={<Button variant="ghost" size="icon" title="Unpublish"><XCircle className="w-4 h-4 text-amber-600" /></Button>}
                       />
                     )}
-                    <ConfirmAction
-                      title="Archive use case?"
-                      desc="It will be hidden from authors and users. Reversible by editing status."
-                      action="Archive"
-                      onConfirm={() => { store.setStatus(u.id, "Archived", "Archived"); trackCTAEvent("admin_archived", { id: u.id }); }}
-                      trigger={<Button variant="ghost" size="icon" title="Archive"><Archive className="w-4 h-4 text-destructive" /></Button>}
-                    />
+                    {canDelete && (
+                      <ConfirmAction
+                        title="Archive use case?"
+                        desc="It will be hidden from authors and users. Reversible by editing status."
+                        action="Archive"
+                        onConfirm={() => { store.setStatus(u.id, "Archived", "Archived"); trackCTAEvent("admin_archived", { id: u.id }); }}
+                        trigger={<Button variant="ghost" size="icon" title="Archive (admin only)"><Archive className="w-4 h-4 text-destructive" /></Button>}
+                      />
+                    )}
                   </div>
                 </td>
               </tr>
