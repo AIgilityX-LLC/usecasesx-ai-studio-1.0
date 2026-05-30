@@ -67,7 +67,7 @@ export const presetsStore = {
 
 import { useSyncExternalStore } from "react";
 export function useSavedPresets() {
-  return useSyncExternalStore(presetsStore.subscribe, presetsStore.get, () => [] as SavedPreset[]);
+  return useSyncExternalStore(presetsStore.subscribe, getSnapshot, () => [] as SavedPreset[]);
 }
 
 // Built-in shareable presets shown in the bar above results.
