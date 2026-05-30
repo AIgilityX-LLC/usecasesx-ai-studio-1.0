@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { MOCK_USE_CASES } from "@/lib/usecasex.mock";
 import {
   useUseCaseXStore,
@@ -35,21 +35,14 @@ export const Route = createFileRoute("/ai-hub/usecasex/portfolio")({
 
 function PortfolioPage() {
   const navigate = useNavigate();
-  const [authChecked, setAuthChecked] = useState(false);
+  const session = useSupabaseSession();
   const store = useUseCaseXStore();
 
   useEffect(() => {
-    (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data.user) {
-        navigate({ to: "/ai-hub/usecasex/pro", replace: true });
-        return;
-      }
-      setAuthChecked(true);
-    })();
-  }, [navigate]);
+    if (session === null) navigate({ to: "/ai-hub/usecasex/pro", replace: true });
+  }, [session, navigate]);
 
-  if (!authChecked) {
+  if (!session) {
     return <div className="mx-auto max-w-4xl px-6 py-16 text-sm text-muted-foreground">Loading your portfolios…</div>;
   }
 

@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { MOCK_USE_CASES, type MockUseCase } from "@/lib/usecasex.mock";
 import {
   useUseCaseXStore,
@@ -59,6 +60,7 @@ export const Route = createFileRoute("/ai-hub/usecasex/reports")({
 
 function ReportsPage() {
   const navigate = useNavigate();
+  const session = useSupabaseSession();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const store = useUseCaseXStore();
@@ -70,19 +72,22 @@ function ReportsPage() {
   const [generated, setGenerated] = useState(false);
 
   useEffect(() => {
+    if (session === undefined) return;
+    if (session === null) { navigate({ to: "/ai-hub/usecasex/pro", replace: true }); return; }
+    let active = true;
     (async () => {
-      const { data: u } = await supabase.auth.getUser();
-      if (!u.user) { navigate({ to: "/ai-hub/usecasex/pro", replace: true }); return; }
       const { data: p } = await supabase
         .from("profiles")
         .select("full_name, organization, role, industry, profile_completed")
-        .eq("user_id", u.user.id)
+        .eq("user_id", session.user.id)
         .maybeSingle();
+      if (!active) return;
       if (!p?.profile_completed) { navigate({ to: "/ai-hub/usecasex/profile", replace: true }); return; }
       setProfile(p);
       setLoading(false);
     })();
-  }, [navigate]);
+    return () => { active = false; };
+  }, [session, navigate]);
 
   // Pre-select saved use cases based on report type
   useEffect(() => {
