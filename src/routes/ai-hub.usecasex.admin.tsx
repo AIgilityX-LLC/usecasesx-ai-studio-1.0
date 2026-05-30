@@ -1,12 +1,13 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import {
   useAdminStore, emptyUseCase, completionPercent,
   VISIBILITIES, STATUSES, PLATFORM_OPTIONS,
   type AdminUseCase, type Visibility, type Status, type PlatformOption,
 } from "@/lib/usecasex.admin";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
+import { RequireRoles } from "@/components/RequireRoles";
+import { useRoles } from "@/lib/usecasex.roles";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
