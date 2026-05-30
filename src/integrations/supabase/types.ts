@@ -286,6 +286,135 @@ export type Database = {
           },
         ]
       }
+      taxonomy_maturity_levels: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_published: boolean
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      taxonomy_meta: {
+        Row: {
+          id: number
+          published_at: string
+          published_by: string | null
+          version: number
+        }
+        Insert: {
+          id?: number
+          published_at?: string
+          published_by?: string | null
+          version?: number
+        }
+        Update: {
+          id?: number
+          published_at?: string
+          published_by?: string | null
+          version?: number
+        }
+        Relationships: []
+      }
+      taxonomy_sectors: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_published: boolean
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      taxonomy_tags: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_published: boolean
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       use_case_business_functions: {
         Row: {
           business_function_id: string
@@ -405,6 +534,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      use_case_feedback: {
+        Row: {
+          comment: string
+          created_at: string
+          id: string
+          is_hidden: boolean
+          is_public: boolean
+          sentiment: string | null
+          updated_at: string
+          use_case_slug: string
+          user_id: string
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean
+          is_public?: boolean
+          sentiment?: string | null
+          updated_at?: string
+          use_case_slug: string
+          user_id: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean
+          is_public?: boolean
+          sentiment?: string | null
+          updated_at?: string
+          use_case_slug?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       use_case_gov_functions: {
         Row: {
@@ -532,6 +697,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      use_case_ratings: {
+        Row: {
+          created_at: string
+          id: string
+          rating: number
+          updated_at: string
+          use_case_slug: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          rating: number
+          updated_at?: string
+          use_case_slug: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          rating?: number
+          updated_at?: string
+          use_case_slug?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       use_cases: {
         Row: {
@@ -694,7 +886,14 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      use_case_rating_aggregates: {
+        Row: {
+          avg_rating: number | null
+          rating_count: number | null
+          use_case_slug: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {

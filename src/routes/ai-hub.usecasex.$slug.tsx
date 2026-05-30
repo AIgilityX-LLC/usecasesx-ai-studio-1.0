@@ -5,6 +5,7 @@ import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { MissingDataFallback } from "@/components/MissingDataFallback";
 import { CompareToggle, CompareTray } from "@/components/usecasex/CompareTray";
+import { RatingWidget } from "@/components/usecasex/RatingWidget";
 import { supabase } from "@/integrations/supabase/client";
 
 // -----------------------------------------------------------------------------
@@ -366,6 +367,8 @@ function UseCaseDetailPage() {
                 </CtaBtn>
               </div>
             </section>
+
+            <RatingWidget slug={c.slug} />
           </div>
 
           {/* -------- Right sidebar: Execution Path -------- */}

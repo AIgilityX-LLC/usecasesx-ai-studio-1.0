@@ -613,44 +613,140 @@ function PreviewUseCase({ uc }: { uc: AdminUseCase }) {
   );
 }
 
-function TaxonomyTab() {
-  const [industries, setIndustries] = useState<any[]>([]);
-  const [functions, setFunctions] = useState<any[]>([]);
-  const [aiCaps, setAiCaps] = useState<any[]>([]);
+type TaxRow = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  sort_order: number;
+  is_published: boolean;
+};
 
-  useEffect(() => {
-    (async () => {
-      const [i, f, c] = await Promise.all([
-        supabase.from("industries").select("name, slug").order("name"),
-        supabase.from("business_functions").select("name, slug").order("name"),
-        supabase.from("ai_capabilities").select("name, slug").order("name"),
-      ]);
-      setIndustries(i.data ?? []); setFunctions(f.data ?? []); setAiCaps(c.data ?? []);
-    })();
-  }, []);
+const TAX_TABLES = {
+  sectors: { table: "taxonomy_sectors", label: "Sectors" },
+  tags: { table: "taxonomy_tags", label: "Tags" },
+  maturity: { table: "taxonomy_maturity_levels", label: "Maturity Levels" },
+} as const;
+
+function TaxonomyTab() {
+  const [meta, setMeta] = useState<{ version: number; published_at: string } | null>(null);
+  const [publishing, setPublishing] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  const loadMeta = async () => {
+    const { data } = await supabase.from("taxonomy_meta").select("version, published_at").eq("id", 1).maybeSingle();
+    if (data) setMeta(data as any);
+  };
+  useEffect(() => { loadMeta(); }, []);
+
+  const publish = async () => {
+    setPublishing(true);
+    setMsg(null);
+    const { data: u } = await supabase.auth.getUser();
+    const { error } = await supabase
+      .from("taxonomy_meta")
+      .update({ version: (meta?.version ?? 0) + 1, published_at: new Date().toISOString(), published_by: u.user?.id ?? null })
+      .eq("id", 1);
+    setPublishing(false);
+    if (error) {
+      setMsg(`Publish failed: ${error.message}`);
+    } else {
+      setMsg("Taxonomy published — version bumped and now live on the public API.");
+      loadMeta();
+    }
+  };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <TaxonomyList title="Industries" items={industries} />
-      <TaxonomyList title="Business functions" items={functions} />
-      <TaxonomyList title="AI capabilities" items={aiCaps} />
+    <div className="space-y-4">
+      <Card>
+        <CardContent className="p-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold">Taxonomy version: <span className="tabular-nums">v{meta?.version ?? "—"}</span></p>
+            <p className="text-xs text-muted-foreground">
+              Last published: {meta?.published_at ? new Date(meta.published_at).toLocaleString() : "never"}.
+              Publish to bump the version exposed at <code>/api/public/usecasex/taxonomy</code>.
+            </p>
+          </div>
+          <Button onClick={publish} disabled={publishing}>
+            <Send className="w-4 h-4 mr-1" /> {publishing ? "Publishing…" : "Publish changes"}
+          </Button>
+        </CardContent>
+      </Card>
+      {msg && <p className="text-xs text-muted-foreground">{msg}</p>}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {(Object.keys(TAX_TABLES) as Array<keyof typeof TAX_TABLES>).map((k) => (
+          <TaxonomyEditor key={k} table={TAX_TABLES[k].table} title={TAX_TABLES[k].label} />
+        ))}
+      </div>
     </div>
   );
 }
 
-function TaxonomyList({ title, items }: { title: string; items: any[] }) {
+function TaxonomyEditor({ table, title }: { table: string; title: string }) {
+  const [rows, setRows] = useState<TaxRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [newSlug, setNewSlug] = useState("");
+  const [newName, setNewName] = useState("");
+
+  const load = async () => {
+    setLoading(true);
+    const { data } = await supabase.from(table as any).select("*").order("sort_order").order("name");
+    setRows(((data as unknown) as TaxRow[]) ?? []);
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, [table]);
+
+  const add = async () => {
+    const slug = newSlug.trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-");
+    if (!slug || !newName.trim()) return;
+    const { error } = await supabase.from(table as any).insert({ slug, name: newName.trim(), sort_order: rows.length });
+    if (!error) { setNewSlug(""); setNewName(""); load(); }
+    else alert(error.message);
+  };
+
+  const update = async (id: string, patch: Partial<TaxRow>) => {
+    const { error } = await supabase.from(table as any).update(patch).eq("id", id);
+    if (!error) load(); else alert(error.message);
+  };
+
+  const remove = async (id: string) => {
+    const { error } = await supabase.from(table as any).delete().eq("id", id);
+    if (!error) load(); else alert(error.message);
+  };
+
   return (
     <Card>
-      <CardHeader><CardTitle className="text-base">{title} <span className="text-xs text-muted-foreground">({items.length})</span></CardTitle></CardHeader>
-      <CardContent className="max-h-96 overflow-y-auto">
-        <ul className="text-sm space-y-1">
-          {items.map((i) => (
-            <li key={i.slug} className="flex justify-between border-b py-1">
-              <span>{i.name}</span>
-              <code className="text-xs text-muted-foreground">{i.slug}</code>
+      <CardHeader>
+        <CardTitle className="text-base flex items-center justify-between">
+          <span>{title} <span className="text-xs text-muted-foreground">({rows.length})</span></span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex gap-2">
+          <Input value={newSlug} onChange={(e) => setNewSlug(e.target.value)} placeholder="slug" className="h-8 text-xs" />
+          <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Display name" className="h-8 text-xs" />
+          <Button size="sm" variant="outline" onClick={add}><Plus className="w-4 h-4" /></Button>
+        </div>
+        <ul className="space-y-1 max-h-96 overflow-y-auto">
+          {loading && <li className="text-xs text-muted-foreground">Loading…</li>}
+          {!loading && rows.length === 0 && <li className="text-xs text-muted-foreground">No items yet.</li>}
+          {rows.map((r) => (
+            <li key={r.id} className="flex items-center gap-2 border-b py-1.5">
+              <Input
+                defaultValue={r.name}
+                onBlur={(e) => e.target.value !== r.name && update(r.id, { name: e.target.value })}
+                className="h-7 text-xs flex-1"
+              />
+              <code className="text-[10px] text-muted-foreground w-20 truncate" title={r.slug}>{r.slug}</code>
+              <label className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+                <Switch checked={r.is_published} onCheckedChange={(v) => update(r.id, { is_published: v })} />
+                {r.is_published ? "Pub" : "Draft"}
+              </label>
+              <Button size="icon" variant="ghost" onClick={() => remove(r.id)} title="Delete">
+                <XCircle className="w-4 h-4 text-destructive" />
+              </Button>
             </li>
           ))}
-          {items.length === 0 && <li className="text-xs text-muted-foreground">No items.</li>}
         </ul>
       </CardContent>
     </Card>
