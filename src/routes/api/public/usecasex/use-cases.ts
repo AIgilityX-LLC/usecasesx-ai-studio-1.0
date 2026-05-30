@@ -55,6 +55,7 @@ export const Route = createFileRoute("/api/public/usecasex/use-cases")({
             .select("use_case_slug, avg_rating, rating_count")
             .in("use_case_slug", slugs);
           for (const a of aggs ?? []) {
+            if (!a.use_case_slug) continue;
             aggMap.set(a.use_case_slug, {
               avg: a.avg_rating ? Number(a.avg_rating) : null,
               count: a.rating_count ?? 0,
