@@ -23,9 +23,19 @@ function read(): SavedPreset[] {
   }
 }
 
+let cachedSnapshot: SavedPreset[] | null = null;
+function getSnapshot(): SavedPreset[] {
+  if (cachedSnapshot === null) cachedSnapshot = read();
+  return cachedSnapshot;
+}
+function invalidate() {
+  cachedSnapshot = null;
+}
+
 function write(next: SavedPreset[]) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(KEY, JSON.stringify(next));
+  invalidate();
   listeners.forEach((l) => l());
 }
 
