@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -7,6 +7,8 @@ import {
   type AdminUseCase, type Visibility, type Status, type PlatformOption,
 } from "@/lib/usecasex.admin";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
+import { RequireRoles } from "@/components/RequireRoles";
+import { useRoles } from "@/lib/usecasex.roles";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -40,38 +42,16 @@ export const Route = createFileRoute("/ai-hub/usecasex/admin")({
 });
 
 function AdminPage() {
-  const navigate = useNavigate();
-  const [authChecked, setAuthChecked] = useState(false);
-  const [allowed, setAllowed] = useState(false);
-  const [roleLabel, setRoleLabel] = useState<string>("");
+  return (
+    <RequireRoles anyOf={["admin", "moderator"]} action="open the UseCaseX admin">
+      <AdminPageInner />
+    </RequireRoles>
+  );
+}
 
-  useEffect(() => {
-    (async () => {
-      const { data: u } = await supabase.auth.getUser();
-      if (!u.user) { navigate({ to: "/ai-hub/usecasex/pro", replace: true }); return; }
-      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", u.user.id);
-      const has = (roles ?? []).some((r) => r.role === "admin" || r.role === "moderator");
-      setAllowed(has);
-      setRoleLabel((roles ?? []).map((r) => r.role).join(", ") || "no roles");
-      setAuthChecked(true);
-    })();
-  }, [navigate]);
-
-  if (!authChecked) {
-    return <div className="mx-auto max-w-4xl px-6 py-16 text-sm text-muted-foreground">Verifying admin access…</div>;
-  }
-  if (!allowed) {
-    return (
-      <div className="mx-auto max-w-2xl px-6 py-16 space-y-4">
-        <h1 className="text-2xl font-semibold">Admin access required</h1>
-        <p className="text-sm text-muted-foreground">
-          Your account does not have an admin role. Contact a super_admin to be granted one of:
-          {" "}{ADMIN_ROLES.join(", ")}.
-        </p>
-        <Button asChild variant="outline"><Link to="/ai-hub/usecasex/dashboard">Back to dashboard</Link></Button>
-      </div>
-    );
-  }
+function AdminPageInner() {
+  const { roles } = useRoles();
+  const roleLabel = roles.length ? roles.join(", ") : "no roles";
 
   return (
     <section className="border-b border-border bg-background">
@@ -152,6 +132,7 @@ function StatCard({ label, value }: { label: string; value: number }) {
 
 function UseCasesTab() {
   const store = useAdminStore();
+  const { canDelete, canPublish } = useRoles();
   const [query, setQuery] = useState("");
   const [statusF, setStatusF] = useState<string>("all");
   const [visF, setVisF] = useState<string>("all");
@@ -242,12 +223,12 @@ function UseCasesTab() {
                     </Button>
                     <Button variant="ghost" size="icon" title="Edit" onClick={() => setEditing(u)}><Pencil className="w-4 h-4" /></Button>
                     <Button variant="ghost" size="icon" title="Duplicate" onClick={() => { store.duplicate(u.id); trackCTAEvent("admin_duplicated", { id: u.id }); }}><Copy className="w-4 h-4" /></Button>
-                    {u.status !== "Published" && (
+                    {u.status !== "Published" && canPublish && (
                       <Button variant="ghost" size="icon" title="Publish" onClick={() => { store.setStatus(u.id, "Published", "Published"); trackCTAEvent("admin_published", { id: u.id }); }}>
                         <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                       </Button>
                     )}
-                    {u.status === "Published" && (
+                    {u.status === "Published" && canPublish && (
                       <ConfirmAction
                         title="Unpublish use case?"
                         desc="It will no longer appear in the public catalogue."
@@ -256,13 +237,15 @@ function UseCasesTab() {
                         trigger={<Button variant="ghost" size="icon" title="Unpublish"><XCircle className="w-4 h-4 text-amber-600" /></Button>}
                       />
                     )}
-                    <ConfirmAction
-                      title="Archive use case?"
-                      desc="It will be hidden from authors and users. Reversible by editing status."
-                      action="Archive"
-                      onConfirm={() => { store.setStatus(u.id, "Archived", "Archived"); trackCTAEvent("admin_archived", { id: u.id }); }}
-                      trigger={<Button variant="ghost" size="icon" title="Archive"><Archive className="w-4 h-4 text-destructive" /></Button>}
-                    />
+                    {canDelete && (
+                      <ConfirmAction
+                        title="Archive use case?"
+                        desc="It will be hidden from authors and users. Reversible by editing status."
+                        action="Archive"
+                        onConfirm={() => { store.setStatus(u.id, "Archived", "Archived"); trackCTAEvent("admin_archived", { id: u.id }); }}
+                        trigger={<Button variant="ghost" size="icon" title="Archive (admin only)"><Archive className="w-4 h-4 text-destructive" /></Button>}
+                      />
+                    )}
                   </div>
                 </td>
               </tr>
