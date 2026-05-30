@@ -42,38 +42,16 @@ export const Route = createFileRoute("/ai-hub/usecasex/admin")({
 });
 
 function AdminPage() {
-  const navigate = useNavigate();
-  const [authChecked, setAuthChecked] = useState(false);
-  const [allowed, setAllowed] = useState(false);
-  const [roleLabel, setRoleLabel] = useState<string>("");
+  return (
+    <RequireRoles anyOf={["admin", "moderator"]} action="open the UseCaseX admin">
+      <AdminPageInner />
+    </RequireRoles>
+  );
+}
 
-  useEffect(() => {
-    (async () => {
-      const { data: u } = await supabase.auth.getUser();
-      if (!u.user) { navigate({ to: "/ai-hub/usecasex/pro", replace: true }); return; }
-      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", u.user.id);
-      const has = (roles ?? []).some((r) => r.role === "admin" || r.role === "moderator");
-      setAllowed(has);
-      setRoleLabel((roles ?? []).map((r) => r.role).join(", ") || "no roles");
-      setAuthChecked(true);
-    })();
-  }, [navigate]);
-
-  if (!authChecked) {
-    return <div className="mx-auto max-w-4xl px-6 py-16 text-sm text-muted-foreground">Verifying admin access…</div>;
-  }
-  if (!allowed) {
-    return (
-      <div className="mx-auto max-w-2xl px-6 py-16 space-y-4">
-        <h1 className="text-2xl font-semibold">Admin access required</h1>
-        <p className="text-sm text-muted-foreground">
-          Your account does not have an admin role. Contact a super_admin to be granted one of:
-          {" "}{ADMIN_ROLES.join(", ")}.
-        </p>
-        <Button asChild variant="outline"><Link to="/ai-hub/usecasex/dashboard">Back to dashboard</Link></Button>
-      </div>
-    );
-  }
+function AdminPageInner() {
+  const { roles } = useRoles();
+  const roleLabel = roles.length ? roles.join(", ") : "no roles";
 
   return (
     <section className="border-b border-border bg-background">
