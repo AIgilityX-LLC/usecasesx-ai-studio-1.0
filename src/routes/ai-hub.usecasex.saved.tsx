@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useMemo } from "react";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { MOCK_USE_CASES, type MockUseCase } from "@/lib/usecasex.mock";
 import {
   useUseCaseXStore,
@@ -21,6 +21,7 @@ import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Trash2, FileText, Target, Gauge, FolderPlus } from "lucide-react";
+import { useState } from "react";
 
 const PRIORITIES: Priority[] = ["Low", "Medium", "High", "Strategic"];
 
@@ -36,19 +37,12 @@ export const Route = createFileRoute("/ai-hub/usecasex/saved")({
 
 function SavedPage() {
   const navigate = useNavigate();
-  const [authChecked, setAuthChecked] = useState(false);
+  const session = useSupabaseSession();
   const store = useUseCaseXStore();
 
   useEffect(() => {
-    (async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!data.session) {
-        navigate({ to: "/ai-hub/usecasex/pro", replace: true });
-        return;
-      }
-      setAuthChecked(true);
-    })();
-  }, [navigate]);
+    if (session === null) navigate({ to: "/ai-hub/usecasex/pro", replace: true });
+  }, [session, navigate]);
 
   const items = useMemo(() => {
     return store.saved
@@ -59,7 +53,7 @@ function SavedPage() {
       .filter(Boolean) as { entry: ReturnType<typeof useUseCaseXStore>["saved"][number]; uc: MockUseCase }[];
   }, [store.saved]);
 
-  if (!authChecked) {
+  if (!session) {
     return <div className="mx-auto max-w-4xl px-6 py-16 text-sm text-muted-foreground">Loading your saved use cases…</div>;
   }
 
