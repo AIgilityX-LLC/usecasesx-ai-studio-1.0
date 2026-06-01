@@ -125,6 +125,66 @@ export type Database = {
         }
         Relationships: []
       }
+      external_module_links: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          module: string
+          sort_order: number
+          url: string
+          use_case_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          module: string
+          sort_order?: number
+          url: string
+          use_case_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          module?: string
+          sort_order?: number
+          url?: string
+          use_case_id?: string
+        }
+        Relationships: []
+      }
+      generated_reports: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          payload: Json | null
+          title: string
+          use_case_count: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          payload?: Json | null
+          title: string
+          use_case_count?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          payload?: Json | null
+          title?: string
+          use_case_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       gov_functions: {
         Row: {
           id: string
@@ -161,6 +221,39 @@ export type Database = {
           id?: string
           name?: string
           slug?: string
+        }
+        Relationships: []
+      }
+      integration_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          payload: Json | null
+          source_module: string
+          target_module: string
+          use_case_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          payload?: Json | null
+          source_module: string
+          target_module: string
+          use_case_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          payload?: Json | null
+          source_module?: string
+          target_module?: string
+          use_case_id?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -215,6 +308,98 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_modules: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          external_url: string | null
+          id: string
+          is_published: boolean
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          external_url?: string | null
+          id?: string
+          is_published?: boolean
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          external_url?: string | null
+          id?: string
+          is_published?: boolean
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      portfolio_items: {
+        Row: {
+          added_at: string
+          portfolio_id: string
+          use_case_id: string
+        }
+        Insert: {
+          added_at?: string
+          portfolio_id: string
+          use_case_id: string
+        }
+        Update: {
+          added_at?: string
+          portfolio_id?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_items_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portfolios: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          objective: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          objective?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          objective?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           country: string | null
@@ -256,6 +441,33 @@ export type Database = {
           profile_completed?: boolean
           role?: string | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_use_cases: {
+        Row: {
+          id: string
+          note: string | null
+          priority: string
+          saved_at: string
+          use_case_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          note?: string | null
+          priority?: string
+          saved_at?: string
+          use_case_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          note?: string | null
+          priority?: string
+          saved_at?: string
+          use_case_id?: string
           user_id?: string
         }
         Relationships: []
@@ -535,6 +747,36 @@ export type Database = {
           },
         ]
       }
+      use_case_downloads: {
+        Row: {
+          asset_kind: string | null
+          created_at: string
+          id: string
+          session_id: string | null
+          source_page: string | null
+          use_case_id: string
+          user_id: string | null
+        }
+        Insert: {
+          asset_kind?: string | null
+          created_at?: string
+          id?: string
+          session_id?: string | null
+          source_page?: string | null
+          use_case_id: string
+          user_id?: string | null
+        }
+        Update: {
+          asset_kind?: string | null
+          created_at?: string
+          id?: string
+          session_id?: string | null
+          source_page?: string | null
+          use_case_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       use_case_feedback: {
         Row: {
           comment: string
@@ -722,6 +964,81 @@ export type Database = {
           updated_at?: string
           use_case_slug?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      use_case_scores: {
+        Row: {
+          created_at: string
+          feasibility: number
+          id: string
+          readiness: number
+          risk: number
+          strategic: number
+          total: number
+          ttv: number
+          updated_at: string
+          use_case_id: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          feasibility?: number
+          id?: string
+          readiness?: number
+          risk?: number
+          strategic?: number
+          total?: number
+          ttv?: number
+          updated_at?: string
+          use_case_id: string
+          user_id: string
+          value?: number
+        }
+        Update: {
+          created_at?: string
+          feasibility?: number
+          id?: string
+          readiness?: number
+          risk?: number
+          strategic?: number
+          total?: number
+          ttv?: number
+          updated_at?: string
+          use_case_id?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      use_case_views: {
+        Row: {
+          created_at: string
+          id: string
+          referrer: string | null
+          session_id: string | null
+          source_page: string | null
+          use_case_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referrer?: string | null
+          session_id?: string | null
+          source_page?: string | null
+          use_case_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referrer?: string | null
+          session_id?: string | null
+          source_page?: string | null
+          use_case_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
