@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { listUseCases, listTaxonomies } from "@/lib/use-cases.functions";
+import { listUseCases, listTaxonomies, listPlatformModules } from "@/lib/use-cases.functions";
 import { UseCaseXHero } from "@/components/UseCaseXHero";
 import { IndustryFocusedSection } from "@/components/IndustryFocusedSection";
 import { UseCaseCard } from "@/components/UseCaseCard";
@@ -20,6 +20,11 @@ const allQ = queryOptions({
   queryKey: ["use-cases", "count-hub"],
   queryFn: () => listUseCases({ data: { q: "", industries: [], capabilities: [], businessFunctions: [], objectives: [], maturity: [], valuePotential: [], complexity: [], riskLevel: [], timeToValue: [], sort: "recent", limit: 120 } }),
   staleTime: 5*60*1000,
+});
+const modulesQ = queryOptions({
+  queryKey: ["platform-modules"],
+  queryFn: () => listPlatformModules(),
+  staleTime: 10*60*1000,
 });
 
 export const Route = createFileRoute("/ai-hub/usecasex/")({
