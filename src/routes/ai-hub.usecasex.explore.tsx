@@ -1,22 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState, useDeferredValue, useEffect } from "react";
+import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useMemo, useState, useEffect } from "react";
 import { z } from "zod";
-import { MOCK_TAX, assertMockReady, filterAndSortMock, type MockFilters, type SortKey } from "@/lib/usecasex.mock";
+import { listUseCases, listTaxonomies } from "@/lib/use-cases.functions";
 import { UseCaseFilters, type FacetState } from "@/components/UseCaseFilters";
-import { MockUseCaseCard } from "@/components/MockUseCaseCard";
+import { UseCaseCard } from "@/components/UseCaseCard";
 import { EmptyState } from "@/components/EmptyState";
 import { CardSkeleton } from "@/components/LoadingSkeleton";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
-import { MissingDataFallback } from "@/components/MissingDataFallback";
 import { PresetBar } from "@/components/usecasex/PresetBar";
 import { CompareTray } from "@/components/usecasex/CompareTray";
 import { track } from "@/lib/usecasex.tracking";
 
 const sortValues = ["relevant", "value", "complexity", "risk", "ttv", "newest"] as const;
+type SortKey = (typeof sortValues)[number];
 
 const searchSchema = z.object({
   q: z.string().optional(),
-  industry: z.string().optional(), // singular preselect (?industry=banking)
+  industry: z.string().optional(),
   industries: z.array(z.string()).optional(),
   capabilities: z.array(z.string()).optional(),
   businessFunctions: z.array(z.string()).optional(),
@@ -33,12 +34,12 @@ const searchSchema = z.object({
 type Search = z.infer<typeof searchSchema>;
 
 const SORT_LABELS: Record<SortKey, string> = {
-  relevant:   "Most relevant",
-  value:      "Highest value",
+  relevant: "Most relevant",
+  value: "Highest value",
   complexity: "Lowest complexity",
-  risk:       "Lowest risk",
-  ttv:        "Fastest time to value",
-  newest:     "Newest",
+  risk: "Lowest risk",
+  ttv: "Fastest time to value",
+  newest: "Newest",
 };
 
 const FACET_LABELS: Record<string, string> = {
@@ -55,6 +56,21 @@ const FACET_LABELS: Record<string, string> = {
   tags: "Tag",
 };
 
+const taxQ = queryOptions({
+  queryKey: ["taxonomies"],
+  queryFn: () => listTaxonomies(),
+  staleTime: 5 * 60 * 1000,
+});
+
+function mapSort(s: SortKey | undefined): "recent" | "impact" | "maturity" | "featured" {
+  switch (s) {
+    case "value": return "impact";
+    case "newest": return "recent";
+    case "relevant":
+    default: return "recent";
+  }
+}
+
 export const Route = createFileRoute("/ai-hub/usecasex/explore")({
   head: () => ({
     meta: [
@@ -63,26 +79,25 @@ export const Route = createFileRoute("/ai-hub/usecasex/explore")({
     ],
   }),
   validateSearch: searchSchema,
+  loader: ({ context }) => context.queryClient.ensureQueryData(taxQ),
   component: Page,
   errorComponent: ({ error }) => <div className="p-12 text-center text-destructive">{error.message}</div>,
   notFoundComponent: () => <div className="p-12 text-center">Not found</div>,
 });
 
 function Page() {
-  const ready = assertMockReady();
+  const { data: tax } = useSuspenseQuery(taxQ);
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
   const [q, setQ] = useState(search.q ?? "");
   const [leadOpen, setLeadOpen] = useState(false);
 
-  // Merge singular ?industry= into industries[] (single source of truth for filtering & chips).
   const effectiveIndustries = useMemo(() => {
     if (search.industries && search.industries.length) return search.industries;
     if (search.industry) return [search.industry];
     return [];
   }, [search.industries, search.industry]);
 
-  // If only ?industry= was supplied, normalize to industries[] in the URL on mount.
   useEffect(() => {
     if (search.industry && !(search.industries && search.industries.length)) {
       navigate({ search: (prev: Search) => ({ ...prev, industries: [search.industry as string], industry: undefined }), replace: true });
@@ -102,39 +117,53 @@ function Page() {
       },
     });
 
-  const filters: MockFilters = {
+  const sort = (search.sort as SortKey | undefined) ?? "relevant";
+
+  const queryInput = useMemo(() => ({
     q: search.q ?? "",
     industries: effectiveIndustries,
     capabilities: search.capabilities ?? [],
     businessFunctions: search.businessFunctions ?? [],
     objectives: search.objectives ?? [],
+    maturity: search.maturity ?? [],
     valuePotential: search.valuePotential ?? [],
     complexity: search.complexity ?? [],
     riskLevel: search.riskLevel ?? [],
-    maturity: search.maturity ?? [],
     timeToValue: search.timeToValue ?? [],
-    sectors: search.sectors ?? [],
-    tags: search.tags ?? [],
-    sort: (search.sort as SortKey | undefined) ?? "relevant",
-  };
+    sort: mapSort(sort),
+    limit: 120,
+  }), [search, effectiveIndustries, sort]);
 
-  const deferred = useDeferredValue(filters);
-  const results = useMemo(() => filterAndSortMock(deferred), [deferred]);
-  const isStale = deferred !== filters;
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["use-cases", "explore", queryInput],
+    queryFn: () => listUseCases({ data: queryInput }),
+    placeholderData: (prev) => prev,
+    staleTime: 60 * 1000,
+  });
 
-  // Build active filter chips from all selected facets.
+  const cases = data?.cases ?? [];
+  const sorted = useMemo(() => {
+    // Client-side sort fallback for sort keys not natively supported by the server fn.
+    const rank: Record<string, number> = { Low: 1, Short: 1, Medium: 2, High: 3, Critical: 4, Long: 3 };
+    const arr = [...cases];
+    if (sort === "complexity") arr.sort((a, b) => (rank[a.complexity ?? ""] ?? 99) - (rank[b.complexity ?? ""] ?? 99));
+    else if (sort === "risk") arr.sort((a, b) => (rank[a.risk_level ?? ""] ?? 99) - (rank[b.risk_level ?? ""] ?? 99));
+    else if (sort === "ttv") arr.sort((a, b) => (rank[a.time_to_value ?? ""] ?? 99) - (rank[b.time_to_value ?? ""] ?? 99));
+    return arr;
+  }, [cases, sort]);
+
   type ChipKey = keyof FacetState;
   const chips: { key: ChipKey; value: string; label: string }[] = [];
-  const facetKeys: ChipKey[] = ["sectors","industries","capabilities","businessFunctions","objectives","maturity","valuePotential","complexity","riskLevel","timeToValue","tags"];
+  const facetKeys: ChipKey[] = ["industries","capabilities","businessFunctions","objectives","maturity","valuePotential","complexity","riskLevel","timeToValue"];
+  const labelMaps: Partial<Record<ChipKey, Record<string, string>>> = {
+    industries: Object.fromEntries(tax.industries.map((i) => [i.slug, i.name])),
+    capabilities: Object.fromEntries(tax.capabilities.map((i) => [i.slug, i.name])),
+    businessFunctions: Object.fromEntries(tax.businessFunctions.map((i) => [i.slug, i.name])),
+    objectives: Object.fromEntries(tax.objectives.map((i) => [i.slug, i.name])),
+  };
   for (const k of facetKeys) {
     const vals = k === "industries" ? effectiveIndustries : ((search as Record<string, string[] | undefined>)[k] ?? []);
-    for (const v of vals) {
-      const labelLookup: Record<string, string> | undefined =
-        k === "industries"
-          ? Object.fromEntries(MOCK_TAX.industries.map((i) => [i.slug, i.name]))
-          : undefined;
-      chips.push({ key: k, value: v, label: labelLookup?.[v] ?? v });
-    }
+    for (const v of vals) chips.push({ key: k, value: v, label: labelMaps[k]?.[v] ?? v });
   }
   const activeCount = chips.length;
 
@@ -161,9 +190,7 @@ function Page() {
 
   const handleFilterChange = (patch: Partial<Search>) => {
     update(patch);
-    Object.entries(patch).forEach(([facet, value]) => {
-      track("filter_used", { facet, value });
-    });
+    Object.entries(patch).forEach(([facet, value]) => track("filter_used", { facet, value }));
   };
 
   const submitSearch = (e: React.FormEvent) => {
@@ -173,17 +200,12 @@ function Page() {
   };
 
   const openCustomRequest = () => {
-    track("custom_use_case_requested", { q: search.q, filters });
+    track("custom_use_case_requested", { q: search.q });
     setLeadOpen(true);
   };
 
-  if (!ready.ok) {
-    return <MissingDataFallback reason={ready.reason} />;
-  }
-
   return (
     <>
-      {/* Hero / search */}
       <section className="border-b border-border bg-background">
         <div className="mx-auto max-w-[1400px] px-6 py-10">
           <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -210,14 +232,12 @@ function Page() {
         </div>
       </section>
 
-      {/* Body */}
       <div className="mx-auto max-w-[1400px] px-6 py-10">
         <div className="flex flex-col gap-8 lg:flex-row">
-          {/* Filters sidebar */}
           <aside className="w-full shrink-0 lg:w-72">
             <div className="lg:sticky lg:top-32">
               <UseCaseFilters
-                tax={MOCK_TAX}
+                tax={tax}
                 value={{ ...search, industries: effectiveIndustries } as Partial<FacetState>}
                 onChange={(p) => handleFilterChange(p as Partial<Search>)}
                 onClear={clearAll}
@@ -226,19 +246,18 @@ function Page() {
             </div>
           </aside>
 
-          {/* Results */}
           <div className="flex-1">
             <PresetBar currentSearch={search as Record<string, unknown>} />
-            {/* Toolbar */}
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
               <p className="text-sm text-muted-foreground">
-                <span className="font-mono text-base font-bold text-foreground">{results.length}</span> use case{results.length === 1 ? "" : "s"}
+                <span className="font-mono text-base font-bold text-foreground">{sorted.length}</span> use case{sorted.length === 1 ? "" : "s"}
                 {(search.q ?? "").trim() && <> for <span className="font-semibold text-foreground">"{search.q}"</span></>}
+                {isFetching && !isLoading && <span className="ml-2 text-xs text-muted-foreground/70">updating…</span>}
               </p>
               <div className="flex items-center gap-2">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Sort</label>
                 <select
-                  value={search.sort ?? "relevant"}
+                  value={sort}
                   onChange={(e) => update({ sort: e.target.value as SortKey })}
                   className="rounded-md border border-input bg-background px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
@@ -249,7 +268,6 @@ function Page() {
               </div>
             </div>
 
-            {/* Active chips */}
             {(activeCount > 0 || (search.q ?? "").trim()) && (
               <div className="mb-5 flex flex-wrap items-center gap-2">
                 {(search.q ?? "").trim() && (
@@ -262,19 +280,15 @@ function Page() {
                     onRemove={() => removeChip(c.key, c.value)}
                   />
                 ))}
-                <button
-                  onClick={clearAll}
-                  className="ml-1 text-[11px] font-bold uppercase tracking-widest text-primary hover:underline"
-                >
+                <button onClick={clearAll} className="ml-1 text-[11px] font-bold uppercase tracking-widest text-primary hover:underline">
                   Clear all
                 </button>
               </div>
             )}
 
-            {/* Grid / empty / loading */}
-            {isStale ? (
+            {isLoading ? (
               <CardSkeleton count={6} />
-            ) : results.length === 0 ? (
+            ) : sorted.length === 0 ? (
               <EmptyState
                 title="No matching use cases found."
                 description="We can build a custom AI use case pack for your industry and objectives."
@@ -289,8 +303,8 @@ function Page() {
               />
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {results.map((c) => (
-                  <MockUseCaseCard key={c.id} c={c} onView={(uc) => track("view_use_case", { id: uc.id, slug: uc.slug })} />
+                {sorted.map((c) => (
+                  <UseCaseCard key={c.id} c={c as Parameters<typeof UseCaseCard>[0]["c"]} />
                 ))}
               </div>
             )}
