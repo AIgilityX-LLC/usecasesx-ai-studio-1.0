@@ -75,7 +75,7 @@ function Page() {
 
       {/* 3. INDUSTRY-FOCUSED — DARK */}
       <div className="surface-dark border-b border-border">
-        <IndustryFocusedSection />
+        <IndustryFocusedSection industries={tax.industries} />
       </div>
 
       {/* 4. FEATURED — LIGHT */}
