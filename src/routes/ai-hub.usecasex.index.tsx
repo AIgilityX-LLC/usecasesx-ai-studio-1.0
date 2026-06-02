@@ -158,7 +158,13 @@ function Page() {
             <Link to="/ai-hub/usecasex/api-integration-preview" className="text-[11px] font-bold uppercase tracking-widest text-[oklch(0.85_0.13_215)] hover:underline">See the API preview →</Link>
           </div>
           <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {PARTNER_PLATFORMS.map((p) => <PlatformBadge key={p.slug} name={p.name} category={p.category} color={p.color as "navy"|"blue"|"cyan"} />)}
+            {modules.length > 0
+              ? modules.map((m) => (
+                  <PlatformBadge key={m.slug} name={m.name} category={m.category ?? undefined} color="navy" />
+                ))
+              : PARTNER_PLATFORMS.map((p) => (
+                  <PlatformBadge key={p.slug} name={p.name} category={p.category} color={p.color as "navy"|"blue"|"cyan"} />
+                ))}
           </div>
         </div>
       </section>
