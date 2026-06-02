@@ -40,6 +40,7 @@ export const Route = createFileRoute("/ai-hub/usecasex/")({
     context.queryClient.ensureQueryData(taxQ),
     context.queryClient.ensureQueryData(featQ),
     context.queryClient.ensureQueryData(allQ),
+    context.queryClient.ensureQueryData(modulesQ),
   ]),
   component: Page,
   errorComponent: ({ error }) => <div className="p-12 text-center text-destructive">{error.message}</div>,
@@ -50,6 +51,7 @@ function Page() {
   const { data: tax } = useSuspenseQuery(taxQ);
   const { data: featured } = useSuspenseQuery(featQ);
   const { data: all } = useSuspenseQuery(allQ);
+  const { data: modules } = useSuspenseQuery(modulesQ);
 
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadInterest, setLeadInterest] = useState<string>("ai_strategy_session");
