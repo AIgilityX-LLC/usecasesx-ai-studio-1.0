@@ -131,6 +131,17 @@ export const listTaxonomies = createServerFn({ method: "GET" }).handler(async ()
   };
 });
 
+export const listPlatformModules = createServerFn({ method: "GET" }).handler(async () => {
+  const sb = publicClient();
+  const { data, error } = await sb
+    .from("platform_modules")
+    .select("slug,name,category,description,external_url,sort_order")
+    .eq("is_published", true)
+    .order("sort_order", { ascending: true });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
+
 // --- Lead capture ---------------------------------------------------------
 const LeadInput = z.object({
   fullName: z.string().min(1).max(200),

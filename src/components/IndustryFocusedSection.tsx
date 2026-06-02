@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 
-const INDUSTRIES: { name: string; slug: string }[] = [
+const FALLBACK_INDUSTRIES: { name: string; slug: string }[] = [
   { name: "Defense", slug: "defense" },
   { name: "Healthcare", slug: "healthcare" },
   { name: "Real Estate", slug: "real-estate" },
@@ -21,7 +21,8 @@ const INDUSTRIES: { name: string; slug: string }[] = [
   { name: "Banking, Finance & Insurance", slug: "banking" },
 ];
 
-export function IndustryFocusedSection() {
+export function IndustryFocusedSection({ industries }: { industries?: { slug: string; name: string }[] }) {
+  const INDUSTRIES = industries && industries.length > 0 ? industries : FALLBACK_INDUSTRIES;
   return (
     <section className="border-b border-border">
       <div className="mx-auto max-w-[1400px] px-6 py-20">

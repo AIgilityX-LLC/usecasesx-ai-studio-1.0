@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { listUseCases, listTaxonomies } from "@/lib/use-cases.functions";
+import { listUseCases, listTaxonomies, listPlatformModules } from "@/lib/use-cases.functions";
 import { UseCaseXHero } from "@/components/UseCaseXHero";
 import { IndustryFocusedSection } from "@/components/IndustryFocusedSection";
 import { UseCaseCard } from "@/components/UseCaseCard";
@@ -21,6 +21,11 @@ const allQ = queryOptions({
   queryFn: () => listUseCases({ data: { q: "", industries: [], capabilities: [], businessFunctions: [], objectives: [], maturity: [], valuePotential: [], complexity: [], riskLevel: [], timeToValue: [], sort: "recent", limit: 120 } }),
   staleTime: 5*60*1000,
 });
+const modulesQ = queryOptions({
+  queryKey: ["platform-modules"],
+  queryFn: () => listPlatformModules(),
+  staleTime: 10*60*1000,
+});
 
 export const Route = createFileRoute("/ai-hub/usecasex/")({
   head: () => ({
@@ -35,6 +40,7 @@ export const Route = createFileRoute("/ai-hub/usecasex/")({
     context.queryClient.ensureQueryData(taxQ),
     context.queryClient.ensureQueryData(featQ),
     context.queryClient.ensureQueryData(allQ),
+    context.queryClient.ensureQueryData(modulesQ),
   ]),
   component: Page,
   errorComponent: ({ error }) => <div className="p-12 text-center text-destructive">{error.message}</div>,
@@ -45,6 +51,7 @@ function Page() {
   const { data: tax } = useSuspenseQuery(taxQ);
   const { data: featured } = useSuspenseQuery(featQ);
   const { data: all } = useSuspenseQuery(allQ);
+  const { data: modules } = useSuspenseQuery(modulesQ);
 
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadInterest, setLeadInterest] = useState<string>("ai_strategy_session");
@@ -68,7 +75,7 @@ function Page() {
 
       {/* 3. INDUSTRY-FOCUSED — DARK */}
       <div className="surface-dark border-b border-border">
-        <IndustryFocusedSection />
+        <IndustryFocusedSection industries={tax.industries} />
       </div>
 
       {/* 4. FEATURED — LIGHT */}
@@ -151,7 +158,13 @@ function Page() {
             <Link to="/ai-hub/usecasex/api-integration-preview" className="text-[11px] font-bold uppercase tracking-widest text-[oklch(0.85_0.13_215)] hover:underline">See the API preview →</Link>
           </div>
           <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {PARTNER_PLATFORMS.map((p) => <PlatformBadge key={p.slug} name={p.name} category={p.category} color={p.color as "navy"|"blue"|"cyan"} />)}
+            {modules.length > 0
+              ? modules.map((m) => (
+                  <PlatformBadge key={m.slug} name={m.name} category={m.category ?? undefined} color="navy" />
+                ))
+              : PARTNER_PLATFORMS.map((p) => (
+                  <PlatformBadge key={p.slug} name={p.name} category={p.category} color={p.color as "navy"|"blue"|"cyan"} />
+                ))}
           </div>
         </div>
       </section>
