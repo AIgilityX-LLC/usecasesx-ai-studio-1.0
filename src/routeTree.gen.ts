@@ -9,46 +9,30 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as SarpiRouteImport } from './routes/sarpi'
-import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AiHubRouteImport } from './routes/ai-hub'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AiHubIndexRouteImport } from './routes/ai-hub.index'
-import { Route as CasesSlugRouteImport } from './routes/cases.$slug'
-import { Route as AiHubUsecasexRouteImport } from './routes/ai-hub.usecasex'
-import { Route as AiHubUsecasexIndexRouteImport } from './routes/ai-hub.usecasex.index'
+import { Route as AppStudioRouteImport } from './routes/_app.studio'
+import { Route as AppRepositoryRouteImport } from './routes/_app.repository'
+import { Route as AppReportsRouteImport } from './routes/_app.reports'
+import { Route as AppProfileRouteImport } from './routes/_app.profile'
+import { Route as AppProRouteImport } from './routes/_app.pro'
+import { Route as AppPortfolioxRouteImport } from './routes/_app.portfoliox'
+import { Route as AppMyUseCasesRouteImport } from './routes/_app.my-use-cases'
+import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppCompareRouteImport } from './routes/_app.compare'
+import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integration'
+import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
 import { Route as CyberxC3gIntakeRouteImport } from './routes/cyberx.c3g.intake'
-import { Route as AiHubUsecasexStudioRouteImport } from './routes/ai-hub.usecasex.studio'
-import { Route as AiHubUsecasexSavedRouteImport } from './routes/ai-hub.usecasex.saved'
-import { Route as AiHubUsecasexReportsRouteImport } from './routes/ai-hub.usecasex.reports'
-import { Route as AiHubUsecasexProfileRouteImport } from './routes/ai-hub.usecasex.profile'
-import { Route as AiHubUsecasexProRouteImport } from './routes/ai-hub.usecasex.pro'
-import { Route as AiHubUsecasexPortfolioRouteImport } from './routes/ai-hub.usecasex.portfolio'
-import { Route as AiHubUsecasexExploreRouteImport } from './routes/ai-hub.usecasex.explore'
-import { Route as AiHubUsecasexDashboardRouteImport } from './routes/ai-hub.usecasex.dashboard'
-import { Route as AiHubUsecasexCompareRouteImport } from './routes/ai-hub.usecasex.compare'
-import { Route as AiHubUsecasexApiIntegrationPreviewRouteImport } from './routes/ai-hub.usecasex.api-integration-preview'
-import { Route as AiHubUsecasexAdminRouteImport } from './routes/ai-hub.usecasex.admin'
-import { Route as AiHubUsecasexSlugRouteImport } from './routes/ai-hub.usecasex.$slug'
+import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
 import { Route as ApiPublicUsecasexUseCasesSlugRouteImport } from './routes/api/public/usecasex/use-cases.$slug'
 
-const SubmitRoute = SubmitRouteImport.update({
-  id: '/submit',
-  path: '/submit',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SarpiRoute = SarpiRouteImport.update({
   id: '/sarpi',
   path: '/sarpi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExploreRoute = ExploreRouteImport.update({
-  id: '/explore',
-  path: '/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -56,9 +40,8 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AiHubRoute = AiHubRouteImport.update({
-  id: '/ai-hub',
-  path: '/ai-hub',
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -66,91 +49,70 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AiHubIndexRoute = AiHubIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AiHubRoute,
+const AppStudioRoute = AppStudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
+  getParentRoute: () => AppRoute,
 } as any)
-const CasesSlugRoute = CasesSlugRouteImport.update({
-  id: '/cases/$slug',
-  path: '/cases/$slug',
-  getParentRoute: () => rootRouteImport,
+const AppRepositoryRoute = AppRepositoryRouteImport.update({
+  id: '/repository',
+  path: '/repository',
+  getParentRoute: () => AppRoute,
 } as any)
-const AiHubUsecasexRoute = AiHubUsecasexRouteImport.update({
-  id: '/usecasex',
-  path: '/usecasex',
-  getParentRoute: () => AiHubRoute,
+const AppReportsRoute = AppReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AppRoute,
 } as any)
-const AiHubUsecasexIndexRoute = AiHubUsecasexIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AiHubUsecasexRoute,
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProRoute = AppProRouteImport.update({
+  id: '/pro',
+  path: '/pro',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPortfolioxRoute = AppPortfolioxRouteImport.update({
+  id: '/portfoliox',
+  path: '/portfoliox',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMyUseCasesRoute = AppMyUseCasesRouteImport.update({
+  id: '/my-use-cases',
+  path: '/my-use-cases',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCompareRoute = AppCompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppApiIntegrationRoute = AppApiIntegrationRouteImport.update({
+  id: '/api-integration',
+  path: '/api-integration',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdministrationRoute = AppAdministrationRouteImport.update({
+  id: '/administration',
+  path: '/administration',
+  getParentRoute: () => AppRoute,
 } as any)
 const CyberxC3gIntakeRoute = CyberxC3gIntakeRouteImport.update({
   id: '/cyberx/c3g/intake',
   path: '/cyberx/c3g/intake',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AiHubUsecasexStudioRoute = AiHubUsecasexStudioRouteImport.update({
-  id: '/studio',
-  path: '/studio',
-  getParentRoute: () => AiHubUsecasexRoute,
-} as any)
-const AiHubUsecasexSavedRoute = AiHubUsecasexSavedRouteImport.update({
-  id: '/saved',
-  path: '/saved',
-  getParentRoute: () => AiHubUsecasexRoute,
-} as any)
-const AiHubUsecasexReportsRoute = AiHubUsecasexReportsRouteImport.update({
-  id: '/reports',
-  path: '/reports',
-  getParentRoute: () => AiHubUsecasexRoute,
-} as any)
-const AiHubUsecasexProfileRoute = AiHubUsecasexProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AiHubUsecasexRoute,
-} as any)
-const AiHubUsecasexProRoute = AiHubUsecasexProRouteImport.update({
-  id: '/pro',
-  path: '/pro',
-  getParentRoute: () => AiHubUsecasexRoute,
-} as any)
-const AiHubUsecasexPortfolioRoute = AiHubUsecasexPortfolioRouteImport.update({
-  id: '/portfolio',
-  path: '/portfolio',
-  getParentRoute: () => AiHubUsecasexRoute,
-} as any)
-const AiHubUsecasexExploreRoute = AiHubUsecasexExploreRouteImport.update({
-  id: '/explore',
-  path: '/explore',
-  getParentRoute: () => AiHubUsecasexRoute,
-} as any)
-const AiHubUsecasexDashboardRoute = AiHubUsecasexDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AiHubUsecasexRoute,
-} as any)
-const AiHubUsecasexCompareRoute = AiHubUsecasexCompareRouteImport.update({
-  id: '/compare',
-  path: '/compare',
-  getParentRoute: () => AiHubUsecasexRoute,
-} as any)
-const AiHubUsecasexApiIntegrationPreviewRoute =
-  AiHubUsecasexApiIntegrationPreviewRouteImport.update({
-    id: '/api-integration-preview',
-    path: '/api-integration-preview',
-    getParentRoute: () => AiHubUsecasexRoute,
-  } as any)
-const AiHubUsecasexAdminRoute = AiHubUsecasexAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AiHubUsecasexRoute,
-} as any)
-const AiHubUsecasexSlugRoute = AiHubUsecasexSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => AiHubUsecasexRoute,
+const AppUseCasesSlugRoute = AppUseCasesSlugRouteImport.update({
+  id: '/use-cases/$slug',
+  path: '/use-cases/$slug',
+  getParentRoute: () => AppRoute,
 } as any)
 const ApiPublicUsecasexUseCasesRoute =
   ApiPublicUsecasexUseCasesRouteImport.update({
@@ -173,28 +135,21 @@ const ApiPublicUsecasexUseCasesSlugRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/ai-hub': typeof AiHubRouteWithChildren
   '/auth': typeof AuthRoute
-  '/explore': typeof ExploreRoute
   '/sarpi': typeof SarpiRoute
-  '/submit': typeof SubmitRoute
-  '/ai-hub/usecasex': typeof AiHubUsecasexRouteWithChildren
-  '/cases/$slug': typeof CasesSlugRoute
-  '/ai-hub/': typeof AiHubIndexRoute
-  '/ai-hub/usecasex/$slug': typeof AiHubUsecasexSlugRoute
-  '/ai-hub/usecasex/admin': typeof AiHubUsecasexAdminRoute
-  '/ai-hub/usecasex/api-integration-preview': typeof AiHubUsecasexApiIntegrationPreviewRoute
-  '/ai-hub/usecasex/compare': typeof AiHubUsecasexCompareRoute
-  '/ai-hub/usecasex/dashboard': typeof AiHubUsecasexDashboardRoute
-  '/ai-hub/usecasex/explore': typeof AiHubUsecasexExploreRoute
-  '/ai-hub/usecasex/portfolio': typeof AiHubUsecasexPortfolioRoute
-  '/ai-hub/usecasex/pro': typeof AiHubUsecasexProRoute
-  '/ai-hub/usecasex/profile': typeof AiHubUsecasexProfileRoute
-  '/ai-hub/usecasex/reports': typeof AiHubUsecasexReportsRoute
-  '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
-  '/ai-hub/usecasex/studio': typeof AiHubUsecasexStudioRoute
+  '/administration': typeof AppAdministrationRoute
+  '/api-integration': typeof AppApiIntegrationRoute
+  '/compare': typeof AppCompareRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/my-use-cases': typeof AppMyUseCasesRoute
+  '/portfoliox': typeof AppPortfolioxRoute
+  '/pro': typeof AppProRoute
+  '/profile': typeof AppProfileRoute
+  '/reports': typeof AppReportsRoute
+  '/repository': typeof AppRepositoryRoute
+  '/studio': typeof AppStudioRoute
+  '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
-  '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
@@ -202,25 +157,20 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/explore': typeof ExploreRoute
   '/sarpi': typeof SarpiRoute
-  '/submit': typeof SubmitRoute
-  '/cases/$slug': typeof CasesSlugRoute
-  '/ai-hub': typeof AiHubIndexRoute
-  '/ai-hub/usecasex/$slug': typeof AiHubUsecasexSlugRoute
-  '/ai-hub/usecasex/admin': typeof AiHubUsecasexAdminRoute
-  '/ai-hub/usecasex/api-integration-preview': typeof AiHubUsecasexApiIntegrationPreviewRoute
-  '/ai-hub/usecasex/compare': typeof AiHubUsecasexCompareRoute
-  '/ai-hub/usecasex/dashboard': typeof AiHubUsecasexDashboardRoute
-  '/ai-hub/usecasex/explore': typeof AiHubUsecasexExploreRoute
-  '/ai-hub/usecasex/portfolio': typeof AiHubUsecasexPortfolioRoute
-  '/ai-hub/usecasex/pro': typeof AiHubUsecasexProRoute
-  '/ai-hub/usecasex/profile': typeof AiHubUsecasexProfileRoute
-  '/ai-hub/usecasex/reports': typeof AiHubUsecasexReportsRoute
-  '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
-  '/ai-hub/usecasex/studio': typeof AiHubUsecasexStudioRoute
+  '/administration': typeof AppAdministrationRoute
+  '/api-integration': typeof AppApiIntegrationRoute
+  '/compare': typeof AppCompareRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/my-use-cases': typeof AppMyUseCasesRoute
+  '/portfoliox': typeof AppPortfolioxRoute
+  '/pro': typeof AppProRoute
+  '/profile': typeof AppProfileRoute
+  '/reports': typeof AppReportsRoute
+  '/repository': typeof AppRepositoryRoute
+  '/studio': typeof AppStudioRoute
+  '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
-  '/ai-hub/usecasex': typeof AiHubUsecasexIndexRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
@@ -228,28 +178,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/ai-hub': typeof AiHubRouteWithChildren
+  '/_app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
-  '/explore': typeof ExploreRoute
   '/sarpi': typeof SarpiRoute
-  '/submit': typeof SubmitRoute
-  '/ai-hub/usecasex': typeof AiHubUsecasexRouteWithChildren
-  '/cases/$slug': typeof CasesSlugRoute
-  '/ai-hub/': typeof AiHubIndexRoute
-  '/ai-hub/usecasex/$slug': typeof AiHubUsecasexSlugRoute
-  '/ai-hub/usecasex/admin': typeof AiHubUsecasexAdminRoute
-  '/ai-hub/usecasex/api-integration-preview': typeof AiHubUsecasexApiIntegrationPreviewRoute
-  '/ai-hub/usecasex/compare': typeof AiHubUsecasexCompareRoute
-  '/ai-hub/usecasex/dashboard': typeof AiHubUsecasexDashboardRoute
-  '/ai-hub/usecasex/explore': typeof AiHubUsecasexExploreRoute
-  '/ai-hub/usecasex/portfolio': typeof AiHubUsecasexPortfolioRoute
-  '/ai-hub/usecasex/pro': typeof AiHubUsecasexProRoute
-  '/ai-hub/usecasex/profile': typeof AiHubUsecasexProfileRoute
-  '/ai-hub/usecasex/reports': typeof AiHubUsecasexReportsRoute
-  '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
-  '/ai-hub/usecasex/studio': typeof AiHubUsecasexStudioRoute
+  '/_app/administration': typeof AppAdministrationRoute
+  '/_app/api-integration': typeof AppApiIntegrationRoute
+  '/_app/compare': typeof AppCompareRoute
+  '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/my-use-cases': typeof AppMyUseCasesRoute
+  '/_app/portfoliox': typeof AppPortfolioxRoute
+  '/_app/pro': typeof AppProRoute
+  '/_app/profile': typeof AppProfileRoute
+  '/_app/reports': typeof AppReportsRoute
+  '/_app/repository': typeof AppRepositoryRoute
+  '/_app/studio': typeof AppStudioRoute
+  '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
-  '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
@@ -258,28 +202,21 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/ai-hub'
     | '/auth'
-    | '/explore'
     | '/sarpi'
-    | '/submit'
-    | '/ai-hub/usecasex'
-    | '/cases/$slug'
-    | '/ai-hub/'
-    | '/ai-hub/usecasex/$slug'
-    | '/ai-hub/usecasex/admin'
-    | '/ai-hub/usecasex/api-integration-preview'
-    | '/ai-hub/usecasex/compare'
-    | '/ai-hub/usecasex/dashboard'
-    | '/ai-hub/usecasex/explore'
-    | '/ai-hub/usecasex/portfolio'
-    | '/ai-hub/usecasex/pro'
-    | '/ai-hub/usecasex/profile'
-    | '/ai-hub/usecasex/reports'
-    | '/ai-hub/usecasex/saved'
-    | '/ai-hub/usecasex/studio'
+    | '/administration'
+    | '/api-integration'
+    | '/compare'
+    | '/dashboard'
+    | '/my-use-cases'
+    | '/portfoliox'
+    | '/pro'
+    | '/profile'
+    | '/reports'
+    | '/repository'
+    | '/studio'
+    | '/use-cases/$slug'
     | '/cyberx/c3g/intake'
-    | '/ai-hub/usecasex/'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/api/public/usecasex/use-cases/$slug'
@@ -287,53 +224,42 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/explore'
     | '/sarpi'
-    | '/submit'
-    | '/cases/$slug'
-    | '/ai-hub'
-    | '/ai-hub/usecasex/$slug'
-    | '/ai-hub/usecasex/admin'
-    | '/ai-hub/usecasex/api-integration-preview'
-    | '/ai-hub/usecasex/compare'
-    | '/ai-hub/usecasex/dashboard'
-    | '/ai-hub/usecasex/explore'
-    | '/ai-hub/usecasex/portfolio'
-    | '/ai-hub/usecasex/pro'
-    | '/ai-hub/usecasex/profile'
-    | '/ai-hub/usecasex/reports'
-    | '/ai-hub/usecasex/saved'
-    | '/ai-hub/usecasex/studio'
+    | '/administration'
+    | '/api-integration'
+    | '/compare'
+    | '/dashboard'
+    | '/my-use-cases'
+    | '/portfoliox'
+    | '/pro'
+    | '/profile'
+    | '/reports'
+    | '/repository'
+    | '/studio'
+    | '/use-cases/$slug'
     | '/cyberx/c3g/intake'
-    | '/ai-hub/usecasex'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/api/public/usecasex/use-cases/$slug'
   id:
     | '__root__'
     | '/'
-    | '/ai-hub'
+    | '/_app'
     | '/auth'
-    | '/explore'
     | '/sarpi'
-    | '/submit'
-    | '/ai-hub/usecasex'
-    | '/cases/$slug'
-    | '/ai-hub/'
-    | '/ai-hub/usecasex/$slug'
-    | '/ai-hub/usecasex/admin'
-    | '/ai-hub/usecasex/api-integration-preview'
-    | '/ai-hub/usecasex/compare'
-    | '/ai-hub/usecasex/dashboard'
-    | '/ai-hub/usecasex/explore'
-    | '/ai-hub/usecasex/portfolio'
-    | '/ai-hub/usecasex/pro'
-    | '/ai-hub/usecasex/profile'
-    | '/ai-hub/usecasex/reports'
-    | '/ai-hub/usecasex/saved'
-    | '/ai-hub/usecasex/studio'
+    | '/_app/administration'
+    | '/_app/api-integration'
+    | '/_app/compare'
+    | '/_app/dashboard'
+    | '/_app/my-use-cases'
+    | '/_app/portfoliox'
+    | '/_app/pro'
+    | '/_app/profile'
+    | '/_app/reports'
+    | '/_app/repository'
+    | '/_app/studio'
+    | '/_app/use-cases/$slug'
     | '/cyberx/c3g/intake'
-    | '/ai-hub/usecasex/'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/api/public/usecasex/use-cases/$slug'
@@ -341,12 +267,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AiHubRoute: typeof AiHubRouteWithChildren
+  AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
-  ExploreRoute: typeof ExploreRoute
   SarpiRoute: typeof SarpiRoute
-  SubmitRoute: typeof SubmitRoute
-  CasesSlugRoute: typeof CasesSlugRoute
   CyberxC3gIntakeRoute: typeof CyberxC3gIntakeRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
@@ -354,25 +277,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/submit': {
-      id: '/submit'
-      path: '/submit'
-      fullPath: '/submit'
-      preLoaderRoute: typeof SubmitRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sarpi': {
       id: '/sarpi'
       path: '/sarpi'
       fullPath: '/sarpi'
       preLoaderRoute: typeof SarpiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/explore': {
-      id: '/explore'
-      path: '/explore'
-      fullPath: '/explore'
-      preLoaderRoute: typeof ExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -382,11 +291,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/ai-hub': {
-      id: '/ai-hub'
-      path: '/ai-hub'
-      fullPath: '/ai-hub'
-      preLoaderRoute: typeof AiHubRouteImport
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -396,33 +305,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/ai-hub/': {
-      id: '/ai-hub/'
-      path: '/'
-      fullPath: '/ai-hub/'
-      preLoaderRoute: typeof AiHubIndexRouteImport
-      parentRoute: typeof AiHubRoute
+    '/_app/studio': {
+      id: '/_app/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof AppStudioRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/cases/$slug': {
-      id: '/cases/$slug'
-      path: '/cases/$slug'
-      fullPath: '/cases/$slug'
-      preLoaderRoute: typeof CasesSlugRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_app/repository': {
+      id: '/_app/repository'
+      path: '/repository'
+      fullPath: '/repository'
+      preLoaderRoute: typeof AppRepositoryRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/ai-hub/usecasex': {
-      id: '/ai-hub/usecasex'
-      path: '/usecasex'
-      fullPath: '/ai-hub/usecasex'
-      preLoaderRoute: typeof AiHubUsecasexRouteImport
-      parentRoute: typeof AiHubRoute
+    '/_app/reports': {
+      id: '/_app/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AppReportsRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/ai-hub/usecasex/': {
-      id: '/ai-hub/usecasex/'
-      path: '/'
-      fullPath: '/ai-hub/usecasex/'
-      preLoaderRoute: typeof AiHubUsecasexIndexRouteImport
-      parentRoute: typeof AiHubUsecasexRoute
+    '/_app/profile': {
+      id: '/_app/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/pro': {
+      id: '/_app/pro'
+      path: '/pro'
+      fullPath: '/pro'
+      preLoaderRoute: typeof AppProRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/portfoliox': {
+      id: '/_app/portfoliox'
+      path: '/portfoliox'
+      fullPath: '/portfoliox'
+      preLoaderRoute: typeof AppPortfolioxRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/my-use-cases': {
+      id: '/_app/my-use-cases'
+      path: '/my-use-cases'
+      fullPath: '/my-use-cases'
+      preLoaderRoute: typeof AppMyUseCasesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/compare': {
+      id: '/_app/compare'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof AppCompareRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/api-integration': {
+      id: '/_app/api-integration'
+      path: '/api-integration'
+      fullPath: '/api-integration'
+      preLoaderRoute: typeof AppApiIntegrationRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/administration': {
+      id: '/_app/administration'
+      path: '/administration'
+      fullPath: '/administration'
+      preLoaderRoute: typeof AppAdministrationRouteImport
+      parentRoute: typeof AppRoute
     }
     '/cyberx/c3g/intake': {
       id: '/cyberx/c3g/intake'
@@ -431,89 +389,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CyberxC3gIntakeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/ai-hub/usecasex/studio': {
-      id: '/ai-hub/usecasex/studio'
-      path: '/studio'
-      fullPath: '/ai-hub/usecasex/studio'
-      preLoaderRoute: typeof AiHubUsecasexStudioRouteImport
-      parentRoute: typeof AiHubUsecasexRoute
-    }
-    '/ai-hub/usecasex/saved': {
-      id: '/ai-hub/usecasex/saved'
-      path: '/saved'
-      fullPath: '/ai-hub/usecasex/saved'
-      preLoaderRoute: typeof AiHubUsecasexSavedRouteImport
-      parentRoute: typeof AiHubUsecasexRoute
-    }
-    '/ai-hub/usecasex/reports': {
-      id: '/ai-hub/usecasex/reports'
-      path: '/reports'
-      fullPath: '/ai-hub/usecasex/reports'
-      preLoaderRoute: typeof AiHubUsecasexReportsRouteImport
-      parentRoute: typeof AiHubUsecasexRoute
-    }
-    '/ai-hub/usecasex/profile': {
-      id: '/ai-hub/usecasex/profile'
-      path: '/profile'
-      fullPath: '/ai-hub/usecasex/profile'
-      preLoaderRoute: typeof AiHubUsecasexProfileRouteImport
-      parentRoute: typeof AiHubUsecasexRoute
-    }
-    '/ai-hub/usecasex/pro': {
-      id: '/ai-hub/usecasex/pro'
-      path: '/pro'
-      fullPath: '/ai-hub/usecasex/pro'
-      preLoaderRoute: typeof AiHubUsecasexProRouteImport
-      parentRoute: typeof AiHubUsecasexRoute
-    }
-    '/ai-hub/usecasex/portfolio': {
-      id: '/ai-hub/usecasex/portfolio'
-      path: '/portfolio'
-      fullPath: '/ai-hub/usecasex/portfolio'
-      preLoaderRoute: typeof AiHubUsecasexPortfolioRouteImport
-      parentRoute: typeof AiHubUsecasexRoute
-    }
-    '/ai-hub/usecasex/explore': {
-      id: '/ai-hub/usecasex/explore'
-      path: '/explore'
-      fullPath: '/ai-hub/usecasex/explore'
-      preLoaderRoute: typeof AiHubUsecasexExploreRouteImport
-      parentRoute: typeof AiHubUsecasexRoute
-    }
-    '/ai-hub/usecasex/dashboard': {
-      id: '/ai-hub/usecasex/dashboard'
-      path: '/dashboard'
-      fullPath: '/ai-hub/usecasex/dashboard'
-      preLoaderRoute: typeof AiHubUsecasexDashboardRouteImport
-      parentRoute: typeof AiHubUsecasexRoute
-    }
-    '/ai-hub/usecasex/compare': {
-      id: '/ai-hub/usecasex/compare'
-      path: '/compare'
-      fullPath: '/ai-hub/usecasex/compare'
-      preLoaderRoute: typeof AiHubUsecasexCompareRouteImport
-      parentRoute: typeof AiHubUsecasexRoute
-    }
-    '/ai-hub/usecasex/api-integration-preview': {
-      id: '/ai-hub/usecasex/api-integration-preview'
-      path: '/api-integration-preview'
-      fullPath: '/ai-hub/usecasex/api-integration-preview'
-      preLoaderRoute: typeof AiHubUsecasexApiIntegrationPreviewRouteImport
-      parentRoute: typeof AiHubUsecasexRoute
-    }
-    '/ai-hub/usecasex/admin': {
-      id: '/ai-hub/usecasex/admin'
-      path: '/admin'
-      fullPath: '/ai-hub/usecasex/admin'
-      preLoaderRoute: typeof AiHubUsecasexAdminRouteImport
-      parentRoute: typeof AiHubUsecasexRoute
-    }
-    '/ai-hub/usecasex/$slug': {
-      id: '/ai-hub/usecasex/$slug'
-      path: '/$slug'
-      fullPath: '/ai-hub/usecasex/$slug'
-      preLoaderRoute: typeof AiHubUsecasexSlugRouteImport
-      parentRoute: typeof AiHubUsecasexRoute
+    '/_app/use-cases/$slug': {
+      id: '/_app/use-cases/$slug'
+      path: '/use-cases/$slug'
+      fullPath: '/use-cases/$slug'
+      preLoaderRoute: typeof AppUseCasesSlugRouteImport
+      parentRoute: typeof AppRoute
     }
     '/api/public/usecasex/use-cases': {
       id: '/api/public/usecasex/use-cases'
@@ -539,54 +420,37 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AiHubUsecasexRouteChildren {
-  AiHubUsecasexSlugRoute: typeof AiHubUsecasexSlugRoute
-  AiHubUsecasexAdminRoute: typeof AiHubUsecasexAdminRoute
-  AiHubUsecasexApiIntegrationPreviewRoute: typeof AiHubUsecasexApiIntegrationPreviewRoute
-  AiHubUsecasexCompareRoute: typeof AiHubUsecasexCompareRoute
-  AiHubUsecasexDashboardRoute: typeof AiHubUsecasexDashboardRoute
-  AiHubUsecasexExploreRoute: typeof AiHubUsecasexExploreRoute
-  AiHubUsecasexPortfolioRoute: typeof AiHubUsecasexPortfolioRoute
-  AiHubUsecasexProRoute: typeof AiHubUsecasexProRoute
-  AiHubUsecasexProfileRoute: typeof AiHubUsecasexProfileRoute
-  AiHubUsecasexReportsRoute: typeof AiHubUsecasexReportsRoute
-  AiHubUsecasexSavedRoute: typeof AiHubUsecasexSavedRoute
-  AiHubUsecasexStudioRoute: typeof AiHubUsecasexStudioRoute
-  AiHubUsecasexIndexRoute: typeof AiHubUsecasexIndexRoute
+interface AppRouteChildren {
+  AppAdministrationRoute: typeof AppAdministrationRoute
+  AppApiIntegrationRoute: typeof AppApiIntegrationRoute
+  AppCompareRoute: typeof AppCompareRoute
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppMyUseCasesRoute: typeof AppMyUseCasesRoute
+  AppPortfolioxRoute: typeof AppPortfolioxRoute
+  AppProRoute: typeof AppProRoute
+  AppProfileRoute: typeof AppProfileRoute
+  AppReportsRoute: typeof AppReportsRoute
+  AppRepositoryRoute: typeof AppRepositoryRoute
+  AppStudioRoute: typeof AppStudioRoute
+  AppUseCasesSlugRoute: typeof AppUseCasesSlugRoute
 }
 
-const AiHubUsecasexRouteChildren: AiHubUsecasexRouteChildren = {
-  AiHubUsecasexSlugRoute: AiHubUsecasexSlugRoute,
-  AiHubUsecasexAdminRoute: AiHubUsecasexAdminRoute,
-  AiHubUsecasexApiIntegrationPreviewRoute:
-    AiHubUsecasexApiIntegrationPreviewRoute,
-  AiHubUsecasexCompareRoute: AiHubUsecasexCompareRoute,
-  AiHubUsecasexDashboardRoute: AiHubUsecasexDashboardRoute,
-  AiHubUsecasexExploreRoute: AiHubUsecasexExploreRoute,
-  AiHubUsecasexPortfolioRoute: AiHubUsecasexPortfolioRoute,
-  AiHubUsecasexProRoute: AiHubUsecasexProRoute,
-  AiHubUsecasexProfileRoute: AiHubUsecasexProfileRoute,
-  AiHubUsecasexReportsRoute: AiHubUsecasexReportsRoute,
-  AiHubUsecasexSavedRoute: AiHubUsecasexSavedRoute,
-  AiHubUsecasexStudioRoute: AiHubUsecasexStudioRoute,
-  AiHubUsecasexIndexRoute: AiHubUsecasexIndexRoute,
+const AppRouteChildren: AppRouteChildren = {
+  AppAdministrationRoute: AppAdministrationRoute,
+  AppApiIntegrationRoute: AppApiIntegrationRoute,
+  AppCompareRoute: AppCompareRoute,
+  AppDashboardRoute: AppDashboardRoute,
+  AppMyUseCasesRoute: AppMyUseCasesRoute,
+  AppPortfolioxRoute: AppPortfolioxRoute,
+  AppProRoute: AppProRoute,
+  AppProfileRoute: AppProfileRoute,
+  AppReportsRoute: AppReportsRoute,
+  AppRepositoryRoute: AppRepositoryRoute,
+  AppStudioRoute: AppStudioRoute,
+  AppUseCasesSlugRoute: AppUseCasesSlugRoute,
 }
 
-const AiHubUsecasexRouteWithChildren = AiHubUsecasexRoute._addFileChildren(
-  AiHubUsecasexRouteChildren,
-)
-
-interface AiHubRouteChildren {
-  AiHubUsecasexRoute: typeof AiHubUsecasexRouteWithChildren
-  AiHubIndexRoute: typeof AiHubIndexRoute
-}
-
-const AiHubRouteChildren: AiHubRouteChildren = {
-  AiHubUsecasexRoute: AiHubUsecasexRouteWithChildren,
-  AiHubIndexRoute: AiHubIndexRoute,
-}
-
-const AiHubRouteWithChildren = AiHubRoute._addFileChildren(AiHubRouteChildren)
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 interface ApiPublicUsecasexUseCasesRouteChildren {
   ApiPublicUsecasexUseCasesSlugRoute: typeof ApiPublicUsecasexUseCasesSlugRoute
@@ -604,12 +468,9 @@ const ApiPublicUsecasexUseCasesRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AiHubRoute: AiHubRouteWithChildren,
+  AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
-  ExploreRoute: ExploreRoute,
   SarpiRoute: SarpiRoute,
-  SubmitRoute: SubmitRoute,
-  CasesSlugRoute: CasesSlugRoute,
   CyberxC3gIntakeRoute: CyberxC3gIntakeRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
   ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRouteWithChildren,
@@ -617,3 +478,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
