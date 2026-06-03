@@ -60,7 +60,7 @@ function PortfolioRoadmapPage() {
   const { features, tier, loading: planLoading } = usePlan();
   const [useCases, setUseCases] = useState<UseCase[]>([]);
   const [scores, setScores] = useState<Record<string, Score>>({});
-  const [links, setLinks] = useState<Link[]>([]);
+  const [links, setLinks] = useState<IntegrationLinkRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [fDept, setFDept] = useState("all");
@@ -89,7 +89,7 @@ function PortfolioRoadmapPage() {
       const scMap: Record<string, Score> = {};
       (sc ?? []).forEach((s: any) => { scMap[s.use_case_id] = s; });
       setScores(scMap);
-      setLinks((lk ?? []) as Link[]);
+      setLinks((lk ?? []) as IntegrationLinkRow[]);
       setLoading(false);
     })();
   }, [planLoading, features.portfolioRoadmap]);
