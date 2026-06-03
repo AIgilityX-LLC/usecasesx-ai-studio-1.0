@@ -37,7 +37,7 @@ export function UseCaseCard({ c, onSave, saved }: { c: UseCaseCardData; onSave?:
         </span>
       </div>
 
-      <Link to="/ai-hub/usecasex/$slug" params={{ slug: c.slug }} className="block">
+      <Link to="/use-cases/$slug" params={{ slug: c.slug }} className="block">
         <h3 className="text-base font-bold leading-snug text-foreground transition-colors group-hover:text-primary">{c.title}</h3>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground line-clamp-3">{c.summary}</p>
       </Link>
@@ -58,7 +58,7 @@ export function UseCaseCard({ c, onSave, saved }: { c: UseCaseCardData; onSave?:
             {saved ? "★ Saved" : "☆ Save"}
           </button>
         ) : (
-          <Link to="/ai-hub/usecasex/$slug" params={{ slug: c.slug }} className="text-[11px] font-bold uppercase tracking-widest text-primary opacity-0 transition-opacity group-hover:opacity-100">View →</Link>
+          <Link to="/use-cases/$slug" params={{ slug: c.slug }} className="text-[11px] font-bold uppercase tracking-widest text-primary opacity-0 transition-opacity group-hover:opacity-100">View →</Link>
         )}
       </div>
     </div>

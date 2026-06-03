@@ -8,7 +8,7 @@ const searchSchema = z.object({
   ids: z.string().optional(),
 });
 
-export const Route = createFileRoute("/ai-hub/usecasex/compare")({
+export const Route = createFileRoute("/_app/compare")({
   head: () => ({
     meta: [
       { title: "Compare AI Use Cases — UseCasesX™" },
@@ -43,7 +43,7 @@ function ComparePage() {
           Open the Explore page or any use case detail and click <strong>Add to compare</strong> to start.
         </p>
         <Link
-          to="/ai-hub/usecasex/explore"
+          to="/repository"
           className="mt-6 inline-block rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110"
         >
           Browse use cases →
@@ -121,7 +121,7 @@ function ComparePage() {
     <article className="bg-background">
       <header className="border-b border-border bg-card/40">
         <div className="mx-auto max-w-[1400px] px-6 py-10">
-          <Link to="/ai-hub/usecasex/explore" className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline">
+          <Link to="/repository" className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline">
             ← Back to Explore
           </Link>
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -142,7 +142,7 @@ function ComparePage() {
                 {items.map((c) => (
                   <th key={c.slug} className="px-4 py-4 text-left align-top">
                     <Link
-                      to="/ai-hub/usecasex/$slug"
+                      to="/use-cases/$slug"
                       params={{ slug: c.slug }}
                       className="block text-base font-bold text-foreground hover:text-primary"
                     >

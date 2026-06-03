@@ -25,7 +25,7 @@ import { useState } from "react";
 
 const PRIORITIES: Priority[] = ["Low", "Medium", "High", "Strategic"];
 
-export const Route = createFileRoute("/ai-hub/usecasex/saved")({
+export const Route = createFileRoute("/_app/my-use-cases")({
   head: () => ({
     meta: [
       { title: "Saved Use Cases — UseCasesX™ Pro" },
@@ -41,7 +41,7 @@ function SavedPage() {
   const store = useUseCaseXPro();
 
   useEffect(() => {
-    if (session === null) navigate({ to: "/ai-hub/usecasex/pro", replace: true });
+    if (session === null) navigate({ to: "/pro", replace: true });
   }, [session, navigate]);
 
   const items = useMemo(() => {
@@ -69,10 +69,10 @@ function SavedPage() {
           </div>
           <div className="flex gap-2">
             <Button asChild variant="outline">
-              <Link to="/ai-hub/usecasex/explore">Explore more</Link>
+              <Link to="/repository">Explore more</Link>
             </Button>
             <Button asChild>
-              <Link to="/ai-hub/usecasex/portfolio">Portfolios</Link>
+              <Link to="/portfoliox">Portfolios</Link>
             </Button>
           </div>
         </header>
@@ -83,7 +83,7 @@ function SavedPage() {
               <p className="text-lg font-medium">No saved use cases yet</p>
               <p className="text-sm text-muted-foreground">Browse the catalogue and save opportunities to begin building your portfolio.</p>
               <Button asChild className="mt-2">
-                <Link to="/ai-hub/usecasex/explore">Explore use cases</Link>
+                <Link to="/repository">Explore use cases</Link>
               </Button>
             </CardContent>
           </Card>
@@ -123,7 +123,7 @@ function SavedCard({
       <CardHeader className="space-y-2">
         <div className="flex items-start justify-between gap-3">
           <CardTitle className="text-base leading-snug">
-            <Link to="/ai-hub/usecasex/$slug" params={{ slug: uc.slug }} className="hover:underline">
+            <Link to="/use-cases/$slug" params={{ slug: uc.slug }} className="hover:underline">
               {uc.title}
             </Link>
           </CardTitle>
@@ -320,7 +320,7 @@ function AddToPortfolioDialog({ slug, store }: { slug: string; store: ReturnType
         {store.portfolios.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             No portfolios yet.{" "}
-            <Link to="/ai-hub/usecasex/portfolio" className="underline">Create one</Link>.
+            <Link to="/portfoliox" className="underline">Create one</Link>.
           </p>
         ) : (
           <Select value={selected} onValueChange={setSelected}>

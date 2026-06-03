@@ -28,9 +28,9 @@ const PLATFORM_BLURB: Record<string, string> = {
 };
 
 const EXECUTION_PATH = [
-  { step: 1, name: "UseCasesX", verb: "Discover", to: "/ai-hub/usecasex/explore" },
-  { step: 2, name: "AI Readiness", verb: "Assess", to: "/ai-hub/readiness" },
-  { step: 3, name: "AI ROI", verb: "Value", to: "/ai-hub/roi-calculator" },
+  { step: 1, name: "UseCasesX", verb: "Discover", to: "/repository" },
+  { step: 2, name: "AI Readiness", verb: "Assess", to: "/data-readiness" },
+  { step: 3, name: "AI ROI", verb: "Value", to: "/impact-assessment" },
   { step: 4, name: "SARPI", verb: "Track", to: "/sarpi" },
   { step: 5, name: "CyberX", verb: "Govern", to: "/cyberx/c3g/intake" },
   { step: 6, name: "AdvisorX", verb: "Decide", to: "/advisorx" },
@@ -44,7 +44,7 @@ async function logUseCaseView(useCaseId: string, slug: string) {
   try {
     await supabase.from("use_case_views").insert({
       use_case_id: useCaseId,
-      source_page: `/ai-hub/usecasex/${slug}`,
+      source_page: `//${slug}`,
       referrer: typeof document !== "undefined" ? document.referrer || null : null,
     });
   } catch {
@@ -93,7 +93,7 @@ async function logIntegrationEvent(input: {
 }
 
 // ---------- Route ----------
-export const Route = createFileRoute("/ai-hub/usecasex/$slug")({
+export const Route = createFileRoute("/_app/use-cases/$slug")({
   head: ({ params }) => ({
     meta: [
       { title: `${params.slug} — UseCasesX™` },
@@ -112,7 +112,7 @@ export const Route = createFileRoute("/ai-hub/usecasex/$slug")({
     <MissingDataFallback
       title="Use case not available"
       reason="This use case isn't published or no longer exists."
-      backTo="/ai-hub/usecasex/explore"
+      backTo="/repository"
       backLabel="Back to Explore"
     />
   ),
@@ -189,7 +189,7 @@ function UseCaseDetailPage() {
 
   const tags: string[] = [...capabilities, ...objectives].slice(0, 8);
 
-  const sourcePage = `/ai-hub/usecasex/${c.slug}`;
+  const sourcePage = `//${c.slug}`;
   const qs = `?source=usecasex&use_case_id=${encodeURIComponent(c.id)}`;
 
   const openLead = (cta: "lite-pdf" | "ai-strategy-session") => {
@@ -202,21 +202,21 @@ function UseCaseDetailPage() {
     void logCtaEvent({
       cta: "save_to_pro_portfolio",
       useCaseId: c.id,
-      targetRoute: "/ai-hub/usecasex/pro",
+      targetRoute: "/pro",
       sourcePage,
     });
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
       navigate({
-        to: "/ai-hub/usecasex/pro",
-        search: { redirect: `/ai-hub/usecasex/${c.slug}` } as any,
+        to: "/pro",
+        search: { redirect: `//${c.slug}` } as any,
       });
       return;
     }
     try {
       const { saveUseCase } = await import("@/lib/usecasex.services");
       await saveUseCase(c.id, { priority: "Medium" });
-      navigate({ to: "/ai-hub/usecasex/saved" });
+      navigate({ to: "/my-use-cases" });
     } catch (e) {
       console.error("[save-to-pro]", e);
     }
@@ -332,7 +332,7 @@ function UseCaseDetailPage() {
         <header className="border-b border-border bg-card/40">
           <div className="mx-auto max-w-[1320px] px-6 pb-10 pt-8">
             <Link
-              to="/ai-hub/usecasex/explore"
+              to="/repository"
               className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline"
             >
               ← Back to Explore
@@ -464,7 +464,7 @@ function UseCaseDetailPage() {
                   {relatedItems.map((r: any) => (
                     <Link
                       key={r.slug}
-                      to="/ai-hub/usecasex/$slug"
+                      to="/use-cases/$slug"
                       params={{ slug: r.slug }}
                       className="group rounded-lg border border-border bg-card/60 p-4 transition hover:border-primary/40"
                     >
@@ -493,10 +493,10 @@ function UseCaseDetailPage() {
                 Route this use case into the AIgilityX execution path.
               </p>
               <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <CtaBtn primary onClick={() => handleNav("check_ai_readiness", `/ai-hub/readiness${qs}`)}>
+                <CtaBtn primary onClick={() => handleNav("check_ai_readiness", `//readiness${qs}`)}>
                   Check AI Readiness
                 </CtaBtn>
-                <CtaBtn primary onClick={() => handleNav("calculate_ai_roi", `/ai-hub/roi-calculator${qs}`)}>
+                <CtaBtn primary onClick={() => handleNav("calculate_ai_roi", `//roi-calculator${qs}`)}>
                   Calculate AI ROI
                 </CtaBtn>
                 <CtaBtn primary onClick={handleSaveToPortfolio}>

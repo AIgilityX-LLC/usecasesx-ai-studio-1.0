@@ -56,7 +56,7 @@ export function PresetBar({ currentSearch }: { currentSearch: Record<string, unk
         {BUILTIN_PRESETS.map((p) => (
           <Link
             key={p.label}
-            to="/ai-hub/usecasex/explore"
+            to="/repository"
             search={p.search as never}
             title={p.description}
             className="rounded-full border border-border bg-background px-3 py-1 text-[11px] font-semibold text-foreground transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
@@ -99,7 +99,7 @@ export function PresetBar({ currentSearch }: { currentSearch: Record<string, unk
                 className="group inline-flex items-center gap-1 rounded-full border border-border bg-background pl-3 text-[11px] font-semibold text-foreground"
               >
                 <Link
-                  to="/ai-hub/usecasex/explore"
+                  to="/repository"
                   search={p.search as never}
                   className="py-1 hover:text-primary"
                 >

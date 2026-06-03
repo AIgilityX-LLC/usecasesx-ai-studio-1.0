@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 
-export const Route = createFileRoute("/ai-hub/usecasex/pro")({
+export const Route = createFileRoute("/_app/pro")({
   head: () => ({
     meta: [
       { title: "UseCasesX™ Pro — Free with Registration" },
@@ -32,9 +32,9 @@ async function routeAfterAuth(navigate: ReturnType<typeof useNavigate>) {
     .eq("user_id", user.id)
     .maybeSingle();
   if (profile?.profile_completed) {
-    navigate({ to: "/ai-hub/usecasex/dashboard", replace: true });
+    navigate({ to: "/dashboard", replace: true });
   } else {
-    navigate({ to: "/ai-hub/usecasex/profile", replace: true });
+    navigate({ to: "/profile", replace: true });
   }
 }
 
@@ -70,7 +70,7 @@ function ProPage() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/ai-hub/usecasex/profile` },
+          options: { emailRedirectTo: `${window.location.origin}/profile` },
         });
         if (error) throw error;
         setInfo("Check your inbox to confirm your email, then sign in to continue.");
@@ -78,7 +78,7 @@ function ProPage() {
       } else {
         const { error } = await supabase.auth.signInWithOtp({
           email,
-          options: { emailRedirectTo: `${window.location.origin}/ai-hub/usecasex/profile` },
+          options: { emailRedirectTo: `${window.location.origin}/profile` },
         });
         if (error) throw error;
         setInfo("Magic link sent. Check your inbox to continue.");
@@ -182,7 +182,7 @@ function ProPage() {
               </form>
 
               <p className="mt-4 text-center text-xs text-muted-foreground">
-                <Link to="/ai-hub/usecasex/explore" className="hover:text-foreground">← Browse use cases first</Link>
+                <Link to="/repository" className="hover:text-foreground">← Browse use cases first</Link>
               </p>
             </div>
           </div>

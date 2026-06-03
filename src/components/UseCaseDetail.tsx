@@ -34,7 +34,7 @@ export function UseCaseDetail({ c, onLeadCapture }: {
 
   return (
     <article className="mx-auto max-w-[1200px] px-6 py-12">
-      <Link to="/ai-hub/usecasex/explore" className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline">← Back to Explore</Link>
+      <Link to="/repository" className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline">← Back to Explore</Link>
 
       <header className="mt-4">
         <div className="flex flex-wrap items-center gap-2">
@@ -57,7 +57,7 @@ export function UseCaseDetail({ c, onLeadCapture }: {
         <div className="mt-6">
           <CTAButtonGroup ctas={[
             { label: "Download Lite PDF", onClick: onLeadCapture },
-            { label: "Save to Workspace", to: "/ai-hub/usecasex/pro", variant: "secondary" },
+            { label: "Save to Workspace", to: "/pro", variant: "secondary" },
             { label: "Talk to AIgilityX ↗", onClick: onLeadCapture, variant: "ghost" },
           ]} />
         </div>
@@ -96,7 +96,7 @@ export function UseCaseDetail({ c, onLeadCapture }: {
             <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">UseCasesX Pro</div>
             <h3 className="mt-2 text-base font-bold text-foreground">Score & shortlist this use case</h3>
             <p className="mt-1 text-sm text-muted-foreground">Save it to your workspace, score it with the AIgilityX engine, and add it to your AI Opportunity Portfolio.</p>
-            <Link to="/ai-hub/usecasex/pro" className="mt-4 inline-flex w-full justify-center rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-110">
+            <Link to="/pro" className="mt-4 inline-flex w-full justify-center rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-110">
               Get Pro — Free →
             </Link>
           </div>
