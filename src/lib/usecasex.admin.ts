@@ -466,7 +466,7 @@ export function useAdminStore() {
       delete (copy as any).id;
       delete (copy as any).created_at;
       delete (copy as any).updated_at;
-      const { data: ins, error: insErr } = await supabase.from("use_cases").insert(copy).select("id").single();
+      const { data: ins, error: insErr } = await (supabase as any).from("use_cases").insert(copy).select("id").single();
       if (insErr) { setError(insErr.message); return; }
       await writeAudit((ins as any).id, "Duplicated", `From ${src.slug}`);
       await reload();
