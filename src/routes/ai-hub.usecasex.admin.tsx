@@ -873,7 +873,7 @@ function SettingsTab() {
       <Separator />
       <div>
         <h3 className="font-semibold mb-1">Catalogue source</h3>
-        <p className="text-sm text-muted-foreground">Currently using local mock store (browser <code>localStorage</code>). Swap with Supabase-backed server functions when ready.</p>
+        <p className="text-sm text-muted-foreground">Use cases, audit log, taxonomy and analytics are now persisted to Lovable Cloud. Every admin action writes an entry to <code>use_case_audit_log</code>.</p>
       </div>
     </CardContent></Card>
   );
