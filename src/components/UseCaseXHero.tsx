@@ -52,8 +52,8 @@ export function UseCaseXHero({ stats, onRequestStrategy }: { stats?: HeroStats; 
 
         <div className="mt-8">
           <CTAButtonGroup ctas={[
-            { label: "Explore AI Use Cases →", to: "/ai-hub/usecasex/explore" },
-            { label: "Create Free Pro Account", to: "/ai-hub/usecasex/pro", variant: "secondary" },
+            { label: "Explore AI Use Cases →", to: "/repository" },
+            { label: "Create Free Pro Account", to: "/pro", variant: "secondary" },
             { label: "Request AI Strategy Session ↗", onClick: onRequestStrategy, variant: "ghost" },
           ]} />
         </div>
@@ -76,7 +76,7 @@ export function UseCaseXHero({ stats, onRequestStrategy }: { stats?: HeroStats; 
         )}
 
         <p className="mt-8 text-[11px] uppercase tracking-[0.18em] text-white/55">
-          Trusted across <Link to="/ai-hub" className="text-white hover:text-[oklch(0.85_0.13_215)]">Banking · Public Sector · Healthcare · Energy · Defense · Telecom</Link>
+          Trusted across <Link to="/" className="text-white hover:text-[oklch(0.85_0.13_215)]">Banking · Public Sector · Healthcare · Energy · Defense · Telecom</Link>
         </p>
       </div>
     </section>

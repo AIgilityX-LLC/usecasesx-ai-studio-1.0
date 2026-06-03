@@ -17,7 +17,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Loader2, Sparkles, Save, Trash2, Wand2, Lightbulb } from "lucide-react";
 
-export const Route = createFileRoute("/ai-hub/usecasex/studio")({
+export const Route = createFileRoute("/_app/studio")({
   head: () => ({
     meta: [
       { title: "Use Case Development Studio — UseCasesX™ Pro" },
@@ -42,7 +42,7 @@ function StudioPage() {
     (async () => {
       const { data } = await supabase.auth.getUser();
       if (!data.user) {
-        navigate({ to: "/ai-hub/usecasex/pro", replace: true });
+        navigate({ to: "/pro", replace: true });
         return;
       }
       setAuthChecked(true);
@@ -122,8 +122,8 @@ function StudioPage() {
             organization — then save them to your Pro workspace.
           </p>
           <div className="mt-6 flex gap-3 text-sm">
-            <Link to="/ai-hub/usecasex/dashboard" className="text-muted-foreground hover:text-foreground">← Back to dashboard</Link>
-            <Link to="/ai-hub/usecasex/saved" className="text-muted-foreground hover:text-foreground">Saved catalog use cases</Link>
+            <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">← Back to dashboard</Link>
+            <Link to="/my-use-cases" className="text-muted-foreground hover:text-foreground">Saved catalog use cases</Link>
           </div>
         </div>
       </section>

@@ -63,11 +63,11 @@ export function ProDashboard({ profile }: Props) {
           </p>
         </div>
         <div className="flex gap-2">
-          <Link to="/ai-hub/usecasex/studio"
+          <Link to="/studio"
             className="rounded-lg border border-primary/40 bg-primary/10 px-4 py-2.5 text-sm font-bold text-foreground hover:bg-primary/20">
             ✨ Open Studio
           </Link>
-          <Link to="/ai-hub/usecasex/explore"
+          <Link to="/repository"
             className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110">
             Explore use cases →
           </Link>
@@ -126,7 +126,7 @@ export function ProDashboard({ profile }: Props) {
                   <div className="text-sm font-semibold text-foreground">{a.label}</div>
                   <p className="text-xs text-muted-foreground">{a.reason}</p>
                 </div>
-                <Link to={a.to as "/ai-hub/usecasex/explore"}
+                <Link to={a.to as "/repository"}
                   className="self-center rounded-md border border-border px-2.5 py-1.5 text-xs font-semibold hover:bg-secondary">
                   Open
                 </Link>
@@ -294,7 +294,7 @@ function BucketCard({
         <ul className="mt-3 space-y-2">
           {items.slice(0, 4).map((u) => (
             <li key={u.id} className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background px-3 py-2">
-              <Link to="/ai-hub/usecasex/$slug" params={{ slug: u.slug }}
+              <Link to="/use-cases/$slug" params={{ slug: u.slug }}
                 className="truncate text-xs font-semibold text-foreground hover:text-primary">
                 {u.title}
               </Link>
@@ -320,26 +320,26 @@ function buildNextActions({
 }) {
   const out: Array<{ label: string; reason: string; icon: string; to: string }> = [];
   if (saved.length === 0) {
-    out.push({ label: "Explore use cases", reason: "Start saving relevant AI opportunities.", icon: "→", to: "/ai-hub/usecasex/explore" });
+    out.push({ label: "Explore use cases", reason: "Start saving relevant AI opportunities.", icon: "→", to: "/repository" });
     return out;
   }
   if (scores.length < saved.length) {
-    out.push({ label: "Score your top use cases", reason: "Some saved cases are unscored.", icon: "★", to: "/ai-hub/usecasex/explore" });
+    out.push({ label: "Score your top use cases", reason: "Some saved cases are unscored.", icon: "★", to: "/repository" });
   }
   if (roiReady.length > 0) {
-    out.push({ label: "Calculate AI ROI", reason: `${roiReady.length} high-value cases are ROI-ready.`, icon: "$", to: "/ai-hub/usecasex/explore" });
+    out.push({ label: "Calculate AI ROI", reason: `${roiReady.length} high-value cases are ROI-ready.`, icon: "$", to: "/repository" });
   }
   if (highRisk.length > 0) {
-    out.push({ label: "Send to CyberX Governance Review", reason: `${highRisk.length} use cases flagged high/critical risk.`, icon: "!", to: "/ai-hub/usecasex/explore" });
+    out.push({ label: "Send to CyberX Governance Review", reason: `${highRisk.length} use cases flagged high/critical risk.`, icon: "!", to: "/repository" });
   }
   if (readinessNeeded.length > 0) {
-    out.push({ label: "Send to SARPI / AI Readiness", reason: "Maturity is unclear for some cases.", icon: "◉", to: "/ai-hub/usecasex/explore" });
+    out.push({ label: "Send to SARPI / AI Readiness", reason: "Maturity is unclear for some cases.", icon: "◉", to: "/repository" });
   }
   if (saved.some((u) => /agentic/i.test(u.aiType))) {
-    out.push({ label: "Design a FlowX Workflow", reason: "You have Agentic AI use cases.", icon: "⚙", to: "/ai-hub/usecasex/explore" });
+    out.push({ label: "Design a FlowX Workflow", reason: "You have Agentic AI use cases.", icon: "⚙", to: "/repository" });
   }
   if (saved.some((u) => /decision|strategy/i.test(u.objective))) {
-    out.push({ label: "Ask AdvisorX", reason: "Strategic decisions detected in your portfolio.", icon: "?", to: "/ai-hub/usecasex/explore" });
+    out.push({ label: "Ask AdvisorX", reason: "Strategic decisions detected in your portfolio.", icon: "?", to: "/repository" });
   }
   return out;
 }

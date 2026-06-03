@@ -66,7 +66,7 @@ export function IndustryFocusedSection({ industries }: { industries?: { slug: st
 
             <div className="mt-8">
               <Link
-                to="/ai-hub/usecasex/explore"
+                to="/repository"
                 className="inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/[0.04] px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition-all hover:border-[oklch(0.85_0.13_215)] hover:text-[oklch(0.85_0.13_215)]"
               >
                 Explore AI Use Cases for These Industries
@@ -80,7 +80,7 @@ export function IndustryFocusedSection({ industries }: { industries?: { slug: st
             {INDUSTRIES.map((ind, i) => (
               <li key={ind.slug}>
                 <Link
-                  to="/ai-hub/usecasex/explore"
+                  to="/repository"
                   search={{ industries: [ind.slug] }}
                   className="group flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3.5 backdrop-blur transition-all hover:-translate-y-px hover:border-[oklch(0.78_0.13_215_/_0.5)] hover:bg-white/[0.06]"
                 >

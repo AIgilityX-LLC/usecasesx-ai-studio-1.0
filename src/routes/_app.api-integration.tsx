@@ -3,7 +3,7 @@ import { useState } from "react";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 
-export const Route = createFileRoute("/ai-hub/usecasex/api-integration-preview")({
+export const Route = createFileRoute("/_app/api-integration")({
   head: () => ({
     meta: [
       { title: "UseCasesX™ API Integration Preview — AIgilityX Ecosystem" },
@@ -119,7 +119,7 @@ function ApiIntegrationPreview() {
 
   function openModal() {
     trackCTAEvent("api_integration_review_requested", {
-      source_page: "/ai-hub/usecasex/api-integration-preview",
+      source_page: "/api-integration",
     });
     setOpen(true);
   }
@@ -157,7 +157,7 @@ function ApiIntegrationPreview() {
               Request Integration Architecture Review
             </button>
             <Link
-              to="/ai-hub/usecasex"
+              to="/"
               className="inline-flex items-center justify-center rounded-md border border-border bg-card/50 px-5 py-3 text-sm font-medium text-foreground/90 backdrop-blur transition hover:bg-card"
             >
               Back to UseCasesX
@@ -312,7 +312,7 @@ function ApiIntegrationPreview() {
         triggerCase="ai-strategy-session"
         title="Request Integration Architecture Review"
         description="Tell us about your AIgilityX integration goals. Our architects will design the right API and governance touchpoints for SARPI, CyberX, AdvisorX, FlowX, PrivacyX, and AssureX."
-        sourcePage="/ai-hub/usecasex/api-integration-preview"
+        sourcePage="/api-integration"
         sourceUseCase="api_integration"
       />
     </div>

@@ -11,7 +11,7 @@ type Profile = {
   main_ai_interest: string | null;
 };
 
-export const Route = createFileRoute("/ai-hub/usecasex/dashboard")({
+export const Route = createFileRoute("/_app/dashboard")({
   head: () => ({
     meta: [
       { title: "Your AI Opportunity Portfolio — UseCasesX™ Pro" },
@@ -29,7 +29,7 @@ function DashboardPage() {
 
   useEffect(() => {
     if (session === undefined) return;
-    if (session === null) { navigate({ to: "/ai-hub/usecasex/pro", replace: true }); return; }
+    if (session === null) { navigate({ to: "/pro", replace: true }); return; }
     let active = true;
     (async () => {
       const { data: p } = await supabase
@@ -39,7 +39,7 @@ function DashboardPage() {
         .maybeSingle();
       if (!active) return;
       if (!p?.profile_completed) {
-        navigate({ to: "/ai-hub/usecasex/profile", replace: true });
+        navigate({ to: "/profile", replace: true });
         return;
       }
       setProfile(p);

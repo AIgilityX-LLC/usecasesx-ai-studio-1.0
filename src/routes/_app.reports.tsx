@@ -48,7 +48,7 @@ type Profile = {
   industry: string | null;
 };
 
-export const Route = createFileRoute("/ai-hub/usecasex/reports")({
+export const Route = createFileRoute("/_app/reports")({
   head: () => ({
     meta: [
       { title: "AI Opportunity Reports — UseCasesX™ Pro" },
@@ -73,7 +73,7 @@ function ReportsPage() {
 
   useEffect(() => {
     if (session === undefined) return;
-    if (session === null) { navigate({ to: "/ai-hub/usecasex/pro", replace: true }); return; }
+    if (session === null) { navigate({ to: "/pro", replace: true }); return; }
     let active = true;
     (async () => {
       const { data: p } = await supabase
@@ -82,7 +82,7 @@ function ReportsPage() {
         .eq("user_id", session.user.id)
         .maybeSingle();
       if (!active) return;
-      if (!p?.profile_completed) { navigate({ to: "/ai-hub/usecasex/profile", replace: true }); return; }
+      if (!p?.profile_completed) { navigate({ to: "/profile", replace: true }); return; }
       setProfile(p);
       setLoading(false);
     })();
@@ -156,8 +156,8 @@ function ReportsPage() {
               </p>
             </div>
             <div className="flex gap-2">
-              <Button asChild variant="outline"><Link to="/ai-hub/usecasex/saved">Saved</Link></Button>
-              <Button asChild variant="outline"><Link to="/ai-hub/usecasex/portfolio">Portfolios</Link></Button>
+              <Button asChild variant="outline"><Link to="/my-use-cases">Saved</Link></Button>
+              <Button asChild variant="outline"><Link to="/portfoliox">Portfolios</Link></Button>
             </div>
           </header>
 
@@ -188,7 +188,7 @@ function ReportsPage() {
                 <label className="text-xs uppercase tracking-wide text-muted-foreground">Use cases to include</label>
                 {store.saved.length === 0 ? (
                   <p className="text-sm text-muted-foreground">
-                    No saved use cases. <Link to="/ai-hub/usecasex/explore" className="underline">Browse the catalogue</Link>.
+                    No saved use cases. <Link to="/repository" className="underline">Browse the catalogue</Link>.
                   </p>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-56 overflow-auto rounded-md border p-2">

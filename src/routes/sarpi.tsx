@@ -41,13 +41,13 @@ function SarpiStub() {
       )}
       <div className="mt-8 flex justify-center gap-3">
         <Link
-          to="/ai-hub/usecasex/explore"
+          to="/repository"
           className="rounded-md border border-border px-4 py-2 text-sm hover:bg-accent"
         >
           Back to Explore
         </Link>
         <Link
-          to="/ai-hub/usecasex/dashboard"
+          to="/dashboard"
           className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90"
         >
           Open Pro Dashboard

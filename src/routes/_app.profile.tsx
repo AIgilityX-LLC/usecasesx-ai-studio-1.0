@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/ai-hub/usecasex/profile")({
+export const Route = createFileRoute("/_app/profile")({
   head: () => ({
     meta: [
       { title: "Complete your profile — UseCasesX™ Pro" },
@@ -40,11 +40,11 @@ function ProfilePage() {
   useEffect(() => {
     (async () => {
       const { data: u } = await supabase.auth.getUser();
-      if (!u.user) { navigate({ to: "/ai-hub/usecasex/pro", replace: true }); return; }
+      if (!u.user) { navigate({ to: "/pro", replace: true }); return; }
       const { data: profile } = await supabase
         .from("profiles").select("*").eq("user_id", u.user.id).maybeSingle();
       if (profile?.profile_completed) {
-        navigate({ to: "/ai-hub/usecasex/dashboard", replace: true });
+        navigate({ to: "/dashboard", replace: true });
         return;
       }
       setForm((f) => ({
@@ -76,7 +76,7 @@ function ProfilePage() {
         profile_completed: true,
       }, { onConflict: "user_id" });
       if (error) throw error;
-      navigate({ to: "/ai-hub/usecasex/dashboard", replace: true });
+      navigate({ to: "/dashboard", replace: true });
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Could not save profile");
     } finally {

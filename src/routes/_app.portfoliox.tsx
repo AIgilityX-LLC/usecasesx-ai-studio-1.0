@@ -23,7 +23,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Separator } from "@/components/ui/separator";
 import { Plus, Trash2, Pencil, X } from "lucide-react";
 
-export const Route = createFileRoute("/ai-hub/usecasex/portfolio")({
+export const Route = createFileRoute("/_app/portfoliox")({
   head: () => ({
     meta: [
       { title: "AI Opportunity Portfolios — UseCasesX™ Pro" },
@@ -39,7 +39,7 @@ function PortfolioPage() {
   const store = useUseCaseXPro();
 
   useEffect(() => {
-    if (session === null) navigate({ to: "/ai-hub/usecasex/pro", replace: true });
+    if (session === null) navigate({ to: "/pro", replace: true });
   }, [session, navigate]);
 
   if (!session) {
@@ -57,7 +57,7 @@ function PortfolioPage() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button asChild variant="outline"><Link to="/ai-hub/usecasex/saved">Saved use cases</Link></Button>
+            <Button asChild variant="outline"><Link to="/my-use-cases">Saved use cases</Link></Button>
             <CreatePortfolioDialog onCreate={store.createPortfolio} />
           </div>
         </header>
@@ -160,7 +160,7 @@ function PortfolioCard({ portfolio, store }: { portfolio: Portfolio; store: Retu
               {items.map(({ uc, score }) => (
                 <li key={uc.slug} className="flex items-center justify-between gap-2 text-sm rounded-md border bg-card px-3 py-2">
                   <Link
-                    to="/ai-hub/usecasex/$slug"
+                    to="/use-cases/$slug"
                     params={{ slug: uc.slug }}
                     className="truncate hover:underline flex-1"
                   >

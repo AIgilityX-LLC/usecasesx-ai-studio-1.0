@@ -71,7 +71,7 @@ function mapSort(s: SortKey | undefined): "recent" | "impact" | "maturity" | "fe
   }
 }
 
-export const Route = createFileRoute("/ai-hub/usecasex/explore")({
+export const Route = createFileRoute("/_app/repository")({
   head: () => ({
     meta: [
       { title: "Explore 1000+ AI Use Cases — UseCasesX™" },

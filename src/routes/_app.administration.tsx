@@ -34,7 +34,7 @@ import {
 
 const ADMIN_ROLES = ["super_admin", "ai_hub_admin", "usecasex_admin", "content_manager", "reviewer"] as const;
 
-export const Route = createFileRoute("/ai-hub/usecasex/admin")({
+export const Route = createFileRoute("/_app/administration")({
   head: () => ({
     meta: [{ title: "UseCasesX™ Admin", name: "robots" }, { name: "robots", content: "noindex" }],
   }),
@@ -222,7 +222,7 @@ function UseCasesTab() {
                 <td className="px-3 py-2">
                   <div className="flex justify-end gap-1">
                     <Button asChild variant="ghost" size="icon" title="View">
-                      <Link to="/ai-hub/usecasex/$slug" params={{ slug: u.slug }}><Eye className="w-4 h-4" /></Link>
+                      <Link to="/use-cases/$slug" params={{ slug: u.slug }}><Eye className="w-4 h-4" /></Link>
                     </Button>
                     <Button variant="ghost" size="icon" title="Edit" onClick={() => setEditing(u)}><Pencil className="w-4 h-4" /></Button>
                     <Button variant="ghost" size="icon" title="Duplicate" onClick={() => { store.duplicate(u.id); trackCTAEvent("admin_duplicated", { id: u.id }); }}><Copy className="w-4 h-4" /></Button>
@@ -857,7 +857,7 @@ function ReportsTab() {
   return (
     <Card><CardContent className="p-6 space-y-3">
       <p className="text-sm">Admin reports use the same engine as Pro reports.</p>
-      <Button asChild><Link to="/ai-hub/usecasex/reports">Open report generator</Link></Button>
+      <Button asChild><Link to="/reports">Open report generator</Link></Button>
     </CardContent></Card>
   );
 }

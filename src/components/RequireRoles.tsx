@@ -61,7 +61,7 @@ export function RequireRoles({ anyOf, action, children, fallback }: Props) {
           Current roles: {roles.length ? roles.join(", ") : "none"}
         </p>
         <Button asChild variant="outline">
-          <Link to="/ai-hub/usecasex">Back to UseCasesX</Link>
+          <Link to="/">Back to UseCasesX</Link>
         </Button>
       </div>
     );

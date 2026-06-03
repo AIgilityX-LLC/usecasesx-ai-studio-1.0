@@ -56,7 +56,7 @@ export function MockUseCaseCard({
 
       {/* Title + summary */}
       <Link
-        to="/ai-hub/usecasex/$slug"
+        to="/use-cases/$slug"
         params={{ slug: c.slug }}
         onClick={() => onView?.(c)}
         className="block"
@@ -88,7 +88,7 @@ export function MockUseCaseCard({
           {c.tags.slice(0, 4).map((t) => (
             <Link
               key={t}
-              to="/ai-hub/usecasex/explore"
+              to="/repository"
               search={{ tags: [t] }}
               className="rounded-full bg-secondary/60 px-2 py-0.5 text-[10px] font-medium text-muted-foreground hover:bg-primary/10 hover:text-primary"
             >
@@ -130,7 +130,7 @@ export function MockUseCaseCard({
       {/* Footer CTA */}
       <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
         <Link
-          to="/ai-hub/usecasex/$slug"
+          to="/use-cases/$slug"
           params={{ slug: c.slug }}
           onClick={() => onView?.(c)}
           className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3.5 py-2 text-[11px] font-bold uppercase tracking-widest text-primary-foreground transition-all hover:brightness-110"

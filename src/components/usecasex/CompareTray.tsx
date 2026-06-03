@@ -15,7 +15,7 @@ export function CompareTray() {
           {slugs.length} / {compareStore.MAX}
         </span>
         <Link
-          to="/ai-hub/usecasex/compare"
+          to="/compare"
           search={{ ids: slugs.join(",") }}
           className="rounded-full bg-primary px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary-foreground hover:brightness-110"
         >
