@@ -368,6 +368,11 @@ function Page() {
         sourcePage="usecasex-explore"
       />
       <CompareTray />
+      <AddToStudioBoardDialog
+        open={!!boardPattern}
+        onOpenChange={(o) => { if (!o) setBoardPattern(null); }}
+        pattern={boardPattern}
+      />
     </>
   );
 }
