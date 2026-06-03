@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { ProDashboard } from "@/components/ProDashboard";
+import { PlatformBanner } from "@/components/PlatformBanner";
 
 type Profile = {
   full_name: string | null;
@@ -53,10 +54,13 @@ function DashboardPage() {
   }
 
   return (
-    <section className="border-b border-border bg-background">
-      <div className="mx-auto max-w-[1280px] px-6 py-12">
-        <ProDashboard profile={profile} />
-      </div>
-    </section>
+    <>
+      <PlatformBanner />
+      <section className="border-b border-border bg-background">
+        <div className="mx-auto max-w-[1280px] px-6 py-12">
+          <ProDashboard profile={profile} />
+        </div>
+      </section>
+    </>
   );
 }
