@@ -270,7 +270,14 @@ export function useUseCaseXPro() {
   const updatePortfolioM = useMutation({
     mutationFn: async ({ id, patch }: { id: string; patch: Partial<Portfolio> }) => {
       requireUser();
-      const dbPatch: Record<string, unknown> = {};
+      const dbPatch: {
+        name?: string;
+        objective?: string | null;
+        portfolio_type?: string;
+        status?: string;
+        target_department?: string | null;
+        target_quarter?: string | null;
+      } = {};
       if (patch.name !== undefined) dbPatch.name = patch.name;
       if (patch.objective !== undefined) dbPatch.objective = patch.objective ?? null;
       if (patch.type !== undefined) dbPatch.portfolio_type = patch.type;
