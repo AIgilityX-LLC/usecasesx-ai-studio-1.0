@@ -379,6 +379,10 @@ export type Database = {
           id: string
           name: string
           objective: string | null
+          portfolio_type: string
+          status: string
+          target_department: string | null
+          target_quarter: string | null
           updated_at: string
           user_id: string
         }
@@ -387,6 +391,10 @@ export type Database = {
           id?: string
           name: string
           objective?: string | null
+          portfolio_type?: string
+          status?: string
+          target_department?: string | null
+          target_quarter?: string | null
           updated_at?: string
           user_id: string
         }
@@ -395,6 +403,10 @@ export type Database = {
           id?: string
           name?: string
           objective?: string | null
+          portfolio_type?: string
+          status?: string
+          target_department?: string | null
+          target_quarter?: string | null
           updated_at?: string
           user_id?: string
         }
