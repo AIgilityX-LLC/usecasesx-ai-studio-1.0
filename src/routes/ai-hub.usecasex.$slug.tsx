@@ -211,6 +211,14 @@ function UseCaseDetailPage() {
         to: "/ai-hub/usecasex/pro",
         search: { redirect: `/ai-hub/usecasex/${c.slug}` } as any,
       });
+      return;
+    }
+    try {
+      const { saveUseCase } = await import("@/lib/usecasex.services");
+      await saveUseCase(c.id, { priority: "Medium" });
+      navigate({ to: "/ai-hub/usecasex/saved" });
+    } catch (e) {
+      console.error("[save-to-pro]", e);
     }
   };
 
