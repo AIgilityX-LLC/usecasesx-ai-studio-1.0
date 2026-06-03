@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
@@ -10,7 +11,7 @@ export const Route = createFileRoute("/_app/pro")({
       { name: "description", content: "Build Your AI Opportunity Portfolio. Save, score, prioritize, and report AI use cases — free with registration." },
     ],
   }),
-  component: ProPage,
+  component: () => (<RequirePlan min="pro" feature="Pro workspace"><ProPage /></RequirePlan>),
 });
 
 const FEATURES = [

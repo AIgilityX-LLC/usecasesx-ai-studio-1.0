@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
@@ -12,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Sparkles, FileDown, FileText, Send, ShieldCheck, Bot, Save } from "lucide-react";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/blueprint")({
-  component: BlueprintPage,
+  component: () => (<RequirePlan min="pro" feature="Blueprint Builder"><BlueprintPage /></RequirePlan>),
 });
 
 const SECTIONS = [

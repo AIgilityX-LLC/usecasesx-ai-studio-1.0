@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,7 +18,7 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/_app/studio/portfolio")({
-  component: PortfolioRoadmapPage,
+  component: () => (<RequirePlan min="pro" feature="Portfolio Roadmap"><PortfolioRoadmapPage /></RequirePlan>),
 });
 
 type UseCase = {

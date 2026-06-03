@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,7 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { Loader2, Plus, Trash2, Save, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/data-readiness")({
-  component: DataReadinessPage,
+  component: () => (<RequirePlan min="pro" feature="Data Readiness"><DataReadinessPage /></RequirePlan>),
 });
 
 type DimensionKey =
