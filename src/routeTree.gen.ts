@@ -44,6 +44,7 @@ import { Route as AppStudioUseCaseIdSarpiRouteImport } from './routes/_app.studi
 import { Route as AppStudioUseCaseIdFeasibilityRouteImport } from './routes/_app.studio.use-case.$id.feasibility'
 import { Route as AppStudioUseCaseIdDataReadinessRouteImport } from './routes/_app.studio.use-case.$id.data-readiness'
 import { Route as AppStudioUseCaseIdBlueprintRouteImport } from './routes/_app.studio.use-case.$id.blueprint'
+import { Route as AppStudioUseCaseIdAdvisorxRouteImport } from './routes/_app.studio.use-case.$id.advisorx'
 
 const SarpiRoute = SarpiRouteImport.update({
   id: '/sarpi',
@@ -225,6 +226,12 @@ const AppStudioUseCaseIdBlueprintRoute =
     path: '/use-case/$id/blueprint',
     getParentRoute: () => AppStudioRoute,
   } as any)
+const AppStudioUseCaseIdAdvisorxRoute =
+  AppStudioUseCaseIdAdvisorxRouteImport.update({
+    id: '/use-case/$id/advisorx',
+    path: '/use-case/$id/advisorx',
+    getParentRoute: () => AppStudioRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -256,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/studio/use-case/$id/data-readiness': typeof AppStudioUseCaseIdDataReadinessRoute
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
@@ -292,6 +300,7 @@ export interface FileRoutesByTo {
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/studio/use-case/$id/data-readiness': typeof AppStudioUseCaseIdDataReadinessRoute
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
@@ -330,6 +339,7 @@ export interface FileRoutesById {
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  '/_app/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/_app/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/_app/studio/use-case/$id/data-readiness': typeof AppStudioUseCaseIdDataReadinessRoute
   '/_app/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
@@ -368,6 +378,7 @@ export interface FileRouteTypes {
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
+    | '/studio/use-case/$id/advisorx'
     | '/studio/use-case/$id/blueprint'
     | '/studio/use-case/$id/data-readiness'
     | '/studio/use-case/$id/feasibility'
@@ -404,6 +415,7 @@ export interface FileRouteTypes {
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
+    | '/studio/use-case/$id/advisorx'
     | '/studio/use-case/$id/blueprint'
     | '/studio/use-case/$id/data-readiness'
     | '/studio/use-case/$id/feasibility'
@@ -441,6 +453,7 @@ export interface FileRouteTypes {
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
+    | '/_app/studio/use-case/$id/advisorx'
     | '/_app/studio/use-case/$id/blueprint'
     | '/_app/studio/use-case/$id/data-readiness'
     | '/_app/studio/use-case/$id/feasibility'
@@ -706,10 +719,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudioUseCaseIdBlueprintRouteImport
       parentRoute: typeof AppStudioRoute
     }
+    '/_app/studio/use-case/$id/advisorx': {
+      id: '/_app/studio/use-case/$id/advisorx'
+      path: '/use-case/$id/advisorx'
+      fullPath: '/studio/use-case/$id/advisorx'
+      preLoaderRoute: typeof AppStudioUseCaseIdAdvisorxRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
   }
 }
 
 interface AppStudioRouteChildren {
+  AppStudioUseCaseIdAdvisorxRoute: typeof AppStudioUseCaseIdAdvisorxRoute
   AppStudioUseCaseIdBlueprintRoute: typeof AppStudioUseCaseIdBlueprintRoute
   AppStudioUseCaseIdDataReadinessRoute: typeof AppStudioUseCaseIdDataReadinessRoute
   AppStudioUseCaseIdFeasibilityRoute: typeof AppStudioUseCaseIdFeasibilityRoute
@@ -717,6 +738,7 @@ interface AppStudioRouteChildren {
 }
 
 const AppStudioRouteChildren: AppStudioRouteChildren = {
+  AppStudioUseCaseIdAdvisorxRoute: AppStudioUseCaseIdAdvisorxRoute,
   AppStudioUseCaseIdBlueprintRoute: AppStudioUseCaseIdBlueprintRoute,
   AppStudioUseCaseIdDataReadinessRoute: AppStudioUseCaseIdDataReadinessRoute,
   AppStudioUseCaseIdFeasibilityRoute: AppStudioUseCaseIdFeasibilityRoute,
