@@ -238,22 +238,48 @@ function UseCaseDetailPage() {
     const payload = {
       use_case_id: c.id,
       title: c.title,
+      slug: c.slug,
+      industry: industries[0] ?? null,
+      business_function: businessFunctions[0] ?? null,
+      ai_type: capabilities[0] ?? null,
+      value_potential: c.value_potential ?? null,
+      complexity_level: c.complexity ?? null,
       risk_level: c.risk_level ?? null,
+      risk_classification: c.risk_level ?? null,
       governance_required: !!c.governance_required,
       privacy_review_required: !!c.privacy_review_required,
       cyber_review_required: !!c.cyber_review_required,
       assurance_review_required: !!c.assurance_review_required,
+      governance_notes: c.governance_notes ?? null,
+      cybersecurity_notes: c.cybersecurity_notes ?? null,
+      privacy_notes: c.privacy_notes ?? null,
       recommended_platforms: platforms,
+      data_required: c.data_required ?? null,
+      kpis: Array.isArray(c.kpis) ? c.kpis : [],
     };
     void logIntegrationEvent({
       sourceModule: "usecasex",
       targetModule: "cyberx_c3g",
       eventType: "governance_review_requested",
       useCaseId: c.id,
-      payload: { object_type: "use_case", object_id: c.id, ...payload },
+      payload: {
+        object_type: "use_case",
+        object_id: c.id,
+        status: "pending",
+        ...payload,
+      },
     });
-    handleNav("send_to_cyberx_governance_review", `/cyberx/c3g/intake${qs}`, "cyberx_c3g");
+    trackCTAEvent("send_to_cyberx_governance", { use_case_id: c.id, slug: c.slug });
+    void logCtaEvent({
+      cta: "send_to_cyberx_governance",
+      useCaseId: c.id,
+      targetRoute: `/cyberx/c3g/intake${qs}`,
+      targetPlatform: "cyberx_c3g",
+      sourcePage: "use_case_detail",
+    });
+    navigate({ to: `/cyberx/c3g/intake${qs}` as any });
   };
+
 
   const handleSarpi = () => {
     const payload = {
