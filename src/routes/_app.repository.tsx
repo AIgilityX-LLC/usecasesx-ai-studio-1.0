@@ -11,6 +11,11 @@ import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { PresetBar } from "@/components/usecasex/PresetBar";
 import { CompareTray } from "@/components/usecasex/CompareTray";
 import { track } from "@/lib/usecasex.tracking";
+import { AddToStudioBoardDialog } from "@/components/AddToStudioBoardDialog";
+import { usePlan } from "@/hooks/usePlan";
+import { toast } from "sonner";
+import type { UseCaseCardData } from "@/components/UseCaseCard";
+import { Link } from "@tanstack/react-router";
 
 const sortValues = ["relevant", "value", "complexity", "risk", "ttv", "newest"] as const;
 type SortKey = (typeof sortValues)[number];
@@ -91,6 +96,25 @@ function Page() {
   const navigate = Route.useNavigate();
   const [q, setQ] = useState(search.q ?? "");
   const [leadOpen, setLeadOpen] = useState(false);
+  const [boardPattern, setBoardPattern] = useState<UseCaseCardData | null>(null);
+  const plan = usePlan();
+  const isLite = !plan.loading && plan.isAuthed && !plan.isPro && !plan.isAdmin;
+
+  const handleAddToBoard = (c: UseCaseCardData) => {
+    if (!plan.isAuthed) {
+      toast.message("Sign in to add patterns to a Studio Board.");
+      return;
+    }
+    if (isLite && c.visibility === "pro") {
+      toast.message("This pattern is part of Pro / Enterprise.", {
+        description: "Upgrade to unlock all premium AI use case patterns.",
+        action: { label: "Upgrade", onClick: () => window.location.assign("/pro") },
+      });
+      return;
+    }
+    track("cta_clicked", { cta: "add_to_studio_board", use_case_id: c.id });
+    setBoardPattern(c);
+  };
 
   const effectiveIndustries = useMemo(() => {
     if (search.industries && search.industries.length) return search.industries;
@@ -290,22 +314,45 @@ function Page() {
               <CardSkeleton count={6} />
             ) : sorted.length === 0 ? (
               <EmptyState
-                title="No matching use cases found."
-                description="We can build a custom AI use case pack for your industry and objectives."
+                title="Your AI use case library is ready."
+                description="Start by exploring patterns or creating your first AI Use Case Studio board."
                 action={
-                  <button
-                    onClick={openCustomRequest}
-                    className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-sm hover:brightness-110"
-                  >
-                    Request a custom AI use case pack →
-                  </button>
+                  <div className="flex flex-wrap items-center justify-center gap-3">
+                    <button
+                      onClick={clearAll}
+                      className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-sm hover:brightness-110"
+                    >
+                      Explore patterns
+                    </button>
+                    <Link
+                      to="/ai-use-case-studio"
+                      className="rounded-md border border-border bg-card px-5 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
+                    >
+                      Open AI Use Case Studio →
+                    </Link>
+                    <button
+                      onClick={openCustomRequest}
+                      className="rounded-md border border-border bg-card px-5 py-2.5 text-sm font-bold text-muted-foreground hover:bg-secondary"
+                    >
+                      Request a custom pack
+                    </button>
+                  </div>
                 }
               />
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {sorted.map((c) => (
-                  <UseCaseCard key={c.id} c={c as Parameters<typeof UseCaseCard>[0]["c"]} />
-                ))}
+                {sorted.map((c) => {
+                  const cd = c as UseCaseCardData;
+                  const locked = isLite && cd.visibility === "pro";
+                  return (
+                    <UseCaseCard
+                      key={cd.id}
+                      c={cd}
+                      onAddToBoard={handleAddToBoard}
+                      locked={locked}
+                    />
+                  );
+                })}
               </div>
             )}
           </div>
@@ -321,6 +368,11 @@ function Page() {
         sourcePage="usecasex-explore"
       />
       <CompareTray />
+      <AddToStudioBoardDialog
+        open={!!boardPattern}
+        onOpenChange={(o) => { if (!o) setBoardPattern(null); }}
+        pattern={boardPattern}
+      />
     </>
   );
 }

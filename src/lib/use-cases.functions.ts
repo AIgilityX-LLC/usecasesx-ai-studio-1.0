@@ -30,7 +30,7 @@ const ListInput = z.object({
 
 const SELECT = `id, slug, title, summary, organization, organization_type, region,
   maturity, maturity_level, maturity_score, impact_score,
-  value_potential, complexity, risk_level, time_to_value,
+  value_potential, complexity, risk_level, time_to_value, visibility,
   is_featured, show_on_landing, display_order, published_at,
   use_case_industries ( industries ( slug, name ) ),
   use_case_capabilities ( ai_capabilities ( slug, name ) ),
