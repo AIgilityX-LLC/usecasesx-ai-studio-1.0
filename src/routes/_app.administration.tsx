@@ -31,6 +31,10 @@ import {
 import {
   Eye, Pencil, Copy, Send, Archive, CheckCircle2, XCircle, Plus, Filter, Search,
 } from "lucide-react";
+import {
+  PatternsAdminTab, CategoriesAdminTab, OrganizationsAdminTab,
+  StudioTemplatesAdminTab, IntegrationsAdminTab, ReportTemplatesAdminTab,
+} from "@/components/admin/StudioAdminTabs";
 
 const ADMIN_ROLES = ["super_admin", "ai_hub_admin", "usecasex_admin", "content_manager", "reviewer"] as const;
 
