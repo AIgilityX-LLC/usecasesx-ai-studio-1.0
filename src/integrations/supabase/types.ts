@@ -410,10 +410,12 @@ export type Database = {
           industry: string | null
           main_ai_interest: string | null
           organization: string | null
+          plan_type: string
           profile_completed: boolean
           role: string | null
           updated_at: string
           user_id: string
+          user_role: string
         }
         Insert: {
           country?: string | null
@@ -424,10 +426,12 @@ export type Database = {
           industry?: string | null
           main_ai_interest?: string | null
           organization?: string | null
+          plan_type?: string
           profile_completed?: boolean
           role?: string | null
           updated_at?: string
           user_id: string
+          user_role?: string
         }
         Update: {
           country?: string | null
@@ -438,10 +442,12 @@ export type Database = {
           industry?: string | null
           main_ai_interest?: string | null
           organization?: string | null
+          plan_type?: string
           profile_completed?: boolean
           role?: string | null
           updated_at?: string
           user_id?: string
+          user_role?: string
         }
         Relationships: []
       }
