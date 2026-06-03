@@ -39,6 +39,10 @@ export interface LeadCaptureProps {
   title?: string;
   description?: string;
   sourceUseCase?: string;
+  /** UUID of the source use case (for Supabase relations). */
+  sourceUseCaseId?: string;
+  /** Optional title used by the Lite PDF preview. */
+  sourceUseCaseTitle?: string;
   sourcePage?: string;
   /** Pre-fill the interest area dropdown. */
   defaultInterestArea?: InterestArea;
