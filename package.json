@@ -4,7 +4,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "clean": "node scripts/clean-dev.mjs",
+    "clean": "node scripts/clean-dev.mjs --full",
     "verify:routes": "node scripts/verify-route-tree.mjs",
     "dev": "node scripts/clean-dev.mjs && vite dev",
     "build": "node scripts/verify-route-tree.mjs && vite build",

@@ -9,6 +9,7 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const full = process.argv.includes("--full");
 
 const targets = [
   "node_modules/.vite",
@@ -16,7 +17,10 @@ const targets = [
   ".nitro",
   ".output",
   ".tanstack",
-  "src/routeTree.gen.ts",
+  // routeTree.gen.ts is only wiped on `--full` (explicit `bun run clean`),
+  // never on plain `dev` — deleting it on every boot races the router plugin
+  // and leaves Vite unable to resolve src/router.tsx's import.
+  ...(full ? ["src/routeTree.gen.ts"] : []),
 ];
 
 for (const rel of targets) {
@@ -26,4 +30,4 @@ for (const rel of targets) {
     console.log(`  cleaned ${rel}`);
   }
 }
-console.log("✓ caches cleared — route tree will regenerate on next dev/build");
+console.log("✓ caches cleared");
