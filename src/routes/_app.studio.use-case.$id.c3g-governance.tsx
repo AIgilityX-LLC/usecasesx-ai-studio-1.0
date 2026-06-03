@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,7 +19,7 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/c3g-governance")({
-  component: C3GGovernancePage,
+  component: () => (<RequirePlan min="pro" feature="C3G™ governance"><C3GGovernancePage /></RequirePlan>),
 });
 
 const RISK_OPTIONS = [

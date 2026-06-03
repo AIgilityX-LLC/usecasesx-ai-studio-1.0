@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Gauge, TrendingUp, Activity, Target, Plus, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/sarpi")({
-  component: SarpiPage,
+  component: () => (<RequirePlan min="pro" feature="SARPI™ assessment"><SarpiPage /></RequirePlan>),
 });
 
 const CARDS = [

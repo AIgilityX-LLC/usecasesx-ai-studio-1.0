@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,7 +19,7 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/advisorx")({
-  component: AdvisorXPage,
+  component: () => (<RequirePlan min="pro" feature="AdvisorX™"><AdvisorXPage /></RequirePlan>),
 });
 
 type AdvisorKey = "strategy" | "data" | "governance" | "roi" | "boardroom";
