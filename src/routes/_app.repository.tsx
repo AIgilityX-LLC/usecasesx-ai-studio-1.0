@@ -11,6 +11,11 @@ import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { PresetBar } from "@/components/usecasex/PresetBar";
 import { CompareTray } from "@/components/usecasex/CompareTray";
 import { track } from "@/lib/usecasex.tracking";
+import { AddToStudioBoardDialog } from "@/components/AddToStudioBoardDialog";
+import { usePlan } from "@/hooks/usePlan";
+import { toast } from "sonner";
+import type { UseCaseCardData } from "@/components/UseCaseCard";
+import { Link } from "@tanstack/react-router";
 
 const sortValues = ["relevant", "value", "complexity", "risk", "ttv", "newest"] as const;
 type SortKey = (typeof sortValues)[number];
