@@ -314,22 +314,45 @@ function Page() {
               <CardSkeleton count={6} />
             ) : sorted.length === 0 ? (
               <EmptyState
-                title="No matching use cases found."
-                description="We can build a custom AI use case pack for your industry and objectives."
+                title="Your AI use case library is ready."
+                description="Start by exploring patterns or creating your first AI Use Case Studio board."
                 action={
-                  <button
-                    onClick={openCustomRequest}
-                    className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-sm hover:brightness-110"
-                  >
-                    Request a custom AI use case pack →
-                  </button>
+                  <div className="flex flex-wrap items-center justify-center gap-3">
+                    <button
+                      onClick={clearAll}
+                      className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-sm hover:brightness-110"
+                    >
+                      Explore patterns
+                    </button>
+                    <Link
+                      to="/ai-use-case-studio"
+                      className="rounded-md border border-border bg-card px-5 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
+                    >
+                      Open AI Use Case Studio →
+                    </Link>
+                    <button
+                      onClick={openCustomRequest}
+                      className="rounded-md border border-border bg-card px-5 py-2.5 text-sm font-bold text-muted-foreground hover:bg-secondary"
+                    >
+                      Request a custom pack
+                    </button>
+                  </div>
                 }
               />
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {sorted.map((c) => (
-                  <UseCaseCard key={c.id} c={c as Parameters<typeof UseCaseCard>[0]["c"]} />
-                ))}
+                {sorted.map((c) => {
+                  const cd = c as UseCaseCardData;
+                  const locked = isLite && cd.visibility === "pro";
+                  return (
+                    <UseCaseCard
+                      key={cd.id}
+                      c={cd}
+                      onAddToBoard={handleAddToBoard}
+                      locked={locked}
+                    />
+                  );
+                })}
               </div>
             )}
           </div>
