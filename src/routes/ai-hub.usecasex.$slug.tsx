@@ -85,7 +85,7 @@ async function logIntegrationEvent(input: {
       target_module: input.targetModule,
       event_type: input.eventType,
       use_case_id: input.useCaseId,
-      payload: input.payload,
+      payload: input.payload as any,
     });
   } catch {
     /* non-blocking */
