@@ -229,6 +229,7 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
         consent: parsed.data.consent,
         triggerCase: trigger,
         sourceUseCase: sourceUseCase ?? null,
+        sourceUseCaseId: sourceUseCaseId ?? null,
         sourcePage:
           sourcePage ?? (typeof window !== "undefined" ? window.location.pathname : null),
       };
@@ -242,7 +243,7 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
 
       // Trigger-specific post-submit behavior.
       if (trigger === "lite-pdf") {
-        triggerLitePdfDownload(sourceUseCase ?? "usecasex");
+        triggerLitePdfDownload(sourceUseCaseTitle ?? sourceUseCase ?? "usecasex");
       }
 
       setDone(true);
