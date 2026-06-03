@@ -11,7 +11,7 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/ai-hub/usecasex/compare")({
   head: () => ({
     meta: [
-      { title: "Compare AI Use Cases — UseCaseX™" },
+      { title: "Compare AI Use Cases — UseCasesX™" },
       { name: "description", content: "Side-by-side comparison of selected AI use cases across maturity, impact, risk, and implementation steps." },
     ],
   }),

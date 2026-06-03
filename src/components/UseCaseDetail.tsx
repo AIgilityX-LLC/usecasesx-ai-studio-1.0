@@ -93,7 +93,7 @@ export function UseCaseDetail({ c, onLeadCapture }: {
             </div>
           </div>
           <div className="rounded-xl border border-primary/30 bg-primary/5 p-5">
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">UseCaseX Pro</div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">UseCasesX Pro</div>
             <h3 className="mt-2 text-base font-bold text-foreground">Score & shortlist this use case</h3>
             <p className="mt-1 text-sm text-muted-foreground">Save it to your workspace, score it with the AIgilityX engine, and add it to your AI Opportunity Portfolio.</p>
             <Link to="/ai-hub/usecasex/pro" className="mt-4 inline-flex w-full justify-center rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-110">

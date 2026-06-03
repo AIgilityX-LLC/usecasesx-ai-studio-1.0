@@ -1,4 +1,4 @@
-// Mock data layer for UseCaseX Explore.
+// Mock data layer for UseCasesX Explore.
 // Replace with Supabase-backed createServerFn later.
 
 export type Level = "Low" | "Medium" | "High";

@@ -1,5 +1,5 @@
 /**
- * UseCaseX™ Supabase service layer.
+ * UseCasesX™ Supabase service layer.
  *
  * Thin, typed wrappers around the auto-generated browser Supabase client
  * (`@/integrations/supabase/client`). All functions throw on Supabase errors

@@ -28,7 +28,7 @@ const PRIORITIES: Priority[] = ["Low", "Medium", "High", "Strategic"];
 export const Route = createFileRoute("/ai-hub/usecasex/saved")({
   head: () => ({
     meta: [
-      { title: "Saved Use Cases — UseCaseX™ Pro" },
+      { title: "Saved Use Cases — UseCasesX™ Pro" },
       { name: "description", content: "Your shortlisted AI use cases with notes, priorities, scoring and portfolio assignment." },
     ],
   }),

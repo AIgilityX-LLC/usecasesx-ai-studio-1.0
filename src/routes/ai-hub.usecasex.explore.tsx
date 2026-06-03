@@ -74,7 +74,7 @@ function mapSort(s: SortKey | undefined): "recent" | "impact" | "maturity" | "fe
 export const Route = createFileRoute("/ai-hub/usecasex/explore")({
   head: () => ({
     meta: [
-      { title: "Explore 1000+ AI Use Cases — UseCaseX™" },
+      { title: "Explore 1000+ AI Use Cases — UseCasesX™" },
       { name: "description", content: "Filter AI, GenAI, Agentic AI and automation use cases by industry, function, value, complexity, risk and readiness." },
     ],
   }),

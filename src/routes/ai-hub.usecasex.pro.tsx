@@ -6,7 +6,7 @@ import { trackCTAEvent } from "@/lib/usecasex.tracking";
 export const Route = createFileRoute("/ai-hub/usecasex/pro")({
   head: () => ({
     meta: [
-      { title: "UseCaseX™ Pro — Free with Registration" },
+      { title: "UseCasesX™ Pro — Free with Registration" },
       { name: "description", content: "Build Your AI Opportunity Portfolio. Save, score, prioritize, and report AI use cases — free with registration." },
     ],
   }),
@@ -97,7 +97,7 @@ function ProPage() {
         <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr]">
           {/* Left */}
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">UseCaseX™ Pro · Free with registration</div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">UseCasesX™ Pro · Free with registration</div>
             <h1 className="mt-3 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
               Build Your <span className="text-primary">AI Opportunity Portfolio</span>
             </h1>
@@ -120,7 +120,7 @@ function ProPage() {
             </div>
 
             <p className="mt-6 text-xs text-muted-foreground">
-              UseCaseX Pro is free with registration. By creating an account you agree to our terms and privacy policy.
+              UseCasesX Pro is free with registration. By creating an account you agree to our terms and privacy policy.
             </p>
           </div>
 

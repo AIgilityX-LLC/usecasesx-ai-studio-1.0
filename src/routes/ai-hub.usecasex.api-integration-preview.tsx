@@ -6,11 +6,11 @@ import { trackCTAEvent } from "@/lib/usecasex.tracking";
 export const Route = createFileRoute("/ai-hub/usecasex/api-integration-preview")({
   head: () => ({
     meta: [
-      { title: "UseCaseX™ API Integration Preview — AIgilityX Ecosystem" },
+      { title: "UseCasesX™ API Integration Preview — AIgilityX Ecosystem" },
       {
         name: "description",
         content:
-          "One independent UseCaseX repository. API-ready integrations for SARPI, CyberX C3G, AdvisorX, FlowX, PrivacyX, and AssureX.",
+          "One independent UseCasesX repository. API-ready integrations for SARPI, CyberX C3G, AdvisorX, FlowX, PrivacyX, and AssureX.",
       },
     ],
   }),
@@ -70,12 +70,12 @@ const PLATFORMS = [
 
 const PRINCIPLES = [
   {
-    t: "UseCaseX remains independent",
+    t: "UseCasesX remains independent",
     d: "A single source of truth for AI opportunity intelligence — owned, versioned, and governed centrally.",
   },
   {
     t: "Platforms consume via APIs",
-    d: "SARPI, CyberX, AdvisorX, FlowX, PrivacyX, and AssureX read UseCaseX intelligence on demand — no forks, no copies.",
+    d: "SARPI, CyberX, AdvisorX, FlowX, PrivacyX, and AssureX read UseCasesX intelligence on demand — no forks, no copies.",
   },
   {
     t: "No duplicate repositories",
@@ -87,7 +87,7 @@ const PRINCIPLES = [
   },
   {
     t: "Central repository, distributed usage",
-    d: "Write once in UseCaseX. Use everywhere across the AIgilityX ecosystem.",
+    d: "Write once in UseCasesX. Use everywhere across the AIgilityX ecosystem.",
   },
 ];
 
@@ -110,7 +110,7 @@ const ENDPOINTS: { method: "GET" | "POST"; path: string; purpose: string }[] = [
   {
     method: "POST",
     path: "/api/usecasex/integration-events",
-    purpose: "Notify UseCaseX of downstream events (scored, governed, validated, deployed).",
+    purpose: "Notify UseCasesX of downstream events (scored, governed, validated, deployed).",
   },
 ];
 
@@ -139,10 +139,10 @@ function ApiIntegrationPreview() {
         <div className="relative mx-auto max-w-6xl px-6 py-20 md:py-28">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-3 py-1 text-xs uppercase tracking-widest text-muted-foreground backdrop-blur">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            UseCaseX™ · API Integration Preview
+            UseCasesX™ · API Integration Preview
           </div>
           <h1 className="max-w-4xl text-balance text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
-            UseCaseX Powers AI Opportunity Intelligence Across the AIgilityX Ecosystem
+            UseCasesX Powers AI Opportunity Intelligence Across the AIgilityX Ecosystem
           </h1>
           <p className="mt-6 max-w-3xl text-pretty text-lg text-muted-foreground md:text-xl">
             One independent repository. Multiple platform extensions. API-ready for SARPI, CyberX C3G, AdvisorX,
@@ -160,7 +160,7 @@ function ApiIntegrationPreview() {
               to="/ai-hub/usecasex"
               className="inline-flex items-center justify-center rounded-md border border-border bg-card/50 px-5 py-3 text-sm font-medium text-foreground/90 backdrop-blur transition hover:bg-card"
             >
-              Back to UseCaseX
+              Back to UseCasesX
             </Link>
           </div>
         </div>
@@ -195,7 +195,7 @@ function ApiIntegrationPreview() {
           <div className="grid items-center gap-8 md:grid-cols-[1fr_auto_1fr]">
             <div className="rounded-2xl border border-primary/40 bg-gradient-to-br from-primary/15 to-transparent p-8 text-center">
               <div className="text-xs uppercase tracking-widest text-primary">Source of truth</div>
-              <div className="mt-2 text-2xl font-semibold">UseCaseX™</div>
+              <div className="mt-2 text-2xl font-semibold">UseCasesX™</div>
               <p className="mt-3 text-sm text-muted-foreground">
                 Independent AI use case repository · Pro scoring · Portfolios · Reports
               </p>
@@ -255,7 +255,7 @@ function ApiIntegrationPreview() {
               Endpoint preview
             </h2>
             <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-              A representative slice of the UseCaseX integration API. Final contracts are issued during the
+              A representative slice of the UseCasesX integration API. Final contracts are issued during the
               Integration Architecture Review.
             </p>
           </div>
@@ -290,7 +290,7 @@ function ApiIntegrationPreview() {
       <section className="mx-auto max-w-6xl px-6 py-20">
         <div className="relative overflow-hidden rounded-2xl border border-primary/40 bg-gradient-to-br from-primary/15 via-card to-card p-10 md:p-14">
           <h2 className="max-w-3xl text-3xl font-semibold tracking-tight md:text-4xl">
-            Ready to plug UseCaseX into your AIgilityX stack?
+            Ready to plug UseCasesX into your AIgilityX stack?
           </h2>
           <p className="mt-4 max-w-2xl text-muted-foreground">
             Request an Integration Architecture Review and we'll map the right APIs, governance touchpoints, and

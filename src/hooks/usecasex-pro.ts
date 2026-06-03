@@ -1,5 +1,5 @@
 /**
- * Supabase-backed UseCaseX™ Pro hook.
+ * Supabase-backed UseCasesX™ Pro hook.
  *
  * Drop-in replacement for the legacy local-storage `useUseCaseXStore`.
  * Same slug-keyed surface, but persists every change to Supabase tables:

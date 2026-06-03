@@ -52,7 +52,7 @@ export function ProDashboard({ profile }: Props) {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
-            UseCaseX™ Pro · Dashboard
+            UseCasesX™ Pro · Dashboard
           </div>
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Welcome{profile?.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""}.

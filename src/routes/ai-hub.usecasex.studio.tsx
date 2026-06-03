@@ -20,7 +20,7 @@ import { Loader2, Sparkles, Save, Trash2, Wand2, Lightbulb } from "lucide-react"
 export const Route = createFileRoute("/ai-hub/usecasex/studio")({
   head: () => ({
     meta: [
-      { title: "Use Case Development Studio — UseCaseX™ Pro" },
+      { title: "Use Case Development Studio — UseCasesX™ Pro" },
       { name: "description", content: "Research and draft AI use cases for your organization using OpenAI, ConversX, or Gemini — and save them to your Pro workspace." },
     ],
   }),
@@ -112,7 +112,7 @@ function StudioPage() {
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-3 py-1 text-xs uppercase tracking-widest text-muted-foreground">
             <Sparkles className="h-3 w-3 text-primary" />
-            UseCaseX™ Pro · Development Studio
+            UseCasesX™ Pro · Development Studio
           </div>
           <h1 className="mt-4 text-3xl md:text-5xl font-semibold tracking-tight">
             Research and draft AI use cases for your organization

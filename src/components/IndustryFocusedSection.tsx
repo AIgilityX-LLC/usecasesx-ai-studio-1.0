@@ -40,7 +40,7 @@ export function IndustryFocusedSection({ industries }: { industries?: { slug: st
               commercial, industrial, public-sector, and service industries.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-white/65">
-              UseCaseX helps leaders discover practical AI opportunities across multiple
+              UseCasesX helps leaders discover practical AI opportunities across multiple
               industries — from predictive insights and automation to governance, compliance,
               workflow intelligence, and executive decision support.
             </p>

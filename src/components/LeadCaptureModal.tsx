@@ -280,7 +280,7 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
         ) : (
           <form onSubmit={onSubmit} noValidate className="px-7 py-7 sm:px-8">
             <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-              UseCaseX™ · AIgilityX
+              UseCasesX™ · AIgilityX
             </div>
             <h3 id="lead-capture-title" className="text-xl font-bold text-foreground sm:text-2xl">
               {title}
@@ -411,7 +411,7 @@ function SuccessView({
 function triggerLitePdfDownload(label: string) {
   if (typeof window === "undefined") return;
   const safe = label.replace(/[<>&]/g, "");
-  const html = `<!doctype html><html><head><meta charset="utf-8"><title>UseCaseX Lite — ${safe}</title>
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>UseCasesX Lite — ${safe}</title>
 <style>
   @page { size: A4; margin: 24mm; }
   body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #0f172a; }
@@ -427,7 +427,7 @@ function triggerLitePdfDownload(label: string) {
 </style></head>
 <body>
   <header>
-    <div class="eyebrow">UseCaseX™ · AIgilityX</div>
+    <div class="eyebrow">UseCasesX™ · AIgilityX</div>
     <h1>Lite Report — ${safe}</h1>
     <div class="muted">Generated ${new Date().toLocaleString()}</div>
   </header>
@@ -435,7 +435,7 @@ function triggerLitePdfDownload(label: string) {
   <p>This Lite report summarizes the AI use case <strong>${safe}</strong>, including business value, recommended platforms, governance considerations, and indicative ROI.</p>
   <h2>Next steps</h2>
   <p>An AIgilityX advisor will follow up with the full report tailored to your context, including readiness assessment and roadmap.</p>
-  <p class="muted">For the full version, request an AI Strategy Session from your UseCaseX dashboard.</p>
+  <p class="muted">For the full version, request an AI Strategy Session from your UseCasesX dashboard.</p>
   <div class="actions">
     <button onclick="window.print()">Print / Save as PDF</button>
   </div>

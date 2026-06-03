@@ -30,9 +30,9 @@ const modulesQ = queryOptions({
 export const Route = createFileRoute("/ai-hub/usecasex/")({
   head: () => ({
     meta: [
-      { title: "UseCaseX™ — Explore 1000+ AI Use Cases for Your Industry" },
+      { title: "UseCasesX™ — Explore 1000+ AI Use Cases for Your Industry" },
       { name: "description", content: "Discover practical AI, GenAI, Agentic AI and automation use cases across 18+ industries and 20+ business functions. Free Pro access. API-ready ecosystem." },
-      { property: "og:title", content: "UseCaseX™ — Global AI Use Cases Repository" },
+      { property: "og:title", content: "UseCasesX™ — Global AI Use Cases Repository" },
       { property: "og:description", content: "Built by AIgilityX — the Sovereign AI Ecosystems." },
     ],
   }),
@@ -101,7 +101,7 @@ function Page() {
       {/* 6. FREE vs PRO — LIGHT */}
       <section className="border-b border-border surface-light">
         <div className="mx-auto max-w-[1400px] px-6 py-20">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Two ways to use UseCaseX™</div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Two ways to use UseCasesX™</div>
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Free / Lite — or Pro (also free with registration)</h2>
           <div className="mt-8 grid gap-5 md:grid-cols-2">
             <Tier name="Free / Lite" tag="No login required" features={[
@@ -151,7 +151,7 @@ function Page() {
               <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[oklch(0.85_0.13_215)]">Sovereign AI Ecosystems</div>
               <h2 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">API-ready for the full AIgilityX platform.</h2>
               <p className="mt-2 text-white/70">
-                UseCaseX™ data flows into SARPI™, CyberX C3G™, AdvisorX™ and 10+ other platforms via a stable
+                UseCasesX™ data flows into SARPI™, CyberX C3G™, AdvisorX™ and 10+ other platforms via a stable
                 API + integration-event contract.
               </p>
             </div>
@@ -251,7 +251,7 @@ function HowItWorksSection() {
   return (
     <section className="border-b border-border surface-dark">
       <div className="mx-auto max-w-[1400px] px-6 py-20">
-        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[oklch(0.85_0.13_215)]">How UseCaseX™ Works</div>
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[oklch(0.85_0.13_215)]">How UseCasesX™ Works</div>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">From discovery to delivery — in six steps.</h2>
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {steps.map((s) => (
@@ -269,7 +269,7 @@ function HowItWorksSection() {
 
 function EcosystemJourneySection() {
   const journey = [
-    { p: "UseCaseX™", d: "brings people in." },
+    { p: "UseCasesX™", d: "brings people in." },
     { p: "AI Readiness", d: "tells them where they stand." },
     { p: "AI ROI Calculator", d: "shows the business value." },
     { p: "SARPI™", d: "tracks maturity and performance." },
@@ -288,7 +288,7 @@ function EcosystemJourneySection() {
             One sovereign ecosystem. Nine connected platforms.
           </h2>
           <p className="mt-3 text-white/70">
-            UseCaseX™ is the entry point. The rest of the AIgilityX ecosystem takes prioritized use cases all the
+            UseCasesX™ is the entry point. The rest of the AIgilityX ecosystem takes prioritized use cases all the
             way from readiness, to ROI, to governed delivery and assurance.
           </p>
         </div>
@@ -310,10 +310,10 @@ function EcosystemJourneySection() {
 
 function FAQSection() {
   const faqs = [
-    { q: "Is UseCaseX™ really free?", a: "Yes. The Lite tier is free with no login required — browse, search, filter and view every use case. The Pro tier is also free; it just requires a registration so we can save your workspace, scores and portfolios." },
+    { q: "Is UseCasesX™ really free?", a: "Yes. The Lite tier is free with no login required — browse, search, filter and view every use case. The Pro tier is also free; it just requires a registration so we can save your workspace, scores and portfolios." },
     { q: "Where do the use cases come from?", a: "Each use case is curated by the AIgilityX team. We review every entry for business clarity, AI fit, delivery realism and sovereign-AI considerations — risk, governance and data residency." },
-    { q: "Can I use UseCaseX™ data inside our enterprise tools?", a: "Yes. UseCaseX™ exposes a stable API and integration-event contract that feeds the broader AIgilityX ecosystem — SARPI™, CyberX C3G™, AdvisorX™, FlowX™ and more." },
-    { q: "Who is UseCaseX™ for?", a: "Executives, public sector leaders, CIOs/CDOs, transformation teams and AI practitioners in regulated industries who need a sovereignty-aware AI opportunity backlog they can act on." },
+    { q: "Can I use UseCasesX™ data inside our enterprise tools?", a: "Yes. UseCasesX™ exposes a stable API and integration-event contract that feeds the broader AIgilityX ecosystem — SARPI™, CyberX C3G™, AdvisorX™, FlowX™ and more." },
+    { q: "Who is UseCasesX™ for?", a: "Executives, public sector leaders, CIOs/CDOs, transformation teams and AI practitioners in regulated industries who need a sovereignty-aware AI opportunity backlog they can act on." },
     { q: "What is an AI Opportunity Portfolio?", a: "A Pro-only feature where you bundle scored use cases into a portfolio, prioritize them, and generate an executive-grade report for funding and delivery decisions." },
     { q: "How do I get started?", a: "Click Explore AI Use Cases to browse the repository, or Create Free Pro Account to unlock saving, scoring and portfolios." },
   ];

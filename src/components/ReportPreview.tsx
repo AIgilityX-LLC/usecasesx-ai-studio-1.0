@@ -6,7 +6,7 @@ export function ReportPreview({ title, description, kind, onGenerate }: {
     <div className="overflow-hidden rounded-xl border border-border bg-card shadow-[var(--shadow-card)]">
       <div className="aspect-[4/3] bg-gradient-to-br from-secondary to-background p-5">
         <div className="flex h-full flex-col rounded-md border border-border bg-background p-4">
-          <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-primary">AIgilityX · UseCaseX™</div>
+          <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-primary">AIgilityX · UseCasesX™</div>
           <div className="mt-2 text-sm font-bold leading-tight text-foreground">{title}</div>
           <div className="mt-3 space-y-1.5">
             {Array.from({ length: 5 }).map((_, i) => (

@@ -1,4 +1,4 @@
-// Supabase-backed admin store for UseCaseX™ catalogue authoring.
+// Supabase-backed admin store for UseCasesX™ catalogue authoring.
 // Public API preserved so existing admin UI continues to work.
 
 import { useCallback, useEffect, useState } from "react";

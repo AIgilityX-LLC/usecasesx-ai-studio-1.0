@@ -1,4 +1,4 @@
-// Client-side store for UseCaseX™ Pro saved use cases, scoring, and portfolios.
+// Client-side store for UseCasesX™ Pro saved use cases, scoring, and portfolios.
 // Persisted via localStorage. Mock-first; swap for Supabase-backed serverFn later
 // without changing the hook surface.
 
