@@ -96,6 +96,25 @@ function Page() {
   const navigate = Route.useNavigate();
   const [q, setQ] = useState(search.q ?? "");
   const [leadOpen, setLeadOpen] = useState(false);
+  const [boardPattern, setBoardPattern] = useState<UseCaseCardData | null>(null);
+  const plan = usePlan();
+  const isLite = !plan.loading && plan.isAuthed && !plan.isPro && !plan.isAdmin;
+
+  const handleAddToBoard = (c: UseCaseCardData) => {
+    if (!plan.isAuthed) {
+      toast.message("Sign in to add patterns to a Studio Board.");
+      return;
+    }
+    if (isLite && c.visibility === "pro") {
+      toast.message("This pattern is part of Pro / Enterprise.", {
+        description: "Upgrade to unlock all premium AI use case patterns.",
+        action: { label: "Upgrade", onClick: () => window.location.assign("/pro") },
+      });
+      return;
+    }
+    track("cta_clicked", { cta: "add_to_studio_board", use_case_id: c.id });
+    setBoardPattern(c);
+  };
 
   const effectiveIndustries = useMemo(() => {
     if (search.industries && search.industries.length) return search.industries;
