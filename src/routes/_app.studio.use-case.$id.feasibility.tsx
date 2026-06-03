@@ -137,7 +137,7 @@ function FeasibilityPage() {
         // Reconstruct rough per-question answers from pillar score (uniform fill).
         const restore = emptyAnswers();
         (Object.keys(restore) as PillarKey[]).forEach((k) => {
-          const s = (existing as Record<string, number | null>)[`${k}_score`];
+          const s = (existing as unknown as Record<string, number | null>)[`${k}_score`];
           if (typeof s === "number") {
             const perQ = Math.max(1, Math.min(5, Math.round(s / 20)));
             restore[k] = restore[k].map(() => perQ);
