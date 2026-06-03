@@ -19,6 +19,7 @@ import { Route as AiHubIndexRouteImport } from './routes/ai-hub.index'
 import { Route as CasesSlugRouteImport } from './routes/cases.$slug'
 import { Route as AiHubUsecasexRouteImport } from './routes/ai-hub.usecasex'
 import { Route as AiHubUsecasexIndexRouteImport } from './routes/ai-hub.usecasex.index'
+import { Route as CyberxC3gIntakeRouteImport } from './routes/cyberx.c3g.intake'
 import { Route as AiHubUsecasexStudioRouteImport } from './routes/ai-hub.usecasex.studio'
 import { Route as AiHubUsecasexSavedRouteImport } from './routes/ai-hub.usecasex.saved'
 import { Route as AiHubUsecasexReportsRouteImport } from './routes/ai-hub.usecasex.reports'
@@ -84,6 +85,11 @@ const AiHubUsecasexIndexRoute = AiHubUsecasexIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AiHubUsecasexRoute,
+} as any)
+const CyberxC3gIntakeRoute = CyberxC3gIntakeRouteImport.update({
+  id: '/cyberx/c3g/intake',
+  path: '/cyberx/c3g/intake',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AiHubUsecasexStudioRoute = AiHubUsecasexStudioRouteImport.update({
   id: '/studio',
@@ -187,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/ai-hub/usecasex/reports': typeof AiHubUsecasexReportsRoute
   '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
   '/ai-hub/usecasex/studio': typeof AiHubUsecasexStudioRoute
+  '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
@@ -212,6 +219,7 @@ export interface FileRoutesByTo {
   '/ai-hub/usecasex/reports': typeof AiHubUsecasexReportsRoute
   '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
   '/ai-hub/usecasex/studio': typeof AiHubUsecasexStudioRoute
+  '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/ai-hub/usecasex': typeof AiHubUsecasexIndexRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
@@ -240,6 +248,7 @@ export interface FileRoutesById {
   '/ai-hub/usecasex/reports': typeof AiHubUsecasexReportsRoute
   '/ai-hub/usecasex/saved': typeof AiHubUsecasexSavedRoute
   '/ai-hub/usecasex/studio': typeof AiHubUsecasexStudioRoute
+  '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/ai-hub/usecasex/': typeof AiHubUsecasexIndexRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
@@ -269,6 +278,7 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex/reports'
     | '/ai-hub/usecasex/saved'
     | '/ai-hub/usecasex/studio'
+    | '/cyberx/c3g/intake'
     | '/ai-hub/usecasex/'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
@@ -294,6 +304,7 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex/reports'
     | '/ai-hub/usecasex/saved'
     | '/ai-hub/usecasex/studio'
+    | '/cyberx/c3g/intake'
     | '/ai-hub/usecasex'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
@@ -321,6 +332,7 @@ export interface FileRouteTypes {
     | '/ai-hub/usecasex/reports'
     | '/ai-hub/usecasex/saved'
     | '/ai-hub/usecasex/studio'
+    | '/cyberx/c3g/intake'
     | '/ai-hub/usecasex/'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
@@ -335,6 +347,7 @@ export interface RootRouteChildren {
   SarpiRoute: typeof SarpiRoute
   SubmitRoute: typeof SubmitRoute
   CasesSlugRoute: typeof CasesSlugRoute
+  CyberxC3gIntakeRoute: typeof CyberxC3gIntakeRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
 }
@@ -410,6 +423,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/ai-hub/usecasex/'
       preLoaderRoute: typeof AiHubUsecasexIndexRouteImport
       parentRoute: typeof AiHubUsecasexRoute
+    }
+    '/cyberx/c3g/intake': {
+      id: '/cyberx/c3g/intake'
+      path: '/cyberx/c3g/intake'
+      fullPath: '/cyberx/c3g/intake'
+      preLoaderRoute: typeof CyberxC3gIntakeRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/ai-hub/usecasex/studio': {
       id: '/ai-hub/usecasex/studio'
@@ -590,6 +610,7 @@ const rootRouteChildren: RootRouteChildren = {
   SarpiRoute: SarpiRoute,
   SubmitRoute: SubmitRoute,
   CasesSlugRoute: CasesSlugRoute,
+  CyberxC3gIntakeRoute: CyberxC3gIntakeRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
   ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRouteWithChildren,
 }
