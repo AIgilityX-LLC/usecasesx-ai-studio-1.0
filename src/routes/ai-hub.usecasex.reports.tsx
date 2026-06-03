@@ -4,13 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { MOCK_USE_CASES, type MockUseCase } from "@/lib/usecasex.mock";
 import {
-  useUseCaseXStore,
   computeTotalScore,
   interpretScore,
   SCORE_LABELS,
   type ScoreDimensions,
   type Portfolio,
 } from "@/lib/usecasex.store";
+import { useUseCaseXPro } from "@/hooks/usecasex-pro";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,7 +63,7 @@ function ReportsPage() {
   const session = useSupabaseSession();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const store = useUseCaseXStore();
+  const store = useUseCaseXPro();
   const printRef = useRef<HTMLDivElement>(null);
 
   const [reportType, setReportType] = useState<ReportType>("AI Use Case Summary Report");
@@ -220,7 +220,21 @@ function ReportsPage() {
 
           <div className="flex flex-wrap gap-2">
             <Button
-              onClick={() => { setGenerated(true); trackCTAEvent("report_generated", { reportType, count: selectedItems.length }); }}
+              onClick={async () => {
+                setGenerated(true);
+                trackCTAEvent("report_generated", { reportType, count: selectedItems.length });
+                try {
+                  const { generateReportRecord } = await import("@/lib/usecasex.services");
+                  await generateReportRecord({
+                    title: `${reportType} — ${new Date().toLocaleDateString()}`,
+                    kind: reportType,
+                    useCaseCount: selectedItems.length,
+                    payload: { slugs: Array.from(selectedSlugs), portfolioId },
+                  });
+                } catch (e) {
+                  console.error("[generate-report]", e);
+                }
+              }}
               disabled={selectedItems.length === 0}
             >
               <FileText className="w-4 h-4 mr-1" /> Generate Report

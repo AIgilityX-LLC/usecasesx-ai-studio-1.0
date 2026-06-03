@@ -379,6 +379,10 @@ export type Database = {
           id: string
           name: string
           objective: string | null
+          portfolio_type: string
+          status: string
+          target_department: string | null
+          target_quarter: string | null
           updated_at: string
           user_id: string
         }
@@ -387,6 +391,10 @@ export type Database = {
           id?: string
           name: string
           objective?: string | null
+          portfolio_type?: string
+          status?: string
+          target_department?: string | null
+          target_quarter?: string | null
           updated_at?: string
           user_id: string
         }
@@ -395,6 +403,10 @@ export type Database = {
           id?: string
           name?: string
           objective?: string | null
+          portfolio_type?: string
+          status?: string
+          target_department?: string | null
+          target_quarter?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -410,10 +422,12 @@ export type Database = {
           industry: string | null
           main_ai_interest: string | null
           organization: string | null
+          plan_type: string
           profile_completed: boolean
           role: string | null
           updated_at: string
           user_id: string
+          user_role: string
         }
         Insert: {
           country?: string | null
@@ -424,10 +438,12 @@ export type Database = {
           industry?: string | null
           main_ai_interest?: string | null
           organization?: string | null
+          plan_type?: string
           profile_completed?: boolean
           role?: string | null
           updated_at?: string
           user_id: string
+          user_role?: string
         }
         Update: {
           country?: string | null
@@ -438,10 +454,12 @@ export type Database = {
           industry?: string | null
           main_ai_interest?: string | null
           organization?: string | null
+          plan_type?: string
           profile_completed?: boolean
           role?: string | null
           updated_at?: string
           user_id?: string
+          user_role?: string
         }
         Relationships: []
       }

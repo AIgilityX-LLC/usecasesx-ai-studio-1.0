@@ -3,7 +3,6 @@ import { useEffect, useMemo } from "react";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { MOCK_USE_CASES, type MockUseCase } from "@/lib/usecasex.mock";
 import {
-  useUseCaseXStore,
   computeTotalScore,
   interpretScore,
   defaultScore,
@@ -11,6 +10,7 @@ import {
   type Priority,
   type ScoreDimensions,
 } from "@/lib/usecasex.store";
+import { useUseCaseXPro } from "@/hooks/usecasex-pro";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/ai-hub/usecasex/saved")({
 function SavedPage() {
   const navigate = useNavigate();
   const session = useSupabaseSession();
-  const store = useUseCaseXStore();
+  const store = useUseCaseXPro();
 
   useEffect(() => {
     if (session === null) navigate({ to: "/ai-hub/usecasex/pro", replace: true });
@@ -50,7 +50,7 @@ function SavedPage() {
         const uc = MOCK_USE_CASES.find((u) => u.slug === entry.useCaseSlug);
         return uc ? { entry, uc } : null;
       })
-      .filter(Boolean) as { entry: ReturnType<typeof useUseCaseXStore>["saved"][number]; uc: MockUseCase }[];
+      .filter(Boolean) as { entry: ReturnType<typeof useUseCaseXPro>["saved"][number]; uc: MockUseCase }[];
   }, [store.saved]);
 
   if (!session) {
@@ -113,7 +113,7 @@ function SavedCard({
   note: string;
   priority: Priority;
   score?: ScoreDimensions;
-  store: ReturnType<typeof useUseCaseXStore>;
+  store: ReturnType<typeof useUseCaseXPro>;
 }) {
   const total = computeTotalScore(score);
   const interp = interpretScore(total);
@@ -302,7 +302,7 @@ function ScoreDialog({
   );
 }
 
-function AddToPortfolioDialog({ slug, store }: { slug: string; store: ReturnType<typeof useUseCaseXStore> }) {
+function AddToPortfolioDialog({ slug, store }: { slug: string; store: ReturnType<typeof useUseCaseXPro> }) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string>("");
 
