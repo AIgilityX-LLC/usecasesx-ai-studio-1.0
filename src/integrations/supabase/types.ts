@@ -1240,14 +1240,30 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "contributor" | "viewer"
+      app_role:
+        | "admin"
+        | "moderator"
+        | "contributor"
+        | "viewer"
+        | "super_admin"
+        | "ai_hub_admin"
+        | "usecasex_admin"
+        | "content_manager"
+        | "reviewer"
       maturity_stage:
         | "concept"
         | "prototype"
         | "pilot"
         | "production"
         | "scaled"
-      use_case_status: "draft" | "review" | "published" | "archived"
+      use_case_status:
+        | "draft"
+        | "review"
+        | "published"
+        | "archived"
+        | "submitted_for_review"
+        | "approved"
+        | "unpublished"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1375,9 +1391,27 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "contributor", "viewer"],
+      app_role: [
+        "admin",
+        "moderator",
+        "contributor",
+        "viewer",
+        "super_admin",
+        "ai_hub_admin",
+        "usecasex_admin",
+        "content_manager",
+        "reviewer",
+      ],
       maturity_stage: ["concept", "prototype", "pilot", "production", "scaled"],
-      use_case_status: ["draft", "review", "published", "archived"],
+      use_case_status: [
+        "draft",
+        "review",
+        "published",
+        "archived",
+        "submitted_for_review",
+        "approved",
+        "unpublished",
+      ],
     },
   },
 } as const
