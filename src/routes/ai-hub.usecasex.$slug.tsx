@@ -259,20 +259,42 @@ function UseCaseDetailPage() {
     const payload = {
       use_case_id: c.id,
       title: c.title,
-      maturity_level: c.maturity_level ?? c.maturity ?? null,
-      readiness_assessment_ready: true,
-      roi_calculation_ready: true,
+      slug: c.slug,
+      industry: industries[0] ?? null,
+      business_function: businessFunctions[0] ?? null,
+      ai_type: capabilities[0] ?? null,
       value_potential: c.value_potential ?? null,
       complexity_level: c.complexity ?? null,
+      risk_level: c.risk_level ?? null,
+      maturity_level: c.maturity_level ?? c.maturity ?? null,
+      time_to_value: c.time_to_value ?? null,
+      readiness_assessment_ready: true,
+      roi_calculation_ready: true,
+      kpis: Array.isArray(c.kpis) ? c.kpis : [],
+      roi_areas: Array.isArray(c.roi_areas) ? c.roi_areas : [],
+      recommended_platforms: platforms,
     };
     void logIntegrationEvent({
       sourceModule: "usecasex",
       targetModule: "sarpi",
       eventType: "readiness_tracking_requested",
       useCaseId: c.id,
-      payload: { object_type: "use_case", object_id: c.id, ...payload },
+      payload: {
+        object_type: "use_case",
+        object_id: c.id,
+        status: "pending",
+        ...payload,
+      },
     });
-    handleNav("send_to_sarpi_readiness_tracking", `/sarpi${qs}`, "sarpi");
+    trackCTAEvent("track_in_sarpi", { use_case_id: c.id, slug: c.slug });
+    void logCtaEvent({
+      cta: "track_in_sarpi",
+      useCaseId: c.id,
+      targetRoute: `/sarpi${qs}`,
+      targetPlatform: "sarpi",
+      sourcePage: "use_case_detail",
+    });
+    navigate({ to: `/sarpi${qs}` as any });
   };
 
   const relatedItems = (related.data?.cases ?? []).filter((r: any) => r.slug !== c.slug).slice(0, 3);
