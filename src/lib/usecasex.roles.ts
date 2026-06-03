@@ -1,7 +1,26 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export type AppRole = "admin" | "moderator" | "contributor" | "viewer";
+export type AppRole =
+  | "admin"
+  | "moderator"
+  | "contributor"
+  | "viewer"
+  | "super_admin"
+  | "ai_hub_admin"
+  | "usecasex_admin"
+  | "content_manager"
+  | "reviewer";
+
+export const ADMIN_TIER_ROLES: AppRole[] = [
+  "admin",
+  "moderator",
+  "super_admin",
+  "ai_hub_admin",
+  "usecasex_admin",
+  "content_manager",
+  "reviewer",
+];
 
 export interface RoleState {
   loading: boolean;
