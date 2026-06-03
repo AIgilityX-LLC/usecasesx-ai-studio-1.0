@@ -211,8 +211,8 @@ function BlueprintPage() {
       .eq("use_case_id", useCaseId)
       .maybeSingle();
     const { error } = existing
-      ? await supabase.from("blueprints").update(packed).eq("id", existing.id)
-      : await supabase.from("blueprints").insert({ use_case_id: useCaseId, ...packed });
+      ? await supabase.from("blueprints").update(packed as any).eq("id", existing.id)
+      : await supabase.from("blueprints").insert({ use_case_id: useCaseId, ...packed } as any);
     setSaving(false);
     if (error) {
       toast.error(error.message);
