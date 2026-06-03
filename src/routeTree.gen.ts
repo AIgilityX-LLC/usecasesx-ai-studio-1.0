@@ -33,6 +33,7 @@ import { Route as AppCompareRouteImport } from './routes/_app.compare'
 import { Route as AppBoardsRouteImport } from './routes/_app.boards'
 import { Route as AppBlueprintRouteImport } from './routes/_app.blueprint'
 import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integration'
+import { Route as AppAiUseCaseStudioRouteImport } from './routes/_app.ai-use-case-studio'
 import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
 import { Route as CyberxC3gIntakeRouteImport } from './routes/cyberx.c3g.intake'
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
@@ -159,6 +160,11 @@ const AppApiIntegrationRoute = AppApiIntegrationRouteImport.update({
   path: '/api-integration',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAiUseCaseStudioRoute = AppAiUseCaseStudioRouteImport.update({
+  id: '/ai-use-case-studio',
+  path: '/ai-use-case-studio',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdministrationRoute = AppAdministrationRouteImport.update({
   id: '/administration',
   path: '/administration',
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/sarpi': typeof SarpiRoute
   '/administration': typeof AppAdministrationRoute
+  '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
   '/boards': typeof AppBoardsRoute
@@ -230,6 +237,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/sarpi': typeof SarpiRoute
   '/administration': typeof AppAdministrationRoute
+  '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
   '/boards': typeof AppBoardsRoute
@@ -263,6 +271,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/sarpi': typeof SarpiRoute
   '/_app/administration': typeof AppAdministrationRoute
+  '/_app/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/_app/api-integration': typeof AppApiIntegrationRoute
   '/_app/blueprint': typeof AppBlueprintRoute
   '/_app/boards': typeof AppBoardsRoute
@@ -296,6 +305,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sarpi'
     | '/administration'
+    | '/ai-use-case-studio'
     | '/api-integration'
     | '/blueprint'
     | '/boards'
@@ -327,6 +337,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sarpi'
     | '/administration'
+    | '/ai-use-case-studio'
     | '/api-integration'
     | '/blueprint'
     | '/boards'
@@ -359,6 +370,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/sarpi'
     | '/_app/administration'
+    | '/_app/ai-use-case-studio'
     | '/_app/api-integration'
     | '/_app/blueprint'
     | '/_app/boards'
@@ -566,6 +578,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppApiIntegrationRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/ai-use-case-studio': {
+      id: '/_app/ai-use-case-studio'
+      path: '/ai-use-case-studio'
+      fullPath: '/ai-use-case-studio'
+      preLoaderRoute: typeof AppAiUseCaseStudioRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/administration': {
       id: '/_app/administration'
       path: '/administration'
@@ -613,6 +632,7 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppAdministrationRoute: typeof AppAdministrationRoute
+  AppAiUseCaseStudioRoute: typeof AppAiUseCaseStudioRoute
   AppApiIntegrationRoute: typeof AppApiIntegrationRoute
   AppBlueprintRoute: typeof AppBlueprintRoute
   AppBoardsRoute: typeof AppBoardsRoute
@@ -637,6 +657,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppAdministrationRoute: AppAdministrationRoute,
+  AppAiUseCaseStudioRoute: AppAiUseCaseStudioRoute,
   AppApiIntegrationRoute: AppApiIntegrationRoute,
   AppBlueprintRoute: AppBlueprintRoute,
   AppBoardsRoute: AppBoardsRoute,
@@ -688,13 +709,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
