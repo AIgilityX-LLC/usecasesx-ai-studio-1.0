@@ -44,7 +44,7 @@ export function TopNav() {
       const uid = sess.session?.user.id;
       setEmail(sess.session?.user.email ?? null);
       if (!uid) { setIsAdmin(false); return; }
-      const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid).in("role", ADMIN_TIER_ROLES as readonly string[] as string[]);
+      const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid).in("role", [...ADMIN_TIER_ROLES]);
       if (active) setIsAdmin(!!data && data.length > 0);
     };
     load();

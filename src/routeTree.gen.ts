@@ -11,17 +11,27 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SarpiRouteImport } from './routes/sarpi'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdvisorxRouteImport } from './routes/advisorx'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppStudioRouteImport } from './routes/_app.studio'
+import { Route as AppRoadmapRouteImport } from './routes/_app.roadmap'
 import { Route as AppRepositoryRouteImport } from './routes/_app.repository'
 import { Route as AppReportsRouteImport } from './routes/_app.reports'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
 import { Route as AppProRouteImport } from './routes/_app.pro'
 import { Route as AppPortfolioxRouteImport } from './routes/_app.portfoliox'
+import { Route as AppPatternsRouteImport } from './routes/_app.patterns'
 import { Route as AppMyUseCasesRouteImport } from './routes/_app.my-use-cases'
+import { Route as AppImpactAssessmentRouteImport } from './routes/_app.impact-assessment'
+import { Route as AppGovernanceRouteImport } from './routes/_app.governance'
+import { Route as AppFeasibilityRouteImport } from './routes/_app.feasibility'
+import { Route as AppDecisionRouteImport } from './routes/_app.decision'
+import { Route as AppDataReadinessRouteImport } from './routes/_app.data-readiness'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppCompareRouteImport } from './routes/_app.compare'
+import { Route as AppBoardsRouteImport } from './routes/_app.boards'
+import { Route as AppBlueprintRouteImport } from './routes/_app.blueprint'
 import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integration'
 import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
 import { Route as CyberxC3gIntakeRouteImport } from './routes/cyberx.c3g.intake'
@@ -40,6 +50,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdvisorxRoute = AdvisorxRouteImport.update({
+  id: '/advisorx',
+  path: '/advisorx',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
@@ -52,6 +67,11 @@ const IndexRoute = IndexRouteImport.update({
 const AppStudioRoute = AppStudioRouteImport.update({
   id: '/studio',
   path: '/studio',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRoadmapRoute = AppRoadmapRouteImport.update({
+  id: '/roadmap',
+  path: '/roadmap',
   getParentRoute: () => AppRoute,
 } as any)
 const AppRepositoryRoute = AppRepositoryRouteImport.update({
@@ -79,9 +99,39 @@ const AppPortfolioxRoute = AppPortfolioxRouteImport.update({
   path: '/portfoliox',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPatternsRoute = AppPatternsRouteImport.update({
+  id: '/patterns',
+  path: '/patterns',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppMyUseCasesRoute = AppMyUseCasesRouteImport.update({
   id: '/my-use-cases',
   path: '/my-use-cases',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppImpactAssessmentRoute = AppImpactAssessmentRouteImport.update({
+  id: '/impact-assessment',
+  path: '/impact-assessment',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGovernanceRoute = AppGovernanceRouteImport.update({
+  id: '/governance',
+  path: '/governance',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFeasibilityRoute = AppFeasibilityRouteImport.update({
+  id: '/feasibility',
+  path: '/feasibility',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDecisionRoute = AppDecisionRouteImport.update({
+  id: '/decision',
+  path: '/decision',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDataReadinessRoute = AppDataReadinessRouteImport.update({
+  id: '/data-readiness',
+  path: '/data-readiness',
   getParentRoute: () => AppRoute,
 } as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
@@ -92,6 +142,16 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
 const AppCompareRoute = AppCompareRouteImport.update({
   id: '/compare',
   path: '/compare',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBoardsRoute = AppBoardsRouteImport.update({
+  id: '/boards',
+  path: '/boards',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBlueprintRoute = AppBlueprintRouteImport.update({
+  id: '/blueprint',
+  path: '/blueprint',
   getParentRoute: () => AppRoute,
 } as any)
 const AppApiIntegrationRoute = AppApiIntegrationRouteImport.update({
@@ -135,18 +195,28 @@ const ApiPublicUsecasexUseCasesSlugRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/advisorx': typeof AdvisorxRoute
   '/auth': typeof AuthRoute
   '/sarpi': typeof SarpiRoute
   '/administration': typeof AppAdministrationRoute
   '/api-integration': typeof AppApiIntegrationRoute
+  '/blueprint': typeof AppBlueprintRoute
+  '/boards': typeof AppBoardsRoute
   '/compare': typeof AppCompareRoute
   '/dashboard': typeof AppDashboardRoute
+  '/data-readiness': typeof AppDataReadinessRoute
+  '/decision': typeof AppDecisionRoute
+  '/feasibility': typeof AppFeasibilityRoute
+  '/governance': typeof AppGovernanceRoute
+  '/impact-assessment': typeof AppImpactAssessmentRoute
   '/my-use-cases': typeof AppMyUseCasesRoute
+  '/patterns': typeof AppPatternsRoute
   '/portfoliox': typeof AppPortfolioxRoute
   '/pro': typeof AppProRoute
   '/profile': typeof AppProfileRoute
   '/reports': typeof AppReportsRoute
   '/repository': typeof AppRepositoryRoute
+  '/roadmap': typeof AppRoadmapRoute
   '/studio': typeof AppStudioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
@@ -156,18 +226,28 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/advisorx': typeof AdvisorxRoute
   '/auth': typeof AuthRoute
   '/sarpi': typeof SarpiRoute
   '/administration': typeof AppAdministrationRoute
   '/api-integration': typeof AppApiIntegrationRoute
+  '/blueprint': typeof AppBlueprintRoute
+  '/boards': typeof AppBoardsRoute
   '/compare': typeof AppCompareRoute
   '/dashboard': typeof AppDashboardRoute
+  '/data-readiness': typeof AppDataReadinessRoute
+  '/decision': typeof AppDecisionRoute
+  '/feasibility': typeof AppFeasibilityRoute
+  '/governance': typeof AppGovernanceRoute
+  '/impact-assessment': typeof AppImpactAssessmentRoute
   '/my-use-cases': typeof AppMyUseCasesRoute
+  '/patterns': typeof AppPatternsRoute
   '/portfoliox': typeof AppPortfolioxRoute
   '/pro': typeof AppProRoute
   '/profile': typeof AppProfileRoute
   '/reports': typeof AppReportsRoute
   '/repository': typeof AppRepositoryRoute
+  '/roadmap': typeof AppRoadmapRoute
   '/studio': typeof AppStudioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
@@ -179,18 +259,28 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
+  '/advisorx': typeof AdvisorxRoute
   '/auth': typeof AuthRoute
   '/sarpi': typeof SarpiRoute
   '/_app/administration': typeof AppAdministrationRoute
   '/_app/api-integration': typeof AppApiIntegrationRoute
+  '/_app/blueprint': typeof AppBlueprintRoute
+  '/_app/boards': typeof AppBoardsRoute
   '/_app/compare': typeof AppCompareRoute
   '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/data-readiness': typeof AppDataReadinessRoute
+  '/_app/decision': typeof AppDecisionRoute
+  '/_app/feasibility': typeof AppFeasibilityRoute
+  '/_app/governance': typeof AppGovernanceRoute
+  '/_app/impact-assessment': typeof AppImpactAssessmentRoute
   '/_app/my-use-cases': typeof AppMyUseCasesRoute
+  '/_app/patterns': typeof AppPatternsRoute
   '/_app/portfoliox': typeof AppPortfolioxRoute
   '/_app/pro': typeof AppProRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/reports': typeof AppReportsRoute
   '/_app/repository': typeof AppRepositoryRoute
+  '/_app/roadmap': typeof AppRoadmapRoute
   '/_app/studio': typeof AppStudioRoute
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
@@ -202,18 +292,28 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/advisorx'
     | '/auth'
     | '/sarpi'
     | '/administration'
     | '/api-integration'
+    | '/blueprint'
+    | '/boards'
     | '/compare'
     | '/dashboard'
+    | '/data-readiness'
+    | '/decision'
+    | '/feasibility'
+    | '/governance'
+    | '/impact-assessment'
     | '/my-use-cases'
+    | '/patterns'
     | '/portfoliox'
     | '/pro'
     | '/profile'
     | '/reports'
     | '/repository'
+    | '/roadmap'
     | '/studio'
     | '/use-cases/$slug'
     | '/cyberx/c3g/intake'
@@ -223,18 +323,28 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/advisorx'
     | '/auth'
     | '/sarpi'
     | '/administration'
     | '/api-integration'
+    | '/blueprint'
+    | '/boards'
     | '/compare'
     | '/dashboard'
+    | '/data-readiness'
+    | '/decision'
+    | '/feasibility'
+    | '/governance'
+    | '/impact-assessment'
     | '/my-use-cases'
+    | '/patterns'
     | '/portfoliox'
     | '/pro'
     | '/profile'
     | '/reports'
     | '/repository'
+    | '/roadmap'
     | '/studio'
     | '/use-cases/$slug'
     | '/cyberx/c3g/intake'
@@ -245,18 +355,28 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_app'
+    | '/advisorx'
     | '/auth'
     | '/sarpi'
     | '/_app/administration'
     | '/_app/api-integration'
+    | '/_app/blueprint'
+    | '/_app/boards'
     | '/_app/compare'
     | '/_app/dashboard'
+    | '/_app/data-readiness'
+    | '/_app/decision'
+    | '/_app/feasibility'
+    | '/_app/governance'
+    | '/_app/impact-assessment'
     | '/_app/my-use-cases'
+    | '/_app/patterns'
     | '/_app/portfoliox'
     | '/_app/pro'
     | '/_app/profile'
     | '/_app/reports'
     | '/_app/repository'
+    | '/_app/roadmap'
     | '/_app/studio'
     | '/_app/use-cases/$slug'
     | '/cyberx/c3g/intake'
@@ -268,6 +388,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
+  AdvisorxRoute: typeof AdvisorxRoute
   AuthRoute: typeof AuthRoute
   SarpiRoute: typeof SarpiRoute
   CyberxC3gIntakeRoute: typeof CyberxC3gIntakeRoute
@@ -291,6 +412,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/advisorx': {
+      id: '/advisorx'
+      path: '/advisorx'
+      fullPath: '/advisorx'
+      preLoaderRoute: typeof AdvisorxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app': {
       id: '/_app'
       path: ''
@@ -310,6 +438,13 @@ declare module '@tanstack/react-router' {
       path: '/studio'
       fullPath: '/studio'
       preLoaderRoute: typeof AppStudioRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/roadmap': {
+      id: '/_app/roadmap'
+      path: '/roadmap'
+      fullPath: '/roadmap'
+      preLoaderRoute: typeof AppRoadmapRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/repository': {
@@ -347,11 +482,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPortfolioxRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/patterns': {
+      id: '/_app/patterns'
+      path: '/patterns'
+      fullPath: '/patterns'
+      preLoaderRoute: typeof AppPatternsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/my-use-cases': {
       id: '/_app/my-use-cases'
       path: '/my-use-cases'
       fullPath: '/my-use-cases'
       preLoaderRoute: typeof AppMyUseCasesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/impact-assessment': {
+      id: '/_app/impact-assessment'
+      path: '/impact-assessment'
+      fullPath: '/impact-assessment'
+      preLoaderRoute: typeof AppImpactAssessmentRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/governance': {
+      id: '/_app/governance'
+      path: '/governance'
+      fullPath: '/governance'
+      preLoaderRoute: typeof AppGovernanceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/feasibility': {
+      id: '/_app/feasibility'
+      path: '/feasibility'
+      fullPath: '/feasibility'
+      preLoaderRoute: typeof AppFeasibilityRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/decision': {
+      id: '/_app/decision'
+      path: '/decision'
+      fullPath: '/decision'
+      preLoaderRoute: typeof AppDecisionRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/data-readiness': {
+      id: '/_app/data-readiness'
+      path: '/data-readiness'
+      fullPath: '/data-readiness'
+      preLoaderRoute: typeof AppDataReadinessRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/dashboard': {
@@ -366,6 +543,20 @@ declare module '@tanstack/react-router' {
       path: '/compare'
       fullPath: '/compare'
       preLoaderRoute: typeof AppCompareRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/boards': {
+      id: '/_app/boards'
+      path: '/boards'
+      fullPath: '/boards'
+      preLoaderRoute: typeof AppBoardsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/blueprint': {
+      id: '/_app/blueprint'
+      path: '/blueprint'
+      fullPath: '/blueprint'
+      preLoaderRoute: typeof AppBlueprintRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/api-integration': {
@@ -423,14 +614,23 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppAdministrationRoute: typeof AppAdministrationRoute
   AppApiIntegrationRoute: typeof AppApiIntegrationRoute
+  AppBlueprintRoute: typeof AppBlueprintRoute
+  AppBoardsRoute: typeof AppBoardsRoute
   AppCompareRoute: typeof AppCompareRoute
   AppDashboardRoute: typeof AppDashboardRoute
+  AppDataReadinessRoute: typeof AppDataReadinessRoute
+  AppDecisionRoute: typeof AppDecisionRoute
+  AppFeasibilityRoute: typeof AppFeasibilityRoute
+  AppGovernanceRoute: typeof AppGovernanceRoute
+  AppImpactAssessmentRoute: typeof AppImpactAssessmentRoute
   AppMyUseCasesRoute: typeof AppMyUseCasesRoute
+  AppPatternsRoute: typeof AppPatternsRoute
   AppPortfolioxRoute: typeof AppPortfolioxRoute
   AppProRoute: typeof AppProRoute
   AppProfileRoute: typeof AppProfileRoute
   AppReportsRoute: typeof AppReportsRoute
   AppRepositoryRoute: typeof AppRepositoryRoute
+  AppRoadmapRoute: typeof AppRoadmapRoute
   AppStudioRoute: typeof AppStudioRoute
   AppUseCasesSlugRoute: typeof AppUseCasesSlugRoute
 }
@@ -438,14 +638,23 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAdministrationRoute: AppAdministrationRoute,
   AppApiIntegrationRoute: AppApiIntegrationRoute,
+  AppBlueprintRoute: AppBlueprintRoute,
+  AppBoardsRoute: AppBoardsRoute,
   AppCompareRoute: AppCompareRoute,
   AppDashboardRoute: AppDashboardRoute,
+  AppDataReadinessRoute: AppDataReadinessRoute,
+  AppDecisionRoute: AppDecisionRoute,
+  AppFeasibilityRoute: AppFeasibilityRoute,
+  AppGovernanceRoute: AppGovernanceRoute,
+  AppImpactAssessmentRoute: AppImpactAssessmentRoute,
   AppMyUseCasesRoute: AppMyUseCasesRoute,
+  AppPatternsRoute: AppPatternsRoute,
   AppPortfolioxRoute: AppPortfolioxRoute,
   AppProRoute: AppProRoute,
   AppProfileRoute: AppProfileRoute,
   AppReportsRoute: AppReportsRoute,
   AppRepositoryRoute: AppRepositoryRoute,
+  AppRoadmapRoute: AppRoadmapRoute,
   AppStudioRoute: AppStudioRoute,
   AppUseCasesSlugRoute: AppUseCasesSlugRoute,
 }
@@ -469,6 +678,7 @@ const ApiPublicUsecasexUseCasesRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
+  AdvisorxRoute: AdvisorxRoute,
   AuthRoute: AuthRoute,
   SarpiRoute: SarpiRoute,
   CyberxC3gIntakeRoute: CyberxC3gIntakeRoute,
@@ -478,13 +688,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
