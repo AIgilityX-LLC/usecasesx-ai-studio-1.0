@@ -42,6 +42,7 @@ import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/publ
 import { Route as ApiPublicUsecasexUseCasesSlugRouteImport } from './routes/api/public/usecasex/use-cases.$slug'
 import { Route as AppStudioUseCaseIdFeasibilityRouteImport } from './routes/_app.studio.use-case.$id.feasibility'
 import { Route as AppStudioUseCaseIdDataReadinessRouteImport } from './routes/_app.studio.use-case.$id.data-readiness'
+import { Route as AppStudioUseCaseIdBlueprintRouteImport } from './routes/_app.studio.use-case.$id.blueprint'
 
 const SarpiRoute = SarpiRouteImport.update({
   id: '/sarpi',
@@ -212,6 +213,12 @@ const AppStudioUseCaseIdDataReadinessRoute =
     path: '/use-case/$id/data-readiness',
     getParentRoute: () => AppStudioRoute,
   } as any)
+const AppStudioUseCaseIdBlueprintRoute =
+  AppStudioUseCaseIdBlueprintRouteImport.update({
+    id: '/use-case/$id/blueprint',
+    path: '/use-case/$id/blueprint',
+    getParentRoute: () => AppStudioRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -243,6 +250,7 @@ export interface FileRoutesByFullPath {
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/studio/use-case/$id/data-readiness': typeof AppStudioUseCaseIdDataReadinessRoute
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
@@ -277,6 +285,7 @@ export interface FileRoutesByTo {
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/studio/use-case/$id/data-readiness': typeof AppStudioUseCaseIdDataReadinessRoute
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
@@ -313,6 +322,7 @@ export interface FileRoutesById {
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  '/_app/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/_app/studio/use-case/$id/data-readiness': typeof AppStudioUseCaseIdDataReadinessRoute
   '/_app/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
@@ -349,6 +359,7 @@ export interface FileRouteTypes {
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
+    | '/studio/use-case/$id/blueprint'
     | '/studio/use-case/$id/data-readiness'
     | '/studio/use-case/$id/feasibility'
     | '/api/public/usecasex/use-cases/$slug'
@@ -383,6 +394,7 @@ export interface FileRouteTypes {
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
+    | '/studio/use-case/$id/blueprint'
     | '/studio/use-case/$id/data-readiness'
     | '/studio/use-case/$id/feasibility'
     | '/api/public/usecasex/use-cases/$slug'
@@ -418,6 +430,7 @@ export interface FileRouteTypes {
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
+    | '/_app/studio/use-case/$id/blueprint'
     | '/_app/studio/use-case/$id/data-readiness'
     | '/_app/studio/use-case/$id/feasibility'
     | '/api/public/usecasex/use-cases/$slug'
@@ -667,15 +680,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudioUseCaseIdDataReadinessRouteImport
       parentRoute: typeof AppStudioRoute
     }
+    '/_app/studio/use-case/$id/blueprint': {
+      id: '/_app/studio/use-case/$id/blueprint'
+      path: '/use-case/$id/blueprint'
+      fullPath: '/studio/use-case/$id/blueprint'
+      preLoaderRoute: typeof AppStudioUseCaseIdBlueprintRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
   }
 }
 
 interface AppStudioRouteChildren {
+  AppStudioUseCaseIdBlueprintRoute: typeof AppStudioUseCaseIdBlueprintRoute
   AppStudioUseCaseIdDataReadinessRoute: typeof AppStudioUseCaseIdDataReadinessRoute
   AppStudioUseCaseIdFeasibilityRoute: typeof AppStudioUseCaseIdFeasibilityRoute
 }
 
 const AppStudioRouteChildren: AppStudioRouteChildren = {
+  AppStudioUseCaseIdBlueprintRoute: AppStudioUseCaseIdBlueprintRoute,
   AppStudioUseCaseIdDataReadinessRoute: AppStudioUseCaseIdDataReadinessRoute,
   AppStudioUseCaseIdFeasibilityRoute: AppStudioUseCaseIdFeasibilityRoute,
 }
