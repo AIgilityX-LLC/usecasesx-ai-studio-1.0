@@ -47,16 +47,6 @@ export const BUSINESS_OBJECTIVES = [
   "Citizen Services", "Regulatory Reporting", "Decision Support",
 ];
 
-export const HUB_MODULES = [
-  { slug: "home", name: "Home", to: "/" as const, live: true },
-  { slug: "ai-readiness", name: "AI Readiness", to: "/" as const, live: false },
-  { slug: "roi-calculator", name: "AI ROI Calculator", to: "/" as const, live: false },
-  { slug: "usecasex", name: "UseCasesX", to: "/" as const, live: true },
-  { slug: "strategy-canvas", name: "AI Strategy Canvas", to: "/" as const, live: false },
-  { slug: "governance", name: "AI Governance Toolkit", to: "/" as const, live: false },
-  { slug: "reports", name: "Reports", to: "/" as const, live: false },
-  { slug: "dashboard", name: "Dashboard", to: "/" as const, live: false },
-];
 
 export const PARTNER_PLATFORMS = [
   { slug: "sarpi", name: "SARPI™", category: "Risk & Performance", color: "navy" },

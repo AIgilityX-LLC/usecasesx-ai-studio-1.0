@@ -1,5 +1,429 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { SiteShell } from "@/components/SiteShell";
+import heroImg from "@/assets/landing-hero.jpg";
+import repositoryImg from "@/assets/landing-repository.jpg";
+import studioImg from "@/assets/landing-studio.jpg";
+import sovereignImg from "@/assets/landing-sovereign.jpg";
 
 export const Route = createFileRoute("/")({
-  beforeLoad: () => { throw redirect({ to: "/" }); },
+  head: () => ({
+    meta: [
+      { title: "UseCasesX™ — Global AI Use Cases Repository & Development Studio" },
+      {
+        name: "description",
+        content:
+          "Discover, design, validate, govern, prioritize, and scale AI use cases using an enterprise-grade and sovereign-ready platform by AIgilityX™.",
+      },
+      { property: "og:title", content: "UseCasesX™ — by AIgilityX™" },
+      {
+        property: "og:description",
+        content:
+          "The AI Use Case Operating System. Discover. Design. Validate. Govern. Scale.",
+      },
+      { property: "og:image", content: heroImg },
+      { property: "og:url", content: "/" },
+    ],
+    links: [{ rel: "canonical", href: "/" }],
+  }),
+  component: LandingPage,
 });
+
+function LandingPage() {
+  return (
+    <SiteShell>
+      <Hero />
+      <WhyUseCasesX />
+      <RepositorySection />
+      <StudioSection />
+      <SarpiSection />
+      <AdvisorXSection />
+      <CyberXSection />
+      <PortfolioRoadmapSection />
+      <PlansSection />
+      <SovereignSection />
+      <TestimonialsSection />
+    </SiteShell>
+  );
+}
+
+/* 1 — HERO */
+function Hero() {
+  return (
+    <section className="relative overflow-hidden border-b border-border">
+      <img
+        src={heroImg}
+        alt=""
+        aria-hidden
+        width={1920}
+        height={1088}
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-70"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(180deg, oklch(0.18 0.05 258 / 0.88) 0%, oklch(0.18 0.05 258 / 0.78) 60%, oklch(0.18 0.05 258 / 0.95) 100%)",
+        }}
+      />
+      <div className="relative mx-auto max-w-[1400px] px-6 pb-24 pt-24 sm:pt-32">
+        <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-[oklch(0.85_0.12_215)] backdrop-blur">
+          <span className="h-1.5 w-1.5 rounded-full bg-[oklch(0.78_0.13_215)]" />
+          UseCasesX™ · by AIgilityX™
+        </div>
+        <h1 className="max-w-5xl text-[44px] font-bold leading-[1.05] tracking-tight text-white sm:text-6xl">
+          Global AI Use Cases <span className="text-[oklch(0.85_0.13_215)]">Repository</span> &amp; Development Studio
+        </h1>
+        <p className="mt-5 max-w-3xl text-lg text-white/85 sm:text-xl">
+          Discover, design, validate, govern, prioritize, and scale AI use cases using an enterprise-grade and
+          sovereign-ready platform.
+        </p>
+        <p className="mt-3 max-w-3xl text-base font-semibold uppercase tracking-[0.22em] text-[oklch(0.85_0.13_215)]">
+          Discover · Design · Validate · Govern · Scale
+        </p>
+
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link
+            to="/repository"
+            className="rounded-md bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-lg hover:brightness-110"
+          >
+            Explore Repository →
+          </Link>
+          <Link
+            to="/studio"
+            className="rounded-md border border-white/30 bg-white/10 px-6 py-3 text-sm font-bold text-white backdrop-blur hover:bg-white/15"
+          >
+            Launch AI Use Case Studio™
+          </Link>
+        </div>
+
+        <div className="mt-14 grid max-w-5xl grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          {[
+            { v: "1,000+", l: "AI Use Cases" },
+            { v: "18+", l: "Industries" },
+            { v: "12+", l: "Government Domains" },
+            { v: "500+", l: "Blueprints Generated" },
+            { v: "120+", l: "Organizations" },
+            { v: "40+", l: "Countries" },
+          ].map((s) => (
+            <div
+              key={s.l}
+              className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur"
+            >
+              <div className="font-mono text-xl font-bold text-white sm:text-2xl">{s.v}</div>
+              <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/65">{s.l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* 2 — WHY USECASESX */
+function WhyUseCasesX() {
+  const pillars = [
+    { t: "Beyond a repository", d: "Not a content library — an AI Use Case Operating System with lifecycle workflows." },
+    { t: "Beyond a marketplace", d: "No sponsored listings. Every use case is curated, governed, and sovereign-aware." },
+    { t: "Built for regulated industries", d: "Designed for governments, banks, healthcare, defense, energy and critical infrastructure." },
+    { t: "Sovereign-ready by design", d: "From Public SaaS to Air-Gapped Sovereign Deployment — one product, six deployment models." },
+    { t: "Every initiative starts here", d: "We help you build the right AI solutions before investing in development." },
+    { t: "API-ready ecosystem", d: "Plugs into SARPI™, CyberX C3G™, AdvisorX™ and the wider AIgilityX platform stack." },
+  ];
+  return (
+    <section className="border-b border-border bg-background">
+      <div className="mx-auto max-w-[1400px] px-6 py-20">
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Why UseCasesX</div>
+        <h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          The AI Use Case Operating System for governments, enterprises &amp; regulators.
+        </h2>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {pillars.map((p) => (
+            <div key={p.t} className="rounded-xl border border-border bg-card p-6">
+              <h3 className="text-base font-bold text-foreground">{p.t}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{p.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* 3 — GLOBAL REPOSITORY */
+function RepositorySection() {
+  return (
+    <section className="border-b border-border bg-secondary/30">
+      <div className="mx-auto grid max-w-[1400px] gap-12 px-6 py-20 lg:grid-cols-2 lg:items-center">
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Global Repository</div>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            1,000+ curated AI use cases across 18+ industries.
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            Browse, search, and filter by industry, business function, AI type, value potential, complexity, risk and
+            maturity. Every use case is reviewed by the AIgilityX team for business clarity, AI fit, delivery
+            realism and sovereign-AI considerations.
+          </p>
+          <ul className="mt-6 space-y-2 text-sm text-foreground">
+            {["Filter by sector, function and AI capability", "Score, save, and shortlist to your workspace", "Export Lite PDFs and full integration packages"].map((x) => (
+              <li key={x} className="flex items-start gap-2"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />{x}</li>
+            ))}
+          </ul>
+          <div className="mt-8 flex gap-3">
+            <Link to="/repository" className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110">Explore Repository →</Link>
+            <Link to="/patterns" className="rounded-md border border-border bg-background px-5 py-2.5 text-sm font-semibold hover:bg-secondary">Pattern Library</Link>
+          </div>
+        </div>
+        <div className="overflow-hidden rounded-2xl border border-border shadow-xl">
+          <img src={repositoryImg} alt="Global AI use cases repository" loading="lazy" width={1536} height={1024} className="h-full w-full object-cover" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* 4 — STUDIO */
+function StudioSection() {
+  return (
+    <section className="border-b border-border bg-background">
+      <div className="mx-auto grid max-w-[1400px] gap-12 px-6 py-20 lg:grid-cols-2 lg:items-center">
+        <div className="order-2 overflow-hidden rounded-2xl border border-border shadow-xl lg:order-1">
+          <img src={studioImg} alt="AI Use Case Studio interface" loading="lazy" width={1536} height={1024} className="h-full w-full object-cover" />
+        </div>
+        <div className="order-1 lg:order-2">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">AIgilityX AI Use Case Studio™</div>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            Design custom AI use cases for your organization.
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            Research and draft tailored AI use cases with the studio's research engines. Generate full briefs —
+            problem, AI solution, data needs, KPIs, ROI areas, governance considerations and next steps — then push
+            into PortfolioX™, BlueprintX™ and DecisionX™.
+          </p>
+          <div className="mt-8 flex gap-3">
+            <Link to="/studio" className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110">Launch AI Use Case Studio™ →</Link>
+            <Link to="/blueprint" className="rounded-md border border-border bg-background px-5 py-2.5 text-sm font-semibold hover:bg-secondary">BlueprintX™</Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* 5 — SARPI */
+function SarpiSection() {
+  return (
+    <section className="border-b border-border surface-dark">
+      <div className="mx-auto max-w-[1400px] px-6 py-20">
+        <div className="grid items-end gap-4 lg:grid-cols-[1fr_auto]">
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[oklch(0.85_0.13_215)]">AI Readiness · SARPI™</div>
+            <h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              Know where you stand. Track readiness, value, and risk in one index.
+            </h2>
+            <p className="mt-3 max-w-3xl text-white/75">
+              The Strategic AI Readiness &amp; Performance Index measures organizational maturity and value
+              realization across every prioritized use case from UseCasesX™.
+            </p>
+          </div>
+          <Link to="/sarpi" className="rounded-md bg-[oklch(0.78_0.13_215)] px-5 py-2.5 text-sm font-bold text-[oklch(0.18_0.05_258)] hover:brightness-110">Open SARPI™ →</Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* 6 — ADVISORX */
+function AdvisorXSection() {
+  return (
+    <section className="border-b border-border bg-background">
+      <div className="mx-auto max-w-[1400px] px-6 py-20">
+        <div className="grid gap-4 lg:grid-cols-[2fr_1fr] lg:items-end">
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Executive Guidance · AdvisorX™</div>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              From use case to board-ready recommendation.
+            </h2>
+            <p className="mt-3 max-w-3xl text-muted-foreground">
+              AdvisorX™ turns scored portfolios into prioritized AI investment recommendations, executive
+              briefings, and decision-grade roadmaps.
+            </p>
+          </div>
+          <Link to="/advisorx" className="self-end rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110">Open AdvisorX™ →</Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* 7 — CYBERX */
+function CyberXSection() {
+  return (
+    <section className="border-b border-border bg-secondary/30">
+      <div className="mx-auto max-w-[1400px] px-6 py-20">
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Governance · CyberX Sovereign AI C3G™</div>
+        <h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          Cybersecurity, Compliance &amp; Governance for every AI initiative.
+        </h2>
+        <p className="mt-3 max-w-3xl text-muted-foreground">
+          Route high-risk use cases through structured governance intake: control mapping, regulator alignment,
+          evidence capture, audit trail and assurance — built for sovereign and regulated environments.
+        </p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link to="/cyberx/c3g/intake" className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110">Open CyberX C3G™ →</Link>
+          <Link to="/governance" className="rounded-md border border-border bg-background px-5 py-2.5 text-sm font-semibold hover:bg-secondary">GovernanceX™</Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* 8 — PORTFOLIO & ROADMAP */
+function PortfolioRoadmapSection() {
+  const cards = [
+    { t: "PortfolioX™", d: "Group scored use cases into themed AI investment portfolios — quick wins, strategic plays, sovereign programs.", to: "/portfoliox" },
+    { t: "RoadmapX™", d: "Sequence portfolios into multi-quarter roadmaps with milestones, dependencies, and value gates.", to: "/roadmap" },
+    { t: "ImpactAssessmentX™", d: "Quantify expected impact across revenue, cost, risk, citizen and customer outcomes before commitment.", to: "/impact-assessment" },
+    { t: "DecisionX™", d: "Capture approvals, board minutes, and the audit trail behind every Go / No-Go / Defer decision.", to: "/decision" },
+  ];
+  return (
+    <section className="border-b border-border bg-background">
+      <div className="mx-auto max-w-[1400px] px-6 py-20">
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Portfolio &amp; Roadmap Management</div>
+        <h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          From prioritized use case to funded delivery roadmap.
+        </h2>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {cards.map((c) => (
+            <Link key={c.t} to={c.to as never} className="group rounded-xl border border-border bg-card p-6 transition hover:-translate-y-0.5 hover:border-primary/40">
+              <h3 className="text-base font-bold text-foreground group-hover:text-primary">{c.t}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{c.d}</p>
+              <div className="mt-5 text-[10px] font-bold uppercase tracking-widest text-primary opacity-0 transition-opacity group-hover:opacity-100">Open →</div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* 9 — PLANS */
+function PlansSection() {
+  const plans = [
+    {
+      name: "UseCasesX Lite™",
+      tag: "Free · No login required",
+      features: ["Browse, search, filter 1,000+ use cases", "View full use case detail", "Download Lite PDF after lead capture"],
+      cta: { label: "Start free", to: "/repository" },
+    },
+    {
+      name: "UseCasesX Pro™",
+      tag: "Free with registration",
+      highlight: true,
+      features: ["Save, score, prioritize", "Build PortfolioX™ &amp; RoadmapX™", "Use AI Use Case Studio™", "Generate executive reports"],
+      cta: { label: "Create Free Pro Account", to: "/pro" },
+    },
+    {
+      name: "UseCasesX Enterprise™",
+      tag: "For enterprises &amp; large agencies",
+      features: ["SSO &amp; role-based access", "Private workspaces &amp; pattern libraries", "Integration into SARPI, CyberX, AdvisorX", "Dedicated success engineering"],
+      cta: { label: "Talk to us", to: "/api-integration" },
+    },
+    {
+      name: "UseCasesX Sovereign AI System™",
+      tag: "GovCloud · On-prem · Air-gapped",
+      features: ["Sovereign AI deployment models", "Country-specific governance packs", "Air-gapped lifecycle workflows", "Sovereign-grade audit trail"],
+      cta: { label: "Request sovereign brief", to: "/api-integration" },
+    },
+  ];
+  return (
+    <section className="border-b border-border bg-secondary/30">
+      <div className="mx-auto max-w-[1400px] px-6 py-20">
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Editions</div>
+        <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Lite · Pro · Enterprise · Sovereign AI System</h2>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {plans.map((p) => (
+            <div
+              key={p.name}
+              className={
+                "flex h-full flex-col rounded-2xl border bg-card p-6 " +
+                (p.highlight ? "border-primary/40 shadow-[var(--shadow-elegant)] ring-1 ring-primary/20" : "border-border")
+              }
+            >
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">{p.tag}</div>
+              <h3 className="mt-2 text-xl font-bold text-foreground" dangerouslySetInnerHTML={{ __html: p.name }} />
+              <ul className="mt-5 flex-1 space-y-2 text-sm text-foreground">
+                {p.features.map((f) => (
+                  <li key={f} className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" /><span dangerouslySetInnerHTML={{ __html: f }} /></li>
+                ))}
+              </ul>
+              <Link
+                to={p.cta.to as never}
+                className={"mt-6 inline-flex w-full justify-center rounded-md px-4 py-2.5 text-sm font-bold " +
+                  (p.highlight ? "bg-primary text-primary-foreground hover:brightness-110" : "border border-border bg-background text-foreground hover:bg-secondary")}
+              >
+                {p.cta.label} →
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* 10 — SOVEREIGN */
+function SovereignSection() {
+  return (
+    <section className="border-b border-border surface-dark">
+      <div className="mx-auto grid max-w-[1400px] gap-12 px-6 py-20 lg:grid-cols-2 lg:items-center">
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[oklch(0.85_0.13_215)]">Government &amp; Sovereign AI</div>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            Built for ministries, regulators &amp; sovereign AI programs.
+          </h2>
+          <p className="mt-4 text-white/80">
+            UseCasesX™ supports the full spectrum of sovereign deployment: Public SaaS, Enterprise SaaS, Private
+            Cloud, GovCloud, On-Premises, and Air-Gapped Sovereign Deployment — with country-specific governance
+            packs and a tamper-evident audit trail across the full use case lifecycle.
+          </p>
+          <ul className="mt-6 grid grid-cols-2 gap-2 text-sm text-white">
+            {["Public SaaS","Enterprise SaaS","Private Cloud","GovCloud","On-Premises","Air-Gapped"].map((d) => (
+              <li key={d} className="rounded-md border border-white/15 bg-white/5 px-3 py-2 text-center backdrop-blur">{d}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
+          <img src={sovereignImg} alt="Sovereign AI deployment" loading="lazy" width={1536} height={1024} className="h-full w-full object-cover" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* 11 — TESTIMONIALS */
+function TestimonialsSection() {
+  const items = [
+    { quote: "UseCasesX™ became our single source of truth for AI opportunities across the ministry.", who: "Director of AI · Government Digital Agency" },
+    { quote: "We replaced six PowerPoint backlogs with one scored portfolio in PortfolioX™.", who: "CDO · Tier-1 Bank" },
+    { quote: "The sovereign deployment model let us run UseCasesX™ inside our air-gapped environment.", who: "CIO · Critical Infrastructure Operator" },
+  ];
+  return (
+    <section className="border-b border-border bg-background">
+      <div className="mx-auto max-w-[1400px] px-6 py-20">
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Customer voices</div>
+        <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Trusted across regulated industries.</h2>
+        <p className="mt-2 text-sm text-muted-foreground">Placeholder testimonials — to be replaced with named reference customers post-beta.</p>
+        <div className="mt-10 grid gap-4 lg:grid-cols-3">
+          {items.map((i) => (
+            <figure key={i.who} className="rounded-xl border border-border bg-card p-6">
+              <blockquote className="text-base text-foreground">“{i.quote}”</blockquote>
+              <figcaption className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">— {i.who}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

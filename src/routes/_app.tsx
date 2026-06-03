@@ -1,11 +1,10 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { AppShell } from "@/components/AppShell";
-import { UseCaseXSubNav } from "@/components/UseCaseXSubNav";
+import { SiteShell } from "@/components/SiteShell";
 
 export const Route = createFileRoute("/_app")({
   component: () => (
-    <AppShell subNav={<UseCaseXSubNav />}>
+    <SiteShell>
       <Outlet />
-    </AppShell>
+    </SiteShell>
   ),
 });
