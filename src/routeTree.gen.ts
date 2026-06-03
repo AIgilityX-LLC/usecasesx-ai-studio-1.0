@@ -41,6 +41,7 @@ import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$sl
 import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
+import { Route as AppStudioUseCaseIdIndexRouteImport } from './routes/_app.studio.use-case.$id.index'
 import { Route as ApiPublicUsecasexUseCasesSlugRouteImport } from './routes/api/public/usecasex/use-cases.$slug'
 import { Route as AppStudioUseCaseIdSarpiRouteImport } from './routes/_app.studio.use-case.$id.sarpi'
 import { Route as AppStudioUseCaseIdFeasibilityRouteImport } from './routes/_app.studio.use-case.$id.feasibility'
@@ -210,6 +211,11 @@ const ApiPublicUsecasexTaxonomyRoute =
     path: '/api/public/usecasex/taxonomy',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AppStudioUseCaseIdIndexRoute = AppStudioUseCaseIdIndexRouteImport.update({
+  id: '/use-case/$id/',
+  path: '/use-case/$id/',
+  getParentRoute: () => AppStudioRoute,
+} as any)
 const ApiPublicUsecasexUseCasesSlugRoute =
   ApiPublicUsecasexUseCasesSlugRouteImport.update({
     id: '/$slug',
@@ -291,6 +297,7 @@ export interface FileRoutesByFullPath {
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
+  '/studio/use-case/$id/': typeof AppStudioUseCaseIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -331,6 +338,7 @@ export interface FileRoutesByTo {
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
+  '/studio/use-case/$id': typeof AppStudioUseCaseIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -373,6 +381,7 @@ export interface FileRoutesById {
   '/_app/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/_app/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
+  '/_app/studio/use-case/$id/': typeof AppStudioUseCaseIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -415,6 +424,7 @@ export interface FileRouteTypes {
     | '/studio/use-case/$id/feasibility'
     | '/studio/use-case/$id/sarpi'
     | '/api/public/usecasex/use-cases/$slug'
+    | '/studio/use-case/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -455,6 +465,7 @@ export interface FileRouteTypes {
     | '/studio/use-case/$id/feasibility'
     | '/studio/use-case/$id/sarpi'
     | '/api/public/usecasex/use-cases/$slug'
+    | '/studio/use-case/$id'
   id:
     | '__root__'
     | '/'
@@ -496,6 +507,7 @@ export interface FileRouteTypes {
     | '/_app/studio/use-case/$id/feasibility'
     | '/_app/studio/use-case/$id/sarpi'
     | '/api/public/usecasex/use-cases/$slug'
+    | '/_app/studio/use-case/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -736,6 +748,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicUsecasexTaxonomyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/studio/use-case/$id/': {
+      id: '/_app/studio/use-case/$id/'
+      path: '/use-case/$id'
+      fullPath: '/studio/use-case/$id/'
+      preLoaderRoute: typeof AppStudioUseCaseIdIndexRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
     '/api/public/usecasex/use-cases/$slug': {
       id: '/api/public/usecasex/use-cases/$slug'
       path: '/$slug'
@@ -796,6 +815,7 @@ interface AppStudioRouteChildren {
   AppStudioUseCaseIdDataReadinessRoute: typeof AppStudioUseCaseIdDataReadinessRoute
   AppStudioUseCaseIdFeasibilityRoute: typeof AppStudioUseCaseIdFeasibilityRoute
   AppStudioUseCaseIdSarpiRoute: typeof AppStudioUseCaseIdSarpiRoute
+  AppStudioUseCaseIdIndexRoute: typeof AppStudioUseCaseIdIndexRoute
 }
 
 const AppStudioRouteChildren: AppStudioRouteChildren = {
@@ -806,6 +826,7 @@ const AppStudioRouteChildren: AppStudioRouteChildren = {
   AppStudioUseCaseIdDataReadinessRoute: AppStudioUseCaseIdDataReadinessRoute,
   AppStudioUseCaseIdFeasibilityRoute: AppStudioUseCaseIdFeasibilityRoute,
   AppStudioUseCaseIdSarpiRoute: AppStudioUseCaseIdSarpiRoute,
+  AppStudioUseCaseIdIndexRoute: AppStudioUseCaseIdIndexRoute,
 }
 
 const AppStudioRouteWithChildren = AppStudioRoute._addFileChildren(
