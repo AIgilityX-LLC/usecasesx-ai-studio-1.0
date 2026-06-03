@@ -220,7 +220,21 @@ function ReportsPage() {
 
           <div className="flex flex-wrap gap-2">
             <Button
-              onClick={() => { setGenerated(true); trackCTAEvent("report_generated", { reportType, count: selectedItems.length }); }}
+              onClick={async () => {
+                setGenerated(true);
+                trackCTAEvent("report_generated", { reportType, count: selectedItems.length });
+                try {
+                  const { generateReportRecord } = await import("@/lib/usecasex.services");
+                  await generateReportRecord({
+                    title: `${reportType} — ${new Date().toLocaleDateString()}`,
+                    kind: reportType,
+                    useCaseCount: selectedItems.length,
+                    payload: { slugs: selectedSlugs, portfolioId },
+                  });
+                } catch (e) {
+                  console.error("[generate-report]", e);
+                }
+              }}
               disabled={selectedItems.length === 0}
             >
               <FileText className="w-4 h-4 mr-1" /> Generate Report
