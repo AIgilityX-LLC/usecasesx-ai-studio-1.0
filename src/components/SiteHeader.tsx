@@ -14,7 +14,7 @@ export function SiteHeader() {
                 UseCasesX<span className="text-primary">™</span>
               </div>
               <div className="text-[9px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                AIgilityX AI Hub™
+                AIgilityX AI Use Case Studio™
               </div>
             </div>
           </Link>
@@ -34,14 +34,13 @@ export function SiteHeader() {
             >
               Explore Use Cases
             </Link>
-            <a
-              href="https://hub.aigilityx.com"
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              to="/pricing"
+              activeProps={{ className: "bg-primary/10 text-primary" }}
               className="rounded-md px-3 py-1.5 text-muted-foreground hover:text-foreground"
             >
-              AI Hub ↗
-            </a>
+              Pricing
+            </Link>
           </nav>
         </div>
         <div className="flex items-center gap-3">

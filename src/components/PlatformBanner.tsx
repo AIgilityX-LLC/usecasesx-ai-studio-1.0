@@ -23,7 +23,7 @@ export function PlatformBanner() {
             <span className="text-muted-foreground">(UseCasesX)</span>
           </h1>
           <p className="text-base text-muted-foreground">
-            The AI Hub for discovering, designing, validating, governing, and scaling AI use cases.
+            The AIgilityX™ platform for discovering, designing, validating, governing, and scaling AI use cases.
           </p>
         </div>
 
