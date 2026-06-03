@@ -331,12 +331,12 @@ async function attachPrimaryTaxonomy(rows: DbUseCase[]) {
   const fnMap = pick(fn.data, "business_function_id", tax.functions.byId);
   const aiMap = pick(ai.data, "capability_id", tax.aiTypes.byId);
   const objMap = pick(obj.data, "objective_id", tax.objectives.byId);
-  return rows.map((r) => ({
+  return rows.map<DbUseCase>((r) => ({
     ...r,
-    _industry_slug: indMap[r.id] ?? "",
-    _business_function_slug: fnMap[r.id] ?? "",
-    _ai_type_slug: aiMap[r.id] ?? "",
-    _objective_slug: objMap[r.id] ?? "",
+    _industry_slug: indMap[(r as any).id] ?? "",
+    _business_function_slug: fnMap[(r as any).id] ?? "",
+    _ai_type_slug: aiMap[(r as any).id] ?? "",
+    _objective_slug: objMap[(r as any).id] ?? "",
   }));
 }
 
