@@ -1,7 +1,26 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export type AppRole = "admin" | "moderator" | "contributor" | "viewer";
+export type AppRole =
+  | "admin"
+  | "moderator"
+  | "contributor"
+  | "viewer"
+  | "super_admin"
+  | "ai_hub_admin"
+  | "usecasex_admin"
+  | "content_manager"
+  | "reviewer";
+
+export const ADMIN_TIER_ROLES: AppRole[] = [
+  "admin",
+  "moderator",
+  "super_admin",
+  "ai_hub_admin",
+  "usecasex_admin",
+  "content_manager",
+  "reviewer",
+];
 
 export interface RoleState {
   loading: boolean;
@@ -60,8 +79,8 @@ export function useRoles(): RoleState {
 
   const has = (role: AppRole) => roles.includes(role);
   const hasAny = (rs: AppRole[]) => rs.some((r) => roles.includes(r));
-  const isAdmin = has("admin");
-  const isModerator = has("moderator");
+  const isAdmin = has("admin") || has("super_admin") || has("ai_hub_admin") || has("usecasex_admin");
+  const isModerator = has("moderator") || has("content_manager") || has("reviewer");
 
   return {
     loading,
@@ -71,8 +90,8 @@ export function useRoles(): RoleState {
     hasAny,
     isAdmin,
     isModerator,
-    canEditTaxonomy: isAdmin || isModerator,
-    canPublish: isAdmin || isModerator,
-    canDelete: isAdmin,
+    canEditTaxonomy: isAdmin || has("moderator") || has("content_manager"),
+    canPublish: isAdmin || has("moderator") || has("content_manager") || has("reviewer"),
+    canDelete: has("admin") || has("super_admin") || has("ai_hub_admin"),
   };
 }

@@ -43,7 +43,10 @@ export const Route = createFileRoute("/ai-hub/usecasex/admin")({
 
 function AdminPage() {
   return (
-    <RequireRoles anyOf={["admin", "moderator"]} action="open the UseCaseX admin">
+    <RequireRoles
+      anyOf={["admin", "moderator", "super_admin", "ai_hub_admin", "usecasex_admin", "content_manager", "reviewer"]}
+      action="open the UseCaseX admin"
+    >
       <AdminPageInner />
     </RequireRoles>
   );
@@ -321,10 +324,12 @@ function AddNewTab() {
     <UseCaseForm
       uc={uc}
       onChange={setUc}
-      onSave={(next, action) => {
-        const saved = store.upsert(next, action);
-        setUc(emptyUseCase());
-        trackCTAEvent("admin_use_case_saved", { id: saved.id, action });
+      onSave={async (next, action) => {
+        const saved = await store.upsert(next, action);
+        if (saved) {
+          setUc(emptyUseCase());
+          trackCTAEvent("admin_use_case_saved", { id: saved.id, action });
+        }
       }}
     />
   );
@@ -868,7 +873,7 @@ function SettingsTab() {
       <Separator />
       <div>
         <h3 className="font-semibold mb-1">Catalogue source</h3>
-        <p className="text-sm text-muted-foreground">Currently using local mock store (browser <code>localStorage</code>). Swap with Supabase-backed server functions when ready.</p>
+        <p className="text-sm text-muted-foreground">Use cases, audit log, taxonomy and analytics are now persisted to Lovable Cloud. Every admin action writes an entry to <code>use_case_audit_log</code>.</p>
       </div>
     </CardContent></Card>
   );
