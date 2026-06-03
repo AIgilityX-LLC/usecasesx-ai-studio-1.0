@@ -436,7 +436,7 @@ export function useAdminStore() {
         : "draft";
       const patch: Record<string, any> = { content_status: contentStatus, status: lifecycle };
       if (contentStatus === "published") patch.published_at = new Date().toISOString();
-      const { error } = await supabase.from("use_cases").update(patch).eq("id", id);
+      const { error } = await (supabase as any).from("use_cases").update(patch).eq("id", id);
       if (error) { setError(error.message); return; }
       await writeAudit(id, action);
       await reload();
