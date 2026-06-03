@@ -398,7 +398,7 @@ export function useAdminStore() {
 
       let savedId = uc.id;
       if (isNew) {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from("use_cases")
           .insert({ ...patch, submitted_by: u.user?.id })
           .select("id")
@@ -406,7 +406,7 @@ export function useAdminStore() {
         if (error) { setError(error.message); return null; }
         savedId = (data as any).id;
       } else {
-        const { error } = await supabase.from("use_cases").update(patch).eq("id", uc.id);
+        const { error } = await (supabase as any).from("use_cases").update(patch).eq("id", uc.id);
         if (error) { setError(error.message); return null; }
       }
       await syncTaxonomyJoins(savedId, uc);
