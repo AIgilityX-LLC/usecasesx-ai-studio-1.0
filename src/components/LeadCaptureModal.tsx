@@ -39,6 +39,10 @@ export interface LeadCaptureProps {
   title?: string;
   description?: string;
   sourceUseCase?: string;
+  /** UUID of the source use case (for Supabase relations). */
+  sourceUseCaseId?: string;
+  /** Optional title used by the Lite PDF preview. */
+  sourceUseCaseTitle?: string;
   sourcePage?: string;
   /** Pre-fill the interest area dropdown. */
   defaultInterestArea?: InterestArea;
@@ -136,6 +140,8 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
     title: titleOverride,
     description: descriptionOverride,
     sourceUseCase,
+    sourceUseCaseId,
+    sourceUseCaseTitle,
     sourcePage,
     defaultInterestArea,
   } = props;
@@ -223,6 +229,7 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
         consent: parsed.data.consent,
         triggerCase: trigger,
         sourceUseCase: sourceUseCase ?? null,
+        sourceUseCaseId: sourceUseCaseId ?? null,
         sourcePage:
           sourcePage ?? (typeof window !== "undefined" ? window.location.pathname : null),
       };
@@ -236,7 +243,7 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
 
       // Trigger-specific post-submit behavior.
       if (trigger === "lite-pdf") {
-        triggerLitePdfDownload(sourceUseCase ?? "usecasex");
+        triggerLitePdfDownload(sourceUseCaseTitle ?? sourceUseCase ?? "usecasex");
       }
 
       setDone(true);
@@ -401,23 +408,54 @@ function SuccessView({
 // -----------------------------------------------------------------------------
 // Lite PDF trigger (placeholder)
 // -----------------------------------------------------------------------------
-function triggerLitePdfDownload(slug: string) {
+function triggerLitePdfDownload(label: string) {
   if (typeof window === "undefined") return;
-  // TODO: replace with a real PDF endpoint, e.g. /api/public/lite-pdf?slug=...
-  const blob = new Blob(
-    [
-      `UseCaseX Lite PDF — ${slug}\n\nThis is a placeholder. The full PDF will be generated server-side and emailed to you.\n`,
-    ],
-    { type: "application/pdf" },
-  );
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `usecasex-lite-${slug}.pdf`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  const safe = label.replace(/[<>&]/g, "");
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>UseCaseX Lite — ${safe}</title>
+<style>
+  @page { size: A4; margin: 24mm; }
+  body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #0f172a; }
+  header { border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 24px; }
+  h1 { font-size: 22px; margin: 4px 0; }
+  .eyebrow { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #6366f1; font-weight: 700; }
+  h2 { font-size: 14px; margin-top: 20px; text-transform: uppercase; letter-spacing: .1em; color: #334155; }
+  p { font-size: 12px; line-height: 1.55; }
+  .muted { color: #64748b; font-size: 11px; }
+  .actions { margin-top: 24px; }
+  button { font: inherit; padding: 8px 14px; border: 1px solid #0f172a; background: #0f172a; color: white; border-radius: 6px; cursor: pointer; }
+  @media print { .actions { display: none; } }
+</style></head>
+<body>
+  <header>
+    <div class="eyebrow">UseCaseX™ · AIgilityX</div>
+    <h1>Lite Report — ${safe}</h1>
+    <div class="muted">Generated ${new Date().toLocaleString()}</div>
+  </header>
+  <h2>Overview</h2>
+  <p>This Lite report summarizes the AI use case <strong>${safe}</strong>, including business value, recommended platforms, governance considerations, and indicative ROI.</p>
+  <h2>Next steps</h2>
+  <p>An AIgilityX advisor will follow up with the full report tailored to your context, including readiness assessment and roadmap.</p>
+  <p class="muted">For the full version, request an AI Strategy Session from your UseCaseX dashboard.</p>
+  <div class="actions">
+    <button onclick="window.print()">Print / Save as PDF</button>
+  </div>
+</body></html>`;
+  const w = window.open("", "_blank", "width=900,height=1000");
+  if (w) {
+    w.document.write(html);
+    w.document.close();
+  } else {
+    // Fallback to file download if popup is blocked.
+    const blob = new Blob([html], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `usecasex-lite-${safe.toLowerCase().replace(/\s+/g, "-")}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
 }
 
 // -----------------------------------------------------------------------------

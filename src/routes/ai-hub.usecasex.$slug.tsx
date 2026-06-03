@@ -535,6 +535,8 @@ function UseCaseDetailPage() {
         open={leadOpen}
         onClose={() => setLeadOpen(false)}
         sourceUseCase={c.slug}
+        sourceUseCaseId={c.id}
+        sourceUseCaseTitle={c.title}
         sourcePage="usecase-detail"
         cta={leadCta}
         title={leadCta === "lite-pdf" ? "Download the Lite PDF" : "Request an AI Strategy Session"}
