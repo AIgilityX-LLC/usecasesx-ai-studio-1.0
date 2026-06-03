@@ -79,8 +79,8 @@ export function useRoles(): RoleState {
 
   const has = (role: AppRole) => roles.includes(role);
   const hasAny = (rs: AppRole[]) => rs.some((r) => roles.includes(r));
-  const isAdmin = has("admin");
-  const isModerator = has("moderator");
+  const isAdmin = has("admin") || has("super_admin") || has("ai_hub_admin") || has("usecasex_admin");
+  const isModerator = has("moderator") || has("content_manager") || has("reviewer");
 
   return {
     loading,
@@ -90,8 +90,8 @@ export function useRoles(): RoleState {
     hasAny,
     isAdmin,
     isModerator,
-    canEditTaxonomy: isAdmin || isModerator,
-    canPublish: isAdmin || isModerator,
-    canDelete: isAdmin,
+    canEditTaxonomy: isAdmin || has("moderator") || has("content_manager"),
+    canPublish: isAdmin || has("moderator") || has("content_manager") || has("reviewer"),
+    canDelete: has("admin") || has("super_admin") || has("ai_hub_admin"),
   };
 }
