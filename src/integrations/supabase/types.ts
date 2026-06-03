@@ -1267,6 +1267,10 @@ export type Database = {
       }
     }
     Functions: {
+      get_use_case_integration_package: {
+        Args: { use_case_uuid: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
