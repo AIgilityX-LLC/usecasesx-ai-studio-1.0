@@ -42,14 +42,8 @@ function UseCaseDetailPage() {
     return () => { active = false; };
   }, [id]);
 
-  const links: { to: any; label: string }[] = [
-    { to: "/studio/use-case/$id/feasibility", label: "Feasibility" },
-    { to: "/studio/use-case/$id/data-readiness", label: "Data Readiness" },
-    { to: "/studio/use-case/$id/blueprint", label: "Blueprint" },
-    { to: "/studio/use-case/$id/sarpi", label: "SARPI" },
-    { to: "/studio/use-case/$id/advisorx", label: "AdvisorX" },
-    { to: "/studio/use-case/$id/c3g-governance", label: "C3G Governance" },
-  ];
+  const linkClass = "inline-flex items-center justify-center rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium hover:bg-secondary";
+
 
   return (
     <section className="border-b border-border bg-background">
