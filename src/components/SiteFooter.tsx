@@ -7,7 +7,7 @@ export function SiteFooter() {
         <div className="grid gap-12 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">
-              UseCasesX™ · AIgilityX AI Hub™
+              UseCasesX™ · AIgilityX AI Use Case Studio™
             </div>
             <h2 className="mb-3 text-2xl font-bold leading-tight text-foreground md:text-3xl">
               Explore 100+ AI Use Cases for Your Industry —{" "}
@@ -35,19 +35,19 @@ export function SiteFooter() {
             ]}
           />
           <FooterCol
-            title="AIgilityX Platforms"
+            title="UseCasesX Modules"
             items={[
-              { label: "AdvisorX™", href: "https://hub.aigilityx.com" },
-              { label: "FlowX™", href: "https://hub.aigilityx.com" },
-              { label: "PrivacyX™", href: "https://hub.aigilityx.com" },
-              { label: "AssureX™", href: "https://hub.aigilityx.com" },
-              { label: "CyberX C3G™", href: "https://hub.aigilityx.com" },
+              { label: "AI Use Case Studio™", href: "/studio" },
+              { label: "SARPI™", href: "/sarpi" },
+              { label: "AdvisorX™", href: "/advisorx" },
+              { label: "CyberX C3G™", href: "/cyberx/c3g/intake" },
+              { label: "Pricing", href: "/pricing" },
             ]}
           />
         </div>
         <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-border/60 pt-6 text-xs text-muted-foreground md:flex-row md:items-center">
-          <span>© 2026 AIgilityX. UseCasesX™ — AI Use Cases Repository Module.</span>
-          <span className="font-mono uppercase tracking-widest">hub.aigilityx.com / usecasex</span>
+          <span>© 2026 AIgilityX™. UseCasesX™ — Global AI Use Cases Repository &amp; Development Studio.</span>
+          <span className="font-mono uppercase tracking-widest">usecasex.aigilityx</span>
         </div>
       </div>
     </footer>

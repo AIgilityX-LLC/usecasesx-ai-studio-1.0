@@ -4,7 +4,7 @@ export function MissingDataFallback({
   title = "Use case catalog is temporarily unavailable",
   reason,
   backTo = "/",
-  backLabel = "Back to AI Hub",
+  backLabel = "Back to UseCasesX™",
 }: {
   title?: string;
   reason?: string;
