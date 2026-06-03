@@ -237,7 +237,6 @@ function toDbPatch(uc: AdminUseCase) {
     risk_level: uc.riskLevel,
     time_to_value: uc.timeToValue,
     maturity_level: uc.maturity,
-    maturity: uc.maturity,
     governance_notes: uc.governanceNotes,
     cybersecurity_notes: uc.cybersecurityNotes,
     privacy_notes: uc.privacyNotes,
