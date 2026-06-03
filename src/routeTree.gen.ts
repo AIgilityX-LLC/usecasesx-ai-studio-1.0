@@ -37,6 +37,7 @@ import { Route as AppAiUseCaseStudioRouteImport } from './routes/_app.ai-use-cas
 import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
 import { Route as CyberxC3gIntakeRouteImport } from './routes/cyberx.c3g.intake'
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
+import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
 import { Route as ApiPublicUsecasexUseCasesSlugRouteImport } from './routes/api/public/usecasex/use-cases.$slug'
@@ -186,6 +187,11 @@ const AppUseCasesSlugRoute = AppUseCasesSlugRouteImport.update({
   path: '/use-cases/$slug',
   getParentRoute: () => AppRoute,
 } as any)
+const AppStudioPortfolioRoute = AppStudioPortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => AppStudioRoute,
+} as any)
 const ApiPublicUsecasexUseCasesRoute =
   ApiPublicUsecasexUseCasesRouteImport.update({
     id: '/api/public/usecasex/use-cases',
@@ -266,6 +272,7 @@ export interface FileRoutesByFullPath {
   '/repository': typeof AppRepositoryRoute
   '/roadmap': typeof AppRoadmapRoute
   '/studio': typeof AppStudioRouteWithChildren
+  '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
@@ -304,6 +311,7 @@ export interface FileRoutesByTo {
   '/repository': typeof AppRepositoryRoute
   '/roadmap': typeof AppRoadmapRoute
   '/studio': typeof AppStudioRouteWithChildren
+  '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
@@ -344,6 +352,7 @@ export interface FileRoutesById {
   '/_app/repository': typeof AppRepositoryRoute
   '/_app/roadmap': typeof AppRoadmapRoute
   '/_app/studio': typeof AppStudioRouteWithChildren
+  '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
@@ -384,6 +393,7 @@ export interface FileRouteTypes {
     | '/repository'
     | '/roadmap'
     | '/studio'
+    | '/studio/portfolio'
     | '/use-cases/$slug'
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
@@ -422,6 +432,7 @@ export interface FileRouteTypes {
     | '/repository'
     | '/roadmap'
     | '/studio'
+    | '/studio/portfolio'
     | '/use-cases/$slug'
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
@@ -461,6 +472,7 @@ export interface FileRouteTypes {
     | '/_app/repository'
     | '/_app/roadmap'
     | '/_app/studio'
+    | '/_app/studio/portfolio'
     | '/_app/use-cases/$slug'
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
@@ -683,6 +695,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUseCasesSlugRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/studio/portfolio': {
+      id: '/_app/studio/portfolio'
+      path: '/portfolio'
+      fullPath: '/studio/portfolio'
+      preLoaderRoute: typeof AppStudioPortfolioRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
     '/api/public/usecasex/use-cases': {
       id: '/api/public/usecasex/use-cases'
       path: '/api/public/usecasex/use-cases'
@@ -750,6 +769,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppStudioRouteChildren {
+  AppStudioPortfolioRoute: typeof AppStudioPortfolioRoute
   AppStudioUseCaseIdAdvisorxRoute: typeof AppStudioUseCaseIdAdvisorxRoute
   AppStudioUseCaseIdBlueprintRoute: typeof AppStudioUseCaseIdBlueprintRoute
   AppStudioUseCaseIdC3gGovernanceRoute: typeof AppStudioUseCaseIdC3gGovernanceRoute
@@ -759,6 +779,7 @@ interface AppStudioRouteChildren {
 }
 
 const AppStudioRouteChildren: AppStudioRouteChildren = {
+  AppStudioPortfolioRoute: AppStudioPortfolioRoute,
   AppStudioUseCaseIdAdvisorxRoute: AppStudioUseCaseIdAdvisorxRoute,
   AppStudioUseCaseIdBlueprintRoute: AppStudioUseCaseIdBlueprintRoute,
   AppStudioUseCaseIdC3gGovernanceRoute: AppStudioUseCaseIdC3gGovernanceRoute,
@@ -850,3 +871,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
