@@ -40,6 +40,7 @@ import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$sl
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
 import { Route as ApiPublicUsecasexUseCasesSlugRouteImport } from './routes/api/public/usecasex/use-cases.$slug'
+import { Route as AppStudioUseCaseIdFeasibilityRouteImport } from './routes/_app.studio.use-case.$id.feasibility'
 
 const SarpiRoute = SarpiRouteImport.update({
   id: '/sarpi',
@@ -198,6 +199,12 @@ const ApiPublicUsecasexUseCasesSlugRoute =
     path: '/$slug',
     getParentRoute: () => ApiPublicUsecasexUseCasesRoute,
   } as any)
+const AppStudioUseCaseIdFeasibilityRoute =
+  AppStudioUseCaseIdFeasibilityRouteImport.update({
+    id: '/use-case/$id/feasibility',
+    path: '/use-case/$id/feasibility',
+    getParentRoute: () => AppStudioRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -224,11 +231,12 @@ export interface FileRoutesByFullPath {
   '/reports': typeof AppReportsRoute
   '/repository': typeof AppRepositoryRoute
   '/roadmap': typeof AppRoadmapRoute
-  '/studio': typeof AppStudioRoute
+  '/studio': typeof AppStudioRouteWithChildren
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
 }
 export interface FileRoutesByTo {
@@ -256,11 +264,12 @@ export interface FileRoutesByTo {
   '/reports': typeof AppReportsRoute
   '/repository': typeof AppRepositoryRoute
   '/roadmap': typeof AppRoadmapRoute
-  '/studio': typeof AppStudioRoute
+  '/studio': typeof AppStudioRouteWithChildren
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
 }
 export interface FileRoutesById {
@@ -290,11 +299,12 @@ export interface FileRoutesById {
   '/_app/reports': typeof AppReportsRoute
   '/_app/repository': typeof AppRepositoryRoute
   '/_app/roadmap': typeof AppRoadmapRoute
-  '/_app/studio': typeof AppStudioRoute
+  '/_app/studio': typeof AppStudioRouteWithChildren
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  '/_app/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
 }
 export interface FileRouteTypes {
@@ -329,6 +339,7 @@ export interface FileRouteTypes {
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
+    | '/studio/use-case/$id/feasibility'
     | '/api/public/usecasex/use-cases/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -361,6 +372,7 @@ export interface FileRouteTypes {
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
+    | '/studio/use-case/$id/feasibility'
     | '/api/public/usecasex/use-cases/$slug'
   id:
     | '__root__'
@@ -394,6 +406,7 @@ export interface FileRouteTypes {
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
+    | '/_app/studio/use-case/$id/feasibility'
     | '/api/public/usecasex/use-cases/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -627,8 +640,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicUsecasexUseCasesSlugRouteImport
       parentRoute: typeof ApiPublicUsecasexUseCasesRoute
     }
+    '/_app/studio/use-case/$id/feasibility': {
+      id: '/_app/studio/use-case/$id/feasibility'
+      path: '/use-case/$id/feasibility'
+      fullPath: '/studio/use-case/$id/feasibility'
+      preLoaderRoute: typeof AppStudioUseCaseIdFeasibilityRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
   }
 }
+
+interface AppStudioRouteChildren {
+  AppStudioUseCaseIdFeasibilityRoute: typeof AppStudioUseCaseIdFeasibilityRoute
+}
+
+const AppStudioRouteChildren: AppStudioRouteChildren = {
+  AppStudioUseCaseIdFeasibilityRoute: AppStudioUseCaseIdFeasibilityRoute,
+}
+
+const AppStudioRouteWithChildren = AppStudioRoute._addFileChildren(
+  AppStudioRouteChildren,
+)
 
 interface AppRouteChildren {
   AppAdministrationRoute: typeof AppAdministrationRoute
@@ -651,7 +683,7 @@ interface AppRouteChildren {
   AppReportsRoute: typeof AppReportsRoute
   AppRepositoryRoute: typeof AppRepositoryRoute
   AppRoadmapRoute: typeof AppRoadmapRoute
-  AppStudioRoute: typeof AppStudioRoute
+  AppStudioRoute: typeof AppStudioRouteWithChildren
   AppUseCasesSlugRoute: typeof AppUseCasesSlugRoute
 }
 
@@ -676,7 +708,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppReportsRoute: AppReportsRoute,
   AppRepositoryRoute: AppRepositoryRoute,
   AppRoadmapRoute: AppRoadmapRoute,
-  AppStudioRoute: AppStudioRoute,
+  AppStudioRoute: AppStudioRouteWithChildren,
   AppUseCasesSlugRoute: AppUseCasesSlugRoute,
 }
 
