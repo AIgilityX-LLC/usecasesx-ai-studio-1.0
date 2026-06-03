@@ -523,6 +523,57 @@ export async function addUseCaseToPortfolio(portfolioId: string, useCaseId: stri
   if (error) throw new ServiceError(error.message, error);
 }
 
+export async function removeUseCaseFromPortfolio(portfolioId: string, useCaseId: string) {
+  const { error } = await supabase
+    .from("portfolio_items")
+    .delete()
+    .eq("portfolio_id", portfolioId)
+    .eq("use_case_id", useCaseId);
+  if (error) throw new ServiceError(error.message, error);
+}
+
+export async function updatePortfolio(
+  id: string,
+  patch: Partial<{
+    name: string;
+    objective: string | null;
+    portfolio_type: string;
+    status: string;
+    target_department: string | null;
+    target_quarter: string | null;
+  }>,
+) {
+  const { error } = await supabase.from("portfolios").update(patch).eq("id", id);
+  if (error) throw new ServiceError(error.message, error);
+}
+
+export async function deletePortfolio(id: string) {
+  const { error } = await supabase.from("portfolios").delete().eq("id", id);
+  if (error) throw new ServiceError(error.message, error);
+}
+
+/** Resolve a use_case slug → id. Returns null if missing/inaccessible. */
+export async function getUseCaseIdBySlug(slug: string): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("use_cases")
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (error) throw new ServiceError(error.message, error);
+  return data?.id ?? null;
+}
+
+export async function listGeneratedReports() {
+  const user = await getCurrentUser();
+  if (!user) return [];
+  const { data, error } = await supabase
+    .from("generated_reports")
+    .select("id, title, kind, use_case_count, created_at, payload")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+  return unwrap(data, error, []);
+}
+
 export async function generateReportRecord(input: {
   title: string;
   kind: "Executive PDF" | "Portfolio PDF" | "Roadmap PDF" | string;
