@@ -4,13 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { MOCK_USE_CASES, type MockUseCase } from "@/lib/usecasex.mock";
 import {
-  useUseCaseXPro,
   computeTotalScore,
   interpretScore,
   SCORE_LABELS,
   type ScoreDimensions,
   type Portfolio,
 } from "@/lib/usecasex.store";
+import { useUseCaseXPro } from "@/hooks/usecasex-pro";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
