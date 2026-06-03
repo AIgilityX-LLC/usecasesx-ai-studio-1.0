@@ -321,10 +321,12 @@ function AddNewTab() {
     <UseCaseForm
       uc={uc}
       onChange={setUc}
-      onSave={(next, action) => {
-        const saved = store.upsert(next, action);
-        setUc(emptyUseCase());
-        trackCTAEvent("admin_use_case_saved", { id: saved.id, action });
+      onSave={async (next, action) => {
+        const saved = await store.upsert(next, action);
+        if (saved) {
+          setUc(emptyUseCase());
+          trackCTAEvent("admin_use_case_saved", { id: saved.id, action });
+        }
       }}
     />
   );
