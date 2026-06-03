@@ -43,7 +43,7 @@ type Score = {
   recommendation: string | null;
 };
 
-type Link = {
+type IntegrationLinkRow = {
   use_case_id: string;
   integration_type: string;
   status: string | null;
