@@ -229,7 +229,7 @@ function ReportsPage() {
                     title: `${reportType} — ${new Date().toLocaleDateString()}`,
                     kind: reportType,
                     useCaseCount: selectedItems.length,
-                    payload: { slugs: selectedSlugs, portfolioId },
+                    payload: { slugs: Array.from(selectedSlugs), portfolioId },
                   });
                 } catch (e) {
                   console.error("[generate-report]", e);
