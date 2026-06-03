@@ -53,13 +53,13 @@ const casesQuery = (input: Search) =>
 export const Route = createFileRoute("/explore")({
   head: () => ({
     meta: [
-      { title: "Explore AI Use Cases — UseCaseX™ by AIgilityX" },
+      { title: "Explore AI Use Cases — UseCasesX™ by AIgilityX" },
       {
         name: "description",
         content:
           "Browse 1000+ validated AI use cases. Filter by industry, business function, AI type, business objective, value, complexity, risk and time-to-value.",
       },
-      { property: "og:title", content: "Explore AI Use Cases — UseCaseX™" },
+      { property: "og:title", content: "Explore AI Use Cases — UseCasesX™" },
       {
         property: "og:description",
         content:
@@ -119,7 +119,7 @@ function ExplorePage() {
       <section className="border-b border-border/60">
         <div className="mx-auto max-w-[1400px] px-6 py-10">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-            UseCaseX™ · Explore
+            UseCasesX™ · Explore
           </div>
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
             <span className="text-primary">Global AI Use Cases Repository</span>

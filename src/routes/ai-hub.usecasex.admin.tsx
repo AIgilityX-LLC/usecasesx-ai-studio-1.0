@@ -36,7 +36,7 @@ const ADMIN_ROLES = ["super_admin", "ai_hub_admin", "usecasex_admin", "content_m
 
 export const Route = createFileRoute("/ai-hub/usecasex/admin")({
   head: () => ({
-    meta: [{ title: "UseCaseX™ Admin", name: "robots" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "UseCasesX™ Admin", name: "robots" }, { name: "robots", content: "noindex" }],
   }),
   component: AdminPage,
 });
@@ -45,7 +45,7 @@ function AdminPage() {
   return (
     <RequireRoles
       anyOf={["admin", "moderator", "super_admin", "ai_hub_admin", "usecasex_admin", "content_manager", "reviewer"]}
-      action="open the UseCaseX admin"
+      action="open the UseCasesX admin"
     >
       <AdminPageInner />
     </RequireRoles>
@@ -61,7 +61,7 @@ function AdminPageInner() {
       <div className="mx-auto max-w-[1400px] px-6 py-10 space-y-6">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight">UseCaseX™ Admin</h1>
+            <h1 className="text-3xl font-semibold tracking-tight">UseCasesX™ Admin</h1>
             <p className="text-sm text-muted-foreground mt-1">
               Manage the AI use case catalogue, taxonomy, platform mapping, leads, and analytics.
             </p>

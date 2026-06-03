@@ -1,4 +1,4 @@
-// Reusable hooks for UseCaseX™ Pro Dashboard.
+// Reusable hooks for UseCasesX™ Pro Dashboard.
 // Mock-backed for now; swap internals for Supabase-backed createServerFn later
 // without changing call sites.
 

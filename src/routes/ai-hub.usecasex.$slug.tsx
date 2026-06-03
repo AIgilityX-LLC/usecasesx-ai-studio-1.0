@@ -28,7 +28,7 @@ const PLATFORM_BLURB: Record<string, string> = {
 };
 
 const EXECUTION_PATH = [
-  { step: 1, name: "UseCaseX", verb: "Discover", to: "/ai-hub/usecasex/explore" },
+  { step: 1, name: "UseCasesX", verb: "Discover", to: "/ai-hub/usecasex/explore" },
   { step: 2, name: "AI Readiness", verb: "Assess", to: "/ai-hub/readiness" },
   { step: 3, name: "AI ROI", verb: "Value", to: "/ai-hub/roi-calculator" },
   { step: 4, name: "SARPI", verb: "Track", to: "/sarpi" },
@@ -96,7 +96,7 @@ async function logIntegrationEvent(input: {
 export const Route = createFileRoute("/ai-hub/usecasex/$slug")({
   head: ({ params }) => ({
     meta: [
-      { title: `${params.slug} — UseCaseX™` },
+      { title: `${params.slug} — UseCasesX™` },
       {
         name: "description",
         content:

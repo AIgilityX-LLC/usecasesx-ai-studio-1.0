@@ -26,10 +26,10 @@ function AppFooter() {
             </div>
           </div>
           <p className="mt-4 max-w-xs text-sm text-muted-foreground">
-            UseCaseX™ — the global AI use cases repository for executives, public sector leaders, and AI teams.
+            UseCasesX™ — the global AI use cases repository for executives, public sector leaders, and AI teams.
           </p>
         </div>
-        <FooterCol title="UseCaseX" items={[
+        <FooterCol title="UseCasesX" items={[
           { l: "Home", to: "/ai-hub/usecasex" },
           { l: "Explore", to: "/ai-hub/usecasex/explore" },
           { l: "Get Pro — Free", to: "/ai-hub/usecasex/pro" },
@@ -52,7 +52,7 @@ function AppFooter() {
       </div>
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-2 px-6 py-4 text-[11px] text-muted-foreground">
-          <span>© {new Date().getFullYear()} AIgilityX. UseCaseX™ is part of the AIgilityX AI Hub.</span>
+          <span>© {new Date().getFullYear()} AIgilityX. UseCasesX™ is part of the AIgilityX AI Hub.</span>
           <span>Built for executives, public sector leaders, and AI teams.</span>
         </div>
       </div>

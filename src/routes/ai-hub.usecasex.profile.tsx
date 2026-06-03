@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/ai-hub/usecasex/profile")({
   head: () => ({
     meta: [
-      { title: "Complete your profile — UseCaseX™ Pro" },
+      { title: "Complete your profile — UseCasesX™ Pro" },
       { name: "description", content: "Tell us about you to personalize your AI Opportunity Portfolio." },
     ],
   }),

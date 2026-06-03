@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface NavItem { to: string; label: string; pro?: boolean; admin?: boolean; }
 
 const ITEMS: NavItem[] = [
-  { to: "/ai-hub/usecasex", label: "UseCaseX Home" },
+  { to: "/ai-hub/usecasex", label: "UseCasesX Home" },
   { to: "/ai-hub/usecasex/explore", label: "Explore Use Cases" },
   { to: "/ai-hub/usecasex/dashboard", label: "Pro Dashboard", pro: true },
   { to: "/ai-hub/usecasex/saved", label: "Saved Use Cases", pro: true },
@@ -41,7 +41,7 @@ export function UseCaseXSubNav() {
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Link to="/ai-hub/usecasex" className="flex items-center gap-2 py-3">
-              <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">UseCaseX™</span>
+              <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">UseCasesX™</span>
               <span className="hidden text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground sm:inline">Global AI Use Cases Repository</span>
             </Link>
           </div>

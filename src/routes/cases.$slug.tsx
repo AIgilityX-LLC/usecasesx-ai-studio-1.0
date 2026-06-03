@@ -18,12 +18,12 @@ export const Route = createFileRoute("/cases/$slug")({
   head: ({ loaderData }: { loaderData?: { title: string; summary: string } }) => ({
     meta: loaderData
       ? [
-          { title: `${loaderData.title} — UseCaseX™` },
+          { title: `${loaderData.title} — UseCasesX™` },
           { name: "description", content: loaderData.summary },
           { property: "og:title", content: loaderData.title },
           { property: "og:description", content: loaderData.summary },
         ]
-      : [{ title: "Use case — UseCaseX™" }],
+      : [{ title: "Use case — UseCasesX™" }],
   }),
   loader: async ({ context, params }) => {
     try {

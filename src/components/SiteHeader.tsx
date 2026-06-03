@@ -11,7 +11,7 @@ export function SiteHeader() {
             </div>
             <div className="leading-tight">
               <div className="text-sm font-bold tracking-tight text-foreground">
-                UseCaseX<span className="text-primary">™</span>
+                UseCasesX<span className="text-primary">™</span>
               </div>
               <div className="text-[9px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
                 AIgilityX AI Hub™
@@ -47,7 +47,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-3">
           <span className="hidden items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary md:inline-flex">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-            UseCaseX Free
+            UseCasesX Free
           </span>
           <Link to="/auth" className="text-sm font-medium text-muted-foreground hover:text-foreground">
             Sign in

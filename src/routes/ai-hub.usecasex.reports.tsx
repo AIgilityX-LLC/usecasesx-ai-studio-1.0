@@ -38,7 +38,7 @@ const REPORT_TYPES: ReportType[] = [
 ];
 
 const ECOSYSTEM = [
-  "UseCaseX", "AI Readiness", "AI ROI", "SARPI", "CyberX", "AdvisorX", "FlowX", "PrivacyX", "AssureX",
+  "UseCasesX", "AI Readiness", "AI ROI", "SARPI", "CyberX", "AdvisorX", "FlowX", "PrivacyX", "AssureX",
 ];
 
 type Profile = {
@@ -51,7 +51,7 @@ type Profile = {
 export const Route = createFileRoute("/ai-hub/usecasex/reports")({
   head: () => ({
     meta: [
-      { title: "AI Opportunity Reports — UseCaseX™ Pro" },
+      { title: "AI Opportunity Reports — UseCasesX™ Pro" },
       { name: "description", content: "Generate executive AI opportunity reports, quick-win briefs and board packs ready for print or PDF." },
     ],
   }),
@@ -301,7 +301,7 @@ function ReportBody({
       {/* Branded header */}
       <header className="flex items-start justify-between border-b border-slate-200 pb-6">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-indigo-600">AIgilityX™ · UseCaseX™</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-indigo-600">AIgilityX™ · UseCasesX™</p>
           <h1 className="text-3xl font-semibold mt-2 leading-tight">{reportType}</h1>
           <p className="text-sm text-slate-500 mt-2">{new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}</p>
         </div>
@@ -477,7 +477,7 @@ function ReportBody({
       </Section>
 
       <footer className="pt-6 border-t border-slate-200 text-[10px] text-slate-400 flex justify-between">
-        <span>© AIgilityX™ — Confidential. Generated via UseCaseX™ Pro.</span>
+        <span>© AIgilityX™ — Confidential. Generated via UseCasesX™ Pro.</span>
         <span>aigilityx.ai</span>
       </footer>
     </>

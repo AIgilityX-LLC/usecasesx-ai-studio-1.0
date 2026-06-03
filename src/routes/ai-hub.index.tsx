@@ -7,7 +7,7 @@ export const Route = createFileRoute("/ai-hub/")({
   head: () => ({
     meta: [
       { title: "AIgilityX AI Hub — Sovereign AI Ecosystems" },
-      { name: "description", content: "The AIgilityX AI Hub — explore UseCaseX™, AI Readiness, AI ROI Calculator, AI Strategy Canvas, AI Governance Toolkit and more." },
+      { name: "description", content: "The AIgilityX AI Hub — explore UseCasesX™, AI Readiness, AI ROI Calculator, AI Strategy Canvas, AI Governance Toolkit and more." },
       { property: "og:title", content: "AIgilityX AI Hub" },
       { property: "og:description", content: "Sovereign AI Ecosystems — discover what to automate, govern and scale next." },
     ],
@@ -32,11 +32,11 @@ function HubHome() {
             One <span className="text-primary">Sovereign AI</span> hub for executives, public sector leaders, and AI teams.
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-muted-foreground">
-            Discover what to automate, govern, and scale next — across UseCaseX™, AI Readiness, AI ROI, Strategy Canvas, Governance and more.
+            Discover what to automate, govern, and scale next — across UseCasesX™, AI Readiness, AI ROI, Strategy Canvas, Governance and more.
           </p>
           <div className="mt-8">
             <CTAButtonGroup ctas={[
-              { label: "Open UseCaseX™ →", to: "/ai-hub/usecasex" },
+              { label: "Open UseCasesX™ →", to: "/ai-hub/usecasex" },
               { label: "Get Pro — Free", to: "/ai-hub/usecasex/pro", variant: "secondary" },
             ]} />
           </div>
@@ -85,7 +85,7 @@ function HubHome() {
           <div className="rounded-2xl border border-primary/20 bg-primary/5 p-10">
             <div className="grid items-center gap-8 md:grid-cols-3">
               <div className="md:col-span-2">
-                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">UseCaseX™ · Free / Lite + Pro</div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">UseCasesX™ · Free / Lite + Pro</div>
                 <h2 className="mt-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
                   Start with the Global AI Use Cases Repository.
                 </h2>
@@ -94,7 +94,7 @@ function HubHome() {
                 </p>
               </div>
               <div className="flex flex-col gap-3 md:items-end">
-                <Link to="/ai-hub/usecasex" className="rounded-md bg-primary px-5 py-3 text-center text-sm font-bold text-primary-foreground hover:brightness-110">Open UseCaseX™ →</Link>
+                <Link to="/ai-hub/usecasex" className="rounded-md bg-primary px-5 py-3 text-center text-sm font-bold text-primary-foreground hover:brightness-110">Open UseCasesX™ →</Link>
                 <Link to="/ai-hub/usecasex/pro" className="text-center text-sm font-semibold text-muted-foreground hover:text-foreground">Get Pro — Free</Link>
               </div>
             </div>

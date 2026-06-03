@@ -92,7 +92,7 @@ export const draftUseCase = createServerFn({ method: "POST" })
     const model = PROVIDER_MODEL[data.provider];
 
     const system = [
-      "You are AIgilityX UseCaseX Studio — an AI use case research assistant.",
+      "You are AIgilityX UseCasesX Studio — an AI use case research assistant.",
       "Given an organization context and objective, produce ONE concrete, organization-specific AI use case draft.",
       "Be specific to the organization and industry. Avoid generic platitudes. Use realistic KPIs.",
       "Always call the draft_ai_use_case tool with the structured fields. Do not return free-form text.",

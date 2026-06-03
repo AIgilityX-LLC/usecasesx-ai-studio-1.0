@@ -17,7 +17,7 @@ interface Props {
  * Route-level role gate. Renders children only when the signed-in user has at
  * least one of the required roles. Otherwise renders a friendly access-denied
  * card. This is the single source of truth for permission UX across
- * UseCaseX™ admin and taxonomy surfaces — keep it aligned with the RLS
+ * UseCasesX™ admin and taxonomy surfaces — keep it aligned with the RLS
  * policies on user_roles / taxonomy_* / use_cases.
  */
 export function RequireRoles({ anyOf, action, children, fallback }: Props) {
@@ -61,7 +61,7 @@ export function RequireRoles({ anyOf, action, children, fallback }: Props) {
           Current roles: {roles.length ? roles.join(", ") : "none"}
         </p>
         <Button asChild variant="outline">
-          <Link to="/ai-hub/usecasex">Back to UseCaseX</Link>
+          <Link to="/ai-hub/usecasex">Back to UseCasesX</Link>
         </Button>
       </div>
     );

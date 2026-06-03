@@ -7,7 +7,7 @@ export function SiteFooter() {
         <div className="grid gap-12 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">
-              UseCaseX™ · AIgilityX AI Hub™
+              UseCasesX™ · AIgilityX AI Hub™
             </div>
             <h2 className="mb-3 text-2xl font-bold leading-tight text-foreground md:text-3xl">
               Explore 100+ AI Use Cases for Your Industry —{" "}
@@ -46,7 +46,7 @@ export function SiteFooter() {
           />
         </div>
         <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-border/60 pt-6 text-xs text-muted-foreground md:flex-row md:items-center">
-          <span>© 2026 AIgilityX. UseCaseX™ — AI Use Cases Repository Module.</span>
+          <span>© 2026 AIgilityX. UseCasesX™ — AI Use Cases Repository Module.</span>
           <span className="font-mono uppercase tracking-widest">hub.aigilityx.com / usecasex</span>
         </div>
       </div>

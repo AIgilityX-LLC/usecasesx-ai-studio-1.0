@@ -33,7 +33,7 @@ export function UseCaseXHero({ stats, onRequestStrategy }: { stats?: HeroStats; 
       <div className="relative mx-auto max-w-[1400px] px-6 pb-24 pt-20 sm:pt-28">
         <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-[oklch(0.85_0.12_215)] backdrop-blur">
           <span className="h-1.5 w-1.5 rounded-full bg-[oklch(0.78_0.13_215)]" />
-          UseCaseX™ · Global AI Use Cases Repository
+          UseCasesX™ · Global AI Use Cases Repository
         </div>
         <h1 className="max-w-5xl text-[44px] font-bold leading-[1.05] tracking-tight text-white sm:text-6xl">
           Explore <span className="text-[oklch(0.85_0.13_215)]">1000+ AI Use Cases</span> for your industry.

@@ -36,7 +36,7 @@ export interface RoleState {
 }
 
 /**
- * Centralised role hook. All UseCaseX permission checks should go through this
+ * Centralised role hook. All UseCasesX permission checks should go through this
  * so that route guards, action buttons, and gates stay in sync with the
  * database RLS policies:
  *   - has_role(uid, 'admin')      → full access

@@ -26,7 +26,7 @@ import { Plus, Trash2, Pencil, X } from "lucide-react";
 export const Route = createFileRoute("/ai-hub/usecasex/portfolio")({
   head: () => ({
     meta: [
-      { title: "AI Opportunity Portfolios — UseCaseX™ Pro" },
+      { title: "AI Opportunity Portfolios — UseCasesX™ Pro" },
       { name: "description", content: "Build, score, and govern AI opportunity portfolios across quick wins, strategic and high-risk initiatives." },
     ],
   }),
