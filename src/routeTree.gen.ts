@@ -43,6 +43,7 @@ import { Route as ApiPublicUsecasexUseCasesSlugRouteImport } from './routes/api/
 import { Route as AppStudioUseCaseIdSarpiRouteImport } from './routes/_app.studio.use-case.$id.sarpi'
 import { Route as AppStudioUseCaseIdFeasibilityRouteImport } from './routes/_app.studio.use-case.$id.feasibility'
 import { Route as AppStudioUseCaseIdDataReadinessRouteImport } from './routes/_app.studio.use-case.$id.data-readiness'
+import { Route as AppStudioUseCaseIdC3gGovernanceRouteImport } from './routes/_app.studio.use-case.$id.c3g-governance'
 import { Route as AppStudioUseCaseIdBlueprintRouteImport } from './routes/_app.studio.use-case.$id.blueprint'
 import { Route as AppStudioUseCaseIdAdvisorxRouteImport } from './routes/_app.studio.use-case.$id.advisorx'
 
@@ -220,6 +221,12 @@ const AppStudioUseCaseIdDataReadinessRoute =
     path: '/use-case/$id/data-readiness',
     getParentRoute: () => AppStudioRoute,
   } as any)
+const AppStudioUseCaseIdC3gGovernanceRoute =
+  AppStudioUseCaseIdC3gGovernanceRouteImport.update({
+    id: '/use-case/$id/c3g-governance',
+    path: '/use-case/$id/c3g-governance',
+    getParentRoute: () => AppStudioRoute,
+  } as any)
 const AppStudioUseCaseIdBlueprintRoute =
   AppStudioUseCaseIdBlueprintRouteImport.update({
     id: '/use-case/$id/blueprint',
@@ -265,6 +272,7 @@ export interface FileRoutesByFullPath {
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
+  '/studio/use-case/$id/c3g-governance': typeof AppStudioUseCaseIdC3gGovernanceRoute
   '/studio/use-case/$id/data-readiness': typeof AppStudioUseCaseIdDataReadinessRoute
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
@@ -302,6 +310,7 @@ export interface FileRoutesByTo {
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
+  '/studio/use-case/$id/c3g-governance': typeof AppStudioUseCaseIdC3gGovernanceRoute
   '/studio/use-case/$id/data-readiness': typeof AppStudioUseCaseIdDataReadinessRoute
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
@@ -341,6 +350,7 @@ export interface FileRoutesById {
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/_app/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/_app/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
+  '/_app/studio/use-case/$id/c3g-governance': typeof AppStudioUseCaseIdC3gGovernanceRoute
   '/_app/studio/use-case/$id/data-readiness': typeof AppStudioUseCaseIdDataReadinessRoute
   '/_app/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/_app/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
@@ -380,6 +390,7 @@ export interface FileRouteTypes {
     | '/api/public/usecasex/use-cases'
     | '/studio/use-case/$id/advisorx'
     | '/studio/use-case/$id/blueprint'
+    | '/studio/use-case/$id/c3g-governance'
     | '/studio/use-case/$id/data-readiness'
     | '/studio/use-case/$id/feasibility'
     | '/studio/use-case/$id/sarpi'
@@ -417,6 +428,7 @@ export interface FileRouteTypes {
     | '/api/public/usecasex/use-cases'
     | '/studio/use-case/$id/advisorx'
     | '/studio/use-case/$id/blueprint'
+    | '/studio/use-case/$id/c3g-governance'
     | '/studio/use-case/$id/data-readiness'
     | '/studio/use-case/$id/feasibility'
     | '/studio/use-case/$id/sarpi'
@@ -455,6 +467,7 @@ export interface FileRouteTypes {
     | '/api/public/usecasex/use-cases'
     | '/_app/studio/use-case/$id/advisorx'
     | '/_app/studio/use-case/$id/blueprint'
+    | '/_app/studio/use-case/$id/c3g-governance'
     | '/_app/studio/use-case/$id/data-readiness'
     | '/_app/studio/use-case/$id/feasibility'
     | '/_app/studio/use-case/$id/sarpi'
@@ -712,6 +725,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudioUseCaseIdDataReadinessRouteImport
       parentRoute: typeof AppStudioRoute
     }
+    '/_app/studio/use-case/$id/c3g-governance': {
+      id: '/_app/studio/use-case/$id/c3g-governance'
+      path: '/use-case/$id/c3g-governance'
+      fullPath: '/studio/use-case/$id/c3g-governance'
+      preLoaderRoute: typeof AppStudioUseCaseIdC3gGovernanceRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
     '/_app/studio/use-case/$id/blueprint': {
       id: '/_app/studio/use-case/$id/blueprint'
       path: '/use-case/$id/blueprint'
@@ -732,6 +752,7 @@ declare module '@tanstack/react-router' {
 interface AppStudioRouteChildren {
   AppStudioUseCaseIdAdvisorxRoute: typeof AppStudioUseCaseIdAdvisorxRoute
   AppStudioUseCaseIdBlueprintRoute: typeof AppStudioUseCaseIdBlueprintRoute
+  AppStudioUseCaseIdC3gGovernanceRoute: typeof AppStudioUseCaseIdC3gGovernanceRoute
   AppStudioUseCaseIdDataReadinessRoute: typeof AppStudioUseCaseIdDataReadinessRoute
   AppStudioUseCaseIdFeasibilityRoute: typeof AppStudioUseCaseIdFeasibilityRoute
   AppStudioUseCaseIdSarpiRoute: typeof AppStudioUseCaseIdSarpiRoute
@@ -740,6 +761,7 @@ interface AppStudioRouteChildren {
 const AppStudioRouteChildren: AppStudioRouteChildren = {
   AppStudioUseCaseIdAdvisorxRoute: AppStudioUseCaseIdAdvisorxRoute,
   AppStudioUseCaseIdBlueprintRoute: AppStudioUseCaseIdBlueprintRoute,
+  AppStudioUseCaseIdC3gGovernanceRoute: AppStudioUseCaseIdC3gGovernanceRoute,
   AppStudioUseCaseIdDataReadinessRoute: AppStudioUseCaseIdDataReadinessRoute,
   AppStudioUseCaseIdFeasibilityRoute: AppStudioUseCaseIdFeasibilityRoute,
   AppStudioUseCaseIdSarpiRoute: AppStudioUseCaseIdSarpiRoute,
@@ -828,3 +850,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
