@@ -43,7 +43,10 @@ export const Route = createFileRoute("/ai-hub/usecasex/admin")({
 
 function AdminPage() {
   return (
-    <RequireRoles anyOf={["admin", "moderator"]} action="open the UseCaseX admin">
+    <RequireRoles
+      anyOf={["admin", "moderator", "super_admin", "ai_hub_admin", "usecasex_admin", "content_manager", "reviewer"]}
+      action="open the UseCaseX admin"
+    >
       <AdminPageInner />
     </RequireRoles>
   );
