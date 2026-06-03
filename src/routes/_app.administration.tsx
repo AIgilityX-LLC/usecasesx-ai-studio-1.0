@@ -78,6 +78,12 @@ function AdminPageInner() {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="use-cases">Use Cases</TabsTrigger>
             <TabsTrigger value="add-new">Add New</TabsTrigger>
+            <TabsTrigger value="patterns">Patterns</TabsTrigger>
+            <TabsTrigger value="categories">Categories</TabsTrigger>
+            <TabsTrigger value="organizations">Organizations</TabsTrigger>
+            <TabsTrigger value="studio-templates">Studio Templates</TabsTrigger>
+            <TabsTrigger value="integrations">Integrations</TabsTrigger>
+            <TabsTrigger value="report-templates">Report Templates</TabsTrigger>
             <TabsTrigger value="taxonomy">Taxonomy</TabsTrigger>
             <TabsTrigger value="platforms">Platform Mapping</TabsTrigger>
             <TabsTrigger value="leads">Leads</TabsTrigger>
@@ -89,6 +95,12 @@ function AdminPageInner() {
           <TabsContent value="overview" className="mt-6"><OverviewTab /></TabsContent>
           <TabsContent value="use-cases" className="mt-6"><UseCasesTab /></TabsContent>
           <TabsContent value="add-new" className="mt-6"><AddNewTab /></TabsContent>
+          <TabsContent value="patterns" className="mt-6"><PatternsAdminTab /></TabsContent>
+          <TabsContent value="categories" className="mt-6"><CategoriesAdminTab /></TabsContent>
+          <TabsContent value="organizations" className="mt-6"><OrganizationsAdminTab /></TabsContent>
+          <TabsContent value="studio-templates" className="mt-6"><StudioTemplatesAdminTab /></TabsContent>
+          <TabsContent value="integrations" className="mt-6"><IntegrationsAdminTab /></TabsContent>
+          <TabsContent value="report-templates" className="mt-6"><ReportTemplatesAdminTab /></TabsContent>
           <TabsContent value="taxonomy" className="mt-6"><TaxonomyTab /></TabsContent>
           <TabsContent value="platforms" className="mt-6"><PlatformsTab /></TabsContent>
           <TabsContent value="leads" className="mt-6"><LeadsTab /></TabsContent>
