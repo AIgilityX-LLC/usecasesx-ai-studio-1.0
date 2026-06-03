@@ -67,12 +67,14 @@ function UseCaseDetailPage() {
         {uc && (
           <>
             <div className="flex flex-wrap gap-2">
-              {links.map((l) => (
-                <Button key={l.label} asChild variant="outline" size="sm">
-                  <Link to={l.to} params={{ id }}>{l.label}</Link>
-                </Button>
-              ))}
+              <Link className={linkClass} to="/studio/use-case/$id/feasibility" params={{ id }}>Feasibility</Link>
+              <Link className={linkClass} to="/studio/use-case/$id/data-readiness" params={{ id }}>Data Readiness</Link>
+              <Link className={linkClass} to="/studio/use-case/$id/blueprint" params={{ id }}>Blueprint</Link>
+              <Link className={linkClass} to="/studio/use-case/$id/sarpi" params={{ id }}>SARPI</Link>
+              <Link className={linkClass} to="/studio/use-case/$id/advisorx" params={{ id }}>AdvisorX</Link>
+              <Link className={linkClass} to="/studio/use-case/$id/c3g-governance" params={{ id }}>C3G Governance</Link>
             </div>
+
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <Card className="lg:col-span-2">
