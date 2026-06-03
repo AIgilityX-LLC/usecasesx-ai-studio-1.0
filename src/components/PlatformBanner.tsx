@@ -1,5 +1,14 @@
 import { Link } from "@tanstack/react-router";
-import { Sparkles, Library, Plus } from "lucide-react";
+import { Sparkles, Library, Plus, ArrowRight } from "lucide-react";
+
+const FLOW = [
+  "Discover in Repository",
+  "Design in Studio",
+  "Assess with SARPI",
+  "Advise with AdvisorX",
+  "Govern with C3G",
+  "Execute & Scale",
+];
 
 export function PlatformBanner() {
   return (
@@ -14,7 +23,7 @@ export function PlatformBanner() {
             <span className="text-muted-foreground">(UseCasesX)</span>
           </h1>
           <p className="text-base text-muted-foreground">
-            Discover, design, validate, govern, and scale AI use cases.
+            The AI Hub for discovering, designing, validating, governing, and scaling AI use cases.
           </p>
         </div>
 
@@ -27,10 +36,16 @@ export function PlatformBanner() {
               <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground">
                 AIgilityX AI Use Case Studio™
               </h2>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-primary">
+                Powered by UseCaseX™
+              </p>
               <p className="mt-2 text-sm text-muted-foreground">
-                Turn AI ambition into validated, governed, fundable, and executable
-                AI use cases. Powered by UseCaseX™ — integrated with SARPI™,
-                AdvisorX™, and CyberX Sovereign AI C3G™.
+                Integrated with SARPI™, AdvisorX™, and CyberX Sovereign AI C3G™.
+              </p>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Move from AI idea to boardroom-ready blueprint through guided discovery,
+                feasibility scoring, data readiness, governance mapping, and portfolio
+                prioritization.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -39,22 +54,40 @@ export function PlatformBanner() {
                 className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-sm hover:brightness-110"
               >
                 <Sparkles className="h-4 w-4" />
-                Open AI Use Case Studio
+                Start AI Use Case Studio
               </Link>
               <Link
                 to="/repository"
                 className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
               >
                 <Library className="h-4 w-4" />
-                Explore Global Repository
+                Explore Repository
               </Link>
               <Link
                 to="/studio"
                 className="inline-flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-4 py-2.5 text-sm font-bold text-foreground hover:bg-primary/20"
               >
                 <Plus className="h-4 w-4" />
-                Start New Use Case
+                Create New Board
               </Link>
+            </div>
+          </div>
+
+          <div className="mt-6 border-t border-border pt-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+              Platform flow
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-2 text-sm">
+              {FLOW.map((step, i) => (
+                <span key={step} className="inline-flex items-center gap-2">
+                  <span className="rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground">
+                    {step}
+                  </span>
+                  {i < FLOW.length - 1 && (
+                    <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
+                  )}
+                </span>
+              ))}
             </div>
           </div>
         </div>
