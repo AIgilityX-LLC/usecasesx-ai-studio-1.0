@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubmitRouteImport } from './routes/submit'
+import { Route as SarpiRouteImport } from './routes/sarpi'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AiHubRouteImport } from './routes/ai-hub'
@@ -37,6 +38,11 @@ import { Route as ApiPublicUsecasexUseCasesSlugRouteImport } from './routes/api/
 const SubmitRoute = SubmitRouteImport.update({
   id: '/submit',
   path: '/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SarpiRoute = SarpiRouteImport.update({
+  id: '/sarpi',
+  path: '/sarpi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExploreRoute = ExploreRouteImport.update({
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/ai-hub': typeof AiHubRouteWithChildren
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
+  '/sarpi': typeof SarpiRoute
   '/submit': typeof SubmitRoute
   '/ai-hub/usecasex': typeof AiHubUsecasexRouteWithChildren
   '/cases/$slug': typeof CasesSlugRoute
@@ -189,6 +196,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
+  '/sarpi': typeof SarpiRoute
   '/submit': typeof SubmitRoute
   '/cases/$slug': typeof CasesSlugRoute
   '/ai-hub': typeof AiHubIndexRoute
@@ -215,6 +223,7 @@ export interface FileRoutesById {
   '/ai-hub': typeof AiHubRouteWithChildren
   '/auth': typeof AuthRoute
   '/explore': typeof ExploreRoute
+  '/sarpi': typeof SarpiRoute
   '/submit': typeof SubmitRoute
   '/ai-hub/usecasex': typeof AiHubUsecasexRouteWithChildren
   '/cases/$slug': typeof CasesSlugRoute
@@ -243,6 +252,7 @@ export interface FileRouteTypes {
     | '/ai-hub'
     | '/auth'
     | '/explore'
+    | '/sarpi'
     | '/submit'
     | '/ai-hub/usecasex'
     | '/cases/$slug'
@@ -268,6 +278,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/explore'
+    | '/sarpi'
     | '/submit'
     | '/cases/$slug'
     | '/ai-hub'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/ai-hub'
     | '/auth'
     | '/explore'
+    | '/sarpi'
     | '/submit'
     | '/ai-hub/usecasex'
     | '/cases/$slug'
@@ -320,6 +332,7 @@ export interface RootRouteChildren {
   AiHubRoute: typeof AiHubRouteWithChildren
   AuthRoute: typeof AuthRoute
   ExploreRoute: typeof ExploreRoute
+  SarpiRoute: typeof SarpiRoute
   SubmitRoute: typeof SubmitRoute
   CasesSlugRoute: typeof CasesSlugRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
@@ -333,6 +346,13 @@ declare module '@tanstack/react-router' {
       path: '/submit'
       fullPath: '/submit'
       preLoaderRoute: typeof SubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sarpi': {
+      id: '/sarpi'
+      path: '/sarpi'
+      fullPath: '/sarpi'
+      preLoaderRoute: typeof SarpiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/explore': {
@@ -567,6 +587,7 @@ const rootRouteChildren: RootRouteChildren = {
   AiHubRoute: AiHubRouteWithChildren,
   AuthRoute: AuthRoute,
   ExploreRoute: ExploreRoute,
+  SarpiRoute: SarpiRoute,
   SubmitRoute: SubmitRoute,
   CasesSlugRoute: CasesSlugRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
