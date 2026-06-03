@@ -32,6 +32,191 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_use_cases: {
+        Row: {
+          ai_type: string | null
+          beneficiaries: string | null
+          board_id: string
+          controls: Json | null
+          created_at: string
+          created_by: string
+          current_state: string | null
+          data_sources: Json | null
+          expected_benefits: Json | null
+          future_state: string | null
+          id: string
+          kpis: Json | null
+          minimum_viable_prediction: string | null
+          mvp_scope: string | null
+          pattern_id: string | null
+          priority_score: number | null
+          problem_statement: string | null
+          risk_level: string | null
+          risks: Json | null
+          stakeholders: Json | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ai_type?: string | null
+          beneficiaries?: string | null
+          board_id: string
+          controls?: Json | null
+          created_at?: string
+          created_by: string
+          current_state?: string | null
+          data_sources?: Json | null
+          expected_benefits?: Json | null
+          future_state?: string | null
+          id?: string
+          kpis?: Json | null
+          minimum_viable_prediction?: string | null
+          mvp_scope?: string | null
+          pattern_id?: string | null
+          priority_score?: number | null
+          problem_statement?: string | null
+          risk_level?: string | null
+          risks?: Json | null
+          stakeholders?: Json | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ai_type?: string | null
+          beneficiaries?: string | null
+          board_id?: string
+          controls?: Json | null
+          created_at?: string
+          created_by?: string
+          current_state?: string | null
+          data_sources?: Json | null
+          expected_benefits?: Json | null
+          future_state?: string | null
+          id?: string
+          kpis?: Json | null
+          minimum_viable_prediction?: string | null
+          mvp_scope?: string | null
+          pattern_id?: string | null
+          priority_score?: number | null
+          problem_statement?: string | null
+          risk_level?: string | null
+          risks?: Json | null
+          stakeholders?: Json | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_use_cases_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "use_case_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_use_cases_pattern_id_fkey"
+            columns: ["pattern_id"]
+            isOneToOne: false
+            referencedRelation: "use_case_patterns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audit_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          event_type: string
+          id: string
+          new_value: Json | null
+          previous_value: Json | null
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          event_type: string
+          id?: string
+          new_value?: Json | null
+          previous_value?: Json | null
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          event_type?: string
+          id?: string
+          new_value?: Json | null
+          previous_value?: Json | null
+        }
+        Relationships: []
+      }
+      blueprints: {
+        Row: {
+          budget_assumptions: string | null
+          business_case: string | null
+          created_at: string
+          data_requirements: string | null
+          executive_summary: string | null
+          governance_controls: string | null
+          id: string
+          implementation_roadmap: string | null
+          model_approach: string | null
+          risk_summary: string | null
+          success_metrics: string | null
+          technical_scope: string | null
+          updated_at: string
+          use_case_id: string
+        }
+        Insert: {
+          budget_assumptions?: string | null
+          business_case?: string | null
+          created_at?: string
+          data_requirements?: string | null
+          executive_summary?: string | null
+          governance_controls?: string | null
+          id?: string
+          implementation_roadmap?: string | null
+          model_approach?: string | null
+          risk_summary?: string | null
+          success_metrics?: string | null
+          technical_scope?: string | null
+          updated_at?: string
+          use_case_id: string
+        }
+        Update: {
+          budget_assumptions?: string | null
+          business_case?: string | null
+          created_at?: string
+          data_requirements?: string | null
+          executive_summary?: string | null
+          governance_controls?: string | null
+          id?: string
+          implementation_roadmap?: string | null
+          model_approach?: string | null
+          risk_summary?: string | null
+          success_metrics?: string | null
+          technical_scope?: string | null
+          updated_at?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blueprints_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "ai_use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       business_functions: {
         Row: {
           id: string
@@ -125,6 +310,62 @@ export type Database = {
         }
         Relationships: []
       }
+      data_readiness_assessments: {
+        Row: {
+          bias_risk_score: number | null
+          created_at: string
+          data_accessibility_score: number | null
+          data_availability_score: number | null
+          data_quality_score: number | null
+          id: string
+          missing_data_gaps: Json | null
+          mitigation_recommendations: Json | null
+          overall_data_readiness_score: number | null
+          ownership_clarity_score: number | null
+          privacy_exposure_score: number | null
+          updated_at: string
+          use_case_id: string
+        }
+        Insert: {
+          bias_risk_score?: number | null
+          created_at?: string
+          data_accessibility_score?: number | null
+          data_availability_score?: number | null
+          data_quality_score?: number | null
+          id?: string
+          missing_data_gaps?: Json | null
+          mitigation_recommendations?: Json | null
+          overall_data_readiness_score?: number | null
+          ownership_clarity_score?: number | null
+          privacy_exposure_score?: number | null
+          updated_at?: string
+          use_case_id: string
+        }
+        Update: {
+          bias_risk_score?: number | null
+          created_at?: string
+          data_accessibility_score?: number | null
+          data_availability_score?: number | null
+          data_quality_score?: number | null
+          id?: string
+          missing_data_gaps?: Json | null
+          mitigation_recommendations?: Json | null
+          overall_data_readiness_score?: number | null
+          ownership_clarity_score?: number | null
+          privacy_exposure_score?: number | null
+          updated_at?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_readiness_assessments_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "ai_use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       external_module_links: {
         Row: {
           created_at: string
@@ -154,6 +395,62 @@ export type Database = {
           use_case_id?: string
         }
         Relationships: []
+      }
+      feasibility_scores: {
+        Row: {
+          created_at: string
+          created_by: string
+          desirability_score: number | null
+          feasibility_score: number | null
+          governability_score: number | null
+          id: string
+          notes: string | null
+          recommendation: string | null
+          sustainability_score: number | null
+          total_score: number | null
+          updated_at: string
+          use_case_id: string
+          viability_score: number | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          desirability_score?: number | null
+          feasibility_score?: number | null
+          governability_score?: number | null
+          id?: string
+          notes?: string | null
+          recommendation?: string | null
+          sustainability_score?: number | null
+          total_score?: number | null
+          updated_at?: string
+          use_case_id: string
+          viability_score?: number | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          desirability_score?: number | null
+          feasibility_score?: number | null
+          governability_score?: number | null
+          id?: string
+          notes?: string | null
+          recommendation?: string | null
+          sustainability_score?: number | null
+          total_score?: number | null
+          updated_at?: string
+          use_case_id?: string
+          viability_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feasibility_scores_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "ai_use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       generated_reports: {
         Row: {
@@ -257,6 +554,47 @@ export type Database = {
         }
         Relationships: []
       }
+      integration_links: {
+        Row: {
+          created_at: string
+          external_reference_id: string | null
+          id: string
+          integration_type: string
+          metadata: Json | null
+          status: string | null
+          updated_at: string
+          use_case_id: string
+        }
+        Insert: {
+          created_at?: string
+          external_reference_id?: string | null
+          id?: string
+          integration_type: string
+          metadata?: Json | null
+          status?: string | null
+          updated_at?: string
+          use_case_id: string
+        }
+        Update: {
+          created_at?: string
+          external_reference_id?: string | null
+          id?: string
+          integration_type?: string
+          metadata?: Json | null
+          status?: string | null
+          updated_at?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_links_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "ai_use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_captures: {
         Row: {
           company: string | null
@@ -305,6 +643,39 @@ export type Database = {
           role?: string | null
           source_page?: string | null
           source_use_case?: string | null
+        }
+        Relationships: []
+      }
+      organizations: {
+        Row: {
+          country: string | null
+          created_at: string
+          id: string
+          industry: string | null
+          name: string
+          plan: string
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          name: string
+          plan?: string
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          name?: string
+          plan?: string
+          type?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -422,6 +793,7 @@ export type Database = {
           industry: string | null
           main_ai_interest: string | null
           organization: string | null
+          organization_id: string | null
           plan_type: string
           profile_completed: boolean
           role: string | null
@@ -438,6 +810,7 @@ export type Database = {
           industry?: string | null
           main_ai_interest?: string | null
           organization?: string | null
+          organization_id?: string | null
           plan_type?: string
           profile_completed?: boolean
           role?: string | null
@@ -454,6 +827,7 @@ export type Database = {
           industry?: string | null
           main_ai_interest?: string | null
           organization?: string | null
+          organization_id?: string | null
           plan_type?: string
           profile_completed?: boolean
           role?: string | null
@@ -461,7 +835,15 @@ export type Database = {
           user_id?: string
           user_role?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       saved_use_cases: {
         Row: {
@@ -674,6 +1056,50 @@ export type Database = {
           use_case_id?: string | null
         }
         Relationships: []
+      }
+      use_case_boards: {
+        Row: {
+          board_type: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          status: string
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          board_type?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          status?: string
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          board_type?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "use_case_boards_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       use_case_business_functions: {
         Row: {
@@ -988,6 +1414,78 @@ export type Database = {
           },
         ]
       }
+      use_case_patterns: {
+        Row: {
+          access_tier: string
+          ai_type: string | null
+          business_problem: string | null
+          complexity_level: string | null
+          controls: Json | null
+          created_at: string
+          data_inputs: Json | null
+          domain: string | null
+          expected_outputs: Json | null
+          function_area: string | null
+          government_domain: string | null
+          id: string
+          industry: string | null
+          maturity_level: string | null
+          risks: Json | null
+          sample_kpis: Json | null
+          status: string
+          summary: string | null
+          title: string
+          updated_at: string
+          value_potential: string | null
+        }
+        Insert: {
+          access_tier?: string
+          ai_type?: string | null
+          business_problem?: string | null
+          complexity_level?: string | null
+          controls?: Json | null
+          created_at?: string
+          data_inputs?: Json | null
+          domain?: string | null
+          expected_outputs?: Json | null
+          function_area?: string | null
+          government_domain?: string | null
+          id?: string
+          industry?: string | null
+          maturity_level?: string | null
+          risks?: Json | null
+          sample_kpis?: Json | null
+          status?: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+          value_potential?: string | null
+        }
+        Update: {
+          access_tier?: string
+          ai_type?: string | null
+          business_problem?: string | null
+          complexity_level?: string | null
+          controls?: Json | null
+          created_at?: string
+          data_inputs?: Json | null
+          domain?: string | null
+          expected_outputs?: Json | null
+          function_area?: string | null
+          government_domain?: string | null
+          id?: string
+          industry?: string | null
+          maturity_level?: string | null
+          risks?: Json | null
+          sample_kpis?: Json | null
+          status?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          value_potential?: string | null
+        }
+        Relationships: []
+      }
       use_case_ratings: {
         Row: {
           created_at: string
@@ -1255,6 +1753,47 @@ export type Database = {
         }
         Relationships: []
       }
+      workspaces: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          name: string
+          organization_id: string
+          updated_at: string
+          workspace_type: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          name: string
+          organization_id: string
+          updated_at?: string
+          workspace_type?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          name?: string
+          organization_id?: string
+          updated_at?: string
+          workspace_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspaces_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       use_case_rating_aggregates: {
@@ -1279,6 +1818,15 @@ export type Database = {
         Returns: boolean
       }
       is_admin_tier: { Args: { _user_id: string }; Returns: boolean }
+      user_can_access_use_case: {
+        Args: { _use_case_id: string; _user_id: string }
+        Returns: boolean
+      }
+      user_in_workspace: {
+        Args: { _user_id: string; _workspace_id: string }
+        Returns: boolean
+      }
+      user_org_id: { Args: { _user_id: string }; Returns: string }
     }
     Enums: {
       app_role:
