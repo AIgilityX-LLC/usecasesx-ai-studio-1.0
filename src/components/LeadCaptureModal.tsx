@@ -140,6 +140,8 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
     title: titleOverride,
     description: descriptionOverride,
     sourceUseCase,
+    sourceUseCaseId,
+    sourceUseCaseTitle,
     sourcePage,
     defaultInterestArea,
   } = props;
