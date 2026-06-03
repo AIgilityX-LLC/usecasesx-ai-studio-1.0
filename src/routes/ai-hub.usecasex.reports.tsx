@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { MOCK_USE_CASES, type MockUseCase } from "@/lib/usecasex.mock";
 import {
-  useUseCaseXStore,
+  useUseCaseXPro,
   computeTotalScore,
   interpretScore,
   SCORE_LABELS,
@@ -63,7 +63,7 @@ function ReportsPage() {
   const session = useSupabaseSession();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const store = useUseCaseXStore();
+  const store = useUseCaseXPro();
   const printRef = useRef<HTMLDivElement>(null);
 
   const [reportType, setReportType] = useState<ReportType>("AI Use Case Summary Report");

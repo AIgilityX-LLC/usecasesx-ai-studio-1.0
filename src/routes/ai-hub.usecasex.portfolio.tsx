@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { MOCK_USE_CASES } from "@/lib/usecasex.mock";
 import {
-  useUseCaseXStore,
+  useUseCaseXPro,
   computeTotalScore,
   PORTFOLIO_TYPES,
   PORTFOLIO_STATUSES,
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/ai-hub/usecasex/portfolio")({
 function PortfolioPage() {
   const navigate = useNavigate();
   const session = useSupabaseSession();
-  const store = useUseCaseXStore();
+  const store = useUseCaseXPro();
 
   useEffect(() => {
     if (session === null) navigate({ to: "/ai-hub/usecasex/pro", replace: true });
@@ -82,7 +82,7 @@ function PortfolioPage() {
   );
 }
 
-function PortfolioCard({ portfolio, store }: { portfolio: Portfolio; store: ReturnType<typeof useUseCaseXStore> }) {
+function PortfolioCard({ portfolio, store }: { portfolio: Portfolio; store: ReturnType<typeof useUseCaseXPro> }) {
   const items = useMemo(() => {
     return portfolio.useCaseSlugs
       .map((slug) => {
@@ -234,7 +234,7 @@ function StatusPicker({ status, onChange }: { status: PortfolioStatus; onChange:
   );
 }
 
-function CreatePortfolioDialog({ onCreate }: { onCreate: ReturnType<typeof useUseCaseXStore>["createPortfolio"] }) {
+function CreatePortfolioDialog({ onCreate }: { onCreate: ReturnType<typeof useUseCaseXPro>["createPortfolio"] }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [type, setType] = useState<PortfolioType>("Quick Wins");
@@ -288,7 +288,7 @@ function CreatePortfolioDialog({ onCreate }: { onCreate: ReturnType<typeof useUs
   );
 }
 
-function EditPortfolioDialog({ portfolio, store }: { portfolio: Portfolio; store: ReturnType<typeof useUseCaseXStore> }) {
+function EditPortfolioDialog({ portfolio, store }: { portfolio: Portfolio; store: ReturnType<typeof useUseCaseXPro> }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(portfolio.name);
   const [type, setType] = useState<PortfolioType>(portfolio.type);
@@ -349,7 +349,7 @@ function EditPortfolioDialog({ portfolio, store }: { portfolio: Portfolio; store
   );
 }
 
-function AddItemDialog({ portfolio, store }: { portfolio: Portfolio; store: ReturnType<typeof useUseCaseXStore> }) {
+function AddItemDialog({ portfolio, store }: { portfolio: Portfolio; store: ReturnType<typeof useUseCaseXPro> }) {
   const [open, setOpen] = useState(false);
   const [slug, setSlug] = useState("");
   const available = store.saved.filter((s) => !portfolio.useCaseSlugs.includes(s.useCaseSlug));
