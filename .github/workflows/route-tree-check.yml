@@ -1,0 +1,19 @@
+name: Route tree check
+
+on:
+  pull_request:
+    paths:
+      - "src/routes/**"
+      - "src/routeTree.gen.ts"
+      - "scripts/verify-route-tree.mjs"
+      - ".github/workflows/route-tree-check.yml"
+  push:
+    branches: [main]
+
+jobs:
+  verify-route-tree:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify routeTree.gen.ts references existing files
+        run: node scripts/verify-route-tree.mjs
