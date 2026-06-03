@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SarpiRouteImport } from './routes/sarpi'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdvisorxRouteImport } from './routes/advisorx'
 import { Route as AppRouteImport } from './routes/_app'
@@ -51,6 +52,11 @@ import { Route as AppStudioUseCaseIdAdvisorxRouteImport } from './routes/_app.st
 const SarpiRoute = SarpiRouteImport.update({
   id: '/sarpi',
   path: '/sarpi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -250,6 +256,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/advisorx': typeof AdvisorxRoute
   '/auth': typeof AuthRoute
+  '/pricing': typeof PricingRoute
   '/sarpi': typeof SarpiRoute
   '/administration': typeof AppAdministrationRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
@@ -289,6 +296,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/advisorx': typeof AdvisorxRoute
   '/auth': typeof AuthRoute
+  '/pricing': typeof PricingRoute
   '/sarpi': typeof SarpiRoute
   '/administration': typeof AppAdministrationRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
@@ -330,6 +338,7 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/advisorx': typeof AdvisorxRoute
   '/auth': typeof AuthRoute
+  '/pricing': typeof PricingRoute
   '/sarpi': typeof SarpiRoute
   '/_app/administration': typeof AppAdministrationRoute
   '/_app/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
@@ -371,6 +380,7 @@ export interface FileRouteTypes {
     | '/'
     | '/advisorx'
     | '/auth'
+    | '/pricing'
     | '/sarpi'
     | '/administration'
     | '/ai-use-case-studio'
@@ -410,6 +420,7 @@ export interface FileRouteTypes {
     | '/'
     | '/advisorx'
     | '/auth'
+    | '/pricing'
     | '/sarpi'
     | '/administration'
     | '/ai-use-case-studio'
@@ -450,6 +461,7 @@ export interface FileRouteTypes {
     | '/_app'
     | '/advisorx'
     | '/auth'
+    | '/pricing'
     | '/sarpi'
     | '/_app/administration'
     | '/_app/ai-use-case-studio'
@@ -491,6 +503,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   AdvisorxRoute: typeof AdvisorxRoute
   AuthRoute: typeof AuthRoute
+  PricingRoute: typeof PricingRoute
   SarpiRoute: typeof SarpiRoute
   CyberxC3gIntakeRoute: typeof CyberxC3gIntakeRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
@@ -504,6 +517,13 @@ declare module '@tanstack/react-router' {
       path: '/sarpi'
       fullPath: '/sarpi'
       preLoaderRoute: typeof SarpiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -863,6 +883,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   AdvisorxRoute: AdvisorxRoute,
   AuthRoute: AuthRoute,
+  PricingRoute: PricingRoute,
   SarpiRoute: SarpiRoute,
   CyberxC3gIntakeRoute: CyberxC3gIntakeRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
