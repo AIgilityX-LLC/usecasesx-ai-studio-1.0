@@ -645,6 +645,36 @@ export type Database = {
         }
         Relationships: []
       }
+      use_case_audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          detail: string | null
+          id: string
+          metadata: Json | null
+          use_case_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          detail?: string | null
+          id?: string
+          metadata?: Json | null
+          use_case_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          detail?: string | null
+          id?: string
+          metadata?: Json | null
+          use_case_id?: string | null
+        }
+        Relationships: []
+      }
       use_case_business_functions: {
         Row: {
           business_function_id: string
@@ -1067,6 +1097,7 @@ export type Database = {
           business_problem: string | null
           business_value: string | null
           complexity: string | null
+          content_status: string
           created_at: string
           cyber_review_required: boolean
           cybersecurity_notes: string | null
@@ -1105,6 +1136,7 @@ export type Database = {
           title: string
           updated_at: string
           value_potential: string | null
+          visibility: Database["public"]["Enums"]["use_case_visibility"]
         }
         Insert: {
           ai_solution_concept?: string | null
@@ -1112,6 +1144,7 @@ export type Database = {
           business_problem?: string | null
           business_value?: string | null
           complexity?: string | null
+          content_status?: string
           created_at?: string
           cyber_review_required?: boolean
           cybersecurity_notes?: string | null
@@ -1150,6 +1183,7 @@ export type Database = {
           title: string
           updated_at?: string
           value_potential?: string | null
+          visibility?: Database["public"]["Enums"]["use_case_visibility"]
         }
         Update: {
           ai_solution_concept?: string | null
@@ -1157,6 +1191,7 @@ export type Database = {
           business_problem?: string | null
           business_value?: string | null
           complexity?: string | null
+          content_status?: string
           created_at?: string
           cyber_review_required?: boolean
           cybersecurity_notes?: string | null
@@ -1195,6 +1230,7 @@ export type Database = {
           title?: string
           updated_at?: string
           value_potential?: string | null
+          visibility?: Database["public"]["Enums"]["use_case_visibility"]
         }
         Relationships: []
       }
@@ -1264,6 +1300,7 @@ export type Database = {
         | "submitted_for_review"
         | "approved"
         | "unpublished"
+      use_case_visibility: "free_lite" | "pro" | "both" | "hidden"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1412,6 +1449,7 @@ export const Constants = {
         "approved",
         "unpublished",
       ],
+      use_case_visibility: ["free_lite", "pro", "both", "hidden"],
     },
   },
 } as const
