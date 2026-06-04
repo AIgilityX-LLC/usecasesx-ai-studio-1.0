@@ -81,6 +81,7 @@ export function UseCaseCard({
         <Link
           to="/use-cases/$slug"
           params={{ slug: c.slug }}
+          search={detailSearch}
           className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline"
         >
           View Pattern →
