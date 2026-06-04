@@ -1,6 +1,8 @@
 import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { z } from "zod";
+import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { MissingDataFallback } from "@/components/MissingDataFallback";
@@ -93,7 +95,12 @@ async function logIntegrationEvent(input: {
 }
 
 // ---------- Route ----------
+const detailSearchSchema = z.object({
+  dept: fallback(z.string().optional(), undefined),
+});
+
 export const Route = createFileRoute("/_app/use-cases/$slug")({
+  validateSearch: zodValidator(detailSearchSchema),
   head: ({ params }) => ({
     meta: [
       { title: `${params.slug} — UseCasesX™` },
@@ -121,6 +128,7 @@ export const Route = createFileRoute("/_app/use-cases/$slug")({
 // ---------- Page ----------
 function UseCaseDetailPage() {
   const { slug } = Route.useParams();
+  const { dept } = Route.useSearch();
   const navigate = useNavigate();
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadCta, setLeadCta] = useState<"lite-pdf" | "ai-strategy-session">("lite-pdf");
@@ -170,9 +178,12 @@ function UseCaseDetailPage() {
     throw notFound();
   }
 
-  const industries = (c.use_case_industries ?? [])
-    .map((x: any) => x.industries?.name)
-    .filter(Boolean) as string[];
+  const industryEntries = (c.use_case_industries ?? [])
+    .map((x: any) => ({ slug: x.industries?.slug as string | undefined, name: x.industries?.name as string | undefined }))
+    .filter((x: any) => x.slug && x.name) as { slug: string; name: string }[];
+  const industries = industryEntries.map((i) => i.name);
+  const activeDept =
+    industryEntries.find((i) => i.slug === dept) ?? industryEntries[0] ?? null;
   const businessFunctions = (c.use_case_business_functions ?? [])
     .map((x: any) => x.business_functions?.name)
     .filter(Boolean) as string[];
@@ -331,12 +342,25 @@ function UseCaseDetailPage() {
         {/* Header */}
         <header className="border-b border-border bg-card/40">
           <div className="mx-auto max-w-[1320px] px-6 pb-10 pt-8">
-            <Link
-              to="/repository"
-              className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline"
-            >
-              ← Back to Explore
-            </Link>
+            <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest">
+              <Link to="/repository" className="text-muted-foreground hover:text-primary">
+                Repository
+              </Link>
+              {activeDept && (
+                <>
+                  <span className="text-muted-foreground/60">/</span>
+                  <Link
+                    to="/repository"
+                    search={{ industries: [activeDept.slug] } as any}
+                    className="text-muted-foreground hover:text-primary"
+                  >
+                    {activeDept.name}
+                  </Link>
+                </>
+              )}
+              <span className="text-muted-foreground/60">/</span>
+              <span className="text-primary truncate max-w-[40ch]">{c.title}</span>
+            </nav>
             <div className="mt-5">
               <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
                 {c.title}

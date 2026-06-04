@@ -39,10 +39,16 @@ export function UseCaseCard({
   onAddToBoard?: (c: UseCaseCardData) => void;
   locked?: boolean;
 }) {
-  const industries = (c.use_case_industries ?? []).map((x) => x.industries?.name).filter(Boolean) as string[];
+  const industryEntries = (c.use_case_industries ?? [])
+    .map((x) => ({ slug: x.industries?.slug, name: x.industries?.name }))
+    .filter((x) => x.slug && x.name) as { slug: string; name: string }[];
+  const industries = industryEntries.map((i) => i.name);
+  const deptSlug = industryEntries[0]?.slug;
   const capabilities = (c.use_case_capabilities ?? []).map((x) => x.ai_capabilities?.name).filter(Boolean) as string[];
   const aiType = capabilities[0];
   const tier = accessTier(c.visibility);
+
+  const detailSearch = deptSlug ? ({ dept: deptSlug } as any) : undefined;
 
   return (
     <div className="group relative flex flex-col rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)] transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[var(--shadow-elegant)]">
@@ -60,7 +66,7 @@ export function UseCaseCard({
         </span>
       </div>
 
-      <Link to="/use-cases/$slug" params={{ slug: c.slug }} className="block">
+      <Link to="/use-cases/$slug" params={{ slug: c.slug }} search={detailSearch} className="block">
         <h3 className="text-base font-bold leading-snug text-foreground transition-colors group-hover:text-primary">{c.title}</h3>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground line-clamp-3">{c.summary}</p>
       </Link>
@@ -75,6 +81,7 @@ export function UseCaseCard({
         <Link
           to="/use-cases/$slug"
           params={{ slug: c.slug }}
+          search={detailSearch}
           className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline"
         >
           View Pattern →
