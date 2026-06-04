@@ -128,6 +128,7 @@ export const Route = createFileRoute("/_app/use-cases/$slug")({
 // ---------- Page ----------
 function UseCaseDetailPage() {
   const { slug } = Route.useParams();
+  const { dept } = Route.useSearch();
   const navigate = useNavigate();
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadCta, setLeadCta] = useState<"lite-pdf" | "ai-strategy-session">("lite-pdf");
