@@ -314,35 +314,51 @@ function PlansSection() {
     {
       name: "UseCasesX Lite™",
       tag: "Free · No login required",
-      features: ["Browse, search, filter 1,000+ use cases", "View full use case detail", "Download Lite PDF after lead capture"],
+      features: [
+        "Browse, search, filter 1,000+ use cases",
+        "View full use case detail pages",
+        "Industry &amp; AI-type taxonomy filters",
+        "Download Lite PDF after lead capture",
+        "Public Global AI Use Cases Repository",
+        "No login required to explore",
+      ],
       cta: { label: "Start free", to: "/repository" },
     },
     {
       name: "UseCasesX Pro™",
       tag: "Free with registration",
       highlight: true,
-      features: ["Save, score, prioritize", "Build PortfolioX™ &amp; RoadmapX™", "Use AI Use Case Studio™", "Generate executive reports"],
+      features: [
+        "Save, score &amp; prioritize use cases",
+        "Build PortfolioX™ &amp; RoadmapX™",
+        "Use AIgilityX AI Use Case Studio™",
+        "Feasibility, data readiness &amp; blueprint canvases",
+        "AdvisorX™ AI co-pilot guidance",
+        "Generate executive PDF reports",
+      ],
       cta: { label: "Create Free Pro Account", to: "/pro" },
     },
     {
       name: "UseCasesX Enterprise™",
-      tag: "For enterprises &amp; large agencies",
-      features: ["SSO &amp; role-based access", "Private workspaces &amp; pattern libraries", "Integration into SARPI, CyberX, AdvisorX", "Dedicated success engineering"],
+      tag: "Enterprise · Sovereign AI System included",
+      features: [
+        "Everything in Pro, for whole organizations",
+        "SSO, RBAC &amp; private workspaces",
+        "Integration into SARPI™, CyberX™, AdvisorX™",
+        "C3G™ governance records &amp; audit trail",
+        "Sovereign AI System™: GovCloud, on-prem, air-gapped",
+        "Country-specific governance packs &amp; success engineering",
+      ],
       cta: { label: "Talk to us", to: "/api-integration" },
-    },
-    {
-      name: "UseCasesX Sovereign AI System™",
-      tag: "GovCloud · On-prem · Air-gapped",
-      features: ["Sovereign AI deployment models", "Country-specific governance packs", "Air-gapped lifecycle workflows", "Sovereign-grade audit trail"],
-      cta: { label: "Request sovereign brief", to: "/api-integration" },
     },
   ];
   return (
     <section className="border-b border-border bg-secondary/30">
       <div className="mx-auto max-w-[1400px] px-6 py-20">
         <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Editions</div>
-        <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Lite · Pro · Enterprise · Sovereign AI System</h2>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Lite · Pro · Enterprise (incl. Sovereign AI System)</h2>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
           {plans.map((p) => (
             <div
               key={p.name}
