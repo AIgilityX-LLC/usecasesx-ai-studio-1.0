@@ -342,12 +342,25 @@ function UseCaseDetailPage() {
         {/* Header */}
         <header className="border-b border-border bg-card/40">
           <div className="mx-auto max-w-[1320px] px-6 pb-10 pt-8">
-            <Link
-              to="/repository"
-              className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline"
-            >
-              ← Back to Explore
-            </Link>
+            <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest">
+              <Link to="/repository" className="text-muted-foreground hover:text-primary">
+                Repository
+              </Link>
+              {activeDept && (
+                <>
+                  <span className="text-muted-foreground/60">/</span>
+                  <Link
+                    to="/repository"
+                    search={{ industries: [activeDept.slug] } as any}
+                    className="text-muted-foreground hover:text-primary"
+                  >
+                    {activeDept.name}
+                  </Link>
+                </>
+              )}
+              <span className="text-muted-foreground/60">/</span>
+              <span className="text-primary truncate max-w-[40ch]">{c.title}</span>
+            </nav>
             <div className="mt-5">
               <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
                 {c.title}
