@@ -178,9 +178,12 @@ function UseCaseDetailPage() {
     throw notFound();
   }
 
-  const industries = (c.use_case_industries ?? [])
-    .map((x: any) => x.industries?.name)
-    .filter(Boolean) as string[];
+  const industryEntries = (c.use_case_industries ?? [])
+    .map((x: any) => ({ slug: x.industries?.slug as string | undefined, name: x.industries?.name as string | undefined }))
+    .filter((x: any) => x.slug && x.name) as { slug: string; name: string }[];
+  const industries = industryEntries.map((i) => i.name);
+  const activeDept =
+    industryEntries.find((i) => i.slug === dept) ?? industryEntries[0] ?? null;
   const businessFunctions = (c.use_case_business_functions ?? [])
     .map((x: any) => x.business_functions?.name)
     .filter(Boolean) as string[];
