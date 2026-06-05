@@ -95,8 +95,12 @@ async function logIntegrationEvent(input: {
 }
 
 // ---------- Route ----------
+// `dept` carries the active Industry slug (primary tag) and `func` carries
+// the active Department / Business-Function slug, so breadcrumbs and back
+// links can restore the user's filter context.
 const detailSearchSchema = z.object({
   dept: fallback(z.string().optional(), undefined),
+  func: fallback(z.string().optional(), undefined),
 });
 
 export const Route = createFileRoute("/_app/use-cases/$slug")({
@@ -128,7 +132,7 @@ export const Route = createFileRoute("/_app/use-cases/$slug")({
 // ---------- Page ----------
 function UseCaseDetailPage() {
   const { slug } = Route.useParams();
-  const { dept } = Route.useSearch();
+  const { dept, func } = Route.useSearch();
   const navigate = useNavigate();
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadCta, setLeadCta] = useState<"lite-pdf" | "ai-strategy-session">("lite-pdf");
@@ -184,9 +188,12 @@ function UseCaseDetailPage() {
   const industries = industryEntries.map((i) => i.name);
   const activeDept =
     industryEntries.find((i) => i.slug === dept) ?? industryEntries[0] ?? null;
-  const businessFunctions = (c.use_case_business_functions ?? [])
-    .map((x: any) => x.business_functions?.name)
-    .filter(Boolean) as string[];
+  const functionEntries = (c.use_case_business_functions ?? [])
+    .map((x: any) => ({ slug: x.business_functions?.slug as string | undefined, name: x.business_functions?.name as string | undefined }))
+    .filter((x: any) => x.slug && x.name) as { slug: string; name: string }[];
+  const businessFunctions = functionEntries.map((f) => f.name);
+  const activeFunc =
+    functionEntries.find((f) => f.slug === func) ?? functionEntries[0] ?? null;
   const capabilities = (c.use_case_capabilities ?? [])
     .map((x: any) => x.ai_capabilities?.name)
     .filter(Boolean) as string[];
