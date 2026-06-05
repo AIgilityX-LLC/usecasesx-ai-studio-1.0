@@ -294,8 +294,15 @@ function BucketCard({
         <ul className="mt-3 space-y-2">
           {items.slice(0, 4).map((u) => (
             <li key={u.id} className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background px-3 py-2">
-              <Link to="/use-cases/$slug" params={{ slug: u.slug }}
-                className="truncate text-xs font-semibold text-foreground hover:text-primary">
+              <Link
+                to="/use-cases/$slug"
+                params={{ slug: u.slug }}
+                search={{
+                  dept: u.industry.slug,
+                  func: slugify(u.businessFunction),
+                } as any}
+                className="truncate text-xs font-semibold text-foreground hover:text-primary"
+              >
                 {u.title}
               </Link>
               <span className="shrink-0 rounded bg-secondary px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-foreground">
@@ -307,6 +314,10 @@ function BucketCard({
       )}
     </div>
   );
+}
+
+function slugify(s: string): string {
+  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
 function buildNextActions({

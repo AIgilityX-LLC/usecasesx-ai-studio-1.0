@@ -25,6 +25,10 @@ import { useState } from "react";
 
 const PRIORITIES: Priority[] = ["Low", "Medium", "High", "Strategic"];
 
+function slugify(s: string): string {
+  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
 export const Route = createFileRoute("/_app/my-use-cases")({
   head: () => ({
     meta: [
@@ -117,13 +121,19 @@ function SavedCard({
 }) {
   const total = computeTotalScore(score);
   const interp = interpretScore(total);
+  // Preserve active tag context (Industry = primary, Department = business
+  // function) when navigating from a saved card to the detail view.
+  const detailSearch = {
+    dept: uc.industry.slug,
+    func: slugify(uc.businessFunction),
+  } as any;
 
   return (
     <Card className="flex flex-col">
       <CardHeader className="space-y-2">
         <div className="flex items-start justify-between gap-3">
           <CardTitle className="text-base leading-snug">
-            <Link to="/use-cases/$slug" params={{ slug: uc.slug }} className="hover:underline">
+            <Link to="/use-cases/$slug" params={{ slug: uc.slug }} search={detailSearch} className="hover:underline">
               {uc.title}
             </Link>
           </CardTitle>
@@ -131,8 +141,10 @@ function SavedCard({
         </div>
         <p className="text-xs text-muted-foreground line-clamp-3">{uc.summary}</p>
         <div className="flex flex-wrap gap-1.5 pt-1">
-          <Badge variant="secondary" className="text-[10px]">{uc.industry.name}</Badge>
-          <Badge variant="outline" className="text-[10px]">{uc.businessFunction}</Badge>
+          <Badge variant="secondary" className="text-[10px]" title="Industry">{uc.industry.name}</Badge>
+          <Badge variant="outline" className="text-[10px] border-violet-500/40 text-violet-600 dark:text-violet-400" title="Department">
+            {uc.businessFunction}
+          </Badge>
           <Badge variant="outline" className="text-[10px]">{uc.aiType}</Badge>
         </div>
       </CardHeader>
