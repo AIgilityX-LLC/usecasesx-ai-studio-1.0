@@ -25,6 +25,10 @@ import { useState } from "react";
 
 const PRIORITIES: Priority[] = ["Low", "Medium", "High", "Strategic"];
 
+function slugify(s: string): string {
+  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
 export const Route = createFileRoute("/_app/my-use-cases")({
   head: () => ({
     meta: [
