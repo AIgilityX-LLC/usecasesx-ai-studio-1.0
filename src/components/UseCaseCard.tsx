@@ -18,6 +18,7 @@ export interface UseCaseCardData {
   visibility?: string | null;
   use_case_industries?: Array<{ industries?: Tag | null }> | null;
   use_case_capabilities?: Array<{ ai_capabilities?: Tag | null }> | null;
+  use_case_business_functions?: Array<{ business_functions?: Tag | null }> | null;
 }
 
 function accessTier(v?: string | null) {
@@ -42,23 +43,50 @@ export function UseCaseCard({
   const industryEntries = (c.use_case_industries ?? [])
     .map((x) => ({ slug: x.industries?.slug, name: x.industries?.name }))
     .filter((x) => x.slug && x.name) as { slug: string; name: string }[];
-  const industries = industryEntries.map((i) => i.name);
-  const deptSlug = industryEntries[0]?.slug;
+  const functionEntries = (c.use_case_business_functions ?? [])
+    .map((x) => ({ slug: x.business_functions?.slug, name: x.business_functions?.name }))
+    .filter((x) => x.slug && x.name) as { slug: string; name: string }[];
+
+  const primaryIndustry = industryEntries[0];
+  const primaryFunction = functionEntries[0];
   const capabilities = (c.use_case_capabilities ?? []).map((x) => x.ai_capabilities?.name).filter(Boolean) as string[];
   const aiType = capabilities[0];
   const tier = accessTier(c.visibility);
 
-  const detailSearch = deptSlug ? ({ dept: deptSlug } as any) : undefined;
+  // Forward both Industry (primary) and Department (= business function) context
+  // through navigation so breadcrumbs and back-links can restore the active filter.
+  const detailSearch =
+    primaryIndustry || primaryFunction
+      ? ({
+          ...(primaryIndustry ? { dept: primaryIndustry.slug } : {}),
+          ...(primaryFunction ? { func: primaryFunction.slug } : {}),
+        } as any)
+      : undefined;
 
   return (
     <div className="group relative flex flex-col rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)] transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[var(--shadow-elegant)]">
       <div className="mb-3 flex items-start justify-between gap-2">
         <div className="flex flex-wrap items-center gap-1.5">
-          {industries.slice(0, 1).map((t) => (
-            <span key={t} className="rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary">{t}</span>
-          ))}
+          {primaryIndustry && (
+            <span
+              className="rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary"
+              title="Industry"
+            >
+              {primaryIndustry.name}
+            </span>
+          )}
+          {primaryFunction && (
+            <span
+              className="rounded-md bg-violet-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-violet-600 dark:text-violet-400"
+              title="Department"
+            >
+              {primaryFunction.name}
+            </span>
+          )}
           {aiType && (
-            <span className="rounded-md bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{aiType}</span>
+            <span className="rounded-md bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              {aiType}
+            </span>
           )}
         </div>
         <span className={"inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest " + tier.cls}>
