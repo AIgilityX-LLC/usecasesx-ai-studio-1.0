@@ -360,8 +360,25 @@ function UseCaseDetailPage() {
                     to="/repository"
                     search={{ industries: [activeDept.slug] } as any}
                     className="text-muted-foreground hover:text-primary"
+                    title="Industry"
                   >
                     {activeDept.name}
+                  </Link>
+                </>
+              )}
+              {activeFunc && (
+                <>
+                  <span className="text-muted-foreground/60">/</span>
+                  <Link
+                    to="/repository"
+                    search={{
+                      ...(activeDept ? { industries: [activeDept.slug] } : {}),
+                      businessFunctions: [activeFunc.slug],
+                    } as any}
+                    className="text-muted-foreground hover:text-primary"
+                    title="Department"
+                  >
+                    {activeFunc.name}
                   </Link>
                 </>
               )}
