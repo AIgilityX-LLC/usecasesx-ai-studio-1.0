@@ -10,7 +10,9 @@ export type AppRole =
   | "ai_hub_admin"
   | "usecasex_admin"
   | "content_manager"
-  | "reviewer";
+  | "reviewer"
+  | "editor"
+  | "user";
 
 export const ADMIN_TIER_ROLES: AppRole[] = [
   "admin",

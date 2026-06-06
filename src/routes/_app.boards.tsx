@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger,
 } from "@/components/ui/dialog";
+import { Can } from "@/components/Can";
 
 export const Route = createFileRoute("/_app/boards")({
   head: () => ({
@@ -74,7 +75,9 @@ function BoardsPage() {
               and innovation backlogs. Every change is captured in your workspace audit trail.
             </p>
           </div>
-          <CreateBoardDialog userId={session!.user.id} />
+          <Can action="boards.create">
+            <CreateBoardDialog userId={session!.user.id} />
+          </Can>
         </header>
 
         {boards.error && (
@@ -90,9 +93,9 @@ function BoardsPage() {
             <p className="mt-1 text-sm text-muted-foreground">
               Create your first board to start organizing AI use cases.
             </p>
-            <div className="mt-6 inline-flex">
-              <CreateBoardDialog userId={session!.user.id} variant="primary" />
-            </div>
+            <Can action="boards.create" fallback={<p className="text-xs text-muted-foreground">You need editor or admin access to create boards.</p>}>
+              <div className="inline-flex"><CreateBoardDialog userId={session!.user.id} variant="primary" /></div>
+            </Can>
           </div>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -149,15 +152,17 @@ function BoardCard({ board, onDelete }: { board: BoardRow; onDelete: () => void 
         >
           Open Board →
         </Link>
-        <button
-          onClick={() => {
-            if (confirm(`Delete board "${board.title}"? This cannot be undone.`)) onDelete();
-          }}
-          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-          aria-label="Delete board"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
+        <Can action="boards.delete">
+          <button
+            onClick={() => {
+              if (confirm(`Delete board "${board.title}"? This cannot be undone.`)) onDelete();
+            }}
+            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+            aria-label="Delete board"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </Can>
       </div>
     </div>
   );
