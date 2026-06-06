@@ -13,7 +13,6 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger,
 } from "@/components/ui/dialog";
 import { Can } from "@/components/Can";
-import { usePermissions } from "@/lib/permissions";
 
 export const Route = createFileRoute("/_app/boards")({
   head: () => ({
