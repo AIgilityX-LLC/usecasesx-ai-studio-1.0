@@ -12,6 +12,8 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger,
 } from "@/components/ui/dialog";
+import { Can } from "@/components/Can";
+import { usePermissions } from "@/lib/permissions";
 
 export const Route = createFileRoute("/_app/boards")({
   head: () => ({
@@ -74,7 +76,9 @@ function BoardsPage() {
               and innovation backlogs. Every change is captured in your workspace audit trail.
             </p>
           </div>
-          <CreateBoardDialog userId={session!.user.id} />
+          <Can action="boards.create">
+            <CreateBoardDialog userId={session!.user.id} />
+          </Can>
         </header>
 
         {boards.error && (
@@ -90,14 +94,14 @@ function BoardsPage() {
             <p className="mt-1 text-sm text-muted-foreground">
               Create your first board to start organizing AI use cases.
             </p>
-            <div className="mt-6 inline-flex">
-              <CreateBoardDialog userId={session!.user.id} variant="primary" />
-            </div>
+            <Can action="boards.create" fallback={<p className="text-xs text-muted-foreground">You need editor or admin access to create boards.</p>}>
+              <div className="inline-flex"><CreateBoardDialog userId={session!.user.id} variant="primary" /></div>
+            </Can>
           </div>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((b) => (
-              <BoardCard key={b.id} board={b} onDelete={() => del.mutate(b.id)} />
+              <BoardCard key={b.id} board={b} onDelete={() => del.mutate(b.id)} canDelete={usePermissionsCanDelete()} />
             ))}
           </div>
         )}
