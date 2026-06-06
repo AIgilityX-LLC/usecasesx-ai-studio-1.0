@@ -101,7 +101,7 @@ function BoardsPage() {
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((b) => (
-              <BoardCard key={b.id} board={b} onDelete={() => del.mutate(b.id)} canDelete={usePermissionsCanDelete()} />
+              <BoardCard key={b.id} board={b} onDelete={() => del.mutate(b.id)} />
             ))}
           </div>
         )}
@@ -153,15 +153,17 @@ function BoardCard({ board, onDelete }: { board: BoardRow; onDelete: () => void 
         >
           Open Board →
         </Link>
-        <button
-          onClick={() => {
-            if (confirm(`Delete board "${board.title}"? This cannot be undone.`)) onDelete();
-          }}
-          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-          aria-label="Delete board"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
+        <Can action="boards.delete">
+          <button
+            onClick={() => {
+              if (confirm(`Delete board "${board.title}"? This cannot be undone.`)) onDelete();
+            }}
+            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+            aria-label="Delete board"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </Can>
       </div>
     </div>
   );
