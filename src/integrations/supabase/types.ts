@@ -1839,6 +1839,8 @@ export type Database = {
         | "usecasex_admin"
         | "content_manager"
         | "reviewer"
+        | "editor"
+        | "user"
       maturity_stage:
         | "concept"
         | "prototype"
@@ -1991,6 +1993,8 @@ export const Constants = {
         "usecasex_admin",
         "content_manager",
         "reviewer",
+        "editor",
+        "user",
       ],
       maturity_stage: ["concept", "prototype", "pilot", "production", "scaled"],
       use_case_status: [
