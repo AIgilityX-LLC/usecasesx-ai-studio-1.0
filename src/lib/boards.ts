@@ -25,44 +25,15 @@ export interface BoardUseCaseRow {
   created_at: string;
 }
 
-/** Ensure the signed-in user has an organization + workspace; returns workspace.id. */
-export async function ensureWorkspace(userId: string): Promise<string> {
-  const { data: prof } = await supabase
-    .from("profiles")
-    .select("organization_id, organization, full_name, email")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  let orgId = prof?.organization_id ?? null;
-  if (!orgId) {
-    const { data: org, error } = await supabase
-      .from("organizations")
-      .insert({
-        name: prof?.organization || prof?.full_name || prof?.email || "My Organization",
-        plan: "lite",
-      })
-      .select("id")
-      .single();
-    if (error || !org) throw new Error(error?.message ?? "Could not create organization.");
-    orgId = org.id;
-    await supabase.from("profiles").update({ organization_id: orgId }).eq("user_id", userId);
-  }
-
-  const { data: ws } = await supabase
-    .from("workspaces")
-    .select("id")
-    .eq("organization_id", orgId)
-    .limit(1)
-    .maybeSingle();
-  if (ws?.id) return ws.id;
-
-  const { data: newWs, error: wsErr } = await supabase
-    .from("workspaces")
-    .insert({ organization_id: orgId, name: "Default Workspace", created_by: userId })
-    .select("id")
-    .single();
-  if (wsErr || !newWs) throw new Error(wsErr?.message ?? "Could not create workspace.");
-  return newWs.id;
+/** Ensure the signed-in user has an organization + workspace; returns workspace.id.
+ *  Delegates to the SECURITY DEFINER `ensure_user_workspace` RPC so standard
+ *  users (who have no INSERT on organizations) can still create their first
+ *  board.
+ */
+export async function ensureWorkspace(_userId: string): Promise<string> {
+  const { data, error } = await supabase.rpc("ensure_user_workspace" as any);
+  if (error || !data) throw new Error(error?.message ?? "Could not provision workspace.");
+  return data as unknown as string;
 }
 
 export async function listBoards(): Promise<BoardRow[]> {
