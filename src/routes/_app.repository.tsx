@@ -16,6 +16,7 @@ import { usePlan } from "@/hooks/usePlan";
 import { toast } from "sonner";
 import type { UseCaseCardData } from "@/components/UseCaseCard";
 import { Link } from "@tanstack/react-router";
+import { Can } from "@/components/Can";
 
 const sortValues = ["relevant", "value", "complexity", "risk", "ttv", "newest"] as const;
 type SortKey = (typeof sortValues)[number];
