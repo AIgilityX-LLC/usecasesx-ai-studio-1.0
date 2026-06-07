@@ -89,7 +89,7 @@ export async function createBoard(input: {
     })
     .select("id, title, description, board_type, status, workspace_id, created_at, updated_at")
     .single();
-  if (error || !data) throw new Error(error?.message ?? "Could not create board.");
+  if (error || !data) throw new Error(error?.message ?? "Board insert failed (check workspace access).");
   return data as BoardRow;
 }
 
