@@ -199,6 +199,14 @@ function SavedCard({
   );
 }
 
+function LockedAction({ label }: { label: string }) {
+  return (
+    <Button variant="outline" size="sm" disabled className="text-xs h-9 opacity-60" title="Editor or admin role required">
+      {label}
+    </Button>
+  );
+}
+
 function PriorityBadge({ priority }: { priority: Priority }) {
   const tone = priority === "Strategic" ? "bg-violet-500/10 text-violet-700 dark:text-violet-300 border-violet-500/30"
     : priority === "High" ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30"
