@@ -152,9 +152,11 @@ export function ProDashboard({ profile }: Props) {
         <div className="rounded-2xl border border-border bg-card p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold text-foreground">Reports</h2>
-            <button className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:brightness-110">
-              Generate new report
-            </button>
+            <Can action="dashboard.export">
+              <button className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:brightness-110">
+                Generate new report
+              </button>
+            </Can>
           </div>
           <ul className="mt-4 divide-y divide-border">
             {reports.map((r) => (
@@ -165,9 +167,11 @@ export function ProDashboard({ profile }: Props) {
                     {r.kind} · {new Date(r.createdAt).toLocaleDateString()} · {r.useCaseCount} cases
                   </div>
                 </div>
-                <button className="rounded-md border border-border px-2.5 py-1.5 text-xs font-semibold hover:bg-secondary">
-                  Download
-                </button>
+                <Can action="dashboard.export" fallback={<span className="text-[10px] uppercase tracking-wider text-muted-foreground">Sign in to download</span>}>
+                  <button className="rounded-md border border-border px-2.5 py-1.5 text-xs font-semibold hover:bg-secondary">
+                    Download
+                  </button>
+                </Can>
               </li>
             ))}
           </ul>
