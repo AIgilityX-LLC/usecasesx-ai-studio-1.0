@@ -32,7 +32,8 @@ export interface BoardUseCaseRow {
  */
 export async function ensureWorkspace(_userId: string): Promise<string> {
   const { data, error } = await supabase.rpc("ensure_user_workspace" as any);
-  if (error || !data) throw new Error(error?.message ?? "Could not provision workspace.");
+  if (error) throw new Error(`Workspace provisioning failed: ${error.message}`);
+  if (!data) throw new Error("Workspace provisioning returned no workspace id.");
   return data as unknown as string;
 }
 
@@ -88,7 +89,7 @@ export async function createBoard(input: {
     })
     .select("id, title, description, board_type, status, workspace_id, created_at, updated_at")
     .single();
-  if (error || !data) throw new Error(error?.message ?? "Could not create board.");
+  if (error || !data) throw new Error(error?.message ?? "Board insert failed (check workspace access).");
   return data as BoardRow;
 }
 
