@@ -4,6 +4,7 @@ import {
   useSavedUseCases, useUseCaseScores, usePortfolios, useGeneratedReports,
   type SavedUseCase, type UseCaseScore,
 } from "@/hooks/usecasex-dashboard";
+import { Can } from "@/components/Can";
 
 interface Props {
   profile?: { full_name?: string | null; industry?: string | null; main_ai_interest?: string | null } | null;
