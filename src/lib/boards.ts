@@ -32,7 +32,8 @@ export interface BoardUseCaseRow {
  */
 export async function ensureWorkspace(_userId: string): Promise<string> {
   const { data, error } = await supabase.rpc("ensure_user_workspace" as any);
-  if (error || !data) throw new Error(error?.message ?? "Could not provision workspace.");
+  if (error) throw new Error(`Workspace provisioning failed: ${error.message}`);
+  if (!data) throw new Error("Workspace provisioning returned no workspace id.");
   return data as unknown as string;
 }
 
