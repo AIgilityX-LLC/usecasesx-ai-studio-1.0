@@ -21,6 +21,7 @@ import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Trash2, FileText, Target, Gauge, FolderPlus } from "lucide-react";
+import { Can } from "@/components/Can";
 import { useState } from "react";
 
 const PRIORITIES: Priority[] = ["Low", "Medium", "High", "Strategic"];
@@ -171,24 +172,38 @@ function SavedCard({
 
         <div className="grid grid-cols-2 gap-2 mt-auto">
           <PriorityPicker priority={priority} onChange={(p) => store.setPriority(uc.slug, p)} />
-          <NoteDialog slug={uc.slug} initial={note} onSave={(n) => store.setNote(uc.slug, n)} />
-          <ScoreDialog slug={uc.slug} initial={score} onSave={(s) => store.setScore(uc.slug, s)} />
+          <Can action="saved.edit" fallback={<LockedAction label="Notes" />}>
+            <NoteDialog slug={uc.slug} initial={note} onSave={(n) => store.setNote(uc.slug, n)} />
+          </Can>
+          <Can action="saved.edit" fallback={<LockedAction label="Score" />}>
+            <ScoreDialog slug={uc.slug} initial={score} onSave={(s) => store.setScore(uc.slug, s)} />
+          </Can>
           <AddToPortfolioDialog slug={uc.slug} store={store} />
         </div>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-destructive hover:text-destructive justify-start"
-          onClick={() => {
-            store.removeSaved(uc.slug);
-            trackCTAEvent("saved_use_case_removed", { slug: uc.slug });
-          }}
-        >
-          <Trash2 className="w-4 h-4 mr-2" /> Remove
-        </Button>
+        <Can action="saved.delete">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-destructive hover:text-destructive justify-start"
+            onClick={() => {
+              store.removeSaved(uc.slug);
+              trackCTAEvent("saved_use_case_removed", { slug: uc.slug });
+            }}
+          >
+            <Trash2 className="w-4 h-4 mr-2" /> Remove
+          </Button>
+        </Can>
       </CardContent>
     </Card>
+  );
+}
+
+function LockedAction({ label }: { label: string }) {
+  return (
+    <Button variant="outline" size="sm" disabled className="text-xs h-9 opacity-60" title="Editor or admin role required">
+      {label}
+    </Button>
   );
 }
 

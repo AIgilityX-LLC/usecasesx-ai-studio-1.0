@@ -1806,6 +1806,7 @@ export type Database = {
       }
     }
     Functions: {
+      ensure_user_workspace: { Args: never; Returns: string }
       get_use_case_integration_package: {
         Args: { use_case_uuid: string }
         Returns: Json
@@ -1818,6 +1819,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin_tier: { Args: { _user_id: string }; Returns: boolean }
+      is_editor_tier: { Args: { _user_id: string }; Returns: boolean }
       user_can_access_use_case: {
         Args: { _use_case_id: string; _user_id: string }
         Returns: boolean
