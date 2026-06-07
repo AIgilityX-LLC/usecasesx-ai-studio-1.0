@@ -239,6 +239,16 @@ function Page() {
           <p className="mt-2 max-w-2xl text-muted-foreground">
             Search, filter and compare AI, GenAI, Agentic AI and automation use cases across 18+ industries.
           </p>
+          <Can action="repo.create">
+            <div className="mt-4">
+              <Link
+                to="/administration"
+                className="inline-flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/20"
+              >
+                + Submit new use case
+              </Link>
+            </div>
+          </Can>
           <form onSubmit={submitSearch} className="relative mt-6 flex max-w-2xl">
             <svg className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="7" />
