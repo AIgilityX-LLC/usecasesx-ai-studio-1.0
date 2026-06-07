@@ -21,6 +21,7 @@ import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Trash2, FileText, Target, Gauge, FolderPlus } from "lucide-react";
+import { Can } from "@/components/Can";
 import { useState } from "react";
 
 const PRIORITIES: Priority[] = ["Low", "Medium", "High", "Strategic"];
