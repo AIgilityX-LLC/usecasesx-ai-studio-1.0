@@ -220,3 +220,88 @@ function AddItemDialog({ userId, boardId }: { userId: string; boardId: string })
     </Dialog>
   );
 }
+
+function AddSavedDialog({ userId, boardId }: { userId: string; boardId: string }) {
+  const qc = useQueryClient();
+  const [open, setOpen] = useState(false);
+
+  const saved = useQuery({
+    queryKey: ["saved-catalog", userId],
+    queryFn: () => listSavedCatalogUseCases(userId),
+    enabled: open,
+  });
+
+  const add = useMutation({
+    mutationFn: (catalogUseCaseId: string) =>
+      addSavedUseCaseToBoard({ userId, boardId, catalogUseCaseId }),
+    onSuccess: () => {
+      toast.success("Saved use case added to board.");
+      qc.invalidateQueries({ queryKey: ["board", boardId, "items"] });
+      qc.invalidateQueries({ queryKey: ["boards", "list"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="gap-1.5">
+          <Bookmark className="h-4 w-4" /> Add from Saved
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-xl">
+        <DialogHeader>
+          <DialogTitle>Add a saved use case to this board</DialogTitle>
+          <DialogDescription>
+            Import one of your saved catalog use cases as a starting point on this board.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="max-h-[420px] space-y-2 overflow-y-auto">
+          {saved.isLoading && (
+            <div className="py-10 text-center text-sm text-muted-foreground">
+              <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" /> Loading saved use cases…
+            </div>
+          )}
+          {saved.error && (
+            <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+              {(saved.error as Error).message}
+            </div>
+          )}
+          {saved.data && saved.data.length === 0 && (
+            <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+              You haven't saved any use cases yet.{" "}
+              <Link to="/repository" className="font-semibold text-primary hover:underline">
+                Browse the catalog
+              </Link>
+              .
+            </div>
+          )}
+          {saved.data?.map((s) => (
+            <div
+              key={s.saved_id}
+              className="flex items-start justify-between gap-3 rounded-lg border border-border bg-card p-3"
+            >
+              <div className="min-w-0">
+                <div className="truncate text-sm font-semibold text-foreground">{s.title}</div>
+                {s.summary && (
+                  <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.summary}</div>
+                )}
+              </div>
+              <Button
+                size="sm"
+                onClick={() => add.mutate(s.use_case_id)}
+                disabled={add.isPending}
+              >
+                {add.isPending && <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />}
+                Add
+              </Button>
+            </div>
+          ))}
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => setOpen(false)}>Close</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
