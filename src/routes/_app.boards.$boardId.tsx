@@ -106,6 +106,7 @@ function BoardDetailPage() {
               Add a use case manually below, or use “+ Add to Studio Board” on any catalog card.
             </p>
             <div className="mt-6 inline-flex gap-2">
+              <AddSavedDialog userId={session!.user.id} boardId={boardId} />
               <AddItemDialog userId={session!.user.id} boardId={boardId} />
               <Button asChild variant="outline">
                 <Link to="/repository">Browse catalog</Link>
