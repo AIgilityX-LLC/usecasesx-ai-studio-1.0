@@ -174,22 +174,32 @@ function CreateBoardDialog({ userId, variant = "secondary" }: { userId: string; 
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [progress, setProgress] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const create = useMutation({
-    mutationFn: () => createBoard({ userId, title, description }),
+    mutationFn: () => {
+      setErrorMsg(null);
+      return createBoard({ userId, title, description, onProgress: setProgress });
+    },
     onSuccess: (b) => {
       toast.success(`Board "${b.title}" created.`);
       qc.invalidateQueries({ queryKey: ["boards"] });
       setOpen(false);
       setTitle("");
       setDescription("");
+      setProgress(null);
       navigate({ to: "/boards/$boardId", params: { boardId: b.id } });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => {
+      setProgress(null);
+      setErrorMsg(e.message);
+      toast.error(e.message);
+    },
   });
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) { setErrorMsg(null); setProgress(null); } }}>
       <DialogTrigger asChild>
         <Button variant={variant === "primary" ? "default" : "default"} className="gap-1.5">
           <Plus className="h-4 w-4" /> New Board
@@ -223,6 +233,20 @@ function CreateBoardDialog({ userId, variant = "secondary" }: { userId: string; 
               placeholder="What does this board track?"
             />
           </div>
+          {progress && create.isPending && (
+            <div className="flex items-center gap-2 rounded-md border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              <span>{progress}</span>
+            </div>
+          )}
+          {errorMsg && (
+            <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+              <strong>Could not create board.</strong> {errorMsg}
+              <div className="mt-1 text-[11px] opacity-80">
+                Try again — if this persists, contact support with the message above.
+              </div>
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => setOpen(false)} disabled={create.isPending}>
@@ -233,7 +257,7 @@ function CreateBoardDialog({ userId, variant = "secondary" }: { userId: string; 
             disabled={create.isPending || !title.trim()}
           >
             {create.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Create &amp; Open <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
+            {errorMsg ? "Retry" : "Create"} &amp; Open <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
           </Button>
         </DialogFooter>
       </DialogContent>

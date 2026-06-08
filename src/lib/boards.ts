@@ -28,13 +28,90 @@ export interface BoardUseCaseRow {
 /** Ensure the signed-in user has an organization + workspace; returns workspace.id.
  *  Delegates to the SECURITY DEFINER `ensure_user_workspace` RPC so standard
  *  users (who have no INSERT on organizations) can still create their first
- *  board.
+ *  board. Retries once on transient network/RPC errors.
  */
-export async function ensureWorkspace(_userId: string): Promise<string> {
-  const { data, error } = await supabase.rpc("ensure_user_workspace" as any);
-  if (error) throw new Error(`Workspace provisioning failed: ${error.message}`);
-  if (!data) throw new Error("Workspace provisioning returned no workspace id.");
-  return data as unknown as string;
+export async function ensureWorkspace(
+  _userId: string,
+  opts: { onProgress?: (step: string) => void } = {},
+): Promise<string> {
+  const attempt = async () => {
+    opts.onProgress?.("Provisioning your workspace…");
+    const { data, error } = await supabase.rpc("ensure_user_workspace" as any);
+    if (error) throw error;
+    if (!data) throw new Error("Workspace provisioning returned no workspace id.");
+    return data as unknown as string;
+  };
+  try {
+    return await attempt();
+  } catch (e: any) {
+    const msg = String(e?.message ?? e);
+    const transient = /network|fetch|timeout|temporar|503|502|504/i.test(msg);
+    if (!transient) throw new Error(`Workspace provisioning failed: ${msg}`);
+    opts.onProgress?.("Retrying workspace provisioning…");
+    try {
+      return await attempt();
+    } catch (e2: any) {
+      throw new Error(`Workspace provisioning failed after retry: ${e2?.message ?? e2}`);
+    }
+  }
+}
+
+export interface SavedCatalogUseCase {
+  saved_id: string;
+  use_case_id: string;
+  title: string;
+  slug: string | null;
+  summary: string | null;
+  saved_at: string;
+}
+
+/** List the signed-in user's saved catalog use cases (for importing into a board). */
+export async function listSavedCatalogUseCases(userId: string): Promise<SavedCatalogUseCase[]> {
+  const { data, error } = await supabase
+    .from("saved_use_cases")
+    .select("id, saved_at, use_case:use_cases(id, title, slug, summary)")
+    .eq("user_id", userId)
+    .order("saved_at", { ascending: false });
+  if (error) throw new Error(error.message);
+  return (data ?? [])
+    .filter((r: any) => r.use_case)
+    .map((r: any) => ({
+      saved_id: r.id,
+      use_case_id: r.use_case.id,
+      title: r.use_case.title,
+      slug: r.use_case.slug,
+      summary: r.use_case.summary,
+      saved_at: r.saved_at,
+    }));
+}
+
+/** Import a saved catalog use case onto a board as a new ai_use_cases row. */
+export async function addSavedUseCaseToBoard(input: {
+  userId: string;
+  boardId: string;
+  catalogUseCaseId: string;
+}): Promise<{ id: string }> {
+  const { data: uc, error: ucErr } = await supabase
+    .from("use_cases")
+    .select("id, title, summary, business_problem")
+    .eq("id", input.catalogUseCaseId)
+    .maybeSingle();
+  if (ucErr) throw new Error(ucErr.message);
+  if (!uc) throw new Error("Saved use case is no longer available in the catalog.");
+
+  const { data, error } = await supabase
+    .from("ai_use_cases")
+    .insert({
+      board_id: input.boardId,
+      title: uc.title,
+      problem_statement: (uc as any).business_problem ?? uc.summary ?? null,
+      status: "idea",
+      created_by: input.userId,
+    })
+    .select("id")
+    .single();
+  if (error || !data) throw new Error(error?.message ?? "Could not add saved use case to board.");
+  return { id: data.id };
 }
 
 export async function listBoards(): Promise<BoardRow[]> {
@@ -76,8 +153,10 @@ export async function createBoard(input: {
   title: string;
   description?: string;
   boardType?: string;
+  onProgress?: (step: string) => void;
 }): Promise<BoardRow> {
-  const workspaceId = await ensureWorkspace(input.userId);
+  const workspaceId = await ensureWorkspace(input.userId, { onProgress: input.onProgress });
+  input.onProgress?.("Creating board…");
   const { data, error } = await supabase
     .from("use_case_boards")
     .insert({
