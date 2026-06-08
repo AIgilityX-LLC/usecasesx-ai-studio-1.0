@@ -92,7 +92,10 @@ function BoardDetailPage() {
               <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{b.description}</p>
             )}
           </div>
-          <AddItemDialog userId={session!.user.id} boardId={boardId} />
+          <div className="flex gap-2">
+            <AddSavedDialog userId={session!.user.id} boardId={boardId} />
+            <AddItemDialog userId={session!.user.id} boardId={boardId} />
+          </div>
         </header>
 
         {list.length === 0 ? (
