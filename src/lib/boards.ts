@@ -153,8 +153,10 @@ export async function createBoard(input: {
   title: string;
   description?: string;
   boardType?: string;
+  onProgress?: (step: string) => void;
 }): Promise<BoardRow> {
-  const workspaceId = await ensureWorkspace(input.userId);
+  const workspaceId = await ensureWorkspace(input.userId, { onProgress: input.onProgress });
+  input.onProgress?.("Creating board…");
   const { data, error } = await supabase
     .from("use_case_boards")
     .insert({
