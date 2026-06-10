@@ -118,8 +118,8 @@ function BoardDetailPage() {
             {list.map((uc) => (
               <Link
                 key={uc.id}
-                to="/ai-use-case-studio"
-                search={{ useCase: uc.id, board: boardId } as never}
+                to="/studio/use-case/$id"
+                params={{ id: uc.id }}
                 className="group flex flex-col rounded-xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[var(--shadow-elegant)]"
               >
                 <div className="mb-2 flex items-center justify-between">
