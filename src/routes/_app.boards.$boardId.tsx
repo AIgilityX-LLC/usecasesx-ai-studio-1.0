@@ -180,7 +180,7 @@ function AddItemDialog({ userId, boardId }: { userId: string; boardId: string })
     mutationFn: () => createBoardUseCase({ userId, boardId, title, problem }),
     onSuccess: ({ id }) => {
       toast.success("Use case added to board.");
-      qc.invalidateQueries({ queryKey: ["board", boardId, "items"] });
+      qc.invalidateQueries({ queryKey: ["board", boardId, "full"] });
       qc.invalidateQueries({ queryKey: ["boards", "list"] });
       setOpen(false);
       setTitle("");
@@ -253,7 +253,7 @@ function AddSavedDialog({ userId, boardId }: { userId: string; boardId: string }
       addSavedUseCaseToBoard({ userId, boardId, catalogUseCaseId }),
     onSuccess: () => {
       toast.success("Saved use case added to board.");
-      qc.invalidateQueries({ queryKey: ["board", boardId, "items"] });
+      qc.invalidateQueries({ queryKey: ["board", boardId, "full"] });
       qc.invalidateQueries({ queryKey: ["boards", "list"] });
     },
     onError: (e: Error) => toast.error(e.message),
