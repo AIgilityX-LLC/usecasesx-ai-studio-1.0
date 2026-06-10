@@ -1,10 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowLeft, Loader2, Plus, ExternalLink, Sparkles } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, ExternalLink, Sparkles, ShieldAlert, FileQuestion } from "lucide-react";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
-import { getBoard, getBoardUseCases, createBoardUseCase, listSavedCatalogUseCases, addSavedUseCaseToBoard } from "@/lib/boards";
+import { createBoardUseCase, listSavedCatalogUseCases, addSavedUseCaseToBoard } from "@/lib/boards";
+import { loadBoardWithItems } from "@/lib/boards.functions";
 import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,20 +30,21 @@ function BoardDetailPage() {
   const { boardId } = Route.useParams();
   const navigate = useNavigate();
   const session = useSupabaseSession();
+  const loadBoard = useServerFn(loadBoardWithItems);
 
   useEffect(() => {
     if (session === null) navigate({ to: "/pro", replace: true });
   }, [session, navigate]);
 
   const board = useQuery({
-    queryKey: ["board", boardId],
-    queryFn: () => getBoard(boardId),
+    queryKey: ["board", boardId, "full"],
+    queryFn: () => loadBoard({ data: { boardId } }),
     enabled: !!session?.user.id,
-  });
-  const items = useQuery({
-    queryKey: ["board", boardId, "items"],
-    queryFn: () => getBoardUseCases(boardId),
-    enabled: !!session?.user.id,
+    retry: (count, err: any) => {
+      const code = err?.statusCode ?? err?.cause?.statusCode;
+      if (code === 403 || code === 404) return false;
+      return count < 1;
+    },
   });
 
   if (session === undefined || board.isLoading) {
@@ -53,20 +56,34 @@ function BoardDetailPage() {
   }
 
   if (board.error || !board.data) {
+    const err: any = board.error;
+    const kind: "forbidden" | "not_found" | "error" =
+      err?.kind ?? err?.cause?.kind ??
+      (err?.statusCode === 403 ? "forbidden" : err?.statusCode === 404 ? "not_found" : "error");
+    const Icon = kind === "forbidden" ? ShieldAlert : kind === "not_found" ? FileQuestion : ShieldAlert;
+    const heading =
+      kind === "forbidden" ? "Access denied"
+      : kind === "not_found" ? "Board not found"
+      : "Couldn't load this board";
     return (
-      <div className="mx-auto max-w-4xl px-6 py-20 text-center">
-        <p className="text-sm text-muted-foreground">
-          {(board.error as Error)?.message ?? "Board not found."}
+      <div className="mx-auto max-w-2xl px-6 py-20 text-center">
+        <Icon className="mx-auto h-10 w-10 text-muted-foreground/70" />
+        <h2 className="mt-4 text-xl font-bold text-foreground">{heading}</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {err?.message ?? "An unexpected error prevented this board from loading."}
         </p>
-        <Link to="/boards" className="mt-4 inline-block text-sm font-semibold text-primary hover:underline">
-          ← All boards
-        </Link>
+        <div className="mt-6 flex justify-center gap-2">
+          <Button variant="outline" onClick={() => board.refetch()}>Try again</Button>
+          <Button asChild>
+            <Link to="/boards">← All boards</Link>
+          </Button>
+        </div>
       </div>
     );
   }
 
-  const b = board.data;
-  const list = items.data ?? [];
+  const b = board.data.board;
+  const list = board.data.items;
 
   return (
     <section className="border-b border-border bg-background">
