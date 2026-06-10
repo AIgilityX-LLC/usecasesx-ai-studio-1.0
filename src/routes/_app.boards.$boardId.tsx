@@ -168,7 +168,7 @@ function AddItemDialog({ userId, boardId }: { userId: string; boardId: string })
       setOpen(false);
       setTitle("");
       setProblem("");
-      navigate({ to: "/ai-use-case-studio", search: { useCase: id, board: boardId } as never });
+      navigate({ to: "/studio/use-case/$id", params: { id } });
     },
     onError: (e: Error) => toast.error(e.message),
   });
