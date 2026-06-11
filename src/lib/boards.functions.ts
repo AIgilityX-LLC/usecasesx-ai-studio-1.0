@@ -78,7 +78,7 @@ export const loadBoardWithItems = createServerFn({ method: "GET" })
     // 3. Fetch items (RLS-enforced; same access rules).
     const { data: items, error: itemsErr } = await context.supabase
       .from("ai_use_cases")
-      .select("id, title, problem_statement, ai_type, status, created_at")
+      .select("id, title, problem_statement, ai_type, status, created_at, board_id")
       .eq("board_id", boardId)
       .order("created_at", { ascending: false });
     if (itemsErr) {
@@ -86,8 +86,19 @@ export const loadBoardWithItems = createServerFn({ method: "GET" })
       throw new Error(itemsErr.message);
     }
 
+    // Defense in depth: every returned item must belong to the requested board.
+    // RLS + the .eq filter both enforce this; assert it server-side so any
+    // future policy regression is caught loudly instead of leaking cross-board
+    // items into the UI.
+    const safeItems = (items ?? []).filter((it: any) => it.board_id === boardId);
+    if (safeItems.length !== (items?.length ?? 0)) {
+      console.error("[loadBoardWithItems] item board_id mismatch — dropping leaked rows", {
+        userId, boardId, returned: items?.length, kept: safeItems.length,
+      });
+    }
+
     return {
       board: board as LoadedBoard,
-      items: (items ?? []) as LoadedBoardItem[],
+      items: safeItems.map(({ board_id: _b, ...rest }: any) => rest) as LoadedBoardItem[],
     };
   });
