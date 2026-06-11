@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
+import { AppBreadcrumb } from "./AppBreadcrumb";
 import { UseCasesXFooter } from "./UseCasesXFooter";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,7 +13,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
 
   const headerInner = (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-border bg-background/85 px-4 backdrop-blur">
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-0 items-center gap-3">
         {isAuthed && <SidebarTrigger />}
         <Link to="/" className="flex items-center gap-2">
           <div className="grid h-7 w-7 place-items-center rounded-md bg-primary/15 ring-1 ring-primary/40">
@@ -22,6 +23,12 @@ export function SiteShell({ children }: { children: ReactNode }) {
             UseCasesX™ <span className="text-muted-foreground">· AIgilityX AI Use Case Studio™</span>
           </div>
         </Link>
+        {isAuthed && (
+          <>
+            <div className="hidden h-5 w-px bg-border md:block" />
+            <AppBreadcrumb />
+          </>
+        )}
       </div>
       <div className="flex items-center gap-2">
         {isAuthed ? (
@@ -62,7 +69,9 @@ export function SiteShell({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background text-foreground">
-        <AppSidebar />
+        <div className="dark">
+          <AppSidebar />
+        </div>
         <SidebarInset className="flex min-w-0 flex-1 flex-col">
           {headerInner}
           <main className="flex-1">{children}</main>
