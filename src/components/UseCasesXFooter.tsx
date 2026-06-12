@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 
 export function UseCasesXFooter() {
   return (
-    <footer className="border-t border-border bg-secondary/40">
+    <footer className="dark border-t border-border bg-background text-foreground">
       <div className="mx-auto grid max-w-[1400px] gap-10 px-6 py-12 md:grid-cols-4">
         <div>
           <Link to="/" className="flex items-center gap-2">
