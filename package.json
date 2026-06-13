@@ -10,6 +10,8 @@
     "build": "node scripts/verify-route-tree.mjs && vite build",
     "build:dev": "node scripts/verify-route-tree.mjs && vite build --mode development",
     "preview": "vite preview",
+    "test:e2e": "node scripts/run-e2e.mjs",
+    "test:smoke": "bun run tests/production-smoke.e2e.ts",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
