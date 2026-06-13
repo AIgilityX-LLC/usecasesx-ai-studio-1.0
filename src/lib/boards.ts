@@ -3,6 +3,7 @@
 // Ensures the user has an org + workspace before creating a board.
 
 import { supabase } from "@/integrations/supabase/client";
+import { trackCTAEvent } from "@/lib/usecasex.tracking";
 
 export interface BoardRow {
   id: string;
@@ -111,6 +112,7 @@ export async function addSavedUseCaseToBoard(input: {
     .select("id")
     .single();
   if (error || !data) throw new Error(error?.message ?? "Could not add saved use case to board.");
+  trackCTAEvent("use_case_saved", { use_case_id: data.id, source_page: `/boards/${input.boardId}` });
   return { id: data.id };
 }
 
@@ -197,5 +199,6 @@ export async function createBoardUseCase(input: {
     .select("id")
     .single();
   if (error || !data) throw new Error(error?.message ?? "Could not create use case.");
+  trackCTAEvent("use_case_created", { use_case_id: data.id, source_page: `/boards/${input.boardId}` });
   return { id: data.id };
 }
