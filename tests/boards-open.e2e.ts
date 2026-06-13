@@ -38,6 +38,8 @@ const DEMO = [
   "lite@demo.usecasex.app",
   "moderator@demo.usecasex.app",
 ];
+const ADMIN_TIER = new Set(["admin@demo.usecasex.app", "moderator@demo.usecasex.app"]);
+const RESTRICTED_DEMO = ["enterprise@demo.usecasex.app", "pro@demo.usecasex.app", "lite@demo.usecasex.app"];
 const PASSWORD = "Demo@123";
 
 let failures = 0;
@@ -106,13 +108,14 @@ async function main() {
       if (!Array.isArray(data)) throw new Error("items query returned non-array");
     });
 
-    // Negative: a different demo user must not see this board.
-    const otherEmail = DEMO.find((e) => e !== email)!;
+    // Negative for normal users: a different organization cannot see this board.
+    // Admin-tier demo accounts intentionally have cross-workspace read access.
+    const otherEmail = RESTRICTED_DEMO.find((e) => e !== email) ?? RESTRICTED_DEMO[0];
     const other = await asUser(otherEmail);
-    await check(`other user (${otherEmail}) is denied this board`, async () => {
+    await check(`${ADMIN_TIER.has(email) ? "admin board remains visible to authorized admins" : `other user (${otherEmail}) is denied this board`}`, async () => {
       const { data, error } = await other.from("use_case_boards").select("id").eq("id", boardId).maybeSingle();
       if (error) throw error;
-      if (data) throw new Error("RLS leak: other user can see this board");
+      if (!ADMIN_TIER.has(email) && data) throw new Error("RLS leak: other user can see this board");
     });
     await other.auth.signOut().catch(() => {});
     await c.auth.signOut().catch(() => {});

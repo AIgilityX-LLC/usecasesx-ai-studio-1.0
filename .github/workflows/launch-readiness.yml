@@ -1,0 +1,38 @@
+name: Launch readiness
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: launch-readiness-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  full-e2e:
+    name: Full E2E launch gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      SMOKE_DEMO_EMAIL: ${{ secrets.SMOKE_DEMO_EMAIL }}
+      SMOKE_DEMO_PASSWORD: ${{ secrets.SMOKE_DEMO_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Verify required test credentials
+        run: |
+          test -n "$SUPABASE_URL"
+          test -n "$SUPABASE_PUBLISHABLE_KEY"
+          test -n "$SUPABASE_SERVICE_ROLE_KEY"
+      - name: Verify route tree
+        run: bun run verify:routes
+      - name: Run all launch-readiness E2E suites
+        run: bun run test:e2e

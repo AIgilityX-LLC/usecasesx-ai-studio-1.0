@@ -17,6 +17,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
+import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import {
   SCORE_WEIGHTS,
   type Priority,
@@ -196,7 +197,10 @@ export function useUseCaseXPro() {
       );
       if (error) throw error;
     },
-    onSuccess: invalidate,
+    onSuccess: (_data, slug) => {
+      trackCTAEvent("use_case_saved", { slug, source_page: "/repository" });
+      invalidate();
+    },
   });
 
   const removeSavedM = useMutation({
@@ -211,7 +215,10 @@ export function useUseCaseXPro() {
         .eq("use_case_id", id);
       if (error) throw error;
     },
-    onSuccess: invalidate,
+    onSuccess: (_data, slug) => {
+      trackCTAEvent("use_case_deleted", { slug, source_page: "/my-use-cases" });
+      invalidate();
+    },
   });
 
   const updateSavedM = useMutation({
@@ -226,7 +233,10 @@ export function useUseCaseXPro() {
         .eq("use_case_id", id);
       if (error) throw error;
     },
-    onSuccess: invalidate,
+    onSuccess: (_data, variables) => {
+      trackCTAEvent("use_case_edited", { slug: variables.slug, source_page: "/my-use-cases" });
+      invalidate();
+    },
   });
 
   const setScoreM = useMutation({

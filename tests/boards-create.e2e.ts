@@ -26,7 +26,7 @@ if (!URL || !ANON || !SR) {
 
 const admin = createClient(URL, SR, { auth: { persistSession: false } });
 
-async function signIn(email: string, password = "demo1234!") {
+async function signIn(email: string, password = process.env.SMOKE_DEMO_PASSWORD ?? "Demo@123") {
   const c = createClient(URL, ANON, { auth: { persistSession: false } });
   const { data, error } = await c.auth.signInWithPassword({ email, password });
   if (error || !data.user) throw new Error(`Sign-in failed for ${email}: ${error?.message}`);
