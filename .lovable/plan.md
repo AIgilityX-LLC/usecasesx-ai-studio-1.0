@@ -1,113 +1,38 @@
-# UseCaseX™ Reliability + Feature Expansion
+## Goal
 
-This is a large multi-feature request. Below is a sequenced plan grouped by risk and dependency. Each section can be approved as-is or trimmed.
+Populate the (currently empty) database so the Repository shows at least 10 high-potential, relevant AI use cases for each of the 18 industries in the attached image, and add a clear disclaimer that the sample data is AI-generated for organizational reference.
 
----
+## Current state
 
-## 1. Safe fallback UI for missing mock/taxonomy data
+- The Repository page (`/repository`) reads from the database (`use_cases` + taxonomy/junction tables) via `listUseCases`. Every one of those tables is currently empty, so the page shows nothing.
+- A separate mock file (`usecasex.mock.ts`) feeds the landing page/public API with ~24 sample cases — that stays as-is.
+- Use cases only appear when `status = 'published'` and `visibility` is `free_lite`/`both`.
 
-- Create `src/components/MissingDataFallback.tsx` — friendly card with title, message, and "Back to AI Hub" link. Uses semantic tokens.
-- Add `assertMockReady()` helper in `src/lib/usecasex.mock.ts` that returns `{ ok, reason }` based on whether `MOCK_USE_CASES` and `MOCK_TAX` are non-empty arrays/objects.
-- Wire into:
-  - `/ai-hub/usecasex/explore`
-  - `/ai-hub/usecasex/$slug`
-  - `/ai-hub/usecasex/compare` (new)
-- When `assertMockReady()` fails, route renders the fallback instead of crashing. Also add `errorComponent` + `notFoundComponent` on each route.
+## The 18 industries (from the image)
 
-## 2. Harden `usecasex.mock.ts` exports
+Defense, Healthcare, Real Estate, Manufacturing, Pharmaceuticals, Transport & Travel, Airlines & Aviation, Food & Agribusiness, Retail & E-Commerce, Education & Academia, Media & Entertainment, Automotive & Industrial, Supply Chain & Logistics, Regulatory & Compliance, Law Enforcement Agencies, Government & Public Sector, Hospitality Gaming & Leisure, Banking Finance & Insurance.
 
-- Move `MOCK_USE_CASES` and `MOCK_TAX` to be **declared and exported in a single statement near the top of the module body** so consumer files can never observe `undefined` from circular-import edge cases.
-- Add a tiny `__moduleSelfCheck()` at the bottom that throws a clear, actionable message if the arrays are empty (caught by the fallback in #1).
-- Add a unit-style runtime check on first import: `if (!Array.isArray(MOCK_USE_CASES)) throw …`.
-- Re-export everything via a barrel `src/lib/usecasex/index.ts` so app imports go through one path.
+## Plan
 
-## 3. Public use-case detail page
+### 1. Seed taxonomy tables
+Insert the 18 `industries` (slugs aligned with existing mock slugs, e.g. `defense`, `healthcare`, `real-estate`, …), plus `ai_capabilities`, `business_functions`, and `business_objectives` drawn from the existing canonical lists in `usecasex.data.ts`.
 
-Already exists at `src/routes/ai-hub.usecasex.$slug.tsx` — enhance it:
-- Render: title, summary, sector badge, maturity, impact (value potential), industry, business function, AI type, full tag chips (clickable → explore with filter), recommended platforms, citations/links block (mock for now, structured for future DB).
-- Add JSON-LD `Article` schema and full `head()` meta (title, description, og:image-less leaf).
-- "Related use cases" section (already present) — keep.
-- Add "Add to Compare" button that pushes the slug to the compare store (#5).
+### 2. Generate use-case content
+Use the AI gateway to generate, per industry, 10+ realistic high-value use cases. Each record includes: title, summary, business problem, AI solution concept, business value, data required, KPIs, ROI areas, AI capability, business function, objective, and value/complexity/risk/time-to-value/maturity ratings. This yields 180+ use cases.
 
-## 4. Saved search presets (bookmarkable + shareable URLs)
+### 3. Insert use cases
+Insert all generated use cases into `use_cases` with `status = 'published'`, `visibility = 'both'`, a `published_at` timestamp, and unique slugs. Then wire each to its industry, capability, business function, and objective via the junction tables, and add a few headline metrics per case in `use_case_metrics`.
 
-- Explore page already encodes filters in URL search params via Zod. Add:
-  - **Preset bar** above results: "Public Sector AI", "High Impact / Low Risk", "Agentic AI", "Defense Quick Wins", "Healthcare Clinical", "Compliance & Privacy", "Newest" — each is a `<Link to="/ai-hub/usecasex/explore" search={…}>`.
-  - **"Save this view"** button → stores `{name, search}` in `localStorage` under `usecasex.savedPresets`.
-  - **"Copy share link"** button → copies current URL with all filters to clipboard.
-  - **My presets** dropdown lists saved presets with delete + rename.
+### 4. AI sample-data disclaimer
+Add a reusable `SampleDataDisclaimer` banner component (using existing `Alert` UI + design tokens) stating the use cases are AI-generated sample data intended as a reference/starting point for organizations and should be validated before operational use. Display it:
+- at the top of the Repository page, and
+- on the use-case detail page (`_app.use-cases.$slug.tsx`).
 
-## 5. Compare view
-
-- New route `src/routes/ai-hub.usecasex.compare.tsx` reading `?ids=slug1,slug2,slug3` (max 4).
-- New tiny zustand store `src/lib/usecasex.compare.store.ts` for transient selection + a "Compare (N)" floating button on Explore + Detail pages.
-- Layout: side-by-side cards comparing — sector, maturity, value potential, complexity, risk, time-to-value, AI type, platforms, tags. Differences highlighted.
-- "Recommended implementation steps" rendered from a static template keyed by `aiType` + `maturity` (until DB-backed).
-
-## 6. Admin taxonomy editor (sectors, tags, maturity levels)
-
-- New admin tab inside existing `/ai-hub/usecasex/admin` → "Taxonomy" (already listed). Build the editor UI:
-  - Three sub-panels: **Sectors**, **Tags**, **Maturity Levels**.
-  - Each: list + inline add + rename + soft-delete + display order.
-- **Storage**: new tables `taxonomy_sectors`, `taxonomy_tags`, `taxonomy_maturity_levels` (slug, name, description, sort_order, is_published, updated_by, updated_at) with RLS:
-  - Public SELECT where `is_published = true`.
-  - Admin/moderator ALL via `has_role()`.
-- "Publish changes" button flips `is_published` and bumps a `taxonomy_version` row in a `taxonomy_meta` table so the public API can advertise the version.
-- Public API endpoint `/api/public/usecasex/taxonomy` updated to merge DB taxonomy with mock-derived facets (DB wins on overlap).
-
-## 7. User feedback & ratings
-
-- New tables:
-  - `use_case_ratings(id, use_case_id, user_id, rating 1-5, created_at)` — unique `(use_case_id, user_id)`.
-  - `use_case_feedback(id, use_case_id, user_id, comment, sentiment, is_public, created_at)`.
-- RLS:
-  - Authenticated users can insert/update their own row.
-  - Public SELECT on aggregated view only.
-  - Admin/moderator read all, can hide abusive feedback.
-- View `use_case_rating_aggregates(use_case_id, avg_rating, rating_count)` exposed via:
-  - `/api/public/usecasex/use-cases` — `aggregate_rating` field on each row.
-  - `/api/public/usecasex/use-cases/$slug` — full aggregate + recent N public comments.
-- UI: 5-star widget + comment box on detail page (auth-gated with "Sign in to rate" CTA for anonymous).
-
----
+### 5. Verify
+Query counts per industry to confirm ≥10 each, then load the Repository in the preview to confirm cards render with industry filters and the disclaimer shows.
 
 ## Technical notes
 
-```text
-New files
-  src/components/MissingDataFallback.tsx
-  src/components/usecasex/PresetBar.tsx
-  src/components/usecasex/SavedPresets.tsx
-  src/components/usecasex/CompareTray.tsx
-  src/components/usecasex/RatingWidget.tsx
-  src/lib/usecasex/index.ts            (barrel)
-  src/lib/usecasex.compare.store.ts
-  src/lib/usecasex.presets.ts          (localStorage helpers)
-  src/lib/usecasex.ratings.functions.ts (createServerFn)
-  src/lib/usecasex.taxonomy.functions.ts
-  src/routes/ai-hub.usecasex.compare.tsx
-  src/routes/ai-hub.usecasex.admin.taxonomy.tsx (or tab in existing admin)
-
-Edits
-  src/lib/usecasex.mock.ts              (hardening + self-check)
-  src/routes/ai-hub.usecasex.$slug.tsx  (richer detail + compare CTA + ratings)
-  src/routes/ai-hub.usecasex.explore.tsx (preset bar + share link)
-  src/routes/api/public/usecasex/*.ts   (DB taxonomy merge + ratings)
-
-Migrations
-  taxonomy_sectors, taxonomy_tags, taxonomy_maturity_levels, taxonomy_meta
-  use_case_ratings, use_case_feedback
-  view: use_case_rating_aggregates
-  RLS + GRANTs for all
-```
-
-## Suggested execution order
-
-1. #2 hardening + #1 fallback (unblocks current crash class)
-2. #3 detail page polish
-3. #4 presets + share link (frontend only)
-4. #5 compare view
-5. #7 ratings (migration → API → UI)
-6. #6 taxonomy editor (migration → admin UI → public API merge)
-
-Approve the whole plan, or tell me which subset to ship first (e.g. "just 1, 2, 3 now").
+- Taxonomy + use-case inserts go through the data-insert tool (not migrations) since tables already exist.
+- Slugs must be globally unique; industry-prefixed slugs (e.g. `healthcare-clinical-triage-copilot`) avoid collisions.
+- Existing mock data and the landing page are untouched.
