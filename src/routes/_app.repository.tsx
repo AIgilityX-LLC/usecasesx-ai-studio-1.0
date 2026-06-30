@@ -4,6 +4,8 @@ import { useMemo, useState, useEffect } from "react";
 import { z } from "zod";
 import { listUseCases, listTaxonomies } from "@/lib/use-cases.functions";
 import { UseCaseFilters, type FacetState } from "@/components/UseCaseFilters";
+import { HorizontalFilters } from "@/components/usecasex/HorizontalFilters";
+import { PageHero } from "@/components/usecasex/PageHero";
 import { UseCaseCard } from "@/components/UseCaseCard";
 import { EmptyState } from "@/components/EmptyState";
 import { CardSkeleton } from "@/components/LoadingSkeleton";
