@@ -11,6 +11,7 @@ import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { PresetBar } from "@/components/usecasex/PresetBar";
 import { CompareTray } from "@/components/usecasex/CompareTray";
 import { RiskClassBar } from "@/components/usecasex/RiskClassBar";
+import { OutcomesFilterBar } from "@/components/usecasex/OutcomesFilterBar";
 import { track } from "@/lib/usecasex.tracking";
 import { AddToStudioBoardDialog } from "@/components/AddToStudioBoardDialog";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
@@ -38,6 +39,7 @@ const searchSchema = z.object({
   sectors: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
   sort: z.enum(sortValues).optional(),
+  gov: z.boolean().optional(),
 });
 type Search = z.infer<typeof searchSchema>;
 
