@@ -7,18 +7,24 @@ import { AppBreadcrumb } from "./AppBreadcrumb";
 import { UseCasesXFooter } from "./UseCasesXFooter";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavLinkIntegrityCheck } from "@/lib/nav-integrity";
 
 const TOP_NAV: { to: string; label: string }[] = [
+  { to: "/", label: "Home" },
   { to: "/repository", label: "Explore" },
   { to: "/insights", label: "Insights" },
   { to: "/patterns", label: "Patterns" },
   { to: "/ai-use-case-studio", label: "Studio" },
+  { to: "/resources", label: "Resources" },
   { to: "/pricing", label: "Pricing" },
 ];
 
 export function SiteShell({ children }: { children: ReactNode }) {
   const session = useSupabaseSession();
   const isAuthed = !!session;
+
+  // Dev-only: verify every primary nav target resolves to a real route.
+  useNavLinkIntegrityCheck();
 
   // Dev-only guard: SiteShell is the single source of navigation. If more than
   // one SiteShell mounts at once, a page is rendering a duplicate nav bar.
@@ -60,13 +66,14 @@ export function SiteShell({ children }: { children: ReactNode }) {
       {/* Top nav is only shown to signed-out visitors. Once signed in, the
           sidebar is the single source of navigation to avoid duplicate menus. */}
       {!isAuthed && (
-        <nav className="hidden items-center gap-0.5 lg:flex">
+        <nav aria-label="Primary" className="hidden items-center gap-0.5 lg:flex">
           {TOP_NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to as never}
+              activeOptions={{ exact: item.to === "/" }}
               activeProps={{ className: "bg-primary/10 text-primary" }}
-              className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               {item.label}
             </Link>
@@ -102,8 +109,9 @@ export function SiteShell({ children }: { children: ReactNode }) {
   if (!isAuthed) {
     return (
       <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
+        <SkipToContent />
         {headerInner}
-        <main className="flex-1">{children}</main>
+        <main id="main-content" tabIndex={-1} className="flex-1 outline-none">{children}</main>
         <UseCasesXFooter />
       </div>
     );
@@ -112,15 +120,27 @@ export function SiteShell({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background text-foreground">
+        <SkipToContent />
         <div className="dark">
           <AppSidebar />
         </div>
         <SidebarInset className="flex min-w-0 flex-1 flex-col">
           {headerInner}
-          <main className="flex-1">{children}</main>
+          <main id="main-content" tabIndex={-1} className="flex-1 outline-none">{children}</main>
           <UseCasesXFooter />
         </SidebarInset>
       </div>
     </SidebarProvider>
+  );
+}
+
+function SkipToContent() {
+  return (
+    <a
+      href="#main-content"
+      className="sr-only z-50 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:outline-none focus:ring-2 focus:ring-ring"
+    >
+      Skip to main content
+    </a>
   );
 }

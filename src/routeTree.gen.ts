@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppStudioRouteImport } from './routes/_app.studio'
 import { Route as AppSarpiRouteImport } from './routes/_app.sarpi'
 import { Route as AppRoadmapRouteImport } from './routes/_app.roadmap'
+import { Route as AppResourcesRouteImport } from './routes/_app.resources'
 import { Route as AppRepositoryRouteImport } from './routes/_app.repository'
 import { Route as AppReportsRouteImport } from './routes/_app.reports'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
@@ -80,6 +81,11 @@ const AppSarpiRoute = AppSarpiRouteImport.update({
 const AppRoadmapRoute = AppRoadmapRouteImport.update({
   id: '/roadmap',
   path: '/roadmap',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppResourcesRoute = AppResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
   getParentRoute: () => AppRoute,
 } as any)
 const AppRepositoryRoute = AppRepositoryRouteImport.update({
@@ -301,6 +307,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AppProfileRoute
   '/reports': typeof AppReportsRoute
   '/repository': typeof AppRepositoryRoute
+  '/resources': typeof AppResourcesRoute
   '/roadmap': typeof AppRoadmapRoute
   '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
@@ -344,6 +351,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AppProfileRoute
   '/reports': typeof AppReportsRoute
   '/repository': typeof AppRepositoryRoute
+  '/resources': typeof AppResourcesRoute
   '/roadmap': typeof AppRoadmapRoute
   '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
@@ -390,6 +398,7 @@ export interface FileRoutesById {
   '/_app/profile': typeof AppProfileRoute
   '/_app/reports': typeof AppReportsRoute
   '/_app/repository': typeof AppRepositoryRoute
+  '/_app/resources': typeof AppResourcesRoute
   '/_app/roadmap': typeof AppRoadmapRoute
   '/_app/sarpi': typeof AppSarpiRoute
   '/_app/studio': typeof AppStudioRouteWithChildren
@@ -436,6 +445,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/reports'
     | '/repository'
+    | '/resources'
     | '/roadmap'
     | '/sarpi'
     | '/studio'
@@ -479,6 +489,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/reports'
     | '/repository'
+    | '/resources'
     | '/roadmap'
     | '/sarpi'
     | '/studio'
@@ -524,6 +535,7 @@ export interface FileRouteTypes {
     | '/_app/profile'
     | '/_app/reports'
     | '/_app/repository'
+    | '/_app/resources'
     | '/_app/roadmap'
     | '/_app/sarpi'
     | '/_app/studio'
@@ -594,6 +606,13 @@ declare module '@tanstack/react-router' {
       path: '/roadmap'
       fullPath: '/roadmap'
       preLoaderRoute: typeof AppRoadmapRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/resources': {
+      id: '/_app/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof AppResourcesRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/repository': {
@@ -921,6 +940,7 @@ interface AppRouteChildren {
   AppProfileRoute: typeof AppProfileRoute
   AppReportsRoute: typeof AppReportsRoute
   AppRepositoryRoute: typeof AppRepositoryRoute
+  AppResourcesRoute: typeof AppResourcesRoute
   AppRoadmapRoute: typeof AppRoadmapRoute
   AppSarpiRoute: typeof AppSarpiRoute
   AppStudioRoute: typeof AppStudioRouteWithChildren
@@ -951,6 +971,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppProfileRoute: AppProfileRoute,
   AppReportsRoute: AppReportsRoute,
   AppRepositoryRoute: AppRepositoryRoute,
+  AppResourcesRoute: AppResourcesRoute,
   AppRoadmapRoute: AppRoadmapRoute,
   AppSarpiRoute: AppSarpiRoute,
   AppStudioRoute: AppStudioRouteWithChildren,
@@ -984,13 +1005,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
