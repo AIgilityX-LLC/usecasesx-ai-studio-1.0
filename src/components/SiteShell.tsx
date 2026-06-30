@@ -7,6 +7,7 @@ import { AppBreadcrumb } from "./AppBreadcrumb";
 import { UseCasesXFooter } from "./UseCasesXFooter";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavLinkIntegrityCheck } from "@/lib/nav-integrity";
 
 const TOP_NAV: { to: string; label: string }[] = [
   { to: "/", label: "Home" },
@@ -21,6 +22,9 @@ const TOP_NAV: { to: string; label: string }[] = [
 export function SiteShell({ children }: { children: ReactNode }) {
   const session = useSupabaseSession();
   const isAuthed = !!session;
+
+  // Dev-only: verify every primary nav target resolves to a real route.
+  useNavLinkIntegrityCheck();
 
   // Dev-only guard: SiteShell is the single source of navigation. If more than
   // one SiteShell mounts at once, a page is rendering a duplicate nav bar.
