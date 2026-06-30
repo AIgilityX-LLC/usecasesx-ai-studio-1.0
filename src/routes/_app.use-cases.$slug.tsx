@@ -196,12 +196,14 @@ function UseCaseDetailPage() {
   const businessFunctions = functionEntries.map((f) => f.name);
   const activeFunc =
     functionEntries.find((f) => f.slug === func) ?? functionEntries[0] ?? null;
-  const capabilities = (c.use_case_capabilities ?? [])
-    .map((x: any) => x.ai_capabilities?.name)
-    .filter(Boolean) as string[];
-  const objectives = (c.use_case_business_objectives ?? [])
-    .map((x: any) => x.business_objectives?.name)
-    .filter(Boolean) as string[];
+  const capabilityEntries = (c.use_case_capabilities ?? [])
+    .map((x: any) => ({ slug: x.ai_capabilities?.slug as string | undefined, name: x.ai_capabilities?.name as string | undefined }))
+    .filter((x: any) => x.slug && x.name) as { slug: string; name: string }[];
+  const capabilities = capabilityEntries.map((c2) => c2.name);
+  const objectiveEntries = (c.use_case_business_objectives ?? [])
+    .map((x: any) => ({ slug: x.business_objectives?.slug as string | undefined, name: x.business_objectives?.name as string | undefined }))
+    .filter((x: any) => x.slug && x.name) as { slug: string; name: string }[];
+  const objectives = objectiveEntries.map((o) => o.name);
 
   const platforms: string[] = Array.isArray(c.recommended_platforms)
     ? c.recommended_platforms
