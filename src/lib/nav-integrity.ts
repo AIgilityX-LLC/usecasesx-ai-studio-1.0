@@ -28,7 +28,8 @@ export function useNavLinkIntegrityCheck(extraTargets: string[] = []) {
   useEffect(() => {
     if (!import.meta.env.DEV) return;
 
-    const flatRoutes = router.flatRoutes as { fullPath?: string }[];
+    const flatRoutes = (router as unknown as { flatRoutes: { fullPath?: string }[] })
+      .flatRoutes;
     const knownPaths = new Set(
       flatRoutes
         .map((r) => r.fullPath?.replace(/\/$/, "") || "/")
