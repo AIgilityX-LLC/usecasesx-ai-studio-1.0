@@ -6,6 +6,7 @@ import { Download } from "lucide-react";
 import { compareStore } from "@/lib/usecasex.compare.store";
 import { getUseCase } from "@/lib/use-cases.functions";
 import { MissingDataFallback } from "@/components/MissingDataFallback";
+import { PageHero } from "@/components/usecasex/PageHero";
 
 const searchSchema = z.object({
   ids: z.string().optional(),
@@ -194,28 +195,25 @@ function ComparePage() {
 
   return (
     <article className="bg-background">
-      <header className="border-b border-border bg-card/40">
-        <div className="mx-auto max-w-[1400px] px-6 py-10">
-          <Link to="/repository" className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline">
-            ← Back to Explore
-          </Link>
-          <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Compare AI Use Cases</h1>
-              <p className="mt-2 max-w-2xl text-muted-foreground">
-                Side-by-side view of {items.length} use case{items.length === 1 ? "" : "s"} across outcomes, risk class, and
-                evidence. Differences are highlighted. This view is saved in the URL — bookmark or share it.
-              </p>
-            </div>
+      <PageHero
+        tone="dark"
+        eyebrow="Compare"
+        title="Compare AI Use Cases"
+        description={`Side-by-side view of ${items.length} use case${items.length === 1 ? "" : "s"} across outcomes, risk class, and evidence. Differences are highlighted. This view is saved in the URL — bookmark or share it.`}
+        actions={
+          <>
+            <Link to="/repository" className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary">
+              ← Back to Explore
+            </Link>
             <button
               onClick={exportPdf}
-              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground hover:brightness-110"
+              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-110"
             >
               <Download className="h-3.5 w-3.5" /> Export PDF
             </button>
-          </div>
-        </div>
-      </header>
+          </>
+        }
+      />
 
       <div className="mx-auto max-w-[1400px] px-6 py-10">
         <div className="overflow-x-auto rounded-xl border border-border bg-card">
