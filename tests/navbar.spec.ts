@@ -80,6 +80,30 @@ async function backgroundLuminance(page: Page, selector: string): Promise<number
   }, selector);
 }
 
+/** Returns the relative luminance of the nth (0-based) <section> rendered inside
+ *  the main landmark, walking ancestors for the nearest opaque background. */
+async function sectionLuminance(page: Page, index: number): Promise<number | null> {
+  return page.evaluate((i) => {
+    const sections = Array.from(
+      document.querySelectorAll("main#main-content section"),
+    ) as HTMLElement[];
+    let el = sections[i] ?? null;
+    const parse = (c: string) => {
+      const m = c.match(/rg(?:b|ba)?\(([^)]+)\)/);
+      if (!m) return null;
+      const [r, g, b, a] = m[1].split(",").map((x) => parseFloat(x));
+      if (a === 0) return null;
+      return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+    };
+    while (el) {
+      const lum = parse(getComputedStyle(el).backgroundColor);
+      if (lum !== null) return lum;
+      el = el.parentElement;
+    }
+    return null;
+  }, index);
+}
+
 test.describe("page hero tone + main landmark", () => {
   const HERO_PAGES = ["/", "/resources", "/pricing", "/insights", "/patterns"];
 
@@ -90,11 +114,28 @@ test.describe("page hero tone + main landmark", () => {
     });
   }
 
-  test("Resources renders a dark hero section as the first content band", async ({ page }) => {
-    await page.goto(`${BASE}/resources`, { waitUntil: "networkidle" });
-    const lum = await backgroundLuminance(page, "main#main-content section:first-of-type");
-    expect(lum, "Resources hero should be a dark band").toBeLessThan(0.5);
-  });
+  // Pages built on the PageHero primitive: first band must be dark, and the
+  // following major section must be lighter (the alternating tone contract).
+  const DARK_HERO_PAGES = ["/resources", "/pricing", "/insights", "/patterns"];
+
+  for (const route of DARK_HERO_PAGES) {
+    test(`${route} renders a dark hero as the first content band`, async ({ page }) => {
+      await page.goto(`${BASE}${route}`, { waitUntil: "networkidle" });
+      const hero = await sectionLuminance(page, 0);
+      expect(hero, `${route} hero luminance should be measurable`).not.toBeNull();
+      expect(hero as number, `${route} hero should be a dark band`).toBeLessThan(0.5);
+    });
+
+    test(`${route} alternates to a lighter major section after the hero`, async ({ page }) => {
+      await page.goto(`${BASE}${route}`, { waitUntil: "networkidle" });
+      const hero = await sectionLuminance(page, 0);
+      const next = await sectionLuminance(page, 1);
+      if (next === null || hero === null) test.skip(true, `${route} has no second section`);
+      expect(next as number, `${route} section after hero should be lighter`).toBeGreaterThan(
+        hero as number,
+      );
+    });
+  }
 
   test("Home exposes a hero section inside the main landmark", async ({ page }) => {
     await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
