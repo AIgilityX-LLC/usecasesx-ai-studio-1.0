@@ -49,10 +49,12 @@ export type Database = {
           minimum_viable_prediction: string | null
           mvp_scope: string | null
           pattern_id: string | null
+          position: number
           priority_score: number | null
           problem_statement: string | null
           risk_level: string | null
           risks: Json | null
+          source_use_case_id: string | null
           stakeholders: Json | null
           status: string
           title: string
@@ -74,10 +76,12 @@ export type Database = {
           minimum_viable_prediction?: string | null
           mvp_scope?: string | null
           pattern_id?: string | null
+          position?: number
           priority_score?: number | null
           problem_statement?: string | null
           risk_level?: string | null
           risks?: Json | null
+          source_use_case_id?: string | null
           stakeholders?: Json | null
           status?: string
           title: string
@@ -99,10 +103,12 @@ export type Database = {
           minimum_viable_prediction?: string | null
           mvp_scope?: string | null
           pattern_id?: string | null
+          position?: number
           priority_score?: number | null
           problem_statement?: string | null
           risk_level?: string | null
           risks?: Json | null
+          source_use_case_id?: string | null
           stakeholders?: Json | null
           status?: string
           title?: string
@@ -121,6 +127,13 @@ export type Database = {
             columns: ["pattern_id"]
             isOneToOne: false
             referencedRelation: "use_case_patterns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_use_cases_source_use_case_id_fkey"
+            columns: ["source_use_case_id"]
+            isOneToOne: false
+            referencedRelation: "use_cases"
             referencedColumns: ["id"]
           },
         ]

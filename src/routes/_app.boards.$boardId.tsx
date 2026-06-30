@@ -3,10 +3,17 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowLeft, Loader2, Plus, ExternalLink, Sparkles, ShieldAlert, FileQuestion } from "lucide-react";
+import {
+  ArrowLeft, Loader2, Plus, ExternalLink, Sparkles, ShieldAlert, FileQuestion,
+  Pencil, Trash2, ArrowUp, ArrowDown, X,
+} from "lucide-react";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
-import { createBoardUseCase, listSavedCatalogUseCases, addSavedUseCaseToBoard } from "@/lib/boards";
-import { loadBoardWithItems } from "@/lib/boards.functions";
+import {
+  createBoardUseCase, listSavedCatalogUseCases, addSavedUseCaseToBoard,
+  renameBoard, deleteBoard, removeBoardUseCase, reorderBoardUseCases,
+  DuplicateBoardItemError,
+} from "@/lib/boards";
+import { loadBoardWithItems, type LoadedBoardItem } from "@/lib/boards.functions";
 import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +22,10 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/_app/boards/$boardId")({
   head: () => ({
@@ -109,7 +120,13 @@ function BoardDetailPage() {
               <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{b.description}</p>
             )}
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <RenameBoardDialog
+              boardId={boardId}
+              currentTitle={b.title}
+              currentDescription={b.description}
+            />
+            <DeleteBoardButton boardId={boardId} title={b.title} />
             <AddSavedDialog userId={session!.user.id} boardId={boardId} />
             <AddItemDialog userId={session!.user.id} boardId={boardId} />
           </div>
@@ -131,41 +148,243 @@ function BoardDetailPage() {
             </div>
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {list.map((uc) => (
-              <Link
-                key={uc.id}
-                to="/studio/use-case/$id"
-                params={{ id: uc.id }}
-                className="group flex flex-col rounded-xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[var(--shadow-elegant)]"
-              >
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="rounded-md bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    {uc.status}
-                  </span>
-                  {uc.ai_type && (
-                    <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary">
-                      {uc.ai_type}
-                    </span>
-                  )}
-                </div>
-                <h3 className="text-base font-bold text-foreground group-hover:text-primary">
-                  {uc.title}
-                </h3>
-                {uc.problem_statement && (
-                  <p className="mt-2 text-sm text-muted-foreground line-clamp-3">
-                    {uc.problem_statement}
-                  </p>
-                )}
-                <span className="mt-4 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-primary">
-                  Open in Studio <ExternalLink className="h-3 w-3" />
-                </span>
-              </Link>
-            ))}
-          </div>
+          <BoardItemList boardId={boardId} items={list} />
         )}
       </div>
     </section>
+  );
+}
+
+function BoardItemList({ boardId, items }: { boardId: string; items: LoadedBoardItem[] }) {
+  const qc = useQueryClient();
+  // Local order for snappy reordering; resynced when server items change.
+  const [order, setOrder] = useState<LoadedBoardItem[]>(items);
+  useEffect(() => {
+    setOrder(items);
+  }, [items]);
+
+  const reorder = useMutation({
+    mutationFn: (orderedIds: string[]) => reorderBoardUseCases({ boardId, orderedIds }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["board", boardId, "full"] }),
+    onError: (e: Error) => {
+      toast.error(e.message);
+      setOrder(items);
+    },
+  });
+
+  const remove = useMutation({
+    mutationFn: (id: string) => removeBoardUseCase(id),
+    onSuccess: () => {
+      toast.success("Use case removed from board.");
+      qc.invalidateQueries({ queryKey: ["board", boardId, "full"] });
+      qc.invalidateQueries({ queryKey: ["boards", "list"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const move = (index: number, dir: -1 | 1) => {
+    const next = [...order];
+    const target = index + dir;
+    if (target < 0 || target >= next.length) return;
+    [next[index], next[target]] = [next[target], next[index]];
+    setOrder(next);
+    reorder.mutate(next.map((i) => i.id));
+  };
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs text-muted-foreground">
+        Use the up/down arrows to reorder use cases on this board.
+      </p>
+      {order.map((uc, index) => (
+        <div
+          key={uc.id}
+          className="group flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/30 hover:shadow-[var(--shadow-elegant)]"
+        >
+          <div className="flex flex-col gap-1 pt-0.5">
+            <button
+              onClick={() => move(index, -1)}
+              disabled={index === 0 || reorder.isPending}
+              className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-30"
+              aria-label="Move up"
+            >
+              <ArrowUp className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => move(index, 1)}
+              disabled={index === order.length - 1 || reorder.isPending}
+              className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-30"
+              aria-label="Move down"
+            >
+              <ArrowDown className="h-3.5 w-3.5" />
+            </button>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="mb-1 flex flex-wrap items-center gap-2">
+              <span className="rounded-md bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                {uc.status}
+              </span>
+              {uc.ai_type && (
+                <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary">
+                  {uc.ai_type}
+                </span>
+              )}
+            </div>
+            <Link
+              to="/studio/use-case/$id"
+              params={{ id: uc.id }}
+              className="text-base font-bold text-foreground hover:text-primary"
+            >
+              {uc.title}
+            </Link>
+            {uc.problem_statement && (
+              <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                {uc.problem_statement}
+              </p>
+            )}
+            <Link
+              to="/studio/use-case/$id"
+              params={{ id: uc.id }}
+              className="mt-2 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-primary hover:underline"
+            >
+              Open in Studio <ExternalLink className="h-3 w-3" />
+            </Link>
+          </div>
+          <button
+            onClick={() => {
+              if (confirm(`Remove "${uc.title}" from this board?`)) remove.mutate(uc.id);
+            }}
+            disabled={remove.isPending}
+            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+            aria-label="Remove from board"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RenameBoardDialog({
+  boardId, currentTitle, currentDescription,
+}: { boardId: string; currentTitle: string; currentDescription: string | null }) {
+  const qc = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState(currentTitle);
+  const [description, setDescription] = useState(currentDescription ?? "");
+
+  useEffect(() => {
+    if (open) {
+      setTitle(currentTitle);
+      setDescription(currentDescription ?? "");
+    }
+  }, [open, currentTitle, currentDescription]);
+
+  const save = useMutation({
+    mutationFn: () => renameBoard({ boardId, title, description }),
+    onSuccess: () => {
+      toast.success("Board updated.");
+      qc.invalidateQueries({ queryKey: ["board", boardId, "full"] });
+      qc.invalidateQueries({ queryKey: ["boards", "list"] });
+      setOpen(false);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="gap-1.5">
+          <Pencil className="h-4 w-4" /> Rename
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Rename board</DialogTitle>
+          <DialogDescription>Update the board title and description.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="rename-title">Board title</Label>
+            <Input
+              id="rename-title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              autoFocus
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="rename-desc">Description (optional)</Label>
+            <Textarea
+              id="rename-desc"
+              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => setOpen(false)} disabled={save.isPending}>
+            Cancel
+          </Button>
+          <Button onClick={() => save.mutate()} disabled={save.isPending || !title.trim()}>
+            {save.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Save
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function DeleteBoardButton({ boardId, title }: { boardId: string; title: string }) {
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const [open, setOpen] = useState(false);
+
+  const del = useMutation({
+    mutationFn: () => deleteBoard(boardId),
+    onSuccess: () => {
+      toast.success("Board deleted.");
+      qc.invalidateQueries({ queryKey: ["boards"] });
+      navigate({ to: "/boards", replace: true });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <Button
+        variant="outline"
+        className="gap-1.5 text-destructive hover:text-destructive"
+        onClick={() => setOpen(true)}
+      >
+        <Trash2 className="h-4 w-4" /> Delete
+      </Button>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete this board?</AlertDialogTitle>
+          <AlertDialogDescription>
+            “{title}” and all of its use cases will be permanently removed. This cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={del.isPending}>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={(e) => {
+              e.preventDefault();
+              del.mutate();
+            }}
+            disabled={del.isPending}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            {del.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Delete board
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 
@@ -256,7 +475,13 @@ function AddSavedDialog({ userId, boardId }: { userId: string; boardId: string }
       qc.invalidateQueries({ queryKey: ["board", boardId, "full"] });
       qc.invalidateQueries({ queryKey: ["boards", "list"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => {
+      if (e instanceof DuplicateBoardItemError || e.name === "DuplicateBoardItemError") {
+        toast.warning(e.message || "This use case is already on the board.");
+      } else {
+        toast.error(e.message);
+      }
+    },
   });
 
   return (

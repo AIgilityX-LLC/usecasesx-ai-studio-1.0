@@ -29,6 +29,8 @@ export interface LoadedBoardItem {
   ai_type: string | null;
   status: string;
   created_at: string;
+  position: number;
+  source_use_case_id: string | null;
 }
 
 export const loadBoardWithItems = createServerFn({ method: "GET" })
@@ -78,9 +80,10 @@ export const loadBoardWithItems = createServerFn({ method: "GET" })
     // 3. Fetch items (RLS-enforced; same access rules).
     const { data: items, error: itemsErr } = await context.supabase
       .from("ai_use_cases")
-      .select("id, title, problem_statement, ai_type, status, created_at, board_id")
+      .select("id, title, problem_statement, ai_type, status, created_at, position, source_use_case_id, board_id")
       .eq("board_id", boardId)
-      .order("created_at", { ascending: false });
+      .order("position", { ascending: true })
+      .order("created_at", { ascending: true });
     if (itemsErr) {
       console.error("[loadBoardWithItems] items read failed", { userId, boardId, err: itemsErr.message });
       throw new Error(itemsErr.message);
