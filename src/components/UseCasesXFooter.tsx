@@ -53,11 +53,15 @@ export function UseCasesXFooter() {
         />
       </div>
       <div className="border-t border-border">
-        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-2 px-6 py-4 text-[11px] text-muted-foreground">
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3 px-6 py-4 text-[11px] text-muted-foreground">
           <span>
             © {new Date().getFullYear()} AIgilityX. UseCasesX™ — Global AI Use Cases Repository & Development Studio.
           </span>
-          <span>Discover · Design · Validate · Govern · Scale.</span>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link to="/pricing" className="hover:text-foreground">Pricing</Link>
+            <Link to="/insights" className="hover:text-foreground">Insights</Link>
+            <span className="hidden sm:inline">Discover · Design · Validate · Govern · Scale.</span>
+          </div>
         </div>
       </div>
     </footer>
