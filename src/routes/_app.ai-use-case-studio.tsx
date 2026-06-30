@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Sparkles, Lightbulb, Gauge, Database, Hammer, Rocket, Shield, Plus, FolderOpen, BookOpen,
+  ArrowRight, CheckCircle2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_app/ai-use-case-studio")({
@@ -50,6 +51,27 @@ const FEATURES = [
   },
 ];
 
+const STATS = [
+  { value: "1000+", label: "AI use case patterns" },
+  { value: "18+", label: "Industries covered" },
+  { value: "5", label: "Validation lenses" },
+  { value: "3", label: "Governance modules" },
+];
+
+const STEPS = [
+  { n: "1", title: "Describe your ambition", desc: "Bring a business problem or pick from 1000+ proven patterns." },
+  { n: "2", title: "Validate & score", desc: "Test feasibility, data readiness, value and risk in minutes." },
+  { n: "3", title: "Govern & fund", desc: "Generate a board-ready blueprint with built-in governance." },
+  { n: "4", title: "Execute with confidence", desc: "Hand off an executable, defensible AI use case roadmap." },
+];
+
+const BENEFITS = [
+  "No more stalled AI pilots — validate before you invest",
+  "Board-ready blueprints in hours, not weeks",
+  "Governance, risk and compliance built in from day one",
+  "Reusable pattern library across every industry",
+];
+
 function AIUseCaseStudioPage() {
   return (
     <>
@@ -71,8 +93,14 @@ function AIUseCaseStudioPage() {
 
           <div className="mt-6 flex flex-wrap gap-2">
             <Link
-              to="/studio"
+              to="/auth"
               className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-sm hover:brightness-110"
+            >
+              Get started free <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              to="/studio"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
             >
               <Plus className="h-4 w-4" /> Start New AI Use Case
             </Link>
@@ -88,6 +116,15 @@ function AIUseCaseStudioPage() {
             >
               <BookOpen className="h-4 w-4" /> Explore Pattern Library
             </Link>
+          </div>
+
+          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {STATS.map((s) => (
+              <div key={s.label} className="rounded-xl border border-border bg-card/60 p-4 text-center">
+                <div className="text-2xl font-bold text-primary">{s.value}</div>
+                <div className="mt-1 text-xs text-muted-foreground">{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -115,6 +152,57 @@ function AIUseCaseStudioPage() {
                 </article>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-border bg-card/30">
+        <div className="mx-auto max-w-[1280px] px-6 py-12">
+          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">How it works</h2>
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {STEPS.map((s) => (
+              <div key={s.n} className="rounded-2xl border border-border bg-background p-6">
+                <div className="grid h-9 w-9 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+                  {s.n}
+                </div>
+                <h3 className="mt-4 text-base font-bold text-foreground">{s.title}</h3>
+                <p className="mt-1.5 text-sm text-muted-foreground">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-background">
+        <div className="mx-auto max-w-[1280px] px-6 py-14">
+          <div className="grid items-center gap-10 lg:grid-cols-2">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                Why teams choose the AI Use Case Studio
+              </h2>
+              <ul className="mt-6 space-y-3">
+                {BENEFITS.map((b) => (
+                  <li key={b} className="flex items-start gap-3 text-sm text-foreground">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/10 via-card to-background p-8 text-center">
+              <Sparkles className="mx-auto h-8 w-8 text-primary" />
+              <h3 className="mt-4 text-xl font-bold text-foreground">Turn AI ambition into funded reality</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Create your free account and build your first validated, governance-ready AI use case today.
+              </p>
+              <Link
+                to="/auth"
+                className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-sm hover:brightness-110"
+              >
+                Sign up free <ArrowRight className="h-4 w-4" />
+              </Link>
+              <p className="mt-3 text-xs text-muted-foreground">No credit card required.</p>
+            </div>
           </div>
         </div>
       </section>

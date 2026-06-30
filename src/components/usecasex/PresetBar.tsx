@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { BUILTIN_PRESETS, presetsStore, useSavedPresets } from "@/lib/usecasex.presets";
+import { BUILTIN_PRESETS, presetsStore } from "@/lib/usecasex.presets";
+import { SavedViewsMenu } from "@/components/usecasex/SavedViewsMenu";
 
 export function PresetBar({ currentSearch }: { currentSearch: Record<string, unknown> }) {
-  const saved = useSavedPresets();
   const [showSave, setShowSave] = useState(false);
   const [name, setName] = useState("");
 
@@ -36,6 +36,7 @@ export function PresetBar({ currentSearch }: { currentSearch: Record<string, unk
           Quick presets
         </div>
         <div className="flex items-center gap-2">
+          <SavedViewsMenu />
           <button
             onClick={copyShareLink}
             className="rounded-md border border-border bg-background px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-foreground hover:bg-secondary"
@@ -84,40 +85,6 @@ export function PresetBar({ currentSearch }: { currentSearch: Record<string, unk
           >
             Save
           </button>
-        </div>
-      )}
-
-      {saved.length > 0 && (
-        <div className="border-t border-border pt-3">
-          <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            My saved presets
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {saved.map((p) => (
-              <div
-                key={p.id}
-                className="group inline-flex items-center gap-1 rounded-full border border-border bg-background pl-3 text-[11px] font-semibold text-foreground"
-              >
-                <Link
-                  to="/repository"
-                  search={p.search as never}
-                  className="py-1 hover:text-primary"
-                >
-                  {p.name}
-                </Link>
-                <button
-                  onClick={() => {
-                    presetsStore.remove(p.id);
-                    toast.success(`Removed "${p.name}"`);
-                  }}
-                  aria-label={`Remove preset ${p.name}`}
-                  className="grid h-6 w-6 place-items-center rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-          </div>
         </div>
       )}
     </div>
