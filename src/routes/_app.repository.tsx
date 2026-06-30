@@ -183,13 +183,6 @@ function Page() {
     return arr;
   }, [cases, sort, governanceFirst]);
 
-  const toggleRisk = (slug: string) => {
-    const cur: string[] = search.riskLevel ?? [];
-    const next = cur.includes(slug) ? cur.filter((x: string) => x !== slug) : [...cur, slug];
-    update({ riskLevel: next });
-    track("filter_used", { facet: "riskLevel", value: slug });
-  };
-
   type ChipKey = keyof FacetState;
   const chips: { key: ChipKey; value: string; label: string }[] = [];
   const facetKeys: ChipKey[] = ["industries","capabilities","businessFunctions","objectives","maturity","valuePotential","complexity","riskLevel","timeToValue"];
