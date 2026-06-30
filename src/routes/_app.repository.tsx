@@ -295,6 +295,12 @@ function Page() {
 
           <div className="flex-1">
             <PresetBar currentSearch={search as Record<string, unknown>} />
+            <RiskClassBar
+              selected={search.riskLevel ?? []}
+              onToggle={toggleRisk}
+              governanceFirst={governanceFirst}
+              onGovernanceFirst={setGovernanceFirst}
+            />
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
               <p className="text-sm text-muted-foreground">
                 <span className="font-mono text-base font-bold text-foreground">{sorted.length}</span> use case{sorted.length === 1 ? "" : "s"}
