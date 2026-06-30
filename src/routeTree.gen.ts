@@ -24,6 +24,7 @@ import { Route as AppProRouteImport } from './routes/_app.pro'
 import { Route as AppPortfolioxRouteImport } from './routes/_app.portfoliox'
 import { Route as AppPatternsRouteImport } from './routes/_app.patterns'
 import { Route as AppMyUseCasesRouteImport } from './routes/_app.my-use-cases'
+import { Route as AppInsightsRouteImport } from './routes/_app.insights'
 import { Route as AppImpactAssessmentRouteImport } from './routes/_app.impact-assessment'
 import { Route as AppGovernanceRouteImport } from './routes/_app.governance'
 import { Route as AppFeasibilityRouteImport } from './routes/_app.feasibility'
@@ -124,6 +125,11 @@ const AppPatternsRoute = AppPatternsRouteImport.update({
 const AppMyUseCasesRoute = AppMyUseCasesRouteImport.update({
   id: '/my-use-cases',
   path: '/my-use-cases',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInsightsRoute = AppInsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
   getParentRoute: () => AppRoute,
 } as any)
 const AppImpactAssessmentRoute = AppImpactAssessmentRouteImport.update({
@@ -288,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/feasibility': typeof AppFeasibilityRoute
   '/governance': typeof AppGovernanceRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
+  '/insights': typeof AppInsightsRoute
   '/my-use-cases': typeof AppMyUseCasesRoute
   '/patterns': typeof AppPatternsRoute
   '/portfoliox': typeof AppPortfolioxRoute
@@ -330,6 +337,7 @@ export interface FileRoutesByTo {
   '/feasibility': typeof AppFeasibilityRoute
   '/governance': typeof AppGovernanceRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
+  '/insights': typeof AppInsightsRoute
   '/my-use-cases': typeof AppMyUseCasesRoute
   '/patterns': typeof AppPatternsRoute
   '/portfoliox': typeof AppPortfolioxRoute
@@ -375,6 +383,7 @@ export interface FileRoutesById {
   '/_app/feasibility': typeof AppFeasibilityRoute
   '/_app/governance': typeof AppGovernanceRoute
   '/_app/impact-assessment': typeof AppImpactAssessmentRoute
+  '/_app/insights': typeof AppInsightsRoute
   '/_app/my-use-cases': typeof AppMyUseCasesRoute
   '/_app/patterns': typeof AppPatternsRoute
   '/_app/portfoliox': typeof AppPortfolioxRoute
@@ -420,6 +429,7 @@ export interface FileRouteTypes {
     | '/feasibility'
     | '/governance'
     | '/impact-assessment'
+    | '/insights'
     | '/my-use-cases'
     | '/patterns'
     | '/portfoliox'
@@ -462,6 +472,7 @@ export interface FileRouteTypes {
     | '/feasibility'
     | '/governance'
     | '/impact-assessment'
+    | '/insights'
     | '/my-use-cases'
     | '/patterns'
     | '/portfoliox'
@@ -506,6 +517,7 @@ export interface FileRouteTypes {
     | '/_app/feasibility'
     | '/_app/governance'
     | '/_app/impact-assessment'
+    | '/_app/insights'
     | '/_app/my-use-cases'
     | '/_app/patterns'
     | '/_app/portfoliox'
@@ -649,6 +661,13 @@ declare module '@tanstack/react-router' {
       path: '/my-use-cases'
       fullPath: '/my-use-cases'
       preLoaderRoute: typeof AppMyUseCasesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/insights': {
+      id: '/_app/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof AppInsightsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/impact-assessment': {
@@ -896,6 +915,7 @@ interface AppRouteChildren {
   AppFeasibilityRoute: typeof AppFeasibilityRoute
   AppGovernanceRoute: typeof AppGovernanceRoute
   AppImpactAssessmentRoute: typeof AppImpactAssessmentRoute
+  AppInsightsRoute: typeof AppInsightsRoute
   AppMyUseCasesRoute: typeof AppMyUseCasesRoute
   AppPatternsRoute: typeof AppPatternsRoute
   AppPortfolioxRoute: typeof AppPortfolioxRoute
@@ -921,6 +941,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppFeasibilityRoute: AppFeasibilityRoute,
   AppGovernanceRoute: AppGovernanceRoute,
   AppImpactAssessmentRoute: AppImpactAssessmentRoute,
+  AppInsightsRoute: AppInsightsRoute,
   AppMyUseCasesRoute: AppMyUseCasesRoute,
   AppPatternsRoute: AppPatternsRoute,
   AppPortfolioxRoute: AppPortfolioxRoute,
