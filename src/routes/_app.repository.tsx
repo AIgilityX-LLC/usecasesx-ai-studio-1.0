@@ -12,6 +12,7 @@ import { PresetBar } from "@/components/usecasex/PresetBar";
 import { CompareTray } from "@/components/usecasex/CompareTray";
 import { track } from "@/lib/usecasex.tracking";
 import { AddToStudioBoardDialog } from "@/components/AddToStudioBoardDialog";
+import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { usePlan } from "@/hooks/usePlan";
 import { toast } from "sonner";
 import type { UseCaseCardData } from "@/components/UseCaseCard";
@@ -268,6 +269,7 @@ function Page() {
       </section>
 
       <div className="mx-auto max-w-[1400px] px-6 py-10">
+        <SampleDataDisclaimer className="mb-6" />
         <div className="flex flex-col gap-8 lg:flex-row">
           <aside className="w-full shrink-0 lg:w-72">
             <div className="lg:sticky lg:top-32">

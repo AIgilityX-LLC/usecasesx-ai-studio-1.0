@@ -8,6 +8,7 @@ import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { MissingDataFallback } from "@/components/MissingDataFallback";
 import { CompareToggle } from "@/components/usecasex/CompareTray";
 import { RatingWidget } from "@/components/usecasex/RatingWidget";
+import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { supabase } from "@/integrations/supabase/client";
 import { getUseCase, listUseCases } from "@/lib/use-cases.functions";
 
@@ -392,6 +393,7 @@ function UseCaseDetailPage() {
               {c.summary && (
                 <p className="mt-4 max-w-3xl text-lg text-muted-foreground">{c.summary}</p>
               )}
+              <SampleDataDisclaimer className="mt-5 max-w-3xl" />
               <div className="mt-6 flex flex-wrap gap-2">
                 {industries.map((n) => (
                   <Badge key={n} tone="primary">{n}</Badge>
