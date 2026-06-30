@@ -60,8 +60,7 @@ function InsightsPage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
+      </PageHero>
 
       <div className="mx-auto max-w-[1400px] px-6 py-10">
         <div className="grid gap-6 lg:grid-cols-2">
