@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
+import { useEffect } from "react";
 import { useQueries } from "@tanstack/react-query";
+import { Download } from "lucide-react";
 import { compareStore } from "@/lib/usecasex.compare.store";
 import { getUseCase } from "@/lib/use-cases.functions";
 import { MissingDataFallback } from "@/components/MissingDataFallback";
@@ -28,11 +30,28 @@ type Row = Record<string, any>;
 
 function ComparePage() {
   const search = Route.useSearch() as { ids?: string };
+  const navigate = Route.useNavigate();
   const slugs: string[] = (search.ids ?? "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean)
     .slice(0, compareStore.MAX);
+
+  // Keep the local compare selection in sync with the shareable URL so the
+  // selection restores on refresh and stays consistent across the app.
+  useEffect(() => {
+    const current = compareStore.get();
+    if (slugs.join(",") !== current.join(",")) {
+      compareStore.set(slugs);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search.ids]);
+
+  const removeSlug = (slug: string) => {
+    const next = slugs.filter((s) => s !== slug);
+    compareStore.set(next);
+    navigate({ search: { ids: next.join(",") || undefined } as never, replace: true });
+  };
 
   const results = useQueries({
     queries: slugs.map((slug) => ({
@@ -119,6 +138,60 @@ function ComparePage() {
     links: (c.use_case_links ?? []) as Row[],
   });
 
+  const exportPdf = () => {
+    if (typeof window === "undefined") return;
+    const esc = (v: unknown) =>
+      String(v ?? "—").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const origin = window.location.origin;
+    const col = (c: Row) => {
+      const e = evidenceFor(c);
+      const sources = e.links
+        .map((l: Row) => `<li><a href="${esc(l.url)}">${esc(l.label ?? l.url)}</a></li>`)
+        .join("");
+      const metrics = e.metrics
+        .map((m: Row) => `<li><strong>${esc(m.value)}${esc(m.unit ?? "")}</strong> ${esc(m.label)}</li>`)
+        .join("");
+      return `<section>
+        <h2><a href="${origin}/use-cases/${esc(c.slug)}">${esc(c.title)}</a></h2>
+        <table class="kv">
+          <tr><th>Industry</th><td>${esc(ind(c))}</td></tr>
+          <tr><th>Business function</th><td>${esc(fn(c))}</td></tr>
+          <tr><th>AI type</th><td>${esc(ai(c))}</td></tr>
+          <tr><th>Value potential</th><td>${esc(c.value_potential)}</td></tr>
+          <tr><th>Complexity</th><td>${esc(c.complexity)}</td></tr>
+          <tr><th>Time to value</th><td>${esc(c.time_to_value)}</td></tr>
+          <tr><th>Risk class</th><td>${esc(c.risk_level)}</td></tr>
+        </table>
+        ${e.problem ? `<h3>Problem</h3><p>${esc(e.problem)}</p>` : ""}
+        ${e.approach ? `<h3>Approach</h3><p>${esc(e.approach)}</p>` : ""}
+        ${e.value ? `<h3>Outcome / value</h3><p>${esc(e.value)}</p>` : ""}
+        ${metrics ? `<h3>Metrics</h3><ul>${metrics}</ul>` : ""}
+        ${sources ? `<h3>Evidence &amp; sources</h3><ul>${sources}</ul>` : ""}
+      </section>`;
+    };
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>AI Use Case Comparison</title>
+      <style>
+        body{font-family:system-ui,sans-serif;margin:40px;color:#111;line-height:1.5}
+        h1{font-size:22px} .meta{color:#777;font-size:12px;margin-bottom:18px}
+        section{border-top:2px solid #1a5fd0;padding-top:14px;margin-top:24px;page-break-inside:avoid}
+        h2{font-size:18px;margin:0 0 8px} h2 a{color:#111;text-decoration:none}
+        h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#555;margin:14px 0 4px}
+        table.kv{border-collapse:collapse;margin:6px 0} table.kv th{text-align:left;color:#666;font-weight:600;padding:2px 18px 2px 0;font-size:12px;vertical-align:top}
+        table.kv td{padding:2px 0;font-size:13px}
+        a{color:#1a5fd0;word-break:break-all} ul{margin:4px 0;padding-left:18px} li{margin-bottom:4px;font-size:13px}
+      </style></head><body>
+      <h1>AI Use Case Comparison</h1>
+      <div class="meta">${items.length} use case${items.length === 1 ? "" : "s"} · exported ${new Date().toLocaleString()} · UseCasesX™</div>
+      ${items.map(col).join("")}
+      <script>window.onload=function(){window.print();}</script>
+      </body></html>`;
+    const w = window.open("", "_blank");
+    if (w) {
+      w.document.write(html);
+      w.document.close();
+    }
+  };
+
   return (
     <article className="bg-background">
       <header className="border-b border-border bg-card/40">
@@ -126,11 +199,21 @@ function ComparePage() {
           <Link to="/repository" className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline">
             ← Back to Explore
           </Link>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Compare AI Use Cases</h1>
-          <p className="mt-2 max-w-2xl text-muted-foreground">
-            Side-by-side view of {items.length} use case{items.length === 1 ? "" : "s"} across outcomes, risk class, and
-            evidence. Differences are highlighted.
-          </p>
+          <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Compare AI Use Cases</h1>
+              <p className="mt-2 max-w-2xl text-muted-foreground">
+                Side-by-side view of {items.length} use case{items.length === 1 ? "" : "s"} across outcomes, risk class, and
+                evidence. Differences are highlighted. This view is saved in the URL — bookmark or share it.
+              </p>
+            </div>
+            <button
+              onClick={exportPdf}
+              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground hover:brightness-110"
+            >
+              <Download className="h-3.5 w-3.5" /> Export PDF
+            </button>
+          </div>
         </div>
       </header>
 
@@ -149,7 +232,7 @@ function ComparePage() {
                     </Link>
                     <div className="mt-1 text-[10px] font-bold uppercase tracking-widest text-primary">{ind(c)}</div>
                     <button
-                      onClick={() => compareStore.remove(c.slug)}
+                      onClick={() => removeSlug(c.slug)}
                       className="mt-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-destructive"
                     >
                       Remove
