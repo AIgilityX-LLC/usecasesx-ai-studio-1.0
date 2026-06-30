@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
-import { MOCK_USE_CASES, assertMockReady, type MockUseCase } from "@/lib/usecasex.mock";
+import { useQueries } from "@tanstack/react-query";
 import { compareStore } from "@/lib/usecasex.compare.store";
+import { getUseCase } from "@/lib/use-cases.functions";
 import { MissingDataFallback } from "@/components/MissingDataFallback";
 
 const searchSchema = z.object({
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/_app/compare")({
   head: () => ({
     meta: [
       { title: "Compare AI Use Cases — UseCasesX™" },
-      { name: "description", content: "Side-by-side comparison of selected AI use cases across maturity, impact, risk, and implementation steps." },
+      { name: "description", content: "Side-by-side comparison of selected AI use cases across outcomes, risk class, and evidence." },
     ],
   }),
   validateSearch: searchSchema,
@@ -23,24 +24,35 @@ export const Route = createFileRoute("/_app/compare")({
   notFoundComponent: () => <MissingDataFallback title="Nothing to compare" />,
 });
 
+type Row = Record<string, any>;
+
 function ComparePage() {
   const search = Route.useSearch() as { ids?: string };
-  const ready = assertMockReady();
-  if (!ready.ok) {
-    return <MissingDataFallback reason={ready.reason} />;
-  }
+  const slugs: string[] = (search.ids ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, compareStore.MAX);
 
-  const slugs: string[] = (search.ids ?? "").split(",").map((s: string) => s.trim()).filter(Boolean).slice(0, compareStore.MAX);
-  const items: MockUseCase[] = slugs
-    .map((s: string) => MOCK_USE_CASES.find((u: MockUseCase) => u.slug === s))
-    .filter((x): x is MockUseCase => Boolean(x));
+  const results = useQueries({
+    queries: slugs.map((slug) => ({
+      queryKey: ["use-case", slug],
+      queryFn: () => getUseCase({ data: { slug } }),
+      staleTime: 60 * 1000,
+    })),
+  });
 
-  if (items.length === 0) {
+  const items = results
+    .map((r) => r.data as Row | undefined)
+    .filter((x): x is Row => Boolean(x));
+  const loading = results.some((r) => r.isLoading);
+
+  if (slugs.length === 0) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-20 text-center">
         <h1 className="text-3xl font-bold text-foreground">Nothing to compare yet</h1>
         <p className="mt-3 text-muted-foreground">
-          Open the Explore page or any use case detail and click <strong>Add to compare</strong> to start.
+          Open the Explore page and click <strong>Add to compare</strong> on any use cases to start.
         </p>
         <Link
           to="/repository"
@@ -52,70 +64,60 @@ function ComparePage() {
     );
   }
 
-  const rows: { label: string; render: (c: MockUseCase) => React.ReactNode; diff?: boolean }[] = [
-    { label: "Industry", render: (c) => c.industry.name, diff: true },
-    { label: "Sector", render: (c) => c.sector === "public" ? "Public" : c.sector === "both" ? "Cross-sector" : "Private", diff: true },
-    { label: "Business function", render: (c) => c.businessFunction, diff: true },
-    { label: "AI type", render: (c) => c.aiType, diff: true },
-    { label: "Objective", render: (c) => c.objective, diff: true },
-    { label: "Value potential", render: (c) => c.valuePotential, diff: true },
-    { label: "Complexity", render: (c) => c.complexity, diff: true },
-    { label: "Risk level", render: (c) => c.riskLevel, diff: true },
-    { label: "Maturity", render: (c) => c.maturity, diff: true },
-    { label: "Time to value", render: (c) => c.timeToValue, diff: true },
+  if (loading && items.length === 0) {
+    return <div className="mx-auto max-w-3xl px-6 py-20 text-center text-muted-foreground">Loading comparison…</div>;
+  }
+
+  const ind = (c: Row) => c.use_case_industries?.[0]?.industries?.name ?? "—";
+  const fn = (c: Row) => c.use_case_business_functions?.[0]?.business_functions?.name ?? "—";
+  const ai = (c: Row) => c.use_case_capabilities?.[0]?.ai_capabilities?.name ?? "—";
+  const obj = (c: Row) => c.use_case_business_objectives?.[0]?.business_objectives?.name ?? "—";
+
+  const riskTone: Record<string, string> = {
+    Low: "bg-emerald-500/10 text-emerald-600",
+    Medium: "bg-amber-500/10 text-amber-600",
+    High: "bg-orange-500/10 text-orange-600",
+    Critical: "bg-rose-500/10 text-rose-600",
+  };
+
+  const rows: { label: string; render: (c: Row) => React.ReactNode; diff?: boolean }[] = [
+    { label: "Industry", render: ind, diff: true },
+    { label: "Business function", render: fn, diff: true },
+    { label: "AI type", render: ai, diff: true },
+    { label: "Objective", render: obj, diff: true },
+    { label: "Maturity", render: (c) => c.maturity ?? "—", diff: true },
+    // Structured outcomes
+    { label: "Value potential", render: (c) => c.value_potential ?? "—", diff: true },
+    { label: "Complexity", render: (c) => c.complexity ?? "—", diff: true },
+    { label: "Time to value", render: (c) => c.time_to_value ?? "—", diff: true },
     {
-      label: "Tags",
-      render: (c) => (
-        <div className="flex flex-wrap gap-1">
-          {c.tags.map((t) => (
-            <span key={t} className="rounded-full bg-secondary/60 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">#{t}</span>
-          ))}
-        </div>
-      ),
-    },
-    {
-      label: "Recommended platforms",
-      render: (c) => (
-        <div className="flex flex-wrap gap-1">
-          {c.platforms.map((p) => (
-            <span key={p.slug} className="rounded-md border border-border bg-background px-2 py-0.5 text-[10px] font-bold text-foreground">
-              {p.name}
-            </span>
-          ))}
-        </div>
-      ),
+      label: "Risk class",
+      diff: true,
+      render: (c) =>
+        c.risk_level ? (
+          <span className={"rounded-full px-2 py-0.5 text-[11px] font-bold " + (riskTone[c.risk_level] ?? "bg-secondary text-foreground")}>
+            {c.risk_level}
+          </span>
+        ) : (
+          "—"
+        ),
     },
   ];
 
-  const stepsFor = (c: MockUseCase): string[] => [
-    `Frame the ${c.businessFunction.toLowerCase()} problem and pick 1–2 ${c.objective.toLowerCase()} KPIs.`,
-    `Assess data readiness for ${c.aiType.toLowerCase()} (volume, quality, governance).`,
-    c.riskLevel === "Critical" || c.riskLevel === "High"
-      ? "Run a CyberX C3G governance + AssureX validation review before any prototype goes live."
-      : "Capture a lightweight risk note and assign an accountable owner.",
-    c.maturity === "Beginner"
-      ? "Build a contained proof-of-value (4–6 weeks) with measurable success criteria."
-      : c.maturity === "Intermediate"
-      ? "Run a controlled pilot in one team or region with full monitoring."
-      : "Scale across teams; productionize with drift monitoring and re-validation cadence.",
-    c.timeToValue === "Short"
-      ? "Target first value in <90 days; instrument from day one."
-      : c.timeToValue === "Medium"
-      ? "Plan for 3–6 months to first measurable value."
-      : "Plan a 6–12 month roadmap; sequence value milestones every quarter.",
-    "Route the use case through the AIgilityX execution path: SARPI → CyberX → AdvisorX → FlowX → PrivacyX → AssureX.",
-  ];
-
-  // Highlight rows where values differ.
   const diffSet = new Set(
     rows
       .filter((r) => r.diff)
-      .filter((r) => {
-        const vals = items.map((c) => String(r.render(c)));
-        return new Set(vals).size > 1;
-      })
+      .filter((r) => new Set(items.map((c) => String(typeof r.render(c) === "object" ? c.risk_level : r.render(c)))).size > 1)
       .map((r) => r.label),
   );
+
+  const evidenceFor = (c: Row): { problem?: string; approach?: string; value?: string; metrics: Row[]; links: Row[] } => ({
+    problem: c.business_problem ?? c.summary ?? undefined,
+    approach: c.ai_solution_concept ?? undefined,
+    value: c.business_value ?? undefined,
+    metrics: (c.use_case_metrics ?? []) as Row[],
+    links: (c.use_case_links ?? []) as Row[],
+  });
 
   return (
     <article className="bg-background">
@@ -124,11 +126,10 @@ function ComparePage() {
           <Link to="/repository" className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline">
             ← Back to Explore
           </Link>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Compare AI Use Cases
-          </h1>
+          <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Compare AI Use Cases</h1>
           <p className="mt-2 max-w-2xl text-muted-foreground">
-            Side-by-side view of {items.length} use case{items.length === 1 ? "" : "s"}. Differences are highlighted.
+            Side-by-side view of {items.length} use case{items.length === 1 ? "" : "s"} across outcomes, risk class, and
+            evidence. Differences are highlighted.
           </p>
         </div>
       </header>
@@ -138,19 +139,15 @@ function ComparePage() {
           <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead>
               <tr className="border-b border-border bg-card/60">
-                <th className="w-48 px-4 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Attribute</th>
+                <th className="w-44 px-4 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Attribute
+                </th>
                 {items.map((c) => (
                   <th key={c.slug} className="px-4 py-4 text-left align-top">
-                    <Link
-                      to="/use-cases/$slug"
-                      params={{ slug: c.slug }}
-                      className="block text-base font-bold text-foreground hover:text-primary"
-                    >
+                    <Link to="/use-cases/$slug" params={{ slug: c.slug }} className="block text-base font-bold text-foreground hover:text-primary">
                       {c.title}
                     </Link>
-                    <div className="mt-1 text-[10px] font-bold uppercase tracking-widest text-primary">
-                      {c.industry.name}
-                    </div>
+                    <div className="mt-1 text-[10px] font-bold uppercase tracking-widest text-primary">{ind(c)}</div>
                     <button
                       onClick={() => compareStore.remove(c.slug)}
                       className="mt-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-destructive"
@@ -179,22 +176,64 @@ function ComparePage() {
               ))}
               <tr>
                 <td className="px-4 py-4 align-top text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Recommended steps
+                  Evidence
                 </td>
-                {items.map((c) => (
-                  <td key={c.slug} className="px-4 py-4 align-top">
-                    <ol className="space-y-2">
-                      {stepsFor(c).map((s, i) => (
-                        <li key={i} className="flex gap-2 text-[13px] text-muted-foreground">
-                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">
-                            {i + 1}
-                          </span>
-                          <span>{s}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </td>
-                ))}
+                {items.map((c) => {
+                  const e = evidenceFor(c);
+                  return (
+                    <td key={c.slug} className="px-4 py-4 align-top">
+                      <div className="space-y-3 text-[13px]">
+                        {e.problem && (
+                          <div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Problem</div>
+                            <p className="mt-0.5 text-foreground/80">{e.problem}</p>
+                          </div>
+                        )}
+                        {e.approach && (
+                          <div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Approach</div>
+                            <p className="mt-0.5 text-foreground/80">{e.approach}</p>
+                          </div>
+                        )}
+                        {e.value && (
+                          <div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Outcome / value</div>
+                            <p className="mt-0.5 text-foreground/80">{e.value}</p>
+                          </div>
+                        )}
+                        {e.metrics.length > 0 && (
+                          <div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Metrics</div>
+                            <ul className="mt-1 space-y-0.5">
+                              {e.metrics.map((m) => (
+                                <li key={m.id} className="text-foreground/80">
+                                  <span className="font-bold text-primary">{m.value}{m.unit ?? ""}</span> {m.label}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {e.links.length > 0 && (
+                          <div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Sources</div>
+                            <ul className="mt-1 space-y-0.5">
+                              {e.links.map((l) => (
+                                <li key={l.id}>
+                                  <a href={l.url} target="_blank" rel="noreferrer noopener" className="text-primary hover:underline">
+                                    {l.label ?? l.url}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {!e.problem && !e.approach && !e.value && e.metrics.length === 0 && e.links.length === 0 && (
+                          <span className="text-muted-foreground">No structured evidence recorded.</span>
+                        )}
+                      </div>
+                    </td>
+                  );
+                })}
               </tr>
             </tbody>
           </table>

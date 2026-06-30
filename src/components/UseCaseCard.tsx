@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { CompareToggle } from "@/components/usecasex/CompareTray";
 
 type Tag = { slug?: string; name?: string };
 
@@ -33,12 +34,14 @@ export function UseCaseCard({
   saved,
   onAddToBoard,
   locked,
+  showCompare = true,
 }: {
   c: UseCaseCardData;
   onSave?: () => void;
   saved?: boolean;
   onAddToBoard?: (c: UseCaseCardData) => void;
   locked?: boolean;
+  showCompare?: boolean;
 }) {
   const industryEntries = (c.use_case_industries ?? [])
     .map((x) => ({ slug: x.industries?.slug, name: x.industries?.name }))
@@ -104,6 +107,12 @@ export function UseCaseCard({
         <div>Complexity<div className="mt-0.5 text-foreground/80">{c.complexity ?? "—"}</div></div>
         <div>Risk<div className="mt-0.5 text-foreground/80">{c.risk_level ?? "—"}</div></div>
       </div>
+
+      {showCompare && (
+        <div className="mt-3">
+          <CompareToggle slug={c.slug} className="w-full" />
+        </div>
+      )}
 
       <div className="mt-4 flex items-center justify-between gap-2 border-t border-border pt-3">
         <Link

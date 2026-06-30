@@ -11,6 +11,7 @@ import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { PresetBar } from "@/components/usecasex/PresetBar";
 import { CompareTray } from "@/components/usecasex/CompareTray";
 import { RiskClassBar } from "@/components/usecasex/RiskClassBar";
+import { OutcomesFilterBar } from "@/components/usecasex/OutcomesFilterBar";
 import { track } from "@/lib/usecasex.tracking";
 import { AddToStudioBoardDialog } from "@/components/AddToStudioBoardDialog";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
@@ -38,6 +39,7 @@ const searchSchema = z.object({
   sectors: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
   sort: z.enum(sortValues).optional(),
+  gov: z.boolean().optional(),
 });
 type Search = z.infer<typeof searchSchema>;
 
@@ -100,7 +102,7 @@ function Page() {
   const [q, setQ] = useState(search.q ?? "");
   const [leadOpen, setLeadOpen] = useState(false);
   const [boardPattern, setBoardPattern] = useState<UseCaseCardData | null>(null);
-  const [governanceFirst, setGovernanceFirst] = useState(false);
+  const governanceFirst = search.gov ?? false;
   const plan = usePlan();
   const isLite = !plan.loading && plan.isAuthed && !plan.isPro && !plan.isAdmin;
 
@@ -299,7 +301,20 @@ function Page() {
               selected={search.riskLevel ?? []}
               onToggle={toggleRisk}
               governanceFirst={governanceFirst}
-              onGovernanceFirst={setGovernanceFirst}
+              onGovernanceFirst={(v) => update({ gov: v || undefined })}
+            />
+            <OutcomesFilterBar
+              value={{
+                valuePotential: search.valuePotential ?? [],
+                complexity: search.complexity ?? [],
+                timeToValue: search.timeToValue ?? [],
+              }}
+              onToggle={(key, slug) => {
+                const cur = (search[key] as string[] | undefined) ?? [];
+                const next = cur.includes(slug) ? cur.filter((x) => x !== slug) : [...cur, slug];
+                update({ [key]: next } as Partial<Search>);
+                track("filter_used", { facet: key, value: slug });
+              }}
             />
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
               <p className="text-sm text-muted-foreground">
