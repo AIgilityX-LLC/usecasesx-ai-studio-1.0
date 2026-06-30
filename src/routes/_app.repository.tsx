@@ -10,6 +10,7 @@ import { CardSkeleton } from "@/components/LoadingSkeleton";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { PresetBar } from "@/components/usecasex/PresetBar";
 import { CompareTray } from "@/components/usecasex/CompareTray";
+import { RiskClassBar } from "@/components/usecasex/RiskClassBar";
 import { track } from "@/lib/usecasex.tracking";
 import { AddToStudioBoardDialog } from "@/components/AddToStudioBoardDialog";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
