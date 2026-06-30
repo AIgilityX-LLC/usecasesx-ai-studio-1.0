@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Loader2, Plus, Trash2, FolderKanban, ExternalLink } from "lucide-react";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { listBoards, createBoard, deleteBoard, type BoardRow } from "@/lib/boards";
+import { PageHero } from "@/components/usecasex/PageHero";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,26 +61,20 @@ function BoardsPage() {
   const items = boards.data ?? [];
 
   return (
-    <section className="border-b border-border bg-background">
-      <div className="mx-auto max-w-[1280px] px-6 py-12 space-y-8">
-        <header className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
-              UseCasesX™ · Boards
-            </div>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Use Case Boards
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-              Group AI use cases into shared boards for portfolio reviews, quick-win sprints,
-              and innovation backlogs. Every change is captured in your workspace audit trail.
-            </p>
-          </div>
+    <>
+      <PageHero
+        tone="dark"
+        eyebrow="UseCasesX™ · Boards"
+        title="Use Case Boards"
+        description="Group AI use cases into shared boards for portfolio reviews, quick-win sprints, and innovation backlogs. Every change is captured in your workspace audit trail."
+        actions={
           <Can action="boards.create">
             <CreateBoardDialog userId={session!.user.id} />
           </Can>
-        </header>
-
+        }
+      />
+      <section className="bg-secondary/40">
+      <div className="mx-auto max-w-[1280px] px-6 py-12 space-y-8">
         {boards.error && (
           <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
             {(boards.error as Error).message}
@@ -106,6 +101,7 @@ function BoardsPage() {
         )}
       </div>
     </section>
+    </>
   );
 }
 
