@@ -146,21 +146,22 @@ function ReportsPage() {
         }
       `}</style>
 
-      <section className="border-b border-border bg-background no-print">
-        <div className="mx-auto max-w-[1280px] px-6 py-10 space-y-6">
-          <header className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-semibold tracking-tight">AI Opportunity Reports</h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                Generate executive-ready reports from your saved use cases, scores and portfolios.
-              </p>
-            </div>
-            <div className="flex gap-2">
+      <div className="no-print">
+        <PageHero
+          tone="dark"
+          eyebrow="Reports"
+          title="AI Opportunity Reports"
+          description="Generate executive-ready reports from your saved use cases, scores and portfolios."
+          actions={
+            <>
               <Button asChild variant="outline"><Link to="/my-use-cases">Saved</Link></Button>
               <Button asChild variant="outline"><Link to="/portfoliox">Portfolios</Link></Button>
-            </div>
-          </header>
-
+            </>
+          }
+        />
+      </div>
+      <section className="border-b border-border bg-secondary/40 no-print">
+        <div className="mx-auto max-w-[1280px] px-6 py-10 space-y-6">
           <Card>
             <CardHeader><CardTitle className="text-base">Configure report</CardTitle></CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
