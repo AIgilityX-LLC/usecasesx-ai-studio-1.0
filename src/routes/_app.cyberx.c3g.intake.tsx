@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/cyberx/c3g/intake")({
+export const Route = createFileRoute("/_app/cyberx/c3g/intake")({
   head: () => ({
     meta: [
       { title: "CyberX C3G Intake — Coming Soon" },
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/cyberx/c3g/intake")({
 });
 
 function CyberXIntakeStub() {
-  const { source, use_case_id } = useSearch({ from: "/cyberx/c3g/intake" });
+  const { source, use_case_id } = useSearch({ from: "/_app/cyberx/c3g/intake" });
   return (
     <div className="mx-auto max-w-2xl px-6 py-24 text-center">
       <p className="text-[11px] font-bold uppercase tracking-widest text-primary">

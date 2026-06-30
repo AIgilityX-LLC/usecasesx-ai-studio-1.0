@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/sarpi")({
+export const Route = createFileRoute("/_app/sarpi")({
   head: () => ({
     meta: [
       { title: "SARPI — Coming Soon" },
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/sarpi")({
 });
 
 function SarpiStub() {
-  const { source, use_case_id } = useSearch({ from: "/sarpi" });
+  const { source, use_case_id } = useSearch({ from: "/_app/sarpi" });
   return (
     <div className="mx-auto max-w-2xl px-6 py-24 text-center">
       <p className="text-[11px] font-bold uppercase tracking-widest text-primary">
