@@ -3,7 +3,9 @@ import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { useMemo, useState, useEffect } from "react";
 import { z } from "zod";
 import { listUseCases, listTaxonomies } from "@/lib/use-cases.functions";
-import { UseCaseFilters, type FacetState } from "@/components/UseCaseFilters";
+import { type FacetState } from "@/components/UseCaseFilters";
+import { HorizontalFilters } from "@/components/usecasex/HorizontalFilters";
+import { PageHero } from "@/components/usecasex/PageHero";
 import { UseCaseCard } from "@/components/UseCaseCard";
 import { EmptyState } from "@/components/EmptyState";
 import { CardSkeleton } from "@/components/LoadingSkeleton";
@@ -244,57 +246,55 @@ function Page() {
 
   return (
     <>
-      <section className="border-b border-border bg-background">
-        <div className="mx-auto max-w-[1400px] px-6 py-10">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Explore <span className="text-primary">AI Use Cases</span>
-          </h1>
-          <p className="mt-2 max-w-2xl text-muted-foreground">
-            Search, filter and compare AI, GenAI, Agentic AI and automation use cases across 18+ industries.
-          </p>
+      <PageHero
+        tone="dark"
+        eyebrow="UseCasesX™ · Explore"
+        title={<>Explore <span className="text-primary">AI Use Cases</span></>}
+        description="Search, filter and compare AI, GenAI, Agentic AI and automation use cases across 18+ industries."
+        actions={
           <Can action="repo.create">
-            <div className="mt-4">
-              <Link
-                to="/administration"
-                className="inline-flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/20"
-              >
-                + Submit new use case
-              </Link>
-            </div>
+            <Link
+              to="/administration"
+              className="inline-flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/20"
+            >
+              + Submit new use case
+            </Link>
           </Can>
-          <form onSubmit={submitSearch} className="relative mt-6 flex max-w-2xl">
-            <svg className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="7" />
-              <path d="m20 20-3-3" strokeLinecap="round" />
-            </svg>
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search 'fraud detection', 'citizen services', 'document AI'…"
-              className="w-full rounded-lg border border-input bg-background py-3 pl-12 pr-28 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-            />
-            <button className="absolute right-1.5 top-1.5 rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-110">
-              Search
-            </button>
-          </form>
+        }
+      >
+        <form onSubmit={submitSearch} className="relative flex max-w-2xl">
+          <svg className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3-3" strokeLinecap="round" />
+          </svg>
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search 'fraud detection', 'citizen services', 'document AI'…"
+            className="w-full rounded-lg border border-input bg-card py-3 pl-12 pr-28 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          />
+          <button className="absolute right-1.5 top-1.5 rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-110">
+            Search
+          </button>
+        </form>
+      </PageHero>
+
+      {/* Sticky horizontal filter bar */}
+      <div className="sticky top-14 z-20 border-b border-border bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+        <div className="mx-auto max-w-[1400px] px-6 py-3">
+          <HorizontalFilters
+            tax={tax}
+            value={{ ...search, industries: effectiveIndustries } as Partial<FacetState>}
+            onChange={(p) => handleFilterChange(p as Partial<Search>)}
+            onClear={clearAll}
+            activeCount={activeCount}
+          />
         </div>
-      </section>
+      </div>
 
       <div className="mx-auto max-w-[1400px] px-6 py-10">
         <SampleDataDisclaimer className="mb-6" />
-        <div className="flex flex-col gap-8 lg:flex-row">
-          <aside className="w-full shrink-0 lg:w-72">
-            <div className="lg:sticky lg:top-32">
-              <UseCaseFilters
-                tax={tax}
-                value={{ ...search, industries: effectiveIndustries } as Partial<FacetState>}
-                onChange={(p) => handleFilterChange(p as Partial<Search>)}
-                onClear={clearAll}
-                activeCount={activeCount}
-              />
-            </div>
-          </aside>
-
+        <div className="flex flex-col gap-8">
           <div className="flex-1">
             <PresetBar currentSearch={search as Record<string, unknown>} />
             <RiskClassBar
