@@ -14,7 +14,8 @@
     "test:smoke": "bun run tests/production-smoke.e2e.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test:navbar": "playwright test tests/navbar.spec.ts"
+    "test:navbar": "playwright test tests/navbar.spec.ts",
+    "check:nav-integrity": "node scripts/check-nav-integrity.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
