@@ -161,5 +161,7 @@ function PricingPage() {
         about regulator, auditor, or multi-tenant Sovereign AI System deployments.
       </p>
     </div>
+      </section>
+    </>
   );
 }
