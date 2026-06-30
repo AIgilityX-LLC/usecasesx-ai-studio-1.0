@@ -100,6 +100,7 @@ function Page() {
   const [q, setQ] = useState(search.q ?? "");
   const [leadOpen, setLeadOpen] = useState(false);
   const [boardPattern, setBoardPattern] = useState<UseCaseCardData | null>(null);
+  const [governanceFirst, setGovernanceFirst] = useState(false);
   const plan = usePlan();
   const isLite = !plan.loading && plan.isAuthed && !plan.isPro && !plan.isAdmin;
 
