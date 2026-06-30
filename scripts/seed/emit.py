@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0,'/tmp/seed')
+import os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build import build_all, qa, IND
 
 def esc(s): return s.replace("'","''")

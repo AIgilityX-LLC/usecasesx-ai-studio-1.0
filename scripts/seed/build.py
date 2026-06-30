@@ -1,5 +1,5 @@
 import sys, re, json
-sys.path.insert(0,'/tmp/seed')
+import os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from data import IND
 
 # Valid taxonomy slugs (from DB)
