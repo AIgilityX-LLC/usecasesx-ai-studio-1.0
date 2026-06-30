@@ -105,8 +105,9 @@ export function SiteShell({ children }: { children: ReactNode }) {
   if (!isAuthed) {
     return (
       <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
+        <SkipToContent />
         {headerInner}
-        <main className="flex-1">{children}</main>
+        <main id="main-content" tabIndex={-1} className="flex-1 outline-none">{children}</main>
         <UseCasesXFooter />
       </div>
     );
@@ -115,15 +116,27 @@ export function SiteShell({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background text-foreground">
+        <SkipToContent />
         <div className="dark">
           <AppSidebar />
         </div>
         <SidebarInset className="flex min-w-0 flex-1 flex-col">
           {headerInner}
-          <main className="flex-1">{children}</main>
+          <main id="main-content" tabIndex={-1} className="flex-1 outline-none">{children}</main>
           <UseCasesXFooter />
         </SidebarInset>
       </div>
     </SidebarProvider>
+  );
+}
+
+function SkipToContent() {
+  return (
+    <a
+      href="#main-content"
+      className="sr-only z-50 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:outline-none focus:ring-2 focus:ring-ring"
+    >
+      Skip to main content
+    </a>
   );
 }
