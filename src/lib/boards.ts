@@ -26,6 +26,14 @@ export interface BoardUseCaseRow {
   created_at: string;
 }
 
+/** Thrown when a catalog use case already exists on the target board. */
+export class DuplicateBoardItemError extends Error {
+  constructor(message = "This use case is already on the board.") {
+    super(message);
+    this.name = "DuplicateBoardItemError";
+  }
+}
+
 /** Ensure the signed-in user has an organization + workspace; returns workspace.id.
  *  Delegates to the SECURITY DEFINER `ensure_user_workspace` RPC so standard
  *  users (who have no INSERT on organizations) can still create their first
@@ -100,6 +108,17 @@ export async function addSavedUseCaseToBoard(input: {
   if (ucErr) throw new Error(ucErr.message);
   if (!uc) throw new Error("Saved use case is no longer available in the catalog.");
 
+  // Prevent adding the same catalog use case to a board more than once.
+  const { data: existing, error: existErr } = await supabase
+    .from("ai_use_cases")
+    .select("id")
+    .eq("board_id", input.boardId)
+    .eq("source_use_case_id", input.catalogUseCaseId)
+    .maybeSingle();
+  if (existErr) throw new Error(existErr.message);
+  if (existing) throw new DuplicateBoardItemError(`"${uc.title}" is already on this board.`);
+
+  const nextPosition = await nextBoardPosition(input.boardId);
   const { data, error } = await supabase
     .from("ai_use_cases")
     .insert({
@@ -107,11 +126,17 @@ export async function addSavedUseCaseToBoard(input: {
       title: uc.title,
       problem_statement: (uc as any).business_problem ?? uc.summary ?? null,
       status: "idea",
+      source_use_case_id: input.catalogUseCaseId,
+      position: nextPosition,
       created_by: input.userId,
     })
     .select("id")
     .single();
-  if (error || !data) throw new Error(error?.message ?? "Could not add saved use case to board.");
+  if (error || !data) {
+    if ((error as any)?.code === "23505")
+      throw new DuplicateBoardItemError(`"${uc.title}" is already on this board.`);
+    throw new Error(error?.message ?? "Could not add saved use case to board.");
+  }
   trackCTAEvent("use_case_saved", { use_case_id: data.id, source_page: `/boards/${input.boardId}` });
   return { id: data.id };
 }
@@ -179,6 +204,57 @@ export async function deleteBoard(boardId: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+export async function renameBoard(input: {
+  boardId: string;
+  title: string;
+  description?: string | null;
+}): Promise<void> {
+  const patch: Record<string, any> = { title: input.title.trim() || "Untitled Board" };
+  if (input.description !== undefined) patch.description = input.description?.trim() || null;
+  const { error } = await supabase
+    .from("use_case_boards")
+    .update(patch)
+    .eq("id", input.boardId);
+  if (error) throw new Error(error.message);
+}
+
+/** Next position value for a new item on a board (max + 1). */
+async function nextBoardPosition(boardId: string): Promise<number> {
+  const { data, error } = await supabase
+    .from("ai_use_cases")
+    .select("position")
+    .eq("board_id", boardId)
+    .order("position", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return ((data?.position as number | undefined) ?? -1) + 1;
+}
+
+export async function removeBoardUseCase(useCaseId: string): Promise<void> {
+  const { error } = await supabase.from("ai_use_cases").delete().eq("id", useCaseId);
+  if (error) throw new Error(error.message);
+}
+
+/** Persist a new order for a board's use cases (array of ids in display order). */
+export async function reorderBoardUseCases(input: {
+  boardId: string;
+  orderedIds: string[];
+}): Promise<void> {
+  await Promise.all(
+    input.orderedIds.map((id, index) =>
+      supabase
+        .from("ai_use_cases")
+        .update({ position: index })
+        .eq("id", id)
+        .eq("board_id", input.boardId)
+        .then(({ error }) => {
+          if (error) throw new Error(error.message);
+        }),
+    ),
+  );
+}
+
 export async function createBoardUseCase(input: {
   userId: string;
   boardId: string;
@@ -186,6 +262,7 @@ export async function createBoardUseCase(input: {
   problem?: string;
   aiType?: string;
 }): Promise<{ id: string }> {
+  const nextPosition = await nextBoardPosition(input.boardId);
   const { data, error } = await supabase
     .from("ai_use_cases")
     .insert({
@@ -194,6 +271,7 @@ export async function createBoardUseCase(input: {
       problem_statement: input.problem?.trim() || null,
       ai_type: input.aiType ?? null,
       status: "idea",
+      position: nextPosition,
       created_by: input.userId,
     })
     .select("id")
