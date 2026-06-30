@@ -1,0 +1,37 @@
+name: Nav integrity + navbar/hero E2E
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "tests/navbar.spec.ts"
+      - "scripts/check-nav-integrity.mjs"
+      - "playwright.config.ts"
+      - ".github/workflows/nav-and-hero.yml"
+  push:
+    branches: [main]
+
+concurrency:
+  group: nav-and-hero-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  nav-and-hero:
+    name: Nav integrity + hero/navbar Playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Verify route tree
+        run: bun run verify:routes
+      - name: Nav-integrity check (top nav + sidebar targets)
+        run: bun run check:nav-integrity
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium
+      - name: Run navbar + hero-tone Playwright suite
+        run: bun run test:navbar
