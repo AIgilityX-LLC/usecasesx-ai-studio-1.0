@@ -8,6 +8,7 @@ import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { MissingDataFallback } from "@/components/MissingDataFallback";
 import { CompareToggle } from "@/components/usecasex/CompareTray";
 import { RatingWidget } from "@/components/usecasex/RatingWidget";
+import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { supabase } from "@/integrations/supabase/client";
 import { getUseCase, listUseCases } from "@/lib/use-cases.functions";
 
