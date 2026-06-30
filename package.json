@@ -13,7 +13,8 @@
     "test:e2e": "node scripts/run-e2e.mjs",
     "test:smoke": "bun run tests/production-smoke.e2e.ts",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:navbar": "playwright test tests/navbar.spec.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
