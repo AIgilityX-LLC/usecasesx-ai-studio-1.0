@@ -24,6 +24,7 @@ export function UseCasesXFooter() {
           title="Platform"
           items={[
             { l: "Global Repository", to: "/repository" },
+            { l: "Deployment Intelligence", to: "/insights" },
             { l: "AI Use Case Studio™", to: "/studio" },
             { l: "PortfolioX™", to: "/portfoliox" },
             { l: "RoadmapX™", to: "/roadmap" },
@@ -31,12 +32,12 @@ export function UseCasesXFooter() {
           ]}
         />
         <FooterCol
-          title="Lifecycle"
+          title="Discover"
           items={[
+            { l: "Explore Use Cases", to: "/repository" },
+            { l: "Use Case Boards", to: "/boards" },
             { l: "FeasibilityX™", to: "/feasibility" },
             { l: "DataReadinessX™", to: "/data-readiness" },
-            { l: "BlueprintX™", to: "/blueprint" },
-            { l: "ImpactAssessmentX™", to: "/impact-assessment" },
             { l: "GovernanceX™", to: "/governance" },
             { l: "DecisionX™", to: "/decision" },
           ]}
