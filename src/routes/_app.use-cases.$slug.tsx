@@ -392,6 +392,7 @@ function UseCaseDetailPage() {
               {c.summary && (
                 <p className="mt-4 max-w-3xl text-lg text-muted-foreground">{c.summary}</p>
               )}
+              <SampleDataDisclaimer className="mt-5 max-w-3xl" />
               <div className="mt-6 flex flex-wrap gap-2">
                 {industries.map((n) => (
                   <Badge key={n} tone="primary">{n}</Badge>
