@@ -295,25 +295,6 @@ function Page() {
         <div className="flex flex-col gap-8">
           <div className="flex-1">
             <PresetBar currentSearch={search as Record<string, unknown>} />
-            <RiskClassBar
-              selected={search.riskLevel ?? []}
-              onToggle={toggleRisk}
-              governanceFirst={governanceFirst}
-              onGovernanceFirst={(v) => update({ gov: v || undefined })}
-            />
-            <OutcomesFilterBar
-              value={{
-                valuePotential: search.valuePotential ?? [],
-                complexity: search.complexity ?? [],
-                timeToValue: search.timeToValue ?? [],
-              }}
-              onToggle={(key, slug) => {
-                const cur = (search[key] as string[] | undefined) ?? [];
-                const next = cur.includes(slug) ? cur.filter((x) => x !== slug) : [...cur, slug];
-                update({ [key]: next } as Partial<Search>);
-                track("filter_used", { facet: key, value: slug });
-              }}
-            />
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
               <p className="text-sm text-muted-foreground">
                 <span className="font-mono text-base font-bold text-foreground">{sorted.length}</span> use case{sorted.length === 1 ? "" : "s"}
