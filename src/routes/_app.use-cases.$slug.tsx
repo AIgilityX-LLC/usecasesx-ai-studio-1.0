@@ -445,36 +445,9 @@ function UseCaseDetailPage() {
         {/* Body + Sidebar */}
         <div className="mx-auto grid max-w-[1320px] gap-10 px-6 py-12 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="space-y-10">
-            {c.business_problem && (
-              <Section label="01 · Business Problem">
-                <p className="text-muted-foreground whitespace-pre-line">{c.business_problem}</p>
-              </Section>
-            )}
-            {(c.ai_solution_concept || c.solution) && (
-              <Section label="02 · AI Solution Concept">
-                <p className="text-muted-foreground whitespace-pre-line">{c.ai_solution_concept ?? c.solution}</p>
-              </Section>
-            )}
-            {(c.business_value || c.outcomes) && (
-              <Section label="03 · Business Value">
-                <p className="text-muted-foreground whitespace-pre-line">{c.business_value ?? c.outcomes}</p>
-              </Section>
-            )}
-            {c.data_required && (
-              <Section label="04 · Data Required">
-                <p className="text-muted-foreground whitespace-pre-line">{c.data_required}</p>
-              </Section>
-            )}
-            {Array.isArray(c.kpis) && c.kpis.length > 0 && (
-              <Section label="05 · KPIs">
-                <BulletList items={c.kpis as string[]} />
-              </Section>
-            )}
-            {Array.isArray(c.roi_areas) && c.roi_areas.length > 0 && (
-              <Section label="06 · ROI Areas">
-                <BulletList items={c.roi_areas as string[]} />
-              </Section>
-            )}
+            {/* Phase 2 — rich narrative case study */}
+            <CaseStudy c={c} industries={industries} capabilities={capabilities} />
+
             {c.governance_notes && (
               <Section label="07 · Governance Notes">
                 <p className="text-muted-foreground whitespace-pre-line">{c.governance_notes}</p>
