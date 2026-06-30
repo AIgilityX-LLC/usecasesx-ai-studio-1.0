@@ -77,6 +77,22 @@ export function HorizontalFilters({ tax, value, onChange, onClear, activeCount }
             </PopoverTrigger>
             <PopoverContent align="start" className="max-h-80 w-64 overflow-y-auto p-2">
               <div className="space-y-0.5">
+                <button
+                  onClick={() => onChange({ [f.key]: [] } as Partial<FacetState>)}
+                  className={
+                    "flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-[13px] font-semibold transition-colors " +
+                    (selected.length === 0 ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-secondary")
+                  }
+                >
+                  <span className={"grid h-3.5 w-3.5 shrink-0 place-items-center rounded-sm border " + (selected.length === 0 ? "border-primary bg-primary" : "border-border")}>
+                    {selected.length === 0 && (
+                      <svg viewBox="0 0 12 12" className="h-2.5 w-2.5 text-primary-foreground">
+                        <path d="M2 6l3 3 5-6" stroke="currentColor" strokeWidth="2" fill="none" />
+                      </svg>
+                    )}
+                  </span>
+                  <span className="flex-1">All</span>
+                </button>
                 {f.options.map((o) => {
                   const active = selected.includes(o.slug);
                   return (
