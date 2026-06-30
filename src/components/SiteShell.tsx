@@ -7,6 +7,14 @@ import { UseCasesXFooter } from "./UseCasesXFooter";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { supabase } from "@/integrations/supabase/client";
 
+const TOP_NAV: { to: string; label: string }[] = [
+  { to: "/repository", label: "Explore" },
+  { to: "/insights", label: "Insights" },
+  { to: "/patterns", label: "Patterns" },
+  { to: "/studio", label: "Studio" },
+  { to: "/pricing", label: "Pricing" },
+];
+
 export function SiteShell({ children }: { children: ReactNode }) {
   const session = useSupabaseSession();
   const isAuthed = !!session;
