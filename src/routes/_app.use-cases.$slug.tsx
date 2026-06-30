@@ -640,19 +640,6 @@ function Section({ label, children }: { label: string; children: React.ReactNode
   );
 }
 
-function BulletList({ items }: { items: string[] }) {
-  return (
-    <ul className="space-y-2">
-      {items.map((s, i) => (
-        <li key={i} className="flex gap-3 text-muted-foreground">
-          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-          <span>{s}</span>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
 type BadgeTone = "default" | "primary" | "muted" | "success" | "warning" | "danger";
 function Badge({ children, tone = "default" }: { children: React.ReactNode; tone?: BadgeTone }) {
   const tones: Record<BadgeTone, string> = {
