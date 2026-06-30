@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { usePlan } from "@/hooks/usePlan";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
+import { PageHero } from "@/components/usecasex/PageHero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -233,27 +234,27 @@ function PortfolioRoadmapPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 p-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Portfolio Roadmap</h1>
-          <p className="text-muted-foreground">
-            Your full AI use case portfolio, prioritization matrix, and execution roadmap.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={exportPortfolio}>
-            <FileDown className="mr-2 h-4 w-4" /> Export Portfolio PDF
-          </Button>
-          <Button variant="outline" onClick={exportPortfolio}>
-            <FileDown className="mr-2 h-4 w-4" /> Export Roadmap
-          </Button>
-          <Button onClick={exportExecutiveSummary}>
-            <FileText className="mr-2 h-4 w-4" /> Export Executive Summary
-          </Button>
-        </div>
-      </div>
-
+    <>
+      <PageHero
+        tone="dark"
+        eyebrow="Portfolio"
+        title="Portfolio Roadmap"
+        description="Your full AI use case portfolio, prioritization matrix, and execution roadmap."
+        actions={
+          <>
+            <Button variant="outline" onClick={exportPortfolio}>
+              <FileDown className="mr-2 h-4 w-4" /> Export Portfolio PDF
+            </Button>
+            <Button variant="outline" onClick={exportPortfolio}>
+              <FileDown className="mr-2 h-4 w-4" /> Export Roadmap
+            </Button>
+            <Button onClick={exportExecutiveSummary}>
+              <FileText className="mr-2 h-4 w-4" /> Export Executive Summary
+            </Button>
+          </>
+        }
+      />
+      <div className="mx-auto max-w-7xl space-y-6 p-6">
       {tier === "lite" && (
         <UpgradePrompt
           feature="Advanced exports & multi-org views"
@@ -349,6 +350,7 @@ function PortfolioRoadmapPage() {
         </>
       )}
     </div>
+    </>
   );
 }
 

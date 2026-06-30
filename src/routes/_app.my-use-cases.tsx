@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo } from "react";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
+import { PageHero } from "@/components/usecasex/PageHero";
 import { MOCK_USE_CASES, type MockUseCase } from "@/lib/usecasex.mock";
 import {
   computeTotalScore,
@@ -63,25 +64,25 @@ function SavedPage() {
   }
 
   return (
-    <section className="border-b border-border bg-background">
-      <div className="mx-auto max-w-[1280px] px-6 py-12 space-y-8">
-        <header className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight">Saved Use Cases</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Score, prioritize, and assemble portfolios from your shortlisted AI opportunities.
-            </p>
-          </div>
-          <div className="flex gap-2">
+    <>
+      <PageHero
+        tone="dark"
+        eyebrow="My Use Cases"
+        title="Saved Use Cases"
+        description="Score, prioritize, and assemble portfolios from your shortlisted AI opportunities."
+        actions={
+          <>
             <Button asChild variant="outline">
               <Link to="/repository">Explore more</Link>
             </Button>
             <Button asChild>
               <Link to="/portfoliox">Portfolios</Link>
             </Button>
-          </div>
-        </header>
-
+          </>
+        }
+      />
+      <section className="bg-secondary/40">
+      <div className="mx-auto max-w-[1280px] px-6 py-12 space-y-8">
         {items.length === 0 ? (
           <Card className="border-dashed">
             <CardContent className="py-16 text-center space-y-3">
@@ -108,6 +109,7 @@ function SavedPage() {
         )}
       </div>
     </section>
+    </>
   );
 }
 

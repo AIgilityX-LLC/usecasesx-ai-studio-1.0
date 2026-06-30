@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { PageHero } from "@/components/usecasex/PageHero";
 
 export const Route = createFileRoute("/_app/profile")({
   head: () => ({
@@ -89,16 +90,15 @@ function ProfilePage() {
   }
 
   return (
-    <section className="border-b border-border bg-background">
+    <>
+      <PageHero
+        tone="dark"
+        eyebrow="Step 2 · Profile"
+        title="Complete your profile"
+        description="We use this to personalize use case recommendations and your AI Opportunity Portfolio."
+      />
+      <section className="bg-secondary/40">
       <div className="mx-auto max-w-2xl px-6 py-16">
-        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Step 2 · Profile</div>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          Complete your profile
-        </h1>
-        <p className="mt-3 text-muted-foreground">
-          We use this to personalize use case recommendations and your AI Opportunity Portfolio.
-        </p>
-
         <form onSubmit={submit} className="mt-8 space-y-4 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
           <Field label="Full name" required>
             <input required value={form.full_name} onChange={onChange("full_name")} className={inputCls} />
@@ -142,6 +142,7 @@ function ProfilePage() {
         </form>
       </div>
     </section>
+    </>
   );
 }
 
