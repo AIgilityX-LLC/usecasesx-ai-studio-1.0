@@ -3,6 +3,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { BUILTIN_PRESETS, presetsStore } from "@/lib/usecasex.presets";
 import { SavedViewsMenu } from "@/components/usecasex/SavedViewsMenu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ChevronDown } from "lucide-react";
 
 export function PresetBar({ currentSearch }: { currentSearch: Record<string, unknown> }) {
   const [showSave, setShowSave] = useState(false);
@@ -29,12 +31,38 @@ export function PresetBar({ currentSearch }: { currentSearch: Record<string, unk
 
   const filterCount = Object.values(currentSearch).filter((v) => (Array.isArray(v) ? v.length > 0 : Boolean(v))).length;
 
+  // Newest first, then the rest.
+  const orderedPresets = [...BUILTIN_PRESETS].sort((a, b) =>
+    a.label === "Newest" ? -1 : b.label === "Newest" ? 1 : 0,
+  );
+
   return (
     <div className="mb-6 space-y-3 rounded-xl border border-border bg-card/40 p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-          Quick presets
-        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-foreground hover:bg-secondary">
+              Quick presets
+              <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent align="start" className="w-64 p-2">
+            <div className="space-y-0.5">
+              {orderedPresets.map((p) => (
+                <Link
+                  key={p.label}
+                  to="/repository"
+                  search={p.search as never}
+                  title={p.description}
+                  className="block rounded-md px-2 py-1.5 text-[13px] font-semibold text-foreground/80 transition hover:bg-primary/5 hover:text-primary"
+                >
+                  {p.label}
+                  <span className="block text-[11px] font-normal text-muted-foreground">{p.description}</span>
+                </Link>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
         <div className="flex items-center gap-2">
           <SavedViewsMenu />
           <button
@@ -51,20 +79,6 @@ export function PresetBar({ currentSearch }: { currentSearch: Record<string, unk
             Save this view
           </button>
         </div>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {BUILTIN_PRESETS.map((p) => (
-          <Link
-            key={p.label}
-            to="/repository"
-            search={p.search as never}
-            title={p.description}
-            className="rounded-full border border-border bg-background px-3 py-1 text-[11px] font-semibold text-foreground transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
-          >
-            {p.label}
-          </Link>
-        ))}
       </div>
 
       {showSave && (
