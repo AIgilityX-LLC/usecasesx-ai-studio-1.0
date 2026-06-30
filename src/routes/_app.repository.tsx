@@ -291,7 +291,6 @@ function Page() {
       </div>
 
       <div className="mx-auto max-w-[1400px] px-6 py-10">
-        <SampleDataDisclaimer className="mb-6" />
         <div className="flex flex-col gap-8">
           <div className="flex-1">
             <PresetBar currentSearch={search as Record<string, unknown>} />
