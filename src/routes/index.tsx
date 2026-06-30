@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { SiteShell } from "@/components/SiteShell";
+import { getInsights } from "@/lib/insights.functions";
 import heroImg from "@/assets/landing-hero.jpg";
 import repositoryImg from "@/assets/landing-repository.jpg";
 import studioImg from "@/assets/landing-studio.jpg";
@@ -33,7 +35,9 @@ function LandingPage() {
     <SiteShell>
       <Hero />
       <WhyUseCasesX />
+      <HowItWorks />
       <RepositorySection />
+      <InsightsPreview />
       <StudioSection />
       <SarpiSection />
       <AdvisorXSection />
@@ -43,6 +47,97 @@ function LandingPage() {
       <SovereignSection />
       <TestimonialsSection />
     </SiteShell>
+  );
+}
+
+/* HOW IT WORKS */
+function HowItWorks() {
+  const steps = [
+    { n: "01", t: "Explore & Discover", d: "Search 1,000+ curated AI use cases and the live Deployment Intelligence layer to find high-value, low-risk opportunities for your sector." },
+    { n: "02", t: "Design & Validate", d: "Open the AI Use Case Studio™ to draft tailored briefs, score feasibility and data readiness, and assemble portfolios and roadmaps." },
+    { n: "03", t: "Govern & Scale value", d: "Route initiatives through C3G™ governance, track readiness with SARPI™, and realize value with AdvisorX™ board-ready recommendations." },
+  ];
+  return (
+    <section className="border-b border-border bg-secondary/30">
+      <div className="mx-auto max-w-[1400px] px-6 py-20">
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">How it works</div>
+        <h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          From discovery to governed value — one operating system.
+        </h2>
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
+          {steps.map((s) => (
+            <div key={s.n} className="rounded-2xl border border-border bg-card p-6">
+              <div className="font-mono text-3xl font-black text-primary/30">{s.n}</div>
+              <h3 className="mt-3 text-lg font-bold text-foreground">{s.t}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{s.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* DEPLOYMENT INTELLIGENCE PREVIEW (live) */
+function InsightsPreview() {
+  const { data } = useQuery({
+    queryKey: ["insights", "landing"],
+    queryFn: () => getInsights(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const caps = (data?.topCapabilities ?? []).slice(0, 6);
+  const max = Math.max(1, ...caps.map((c) => c.count));
+  return (
+    <section className="border-b border-border bg-background">
+      <div className="mx-auto grid max-w-[1400px] gap-12 px-6 py-20 lg:grid-cols-2 lg:items-center">
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Deployment Intelligence</div>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            See where AI is actually being applied.
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            A live intelligence layer over the entire corpus — the most-applied AI capabilities, value concentration by
+            industry, and risk distribution. Make evidence-based AI portfolio decisions, not guesses.
+          </p>
+          {data && (
+            <div className="mt-6 flex flex-wrap gap-6 text-sm">
+              <Stat v={data.totals.useCases.toLocaleString()} l="Use cases analyzed" />
+              <Stat v={data.totals.industries} l="Industries" />
+              <Stat v={data.totals.capabilities} l="AI capabilities" />
+            </div>
+          )}
+          <div className="mt-8">
+            <Link to="/insights" className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110">Explore Insights →</Link>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-xl">
+          <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Top AI capability types</div>
+          <div className="mt-5 space-y-3">
+            {caps.length === 0 && <p className="text-sm text-muted-foreground">Loading live corpus…</p>}
+            {caps.map((c) => (
+              <div key={c.slug}>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-medium text-foreground">{c.name}</span>
+                  <span className="font-mono text-muted-foreground">{c.count}</span>
+                </div>
+                <div className="mt-1 h-2 overflow-hidden rounded-full bg-secondary">
+                  <div className="h-full rounded-full bg-primary" style={{ width: `${(c.count / max) * 100}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Stat({ v, l }: { v: string | number; l: string }) {
+  return (
+    <div>
+      <div className="font-mono text-2xl font-bold text-foreground">{v}</div>
+      <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{l}</div>
+    </div>
   );
 }
 
