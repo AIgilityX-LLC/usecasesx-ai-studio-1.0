@@ -9,18 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SarpiRouteImport } from './routes/sarpi'
-import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AdvisorxRouteImport } from './routes/advisorx'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppStudioRouteImport } from './routes/_app.studio'
+import { Route as AppSarpiRouteImport } from './routes/_app.sarpi'
 import { Route as AppRoadmapRouteImport } from './routes/_app.roadmap'
 import { Route as AppRepositoryRouteImport } from './routes/_app.repository'
 import { Route as AppReportsRouteImport } from './routes/_app.reports'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
 import { Route as AppProRouteImport } from './routes/_app.pro'
+import { Route as AppPricingRouteImport } from './routes/_app.pricing'
 import { Route as AppPortfolioxRouteImport } from './routes/_app.portfoliox'
 import { Route as AppPatternsRouteImport } from './routes/_app.patterns'
 import { Route as AppMyUseCasesRouteImport } from './routes/_app.my-use-cases'
@@ -36,14 +35,15 @@ import { Route as AppBoardsRouteImport } from './routes/_app.boards'
 import { Route as AppBlueprintRouteImport } from './routes/_app.blueprint'
 import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integration'
 import { Route as AppAiUseCaseStudioRouteImport } from './routes/_app.ai-use-case-studio'
+import { Route as AppAdvisorxRouteImport } from './routes/_app.advisorx'
 import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
-import { Route as CyberxC3gIntakeRouteImport } from './routes/cyberx.c3g.intake'
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
 import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
+import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
 import { Route as AppStudioUseCaseIdIndexRouteImport } from './routes/_app.studio.use-case.$id.index'
 import { Route as ApiPublicUsecasexUseCasesSlugRouteImport } from './routes/api/public/usecasex/use-cases.$slug'
 import { Route as AppStudioUseCaseIdSarpiRouteImport } from './routes/_app.studio.use-case.$id.sarpi'
@@ -53,24 +53,9 @@ import { Route as AppStudioUseCaseIdC3gGovernanceRouteImport } from './routes/_a
 import { Route as AppStudioUseCaseIdBlueprintRouteImport } from './routes/_app.studio.use-case.$id.blueprint'
 import { Route as AppStudioUseCaseIdAdvisorxRouteImport } from './routes/_app.studio.use-case.$id.advisorx'
 
-const SarpiRoute = SarpiRouteImport.update({
-  id: '/sarpi',
-  path: '/sarpi',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdvisorxRoute = AdvisorxRouteImport.update({
-  id: '/advisorx',
-  path: '/advisorx',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -85,6 +70,11 @@ const IndexRoute = IndexRouteImport.update({
 const AppStudioRoute = AppStudioRouteImport.update({
   id: '/studio',
   path: '/studio',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSarpiRoute = AppSarpiRouteImport.update({
+  id: '/sarpi',
+  path: '/sarpi',
   getParentRoute: () => AppRoute,
 } as any)
 const AppRoadmapRoute = AppRoadmapRouteImport.update({
@@ -110,6 +100,11 @@ const AppProfileRoute = AppProfileRouteImport.update({
 const AppProRoute = AppProRouteImport.update({
   id: '/pro',
   path: '/pro',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPricingRoute = AppPricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => AppRoute,
 } as any)
 const AppPortfolioxRoute = AppPortfolioxRouteImport.update({
@@ -187,6 +182,11 @@ const AppAiUseCaseStudioRoute = AppAiUseCaseStudioRouteImport.update({
   path: '/ai-use-case-studio',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdvisorxRoute = AppAdvisorxRouteImport.update({
+  id: '/advisorx',
+  path: '/advisorx',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdministrationRoute = AppAdministrationRouteImport.update({
   id: '/administration',
   path: '/administration',
@@ -196,11 +196,6 @@ const AppBoardsIndexRoute = AppBoardsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppBoardsRoute,
-} as any)
-const CyberxC3gIntakeRoute = CyberxC3gIntakeRouteImport.update({
-  id: '/cyberx/c3g/intake',
-  path: '/cyberx/c3g/intake',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const AppUseCasesSlugRoute = AppUseCasesSlugRouteImport.update({
   id: '/use-cases/$slug',
@@ -229,6 +224,11 @@ const ApiPublicUsecasexTaxonomyRoute =
     path: '/api/public/usecasex/taxonomy',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AppCyberxC3gIntakeRoute = AppCyberxC3gIntakeRouteImport.update({
+  id: '/cyberx/c3g/intake',
+  path: '/cyberx/c3g/intake',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppStudioUseCaseIdIndexRoute = AppStudioUseCaseIdIndexRouteImport.update({
   id: '/use-case/$id/',
   path: '/use-case/$id/',
@@ -278,11 +278,9 @@ const AppStudioUseCaseIdAdvisorxRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/advisorx': typeof AdvisorxRoute
   '/auth': typeof AuthRoute
-  '/pricing': typeof PricingRoute
-  '/sarpi': typeof SarpiRoute
   '/administration': typeof AppAdministrationRoute
+  '/advisorx': typeof AppAdvisorxRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
@@ -298,17 +296,19 @@ export interface FileRoutesByFullPath {
   '/my-use-cases': typeof AppMyUseCasesRoute
   '/patterns': typeof AppPatternsRoute
   '/portfoliox': typeof AppPortfolioxRoute
+  '/pricing': typeof AppPricingRoute
   '/pro': typeof AppProRoute
   '/profile': typeof AppProfileRoute
   '/reports': typeof AppReportsRoute
   '/repository': typeof AppRepositoryRoute
   '/roadmap': typeof AppRoadmapRoute
+  '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
-  '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/boards/': typeof AppBoardsIndexRoute
+  '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
@@ -322,11 +322,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/advisorx': typeof AdvisorxRoute
   '/auth': typeof AuthRoute
-  '/pricing': typeof PricingRoute
-  '/sarpi': typeof SarpiRoute
   '/administration': typeof AppAdministrationRoute
+  '/advisorx': typeof AppAdvisorxRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
@@ -341,17 +339,19 @@ export interface FileRoutesByTo {
   '/my-use-cases': typeof AppMyUseCasesRoute
   '/patterns': typeof AppPatternsRoute
   '/portfoliox': typeof AppPortfolioxRoute
+  '/pricing': typeof AppPricingRoute
   '/pro': typeof AppProRoute
   '/profile': typeof AppProfileRoute
   '/reports': typeof AppReportsRoute
   '/repository': typeof AppRepositoryRoute
   '/roadmap': typeof AppRoadmapRoute
+  '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
-  '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/boards': typeof AppBoardsIndexRoute
+  '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
@@ -367,11 +367,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
-  '/advisorx': typeof AdvisorxRoute
   '/auth': typeof AuthRoute
-  '/pricing': typeof PricingRoute
-  '/sarpi': typeof SarpiRoute
   '/_app/administration': typeof AppAdministrationRoute
+  '/_app/advisorx': typeof AppAdvisorxRoute
   '/_app/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/_app/api-integration': typeof AppApiIntegrationRoute
   '/_app/blueprint': typeof AppBlueprintRoute
@@ -387,17 +385,19 @@ export interface FileRoutesById {
   '/_app/my-use-cases': typeof AppMyUseCasesRoute
   '/_app/patterns': typeof AppPatternsRoute
   '/_app/portfoliox': typeof AppPortfolioxRoute
+  '/_app/pricing': typeof AppPricingRoute
   '/_app/pro': typeof AppProRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/reports': typeof AppReportsRoute
   '/_app/repository': typeof AppRepositoryRoute
   '/_app/roadmap': typeof AppRoadmapRoute
+  '/_app/sarpi': typeof AppSarpiRoute
   '/_app/studio': typeof AppStudioRouteWithChildren
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
-  '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
   '/_app/boards/': typeof AppBoardsIndexRoute
+  '/_app/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/_app/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
@@ -413,11 +413,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/advisorx'
     | '/auth'
-    | '/pricing'
-    | '/sarpi'
     | '/administration'
+    | '/advisorx'
     | '/ai-use-case-studio'
     | '/api-integration'
     | '/blueprint'
@@ -433,17 +431,19 @@ export interface FileRouteTypes {
     | '/my-use-cases'
     | '/patterns'
     | '/portfoliox'
+    | '/pricing'
     | '/pro'
     | '/profile'
     | '/reports'
     | '/repository'
     | '/roadmap'
+    | '/sarpi'
     | '/studio'
     | '/boards/$boardId'
     | '/studio/portfolio'
     | '/use-cases/$slug'
-    | '/cyberx/c3g/intake'
     | '/boards/'
+    | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/studio/use-case/$id/advisorx'
@@ -457,11 +457,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/advisorx'
     | '/auth'
-    | '/pricing'
-    | '/sarpi'
     | '/administration'
+    | '/advisorx'
     | '/ai-use-case-studio'
     | '/api-integration'
     | '/blueprint'
@@ -476,17 +474,19 @@ export interface FileRouteTypes {
     | '/my-use-cases'
     | '/patterns'
     | '/portfoliox'
+    | '/pricing'
     | '/pro'
     | '/profile'
     | '/reports'
     | '/repository'
     | '/roadmap'
+    | '/sarpi'
     | '/studio'
     | '/boards/$boardId'
     | '/studio/portfolio'
     | '/use-cases/$slug'
-    | '/cyberx/c3g/intake'
     | '/boards'
+    | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/studio/use-case/$id/advisorx'
@@ -501,11 +501,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_app'
-    | '/advisorx'
     | '/auth'
-    | '/pricing'
-    | '/sarpi'
     | '/_app/administration'
+    | '/_app/advisorx'
     | '/_app/ai-use-case-studio'
     | '/_app/api-integration'
     | '/_app/blueprint'
@@ -521,17 +519,19 @@ export interface FileRouteTypes {
     | '/_app/my-use-cases'
     | '/_app/patterns'
     | '/_app/portfoliox'
+    | '/_app/pricing'
     | '/_app/pro'
     | '/_app/profile'
     | '/_app/reports'
     | '/_app/repository'
     | '/_app/roadmap'
+    | '/_app/sarpi'
     | '/_app/studio'
     | '/_app/boards/$boardId'
     | '/_app/studio/portfolio'
     | '/_app/use-cases/$slug'
-    | '/cyberx/c3g/intake'
     | '/_app/boards/'
+    | '/_app/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/_app/studio/use-case/$id/advisorx'
@@ -547,43 +547,18 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
-  AdvisorxRoute: typeof AdvisorxRoute
   AuthRoute: typeof AuthRoute
-  PricingRoute: typeof PricingRoute
-  SarpiRoute: typeof SarpiRoute
-  CyberxC3gIntakeRoute: typeof CyberxC3gIntakeRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sarpi': {
-      id: '/sarpi'
-      path: '/sarpi'
-      fullPath: '/sarpi'
-      preLoaderRoute: typeof SarpiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/advisorx': {
-      id: '/advisorx'
-      path: '/advisorx'
-      fullPath: '/advisorx'
-      preLoaderRoute: typeof AdvisorxRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app': {
@@ -605,6 +580,13 @@ declare module '@tanstack/react-router' {
       path: '/studio'
       fullPath: '/studio'
       preLoaderRoute: typeof AppStudioRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/sarpi': {
+      id: '/_app/sarpi'
+      path: '/sarpi'
+      fullPath: '/sarpi'
+      preLoaderRoute: typeof AppSarpiRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/roadmap': {
@@ -640,6 +622,13 @@ declare module '@tanstack/react-router' {
       path: '/pro'
       fullPath: '/pro'
       preLoaderRoute: typeof AppProRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/pricing': {
+      id: '/_app/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof AppPricingRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/portfoliox': {
@@ -747,6 +736,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAiUseCaseStudioRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/advisorx': {
+      id: '/_app/advisorx'
+      path: '/advisorx'
+      fullPath: '/advisorx'
+      preLoaderRoute: typeof AppAdvisorxRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/administration': {
       id: '/_app/administration'
       path: '/administration'
@@ -760,13 +756,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/boards/'
       preLoaderRoute: typeof AppBoardsIndexRouteImport
       parentRoute: typeof AppBoardsRoute
-    }
-    '/cyberx/c3g/intake': {
-      id: '/cyberx/c3g/intake'
-      path: '/cyberx/c3g/intake'
-      fullPath: '/cyberx/c3g/intake'
-      preLoaderRoute: typeof CyberxC3gIntakeRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/_app/use-cases/$slug': {
       id: '/_app/use-cases/$slug'
@@ -802,6 +791,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/public/usecasex/taxonomy'
       preLoaderRoute: typeof ApiPublicUsecasexTaxonomyRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_app/cyberx/c3g/intake': {
+      id: '/_app/cyberx/c3g/intake'
+      path: '/cyberx/c3g/intake'
+      fullPath: '/cyberx/c3g/intake'
+      preLoaderRoute: typeof AppCyberxC3gIntakeRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/studio/use-case/$id/': {
       id: '/_app/studio/use-case/$id/'
@@ -904,6 +900,7 @@ const AppStudioRouteWithChildren = AppStudioRoute._addFileChildren(
 
 interface AppRouteChildren {
   AppAdministrationRoute: typeof AppAdministrationRoute
+  AppAdvisorxRoute: typeof AppAdvisorxRoute
   AppAiUseCaseStudioRoute: typeof AppAiUseCaseStudioRoute
   AppApiIntegrationRoute: typeof AppApiIntegrationRoute
   AppBlueprintRoute: typeof AppBlueprintRoute
@@ -919,17 +916,21 @@ interface AppRouteChildren {
   AppMyUseCasesRoute: typeof AppMyUseCasesRoute
   AppPatternsRoute: typeof AppPatternsRoute
   AppPortfolioxRoute: typeof AppPortfolioxRoute
+  AppPricingRoute: typeof AppPricingRoute
   AppProRoute: typeof AppProRoute
   AppProfileRoute: typeof AppProfileRoute
   AppReportsRoute: typeof AppReportsRoute
   AppRepositoryRoute: typeof AppRepositoryRoute
   AppRoadmapRoute: typeof AppRoadmapRoute
+  AppSarpiRoute: typeof AppSarpiRoute
   AppStudioRoute: typeof AppStudioRouteWithChildren
   AppUseCasesSlugRoute: typeof AppUseCasesSlugRoute
+  AppCyberxC3gIntakeRoute: typeof AppCyberxC3gIntakeRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppAdministrationRoute: AppAdministrationRoute,
+  AppAdvisorxRoute: AppAdvisorxRoute,
   AppAiUseCaseStudioRoute: AppAiUseCaseStudioRoute,
   AppApiIntegrationRoute: AppApiIntegrationRoute,
   AppBlueprintRoute: AppBlueprintRoute,
@@ -945,13 +946,16 @@ const AppRouteChildren: AppRouteChildren = {
   AppMyUseCasesRoute: AppMyUseCasesRoute,
   AppPatternsRoute: AppPatternsRoute,
   AppPortfolioxRoute: AppPortfolioxRoute,
+  AppPricingRoute: AppPricingRoute,
   AppProRoute: AppProRoute,
   AppProfileRoute: AppProfileRoute,
   AppReportsRoute: AppReportsRoute,
   AppRepositoryRoute: AppRepositoryRoute,
   AppRoadmapRoute: AppRoadmapRoute,
+  AppSarpiRoute: AppSarpiRoute,
   AppStudioRoute: AppStudioRouteWithChildren,
   AppUseCasesSlugRoute: AppUseCasesSlugRoute,
+  AppCyberxC3gIntakeRoute: AppCyberxC3gIntakeRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
@@ -973,14 +977,20 @@ const ApiPublicUsecasexUseCasesRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
-  AdvisorxRoute: AdvisorxRoute,
   AuthRoute: AuthRoute,
-  PricingRoute: PricingRoute,
-  SarpiRoute: SarpiRoute,
-  CyberxC3gIntakeRoute: CyberxC3gIntakeRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
   ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

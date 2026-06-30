@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/advisorx")({
+export const Route = createFileRoute("/_app/advisorx")({
   head: () => ({
     meta: [
       { title: "AdvisorX™ — Coming Soon" },

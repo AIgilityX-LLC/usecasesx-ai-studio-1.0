@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 
 import { supabase } from "@/integrations/supabase/client";
-import { SiteHeader } from "@/components/SiteHeader";
-import { SiteFooter } from "@/components/SiteFooter";
+import { SiteShell } from "@/components/SiteShell";
 import { seedDemoAccounts, DEMO_ACCOUNTS } from "@/lib/demo-accounts.functions";
 
 export const Route = createFileRoute("/auth")({
@@ -79,9 +78,8 @@ function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
-      <SiteHeader />
-      <main className="mx-auto grid max-w-5xl gap-10 px-6 py-16 md:grid-cols-2">
+    <SiteShell>
+      <div className="mx-auto grid max-w-5xl gap-10 px-6 py-16 md:grid-cols-2">
         <section>
           <h1 className="text-3xl font-bold tracking-tight">
             {mode === "signin" ? "Sign in" : "Create account"}
@@ -168,8 +166,7 @@ function AuthPage() {
             ))}
           </ul>
         </aside>
-      </main>
-      <SiteFooter />
-    </div>
+      </div>
+    </SiteShell>
   );
 }
