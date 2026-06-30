@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, Library, Sparkles, FolderHeart, KanbanSquare,
-  BookOpen, Gauge, Database, Hammer, Map, Rocket, Compass, Shield,
+  BookOpen, Gauge, Database, Hammer, Map, Rocket, Compass, Shield, BarChart3,
   FileBarChart, Settings, Lock,
 } from "lucide-react";
 import {
@@ -15,6 +15,7 @@ type Item = { to: string; label: string; icon: React.ComponentType<{ className?:
 const CORE: Item[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/repository", label: "Global Repository", icon: Library },
+  { to: "/insights", label: "Deployment Intelligence", icon: BarChart3 },
   { to: "/studio", label: "AI Use Case Studio", icon: Sparkles },
   { to: "/my-use-cases", label: "My Use Cases", icon: FolderHeart },
   { to: "/boards", label: "Use Case Boards", icon: KanbanSquare },
