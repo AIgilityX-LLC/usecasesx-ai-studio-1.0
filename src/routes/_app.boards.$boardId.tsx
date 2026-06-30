@@ -475,7 +475,13 @@ function AddSavedDialog({ userId, boardId }: { userId: string; boardId: string }
       qc.invalidateQueries({ queryKey: ["board", boardId, "full"] });
       qc.invalidateQueries({ queryKey: ["boards", "list"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => {
+      if (e instanceof DuplicateBoardItemError || e.name === "DuplicateBoardItemError") {
+        toast.warning(e.message || "This use case is already on the board.");
+      } else {
+        toast.error(e.message);
+      }
+    },
   });
 
   return (
