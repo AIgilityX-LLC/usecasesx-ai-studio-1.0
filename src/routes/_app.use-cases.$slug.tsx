@@ -448,7 +448,14 @@ function UseCaseDetailPage() {
         <div className="mx-auto grid max-w-[1320px] gap-10 px-6 py-12 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="space-y-10">
             {/* Phase 2 — rich narrative case study */}
-            <CaseStudy c={c} industries={industries} capabilities={capabilities} />
+            <CaseStudy
+              c={c}
+              industries={industries}
+              capabilities={capabilities}
+              industryEntries={industryEntries}
+              capabilityEntries={capabilityEntries}
+              objectiveEntries={objectiveEntries}
+            />
 
             {c.governance_notes && (
               <Section label="07 · Governance Notes">
