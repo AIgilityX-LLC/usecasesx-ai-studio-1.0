@@ -209,7 +209,9 @@ export async function renameBoard(input: {
   title: string;
   description?: string | null;
 }): Promise<void> {
-  const patch: Record<string, any> = { title: input.title.trim() || "Untitled Board" };
+  const patch: { title: string; description?: string | null } = {
+    title: input.title.trim() || "Untitled Board",
+  };
   if (input.description !== undefined) patch.description = input.description?.trim() || null;
   const { error } = await supabase
     .from("use_case_boards")
