@@ -68,6 +68,9 @@ export const compareStore = {
     const cur = read();
     if (!cur.includes(slug) && cur.length < MAX) write([...cur, slug]);
   },
+  set(slugs: string[]) {
+    write(slugs.filter((x) => typeof x === "string").slice(0, MAX));
+  },
   remove(slug: string) {
     write(read().filter((s) => s !== slug));
   },
