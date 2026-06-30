@@ -11,9 +11,7 @@ const TOP_NAV: { to: string; label: string }[] = [
   { to: "/repository", label: "Explore" },
   { to: "/insights", label: "Insights" },
   { to: "/patterns", label: "Patterns" },
-  { to: "/boards", label: "Boards" },
-  { to: "/roadmap", label: "Roadmap" },
-  { to: "/studio", label: "Studio" },
+  { to: "/ai-use-case-studio", label: "Studio" },
   { to: "/pricing", label: "Pricing" },
 ];
 
@@ -40,18 +38,22 @@ export function SiteShell({ children }: { children: ReactNode }) {
           </>
         )}
       </div>
-      <nav className="hidden items-center gap-0.5 lg:flex">
-        {TOP_NAV.map((item) => (
-          <Link
-            key={item.to}
-            to={item.to as never}
-            activeProps={{ className: "bg-primary/10 text-primary" }}
-            className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {item.label}
-          </Link>
-        ))}
-      </nav>
+      {/* Top nav is only shown to signed-out visitors. Once signed in, the
+          sidebar is the single source of navigation to avoid duplicate menus. */}
+      {!isAuthed && (
+        <nav className="hidden items-center gap-0.5 lg:flex">
+          {TOP_NAV.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to as never}
+              activeProps={{ className: "bg-primary/10 text-primary" }}
+              className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      )}
       <div className="flex items-center gap-2">
         {isAuthed ? (
           <button
