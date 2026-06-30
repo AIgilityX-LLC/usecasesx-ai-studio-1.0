@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { AppBreadcrumb } from "./AppBreadcrumb";
@@ -18,6 +19,24 @@ const TOP_NAV: { to: string; label: string }[] = [
 export function SiteShell({ children }: { children: ReactNode }) {
   const session = useSupabaseSession();
   const isAuthed = !!session;
+
+  // Dev-only guard: SiteShell is the single source of navigation. If more than
+  // one SiteShell mounts at once, a page is rendering a duplicate nav bar.
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    const w = window as unknown as { __siteShellCount?: number };
+    w.__siteShellCount = (w.__siteShellCount ?? 0) + 1;
+    if (w.__siteShellCount > 1) {
+      console.error(
+        `[SiteShell] ${w.__siteShellCount} navigation shells are mounted at once. ` +
+          "A page is rendering its own nav in addition to the shared SiteShell. " +
+          "Remove the duplicate layout wrapper.",
+      );
+    }
+    return () => {
+      w.__siteShellCount = (w.__siteShellCount ?? 1) - 1;
+    };
+  }, []);
 
   const headerInner = (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-border bg-background/85 px-4 backdrop-blur">
