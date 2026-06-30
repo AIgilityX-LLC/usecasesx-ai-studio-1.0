@@ -182,8 +182,8 @@ function Page() {
   }, [cases, sort, governanceFirst]);
 
   const toggleRisk = (slug: string) => {
-    const cur = search.riskLevel ?? [];
-    const next = cur.includes(slug) ? cur.filter((x) => x !== slug) : [...cur, slug];
+    const cur: string[] = search.riskLevel ?? [];
+    const next = cur.includes(slug) ? cur.filter((x: string) => x !== slug) : [...cur, slug];
     update({ riskLevel: next });
     track("filter_used", { facet: "riskLevel", value: slug });
   };
