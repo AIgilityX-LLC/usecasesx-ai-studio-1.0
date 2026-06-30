@@ -10,6 +10,7 @@ import { CardSkeleton } from "@/components/LoadingSkeleton";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { PresetBar } from "@/components/usecasex/PresetBar";
 import { CompareTray } from "@/components/usecasex/CompareTray";
+import { RiskClassBar } from "@/components/usecasex/RiskClassBar";
 import { track } from "@/lib/usecasex.tracking";
 import { AddToStudioBoardDialog } from "@/components/AddToStudioBoardDialog";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
@@ -99,6 +100,7 @@ function Page() {
   const [q, setQ] = useState(search.q ?? "");
   const [leadOpen, setLeadOpen] = useState(false);
   const [boardPattern, setBoardPattern] = useState<UseCaseCardData | null>(null);
+  const [governanceFirst, setGovernanceFirst] = useState(false);
   const plan = usePlan();
   const isLite = !plan.loading && plan.isAuthed && !plan.isPro && !plan.isAdmin;
 
@@ -175,8 +177,16 @@ function Page() {
     if (sort === "complexity") arr.sort((a, b) => (rank[a.complexity ?? ""] ?? 99) - (rank[b.complexity ?? ""] ?? 99));
     else if (sort === "risk") arr.sort((a, b) => (rank[a.risk_level ?? ""] ?? 99) - (rank[b.risk_level ?? ""] ?? 99));
     else if (sort === "ttv") arr.sort((a, b) => (rank[a.time_to_value ?? ""] ?? 99) - (rank[b.time_to_value ?? ""] ?? 99));
+    if (governanceFirst) arr.sort((a, b) => (rank[b.risk_level ?? ""] ?? 0) - (rank[a.risk_level ?? ""] ?? 0));
     return arr;
-  }, [cases, sort]);
+  }, [cases, sort, governanceFirst]);
+
+  const toggleRisk = (slug: string) => {
+    const cur: string[] = search.riskLevel ?? [];
+    const next = cur.includes(slug) ? cur.filter((x: string) => x !== slug) : [...cur, slug];
+    update({ riskLevel: next });
+    track("filter_used", { facet: "riskLevel", value: slug });
+  };
 
   type ChipKey = keyof FacetState;
   const chips: { key: ChipKey; value: string; label: string }[] = [];
@@ -285,6 +295,12 @@ function Page() {
 
           <div className="flex-1">
             <PresetBar currentSearch={search as Record<string, unknown>} />
+            <RiskClassBar
+              selected={search.riskLevel ?? []}
+              onToggle={toggleRisk}
+              governanceFirst={governanceFirst}
+              onGovernanceFirst={setGovernanceFirst}
+            />
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
               <p className="text-sm text-muted-foreground">
                 <span className="font-mono text-base font-bold text-foreground">{sorted.length}</span> use case{sorted.length === 1 ? "" : "s"}

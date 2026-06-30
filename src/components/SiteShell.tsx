@@ -11,6 +11,8 @@ const TOP_NAV: { to: string; label: string }[] = [
   { to: "/repository", label: "Explore" },
   { to: "/insights", label: "Insights" },
   { to: "/patterns", label: "Patterns" },
+  { to: "/boards", label: "Boards" },
+  { to: "/roadmap", label: "Roadmap" },
   { to: "/studio", label: "Studio" },
   { to: "/pricing", label: "Pricing" },
 ];
