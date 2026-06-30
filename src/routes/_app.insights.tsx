@@ -3,6 +3,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { getInsights, type CountItem, type RankItem, type IndustryValueCell } from "@/lib/insights.functions";
 import { usePlan } from "@/hooks/usePlan";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
+import { PageHero } from "@/components/usecasex/PageHero";
 
 const insightsQ = queryOptions({
   queryKey: ["insights"],
@@ -45,17 +46,13 @@ function InsightsPage() {
 
   return (
     <>
-      <section className="border-b border-border bg-background">
-        <div className="mx-auto max-w-[1400px] px-6 py-10">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Deployment Intelligence</div>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            AI Use Case <span className="text-primary">Intelligence</span>
-          </h1>
-          <p className="mt-2 max-w-2xl text-muted-foreground">
-            A live, data-driven view of the entire UseCasesX™ corpus — what AI is being applied, where the value
-            concentrates, and how risk is distributed across industries.
-          </p>
-          <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+      <PageHero
+        tone="dark"
+        eyebrow="Deployment Intelligence"
+        title={<>AI Use Case <span className="text-primary">Intelligence</span></>}
+        description="A live, data-driven view of the entire UseCasesX™ corpus — what AI is being applied, where the value concentrates, and how risk is distributed across industries."
+      >
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
             {kpis.map((k) => (
               <div key={k.l} className="rounded-xl border border-border bg-card px-4 py-3">
                 <div className="font-mono text-2xl font-bold text-foreground">{k.v}</div>
