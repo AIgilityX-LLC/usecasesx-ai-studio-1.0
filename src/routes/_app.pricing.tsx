@@ -3,6 +3,7 @@ import { Check, Sparkles, Shield } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { PageHero } from "@/components/usecasex/PageHero";
 
 export const Route = createFileRoute("/_app/pricing")({
   head: () => ({
@@ -93,21 +94,15 @@ const PLANS: Plan[] = [
 
 function PricingPage() {
   return (
-    <div className="mx-auto max-w-6xl px-6 py-16">
-      <div className="mb-12 text-center">
-        <Badge variant="secondary" className="mb-3">
-          <Sparkles className="mr-1 h-3 w-3" /> Plans
-        </Badge>
-        <h1 className="text-4xl font-bold tracking-tight">
-          Pricing built for AI use case maturity
-        </h1>
-        <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-          Start free with the Lite plan. Unlock the full discovery, scoring,
-          blueprint, and governance workflow with Pro. Run sovereign,
-          regulator-grade deployments with Enterprise.
-        </p>
-      </div>
-
+    <>
+      <PageHero
+        tone="dark"
+        eyebrow="Plans"
+        title="Pricing built for AI use case maturity"
+        description="Start free with the Lite plan. Unlock the full discovery, scoring, blueprint, and governance workflow with Pro. Run sovereign, regulator-grade deployments with Enterprise."
+      />
+      <section className="bg-secondary/40">
+      <div className="mx-auto max-w-6xl px-6 py-16">
       <div className="grid gap-6 md:grid-cols-3">
         {PLANS.map((p) => (
           <Card
