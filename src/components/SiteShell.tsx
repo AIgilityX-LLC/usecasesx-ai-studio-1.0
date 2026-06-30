@@ -9,10 +9,12 @@ import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { supabase } from "@/integrations/supabase/client";
 
 const TOP_NAV: { to: string; label: string }[] = [
+  { to: "/", label: "Home" },
   { to: "/repository", label: "Explore" },
   { to: "/insights", label: "Insights" },
   { to: "/patterns", label: "Patterns" },
   { to: "/ai-use-case-studio", label: "Studio" },
+  { to: "/resources", label: "Resources" },
   { to: "/pricing", label: "Pricing" },
 ];
 
@@ -60,13 +62,14 @@ export function SiteShell({ children }: { children: ReactNode }) {
       {/* Top nav is only shown to signed-out visitors. Once signed in, the
           sidebar is the single source of navigation to avoid duplicate menus. */}
       {!isAuthed && (
-        <nav className="hidden items-center gap-0.5 lg:flex">
+        <nav aria-label="Primary" className="hidden items-center gap-0.5 lg:flex">
           {TOP_NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to as never}
+              activeOptions={{ exact: item.to === "/" }}
               activeProps={{ className: "bg-primary/10 text-primary" }}
-              className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               {item.label}
             </Link>
