@@ -3,6 +3,7 @@ import {
   Sparkles, Lightbulb, Gauge, Database, Hammer, Rocket, Shield, Plus, FolderOpen, BookOpen,
   ArrowRight, CheckCircle2,
 } from "lucide-react";
+import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 
 export const Route = createFileRoute("/_app/ai-use-case-studio")({
   head: () => ({
@@ -75,7 +76,7 @@ const BENEFITS = [
 function AIUseCaseStudioPage() {
   return (
     <>
-      <section className="border-b border-border bg-gradient-to-br from-primary/10 via-background to-background">
+      <section className="dark border-b border-border bg-gradient-to-br from-primary/15 via-background to-background text-foreground">
         <div className="mx-auto max-w-[1280px] px-6 py-12">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary">
             <Sparkles className="h-3 w-3" /> Flagship Module
@@ -204,6 +205,12 @@ function AIUseCaseStudioPage() {
               <p className="mt-3 text-xs text-muted-foreground">No credit card required.</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="bg-background">
+        <div className="mx-auto max-w-[1280px] px-6 pb-12">
+          <SampleDataDisclaimer />
         </div>
       </section>
     </>
