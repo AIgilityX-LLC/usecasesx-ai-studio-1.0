@@ -24,6 +24,7 @@ export function UseCasesXFooter() {
           title="Platform"
           items={[
             { l: "Global Repository", to: "/repository" },
+            { l: "Deployment Intelligence", to: "/insights" },
             { l: "AI Use Case Studio™", to: "/studio" },
             { l: "PortfolioX™", to: "/portfoliox" },
             { l: "RoadmapX™", to: "/roadmap" },
@@ -31,12 +32,12 @@ export function UseCasesXFooter() {
           ]}
         />
         <FooterCol
-          title="Lifecycle"
+          title="Discover"
           items={[
+            { l: "Explore Use Cases", to: "/repository" },
+            { l: "Use Case Boards", to: "/boards" },
             { l: "FeasibilityX™", to: "/feasibility" },
             { l: "DataReadinessX™", to: "/data-readiness" },
-            { l: "BlueprintX™", to: "/blueprint" },
-            { l: "ImpactAssessmentX™", to: "/impact-assessment" },
             { l: "GovernanceX™", to: "/governance" },
             { l: "DecisionX™", to: "/decision" },
           ]}
@@ -52,11 +53,15 @@ export function UseCasesXFooter() {
         />
       </div>
       <div className="border-t border-border">
-        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-2 px-6 py-4 text-[11px] text-muted-foreground">
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3 px-6 py-4 text-[11px] text-muted-foreground">
           <span>
             © {new Date().getFullYear()} AIgilityX. UseCasesX™ — Global AI Use Cases Repository & Development Studio.
           </span>
-          <span>Discover · Design · Validate · Govern · Scale.</span>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link to="/pricing" className="hover:text-foreground">Pricing</Link>
+            <Link to="/insights" className="hover:text-foreground">Insights</Link>
+            <span className="hidden sm:inline">Discover · Design · Validate · Govern · Scale.</span>
+          </div>
         </div>
       </div>
     </footer>

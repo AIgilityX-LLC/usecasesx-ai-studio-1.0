@@ -7,6 +7,14 @@ import { UseCasesXFooter } from "./UseCasesXFooter";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { supabase } from "@/integrations/supabase/client";
 
+const TOP_NAV: { to: string; label: string }[] = [
+  { to: "/repository", label: "Explore" },
+  { to: "/insights", label: "Insights" },
+  { to: "/patterns", label: "Patterns" },
+  { to: "/studio", label: "Studio" },
+  { to: "/pricing", label: "Pricing" },
+];
+
 export function SiteShell({ children }: { children: ReactNode }) {
   const session = useSupabaseSession();
   const isAuthed = !!session;
@@ -30,6 +38,18 @@ export function SiteShell({ children }: { children: ReactNode }) {
           </>
         )}
       </div>
+      <nav className="hidden items-center gap-0.5 lg:flex">
+        {TOP_NAV.map((item) => (
+          <Link
+            key={item.to}
+            to={item.to as never}
+            activeProps={{ className: "bg-primary/10 text-primary" }}
+            className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
       <div className="flex items-center gap-2">
         {isAuthed ? (
           <button

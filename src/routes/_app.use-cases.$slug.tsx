@@ -9,6 +9,7 @@ import { MissingDataFallback } from "@/components/MissingDataFallback";
 import { CompareToggle } from "@/components/usecasex/CompareTray";
 import { RatingWidget } from "@/components/usecasex/RatingWidget";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
+import { CaseStudy } from "@/components/usecasex/CaseStudy";
 import { supabase } from "@/integrations/supabase/client";
 import { getUseCase, listUseCases } from "@/lib/use-cases.functions";
 
@@ -444,36 +445,9 @@ function UseCaseDetailPage() {
         {/* Body + Sidebar */}
         <div className="mx-auto grid max-w-[1320px] gap-10 px-6 py-12 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="space-y-10">
-            {c.business_problem && (
-              <Section label="01 · Business Problem">
-                <p className="text-muted-foreground whitespace-pre-line">{c.business_problem}</p>
-              </Section>
-            )}
-            {(c.ai_solution_concept || c.solution) && (
-              <Section label="02 · AI Solution Concept">
-                <p className="text-muted-foreground whitespace-pre-line">{c.ai_solution_concept ?? c.solution}</p>
-              </Section>
-            )}
-            {(c.business_value || c.outcomes) && (
-              <Section label="03 · Business Value">
-                <p className="text-muted-foreground whitespace-pre-line">{c.business_value ?? c.outcomes}</p>
-              </Section>
-            )}
-            {c.data_required && (
-              <Section label="04 · Data Required">
-                <p className="text-muted-foreground whitespace-pre-line">{c.data_required}</p>
-              </Section>
-            )}
-            {Array.isArray(c.kpis) && c.kpis.length > 0 && (
-              <Section label="05 · KPIs">
-                <BulletList items={c.kpis as string[]} />
-              </Section>
-            )}
-            {Array.isArray(c.roi_areas) && c.roi_areas.length > 0 && (
-              <Section label="06 · ROI Areas">
-                <BulletList items={c.roi_areas as string[]} />
-              </Section>
-            )}
+            {/* Phase 2 — rich narrative case study */}
+            <CaseStudy c={c} industries={industries} capabilities={capabilities} />
+
             {c.governance_notes && (
               <Section label="07 · Governance Notes">
                 <p className="text-muted-foreground whitespace-pre-line">{c.governance_notes}</p>
@@ -663,19 +637,6 @@ function Section({ label, children }: { label: string; children: React.ReactNode
       <div className="text-[11px] font-bold uppercase tracking-widest text-primary">{label}</div>
       <div className="mt-3 text-base leading-relaxed">{children}</div>
     </section>
-  );
-}
-
-function BulletList({ items }: { items: string[] }) {
-  return (
-    <ul className="space-y-2">
-      {items.map((s, i) => (
-        <li key={i} className="flex gap-3 text-muted-foreground">
-          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-          <span>{s}</span>
-        </li>
-      ))}
-    </ul>
   );
 }
 
