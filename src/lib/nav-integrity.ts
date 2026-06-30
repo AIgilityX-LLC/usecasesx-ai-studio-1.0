@@ -28,12 +28,18 @@ export function useNavLinkIntegrityCheck(extraTargets: string[] = []) {
   useEffect(() => {
     if (!import.meta.env.DEV) return;
 
-    const flatRoutes = (router as unknown as { flatRoutes: { fullPath?: string }[] })
-      .flatRoutes;
+    const r = router as unknown as {
+      flatRoutes?: { fullPath?: string }[];
+      routesById?: Record<string, { fullPath?: string }>;
+    };
+    const routeList =
+      r.flatRoutes ?? (r.routesById ? Object.values(r.routesById) : []);
+    if (routeList.length === 0) return; // router not ready / API unavailable
     const knownPaths = new Set(
-      flatRoutes
-        .map((r) => r.fullPath?.replace(/\/$/, "") || "/")
-        .map((p) => (p === "" ? "/" : p)),
+      routeList.map((route) => {
+        const p = (route.fullPath ?? "").replace(/\/$/, "");
+        return p === "" ? "/" : p;
+      }),
     );
 
     const targets = [...PRIMARY_NAV_TARGETS, ...extraTargets];
