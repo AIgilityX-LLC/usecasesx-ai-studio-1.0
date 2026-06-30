@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Can } from "@/components/Can";
 
-export const Route = createFileRoute("/_app/boards")({
+export const Route = createFileRoute("/_app/boards/")({
   head: () => ({
     meta: [
       { title: "Use Case Boards — UseCasesX™" },

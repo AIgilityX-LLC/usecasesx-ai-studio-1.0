@@ -36,6 +36,7 @@ import { Route as AppBlueprintRouteImport } from './routes/_app.blueprint'
 import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integration'
 import { Route as AppAiUseCaseStudioRouteImport } from './routes/_app.ai-use-case-studio'
 import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
+import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as CyberxC3gIntakeRouteImport } from './routes/cyberx.c3g.intake'
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
 import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
@@ -185,6 +186,11 @@ const AppAdministrationRoute = AppAdministrationRouteImport.update({
   path: '/administration',
   getParentRoute: () => AppRoute,
 } as any)
+const AppBoardsIndexRoute = AppBoardsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppBoardsRoute,
+} as any)
 const CyberxC3gIntakeRoute = CyberxC3gIntakeRouteImport.update({
   id: '/cyberx/c3g/intake',
   path: '/cyberx/c3g/intake',
@@ -295,6 +301,7 @@ export interface FileRoutesByFullPath {
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
+  '/boards/': typeof AppBoardsIndexRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
@@ -316,7 +323,6 @@ export interface FileRoutesByTo {
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
-  '/boards': typeof AppBoardsRouteWithChildren
   '/compare': typeof AppCompareRoute
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
@@ -337,6 +343,7 @@ export interface FileRoutesByTo {
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
+  '/boards': typeof AppBoardsIndexRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
@@ -381,6 +388,7 @@ export interface FileRoutesById {
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/cyberx/c3g/intake': typeof CyberxC3gIntakeRoute
+  '/_app/boards/': typeof AppBoardsIndexRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/_app/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
@@ -425,6 +433,7 @@ export interface FileRouteTypes {
     | '/studio/portfolio'
     | '/use-cases/$slug'
     | '/cyberx/c3g/intake'
+    | '/boards/'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/studio/use-case/$id/advisorx'
@@ -446,7 +455,6 @@ export interface FileRouteTypes {
     | '/ai-use-case-studio'
     | '/api-integration'
     | '/blueprint'
-    | '/boards'
     | '/compare'
     | '/dashboard'
     | '/data-readiness'
@@ -467,6 +475,7 @@ export interface FileRouteTypes {
     | '/studio/portfolio'
     | '/use-cases/$slug'
     | '/cyberx/c3g/intake'
+    | '/boards'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/studio/use-case/$id/advisorx'
@@ -510,6 +519,7 @@ export interface FileRouteTypes {
     | '/_app/studio/portfolio'
     | '/_app/use-cases/$slug'
     | '/cyberx/c3g/intake'
+    | '/_app/boards/'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/_app/studio/use-case/$id/advisorx'
@@ -725,6 +735,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdministrationRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/boards/': {
+      id: '/_app/boards/'
+      path: '/'
+      fullPath: '/boards/'
+      preLoaderRoute: typeof AppBoardsIndexRouteImport
+      parentRoute: typeof AppBoardsRoute
+    }
     '/cyberx/c3g/intake': {
       id: '/cyberx/c3g/intake'
       path: '/cyberx/c3g/intake'
@@ -828,10 +845,12 @@ declare module '@tanstack/react-router' {
 
 interface AppBoardsRouteChildren {
   AppBoardsBoardIdRoute: typeof AppBoardsBoardIdRoute
+  AppBoardsIndexRoute: typeof AppBoardsIndexRoute
 }
 
 const AppBoardsRouteChildren: AppBoardsRouteChildren = {
   AppBoardsBoardIdRoute: AppBoardsBoardIdRoute,
+  AppBoardsIndexRoute: AppBoardsIndexRoute,
 }
 
 const AppBoardsRouteWithChildren = AppBoardsRoute._addFileChildren(
@@ -944,13 +963,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
