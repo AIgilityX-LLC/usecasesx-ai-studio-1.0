@@ -381,6 +381,10 @@ function Page() {
         </div>
       </div>
 
+      <div className="mx-auto max-w-[1400px] px-6 pb-10">
+        <SampleDataDisclaimer />
+      </div>
+
       <LeadCaptureModal
         open={leadOpen}
         onClose={() => setLeadOpen(false)}
