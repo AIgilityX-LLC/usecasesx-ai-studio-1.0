@@ -39,6 +39,7 @@ function LandingPage() {
       <RepositorySection />
       <InsightsPreview />
       <StudioSection />
+      <BoardsSection />
       <SarpiSection />
       <AdvisorXSection />
       <CyberXSection />
