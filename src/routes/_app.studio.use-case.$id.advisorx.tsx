@@ -360,6 +360,8 @@ function AdvisorXPage() {
           <span className="font-medium text-foreground">Enterprise configuration</span>.
         </CardContent>
       </Card>
+
+      <SampleDataDisclaimer />
     </div>
   );
 }
