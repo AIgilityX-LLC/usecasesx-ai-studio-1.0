@@ -33,6 +33,13 @@ export interface LoadedBoardItem {
   source_use_case_id: string | null;
 }
 
+export interface BoardAuditNote {
+  id: string;
+  event_type: string;
+  created_at: string;
+  summary: string;
+}
+
 export const loadBoardWithItems = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ boardId: z.string().uuid() }).parse(d))
@@ -100,8 +107,33 @@ export const loadBoardWithItems = createServerFn({ method: "GET" })
       });
     }
 
+    // 4. Recent audit-style activity for this board (best-effort; never fails the load).
+    let auditNotes: BoardAuditNote[] = [];
+    try {
+      const { data: events } = await context.supabase
+        .from("audit_events")
+        .select("id, event_type, created_at, new_value, previous_value")
+        .eq("entity_type", "use_case_board")
+        .eq("entity_id", boardId)
+        .order("created_at", { ascending: false })
+        .limit(10);
+      auditNotes = (events ?? []).map((e: any) => {
+        const val = e.new_value ?? e.previous_value ?? {};
+        const label =
+          e.event_type === "board.created"
+            ? `Board "${val.title ?? "Untitled"}" created`
+            : e.event_type === "board.deleted"
+              ? `Board "${val.title ?? "Untitled"}" deleted`
+              : e.event_type.replace(/[._]/g, " ");
+        return { id: e.id, event_type: e.event_type, created_at: e.created_at, summary: label };
+      });
+    } catch (e: any) {
+      console.warn("[loadBoardWithItems] audit read skipped", { boardId, err: e?.message });
+    }
+
     return {
       board: board as LoadedBoard,
       items: safeItems.map(({ board_id: _b, ...rest }: any) => rest) as LoadedBoardItem[],
+      auditNotes,
     };
   });
