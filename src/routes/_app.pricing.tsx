@@ -319,19 +319,35 @@ function PricingPage() {
             Every capability across UseCasesX™ discovery, design, governance, and roadmap. Pro is
             <span className="font-semibold text-foreground"> free until {FREE_UNTIL}</span> for founding members.
           </p>
+          {myPlan && (
+            <div className="mt-5 inline-flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-2.5">
+              <Switch id="highlight-plan" checked={highlightMine} onCheckedChange={setHighlightMine} />
+              <label htmlFor="highlight-plan" className="cursor-pointer text-sm font-medium">
+                Highlight my plan
+                <span className="ml-1.5 rounded bg-emerald-600/15 px-1.5 py-0.5 text-[10px] font-bold uppercase text-emerald-700 dark:text-emerald-400">
+                  {myPlan}
+                </span>
+              </label>
+            </div>
+          )}
           <div className="mt-8 overflow-hidden rounded-xl border">
             <Table>
               <TableHeader>
                 <TableRow className="bg-secondary/60">
                   <TableHead className="min-w-[220px] text-foreground">Feature</TableHead>
-                  <TableHead className="text-center text-foreground">Lite</TableHead>
-                  <TableHead className="text-center text-foreground">
+                  <TableHead className={`text-center text-foreground ${mineOn && myPlan === "lite" ? "bg-emerald-500/10" : ""}`}>
+                    Lite {mineOn && myPlan === "lite" && <span className="ml-1 text-[9px] font-bold uppercase text-emerald-600 dark:text-emerald-400">You</span>}
+                  </TableHead>
+                  <TableHead className={`text-center text-foreground ${mineOn && myPlan === "pro" ? "bg-emerald-500/10" : ""}`}>
                     Pro
                     <span className="ml-1 rounded bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase text-primary">
                       Free
                     </span>
+                    {mineOn && myPlan === "pro" && <span className="ml-1 text-[9px] font-bold uppercase text-emerald-600 dark:text-emerald-400">You</span>}
                   </TableHead>
-                  <TableHead className="text-center text-foreground">Enterprise</TableHead>
+                  <TableHead className={`text-center text-foreground ${mineOn && myPlan === "enterprise" ? "bg-emerald-500/10" : ""}`}>
+                    Enterprise {mineOn && myPlan === "enterprise" && <span className="ml-1 text-[9px] font-bold uppercase text-emerald-600 dark:text-emerald-400">You</span>}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -345,9 +361,9 @@ function PricingPage() {
                     {group.rows.map((row) => (
                       <TableRow key={row.label}>
                         <TableCell className="font-medium">{row.label}</TableCell>
-                        <Cell value={row.lite} />
-                        <Cell value={row.pro} />
-                        <Cell value={row.enterprise} />
+                        <Cell value={row.lite} highlight={mineOn && myPlan === "lite"} />
+                        <Cell value={row.pro} highlight={mineOn && myPlan === "pro"} />
+                        <Cell value={row.enterprise} highlight={mineOn && myPlan === "enterprise"} />
                       </TableRow>
                     ))}
                   </Fragment>
