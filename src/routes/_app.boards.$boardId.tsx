@@ -152,7 +152,7 @@ function BoardDetailPage() {
             </div>
           </div>
         ) : (
-          <BoardItemList boardId={boardId} items={list} />
+          <BoardItemList boardId={boardId} items={list} userId={session!.user.id} />
         )}
 
         <BoardMetadataPanel board={b} itemCount={list.length} auditNotes={auditNotes} />
