@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Check, Minus, Sparkles, Shield, Crown, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -319,8 +319,8 @@ function PricingPage() {
               </TableHeader>
               <TableBody>
                 {COMPARISON.map((group) => (
-                  <>
-                    <TableRow key={group.group} className="bg-muted/40">
+                  <Fragment key={group.group}>
+                    <TableRow className="bg-muted/40">
                       <TableCell colSpan={4} className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                         {group.group}
                       </TableCell>
@@ -333,7 +333,7 @@ function PricingPage() {
                         <Cell value={row.enterprise} />
                       </TableRow>
                     ))}
-                  </>
+                  </Fragment>
                 ))}
               </TableBody>
             </Table>
