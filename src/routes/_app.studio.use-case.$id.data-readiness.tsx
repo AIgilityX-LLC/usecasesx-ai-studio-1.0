@@ -343,6 +343,8 @@ function DataReadinessPage() {
           </Card>
         </div>
       </div>
+
+      <SampleDataDisclaimer />
     </div>
   );
 }
