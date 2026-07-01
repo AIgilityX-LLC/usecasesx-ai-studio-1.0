@@ -1,9 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, Sparkles, Shield } from "lucide-react";
+import { useState } from "react";
+import { Check, Minus, Sparkles, Shield, Crown, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageHero } from "@/components/usecasex/PageHero";
+import { LeadCaptureModal } from "@/components/LeadCaptureModal";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+const FREE_UNTIL = "31 Dec 2026";
 
 export const Route = createFileRoute("/_app/pricing")({
   head: () => ({
