@@ -12,7 +12,8 @@ export type LeadTriggerCase =
   | "custom-use-case"
   | "governance-review"
   | "ai-opportunity-workshop"
-  | "sector-pack";
+  | "sector-pack"
+  | "founding-member";
 
 export const INTEREST_AREAS = [
   "Lite PDF Download",
@@ -25,6 +26,7 @@ export const INTEREST_AREAS = [
   "CyberX Governance",
   "AdvisorX Advisory",
   "FlowX Workflow",
+  "Founding Member Waitlist",
 ] as const;
 export type InterestArea = (typeof INTEREST_AREAS)[number];
 
@@ -96,6 +98,15 @@ const TRIGGERS: Record<
     cta: "Request Sector Pack",
     success: "Thank you. Your sector pack will be sent shortly.",
     interest: "Sector Use Case Pack",
+  },
+  "founding-member": {
+    title: "Join the Founding Member Waitlist",
+    description:
+      "Reserve free Pro access — gratis until 31 Dec 2026 for eligible founding members. Tell us a little about you and we'll confirm your early-access spot.",
+    cta: "Join the Waitlist",
+    success:
+      "You're on the Founding Member waitlist. We'll email you to confirm your free SARPI Pro access (gratis until 31 Dec 2026).",
+    interest: "Founding Member Waitlist",
   },
 };
 
