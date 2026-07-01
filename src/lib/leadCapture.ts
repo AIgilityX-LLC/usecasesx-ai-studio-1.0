@@ -5,6 +5,7 @@ import {
   trackUseCaseDownload,
 } from "./usecasex.services";
 import { trackCTAEvent } from "./usecasex.tracking";
+import { isEligibleEmail } from "./entitlements";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -37,6 +38,10 @@ export async function saveLeadCapture(
         ? payload.sourceUseCase
         : null;
 
+  // Founding-member / waitlist submissions carry an eligibility flag so the
+  // team can triage who qualifies for gratis Pro vs. the Free Pro waitlist.
+  const eligible = isEligibleEmail(payload.email);
+
   // 1. lead_captures
   await createLeadCapture({
     fullName: payload.fullName,
@@ -49,6 +54,8 @@ export async function saveLeadCapture(
     sourceUseCase: sourceUuid,
     sourcePage: payload.sourcePage ?? null,
     cta: payload.triggerCase,
+    eligible,
+    waitlistStatus: eligible ? "eligible" : "pending",
   });
 
   // 2. cta_events
