@@ -5,13 +5,13 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import {
   ArrowLeft, Loader2, Plus, ExternalLink, Sparkles, ShieldAlert, FileQuestion,
-  Pencil, Trash2, ArrowUp, ArrowDown, X,
+  Pencil, Trash2, ArrowUp, ArrowDown, X, Library, GripVertical, Search,
 } from "lucide-react";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import {
   createBoardUseCase, listSavedCatalogUseCases, addSavedUseCaseToBoard,
   renameBoard, deleteBoard, removeBoardUseCase, reorderBoardUseCases,
-  DuplicateBoardItemError,
+  DuplicateBoardItemError, listRepositoryUseCasesForBoard,
 } from "@/lib/boards";
 import { loadBoardWithItems, type LoadedBoardItem } from "@/lib/boards.functions";
 import { Bookmark } from "lucide-react";
