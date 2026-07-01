@@ -7,6 +7,7 @@ import {
   ArrowLeft, Loader2, Plus, ExternalLink, Sparkles, ShieldAlert, FileQuestion,
   Pencil, Trash2, ArrowUp, ArrowDown, X, Library, GripVertical, Search,
 } from "lucide-react";
+import { CalendarClock, History, ListChecks, Clock } from "lucide-react";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import {
   createBoardUseCase, listSavedCatalogUseCases, addSavedUseCaseToBoard,
@@ -95,6 +96,7 @@ function BoardDetailPage() {
 
   const b = board.data.board;
   const list = board.data.items;
+  const auditNotes = board.data.auditNotes ?? [];
 
   return (
     <section className="border-b border-border bg-background">
@@ -152,8 +154,85 @@ function BoardDetailPage() {
         ) : (
           <BoardItemList boardId={boardId} items={list} />
         )}
+
+        <BoardMetadataPanel board={b} itemCount={list.length} auditNotes={auditNotes} />
       </div>
     </section>
+  );
+}
+
+function BoardMetadataPanel({
+  board, itemCount, auditNotes,
+}: {
+  board: LoadedBoard;
+  itemCount: number;
+  auditNotes: BoardAuditNote[];
+}) {
+  const fmt = (iso: string) =>
+    new Date(iso).toLocaleString(undefined, {
+      year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+    });
+  return (
+    <div className="grid gap-5 lg:grid-cols-3">
+      <div className="rounded-xl border border-border bg-card p-5 lg:col-span-1">
+        <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          Board metadata
+        </h2>
+        <dl className="mt-4 space-y-3 text-sm">
+          <div className="flex items-start gap-2">
+            <ListChecks className="mt-0.5 h-4 w-4 text-primary" />
+            <div>
+              <dt className="text-xs text-muted-foreground">Name</dt>
+              <dd className="font-semibold text-foreground">{board.title}</dd>
+            </div>
+          </div>
+          <div className="flex items-start gap-2">
+            <Library className="mt-0.5 h-4 w-4 text-primary" />
+            <div>
+              <dt className="text-xs text-muted-foreground">Included use cases</dt>
+              <dd className="font-semibold text-foreground">{itemCount}</dd>
+            </div>
+          </div>
+          <div className="flex items-start gap-2">
+            <CalendarClock className="mt-0.5 h-4 w-4 text-primary" />
+            <div>
+              <dt className="text-xs text-muted-foreground">Created</dt>
+              <dd className="font-semibold text-foreground">{fmt(board.created_at)}</dd>
+            </div>
+          </div>
+          <div className="flex items-start gap-2">
+            <Clock className="mt-0.5 h-4 w-4 text-primary" />
+            <div>
+              <dt className="text-xs text-muted-foreground">Last updated</dt>
+              <dd className="font-semibold text-foreground">{fmt(board.updated_at)}</dd>
+            </div>
+          </div>
+        </dl>
+      </div>
+      <div className="rounded-xl border border-border bg-card p-5 lg:col-span-2">
+        <h2 className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          <History className="h-3.5 w-3.5" /> Activity &amp; audit notes
+        </h2>
+        {auditNotes.length === 0 ? (
+          <p className="mt-4 text-sm text-muted-foreground">
+            No recorded activity yet. Board changes are captured in your workspace audit trail.
+          </p>
+        ) : (
+          <ul className="mt-4 space-y-3">
+            {auditNotes.map((n) => (
+              <li key={n.id} className="flex items-start gap-3 border-l-2 border-primary/40 pl-3">
+                <div>
+                  <p className="text-sm font-medium capitalize text-foreground">{n.summary}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(n.created_at).toLocaleString()}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
   );
 }
 
