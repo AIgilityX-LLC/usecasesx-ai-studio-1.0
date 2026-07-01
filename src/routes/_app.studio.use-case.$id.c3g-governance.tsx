@@ -307,6 +307,8 @@ function C3GGovernancePage() {
           .
         </CardContent>
       </Card>
+
+      <SampleDataDisclaimer />
     </div>
   );
 }
