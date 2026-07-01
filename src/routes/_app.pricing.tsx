@@ -162,6 +162,7 @@ function PricingPage() {
   const ent = useEntitlement();
   const [highlightMine, setHighlightMine] = useState(true);
   const myPlan = ent.isAuthed && !ent.loading ? ent.tier : null;
+  const mineOn = highlightMine && !!myPlan;
   return (
     <>
       {/* Founding member banner */}
@@ -389,20 +390,21 @@ function PricingPage() {
   );
 }
 
-function Cell({ value }: { value: boolean | string }) {
+function Cell({ value, highlight = false }: { value: boolean | string; highlight?: boolean }) {
+  const hl = highlight ? "bg-emerald-500/10" : "";
   if (value === true) {
     return (
-      <TableCell className="text-center">
+      <TableCell className={`text-center ${hl}`}>
         <Check className="mx-auto h-4 w-4 text-emerald-500" />
       </TableCell>
     );
   }
   if (value === false) {
     return (
-      <TableCell className="text-center">
+      <TableCell className={`text-center ${hl}`}>
         <Minus className="mx-auto h-4 w-4 text-muted-foreground/50" />
       </TableCell>
     );
   }
-  return <TableCell className="text-center text-sm text-muted-foreground">{value}</TableCell>;
+  return <TableCell className={`text-center text-sm text-muted-foreground ${hl}`}>{value}</TableCell>;
 }
