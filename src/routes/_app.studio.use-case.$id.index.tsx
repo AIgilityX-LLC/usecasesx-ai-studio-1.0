@@ -91,6 +91,8 @@ function UseCaseDetailPage() {
             </div>
           </>
         )}
+
+        <SampleDataDisclaimer />
       </div>
     </section>
   );
