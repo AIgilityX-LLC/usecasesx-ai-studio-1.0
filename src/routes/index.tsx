@@ -307,6 +307,55 @@ function StudioSection() {
   );
 }
 
+/* Use Case Boards */
+function BoardsSection() {
+  const FEATURES = [
+    "Build multiple boards for sprints, portfolios and backlogs",
+    "Add use cases from the repository with duplicate protection",
+    "Drag-and-drop reorder, curate and remove items",
+    "Rename, save and delete boards with full audit trail",
+  ];
+  return (
+    <section className="border-b border-border bg-secondary/30">
+      <div className="mx-auto grid max-w-[1400px] gap-12 px-6 py-20 lg:grid-cols-2 lg:items-center">
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Use Case Boards</div>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            Organize your AI use cases into shared boards.
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            Group AI use cases into boards for portfolio reviews, quick-win sprints and innovation backlogs — then
+            prioritize, reorder and hand off with confidence. Every change is captured in your workspace audit trail.
+          </p>
+          <ul className="mt-6 space-y-2">
+            {FEATURES.map((f) => (
+              <li key={f} className="flex items-start gap-2 text-sm text-foreground">
+                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md bg-primary/10 text-[11px] font-bold text-primary">✓</span>
+                {f}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-8 flex gap-3">
+            <Link to="/boards" className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110">Open Use Case Boards →</Link>
+            <Link to="/repository" className="rounded-md border border-border bg-background px-5 py-2.5 text-sm font-semibold hover:bg-secondary">Browse Repository</Link>
+          </div>
+        </div>
+        <div className="grid gap-4 rounded-2xl border border-border bg-card p-6 shadow-xl">
+          {["Quick-Win Sprint Q1", "Government AI Portfolio", "Innovation Backlog"].map((t, i) => (
+            <div key={t} className="flex items-center justify-between rounded-xl border border-border bg-background p-4">
+              <div>
+                <div className="text-sm font-bold text-foreground">{t}</div>
+                <div className="mt-0.5 text-xs text-muted-foreground">{(i + 2) * 3} use cases · updated recently</div>
+              </div>
+              <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary">Studio</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* 5 — SARPI */
 function SarpiSection() {
   return (
