@@ -162,6 +162,7 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
     if (triggerCaseProp) return triggerCaseProp;
     const alias = (ctaProp ?? "").toLowerCase();
     if (alias.includes("strategy")) return "ai-strategy-session";
+    if (alias.includes("waitlist") || alias.includes("founding")) return "founding-member";
     if (alias.includes("custom")) return "custom-use-case";
     if (alias.includes("governance")) return "governance-review";
     if (alias.includes("workshop")) return "ai-opportunity-workshop";
