@@ -104,6 +104,55 @@ const PLANS: Plan[] = [
   },
 ];
 
+type Cmp = boolean | string;
+type CmpRow = { label: string; lite: Cmp; pro: Cmp; enterprise: Cmp };
+type CmpGroup = { group: string; rows: CmpRow[] };
+
+const COMPARISON: CmpGroup[] = [
+  {
+    group: "Discovery & Repository",
+    rows: [
+      { label: "Global AI Use Cases Repository", lite: "Free patterns", pro: true, enterprise: true },
+      { label: "Advanced filters & saved views", lite: false, pro: true, enterprise: true },
+      { label: "Use case comparison view", lite: "Up to 2", pro: "Unlimited", enterprise: "Unlimited" },
+      { label: "Evidence & citations drawer", lite: true, pro: true, enterprise: true },
+      { label: "Export (PDF / JSON)", lite: "Basic", pro: true, enterprise: true },
+    ],
+  },
+  {
+    group: "Boards & Studio",
+    rows: [
+      { label: "Use Case Boards", lite: "1 board", pro: "Unlimited", enterprise: "Unlimited" },
+      { label: "Active use cases", lite: "Up to 3", pro: "Unlimited", enterprise: "Unlimited" },
+      { label: "AI ideation co-pilot", lite: false, pro: true, enterprise: true },
+      { label: "Data Readiness canvas", lite: false, pro: true, enterprise: true },
+      { label: "Blueprint Builder", lite: "Basic PDF", pro: true, enterprise: true },
+      { label: "Feasibility scoring", lite: "Manual", pro: "Assisted", enterprise: "Assisted" },
+    ],
+  },
+  {
+    group: "Intelligence & Governance",
+    rows: [
+      { label: "SARPI™ integration", lite: false, pro: "Draft link", enterprise: "Full suite" },
+      { label: "AdvisorX™ review", lite: false, pro: true, enterprise: true },
+      { label: "C3G™ governance", lite: false, pro: "Draft link", enterprise: "Full workflow" },
+      { label: "Portfolio Roadmap & optimizer", lite: false, pro: true, enterprise: true },
+      { label: "Decision Provenance Report™", lite: false, pro: "Activity history", enterprise: true },
+    ],
+  },
+  {
+    group: "Organization & Compliance",
+    rows: [
+      { label: "Multi-org / agency hierarchy", lite: false, pro: false, enterprise: true },
+      { label: "Custom governance templates", lite: false, pro: false, enterprise: true },
+      { label: "Sovereign AI System™ label", lite: false, pro: false, enterprise: true },
+      { label: "Regulator / auditor views", lite: false, pro: false, enterprise: true },
+      { label: "Advanced audit trail", lite: false, pro: "Standard", enterprise: true },
+      { label: "Support", lite: "Community", pro: "Priority", enterprise: "Dedicated" },
+    ],
+  },
+];
+
 function PricingPage() {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   return (
