@@ -128,6 +128,7 @@ function BoardDetailPage() {
             />
             <DeleteBoardButton boardId={boardId} title={b.title} />
             <AddSavedDialog userId={session!.user.id} boardId={boardId} />
+            <AddFromRepositoryDialog userId={session!.user.id} boardId={boardId} />
             <AddItemDialog userId={session!.user.id} boardId={boardId} />
           </div>
         </header>
@@ -141,6 +142,7 @@ function BoardDetailPage() {
             </p>
             <div className="mt-6 inline-flex gap-2">
               <AddSavedDialog userId={session!.user.id} boardId={boardId} />
+              <AddFromRepositoryDialog userId={session!.user.id} boardId={boardId} />
               <AddItemDialog userId={session!.user.id} boardId={boardId} />
               <Button asChild variant="outline">
                 <Link to="/repository">Browse catalog</Link>
