@@ -258,6 +258,11 @@ function PricingPage() {
                 </Badge>
               </div>
             )}
+            {myPlan === p.key && (
+              <div className="absolute -top-3 right-3">
+                <Badge className="bg-emerald-600 text-white">Your plan</Badge>
+              </div>
+            )}
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 {p.key === "enterprise" && <Shield className="h-5 w-5 text-primary" />}
