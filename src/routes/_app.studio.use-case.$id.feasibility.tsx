@@ -348,6 +348,8 @@ function FeasibilityPage() {
           </Card>
         </div>
       </div>
+
+      <SampleDataDisclaimer />
     </div>
   );
 }
