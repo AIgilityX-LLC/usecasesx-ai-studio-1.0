@@ -401,15 +401,21 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
 // Success view
 // -----------------------------------------------------------------------------
 function SuccessView({
-  triggerCase, message, onClose,
-}: { triggerCase: LeadTriggerCase; message: string; onClose: () => void }) {
+  triggerCase, message, eligible, onClose,
+}: { triggerCase: LeadTriggerCase; message: string; eligible?: boolean | null; onClose: () => void }) {
+  const foundingMsg =
+    triggerCase === "founding-member" && eligible != null
+      ? eligible
+        ? `Great news — your work email qualifies for founding-member access. Sign in with a verified account to unlock Pro gratis until ${FOUNDING_UNTIL_LABEL}.`
+        : `You're on the Free Pro waitlist. We'll review your submission and email you about early access.`
+      : message;
   return (
     <div className="px-8 py-12 text-center">
       <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full bg-primary/15 text-primary">
         ✓
       </div>
       <h3 className="text-xl font-bold text-foreground">Thank you.</h3>
-      <p className="mt-2 text-sm text-muted-foreground">{message}</p>
+      <p className="mt-2 text-sm text-muted-foreground">{foundingMsg}</p>
       {triggerCase === "lite-pdf" && (
         <p className="mt-2 text-xs text-muted-foreground">
           If your download doesn't start, check your browser's download bar.
