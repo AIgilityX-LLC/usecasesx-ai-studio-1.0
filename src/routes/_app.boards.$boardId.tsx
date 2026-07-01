@@ -209,29 +209,93 @@ function BoardMetadataPanel({
           </div>
         </dl>
       </div>
-      <div className="rounded-xl border border-border bg-card p-5 lg:col-span-2">
-        <h2 className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-          <History className="h-3.5 w-3.5" /> Activity &amp; audit notes
-        </h2>
-        {auditNotes.length === 0 ? (
-          <p className="mt-4 text-sm text-muted-foreground">
-            No recorded activity yet. Board changes are captured in your workspace audit trail.
-          </p>
-        ) : (
+      <AuditNotesPanel auditNotes={auditNotes} fmt={fmt} />
+    </div>
+  );
+}
+
+const AUDIT_PAGE_SIZE = 5;
+
+function auditActionLabel(eventType: string): string {
+  const t = eventType.toLowerCase();
+  if (t.includes("delete") || t.includes("remove")) return "Removed";
+  if (t.includes("create") || t.includes("add")) return "Added";
+  if (t.includes("rename") || t.includes("update") || t.includes("edit")) return "Updated";
+  if (t.includes("reorder") || t.includes("move")) return "Reordered";
+  return "Activity";
+}
+
+function auditLabelClass(label: string): string {
+  switch (label) {
+    case "Removed": return "bg-destructive/10 text-destructive";
+    case "Added": return "bg-primary/10 text-primary";
+    case "Updated": return "bg-amber-500/10 text-amber-600 dark:text-amber-400";
+    case "Reordered": return "bg-secondary text-muted-foreground";
+    default: return "bg-secondary text-muted-foreground";
+  }
+}
+
+function relativeTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.round(diff / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m}m ago`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.round(h / 24);
+  if (d < 30) return `${d}d ago`;
+  return `${Math.round(d / 30)}mo ago`;
+}
+
+function AuditNotesPanel({
+  auditNotes, fmt,
+}: { auditNotes: BoardAuditNote[]; fmt: (iso: string) => string }) {
+  const [visible, setVisible] = useState(AUDIT_PAGE_SIZE);
+  const shown = auditNotes.slice(0, visible);
+  return (
+    <div className="rounded-xl border border-border bg-card p-5 lg:col-span-2">
+      <h2 className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+        <History className="h-3.5 w-3.5" /> Activity &amp; audit notes
+      </h2>
+      {auditNotes.length === 0 ? (
+        <p className="mt-4 text-sm text-muted-foreground">
+          No recorded activity yet. Board changes are captured in your workspace audit trail.
+        </p>
+      ) : (
+        <>
           <ul className="mt-4 space-y-3">
-            {auditNotes.map((n) => (
-              <li key={n.id} className="flex items-start gap-3 border-l-2 border-primary/40 pl-3">
-                <div>
-                  <p className="text-sm font-medium capitalize text-foreground">{n.summary}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(n.created_at).toLocaleString()}
-                  </p>
-                </div>
-              </li>
-            ))}
+            {shown.map((n) => {
+              const label = auditActionLabel(n.event_type);
+              return (
+                <li key={n.id} className="flex items-start gap-3 border-l-2 border-primary/40 pl-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${auditLabelClass(label)}`}>
+                        {label}
+                      </span>
+                      <p className="text-sm font-medium capitalize text-foreground">{n.summary}</p>
+                    </div>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      <time dateTime={n.created_at} title={fmt(n.created_at)}>
+                        {fmt(n.created_at)} · {relativeTime(n.created_at)}
+                      </time>
+                    </p>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
-        )}
-      </div>
+          {visible < auditNotes.length && (
+            <button
+              type="button"
+              onClick={() => setVisible((v) => v + AUDIT_PAGE_SIZE)}
+              className="mt-4 text-[11px] font-bold uppercase tracking-widest text-primary hover:underline"
+            >
+              Load more ({auditNotes.length - visible} older)
+            </button>
+          )}
+        </>
+      )}
     </div>
   );
 }
