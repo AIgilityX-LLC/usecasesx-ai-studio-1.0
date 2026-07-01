@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -349,6 +350,8 @@ function PortfolioRoadmapPage() {
           </Card>
         </>
       )}
+
+      <SampleDataDisclaimer />
     </div>
     </>
   );

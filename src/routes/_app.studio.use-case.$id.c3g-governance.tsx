@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -306,6 +307,8 @@ function C3GGovernancePage() {
           .
         </CardContent>
       </Card>
+
+      <SampleDataDisclaimer />
     </div>
   );
 }

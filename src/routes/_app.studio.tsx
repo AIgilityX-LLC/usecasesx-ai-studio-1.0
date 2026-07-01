@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -242,6 +243,10 @@ function StudioPage() {
             ))}
           </div>
         )}
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-10">
+        <SampleDataDisclaimer />
       </section>
     </div>
   );

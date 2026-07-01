@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -359,6 +360,8 @@ function AdvisorXPage() {
           <span className="font-medium text-foreground">Enterprise configuration</span>.
         </CardContent>
       </Card>
+
+      <SampleDataDisclaimer />
     </div>
   );
 }
