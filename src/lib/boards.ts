@@ -94,6 +94,46 @@ export async function listSavedCatalogUseCases(userId: string): Promise<SavedCat
     }));
 }
 
+export interface RepositoryUseCaseOption {
+  use_case_id: string;
+  title: string;
+  summary: string | null;
+  already_on_board: boolean;
+}
+
+/** List published catalog use cases for the "Add from repository" modal,
+ *  flagging any that are already present on the given board so the UI can
+ *  prevent duplicates. */
+export async function listRepositoryUseCasesForBoard(
+  boardId: string,
+  opts: { search?: string; limit?: number } = {},
+): Promise<RepositoryUseCaseOption[]> {
+  let query = supabase
+    .from("use_cases")
+    .select("id, title, summary")
+    .eq("status", "published")
+    .order("title", { ascending: true })
+    .limit(opts.limit ?? 100);
+  if (opts.search?.trim()) query = query.ilike("title", `%${opts.search.trim()}%`);
+  const { data, error } = await query;
+  if (error) throw new Error(error.message);
+
+  const { data: existing, error: existErr } = await supabase
+    .from("ai_use_cases")
+    .select("source_use_case_id")
+    .eq("board_id", boardId)
+    .not("source_use_case_id", "is", null);
+  if (existErr) throw new Error(existErr.message);
+  const onBoard = new Set((existing ?? []).map((r: any) => r.source_use_case_id));
+
+  return (data ?? []).map((r: any) => ({
+    use_case_id: r.id,
+    title: r.title,
+    summary: r.summary,
+    already_on_board: onBoard.has(r.id),
+  }));
+}
+
 /** Import a saved catalog use case onto a board as a new ai_use_cases row. */
 export async function addSavedUseCaseToBoard(input: {
   userId: string;
