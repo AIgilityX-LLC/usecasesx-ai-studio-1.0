@@ -614,6 +614,7 @@ export type Database = {
           country: string | null
           created_at: string
           cta: string | null
+          eligible: boolean | null
           email: string
           full_name: string
           id: string
@@ -624,12 +625,14 @@ export type Database = {
           role: string | null
           source_page: string | null
           source_use_case: string | null
+          waitlist_status: string
         }
         Insert: {
           company?: string | null
           country?: string | null
           created_at?: string
           cta?: string | null
+          eligible?: boolean | null
           email: string
           full_name: string
           id?: string
@@ -640,12 +643,14 @@ export type Database = {
           role?: string | null
           source_page?: string | null
           source_use_case?: string | null
+          waitlist_status?: string
         }
         Update: {
           company?: string | null
           country?: string | null
           created_at?: string
           cta?: string | null
+          eligible?: boolean | null
           email?: string
           full_name?: string
           id?: string
@@ -656,6 +661,7 @@ export type Database = {
           role?: string | null
           source_page?: string | null
           source_use_case?: string | null
+          waitlist_status?: string
         }
         Relationships: []
       }
@@ -801,6 +807,9 @@ export type Database = {
           country: string | null
           created_at: string
           email: string | null
+          entitlement_expires_at: string | null
+          entitlement_tier: string
+          founding_member: boolean
           full_name: string | null
           id: string
           industry: string | null
@@ -818,6 +827,9 @@ export type Database = {
           country?: string | null
           created_at?: string
           email?: string | null
+          entitlement_expires_at?: string | null
+          entitlement_tier?: string
+          founding_member?: boolean
           full_name?: string | null
           id?: string
           industry?: string | null
@@ -835,6 +847,9 @@ export type Database = {
           country?: string | null
           created_at?: string
           email?: string | null
+          entitlement_expires_at?: string | null
+          entitlement_tier?: string
+          founding_member?: boolean
           full_name?: string | null
           id?: string
           industry?: string | null
