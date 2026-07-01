@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Sparkles, Crown, Clock, MailWarning, ShieldCheck, ArrowRight } from "lucide-react";
+import { Sparkles, Crown, MailWarning, ShieldCheck } from "lucide-react";
 import { claimFoundingAccess, type ClaimResult } from "@/lib/founding.functions";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import { FOUNDING_UNTIL_LABEL } from "@/lib/entitlements";
