@@ -577,3 +577,135 @@ function AddSavedDialog({ userId, boardId }: { userId: string; boardId: string }
     </Dialog>
   );
 }
+
+function AddFromRepositoryDialog({ userId, boardId }: { userId: string; boardId: string }) {
+  const qc = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  const repo = useQuery({
+    queryKey: ["repo-usecases", boardId, search],
+    queryFn: () => listRepositoryUseCasesForBoard(boardId, { search }),
+    enabled: open,
+  });
+
+  const add = useMutation({
+    mutationFn: async (ids: string[]) => {
+      let added = 0;
+      let dupes = 0;
+      for (const id of ids) {
+        try {
+          await addSavedUseCaseToBoard({ userId, boardId, catalogUseCaseId: id });
+          added += 1;
+        } catch (e: any) {
+          if (e instanceof DuplicateBoardItemError || e?.name === "DuplicateBoardItemError") dupes += 1;
+          else throw e;
+        }
+      }
+      return { added, dupes };
+    },
+    onSuccess: ({ added, dupes }) => {
+      if (added > 0) toast.success(`${added} use case${added === 1 ? "" : "s"} added to board.`);
+      if (dupes > 0) toast.warning(`${dupes} skipped — already on this board.`);
+      if (added === 0 && dupes === 0) toast.info("Nothing selected.");
+      qc.invalidateQueries({ queryKey: ["board", boardId, "full"] });
+      qc.invalidateQueries({ queryKey: ["boards", "list"] });
+      qc.invalidateQueries({ queryKey: ["repo-usecases", boardId] });
+      setSelected(new Set());
+      setOpen(false);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const toggle = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSelected(new Set()); }}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="gap-1.5">
+          <Library className="h-4 w-4" /> Add from Repository
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Add use cases from the repository</DialogTitle>
+          <DialogDescription>
+            Select one or more use cases to add to this board. Items already on the board are disabled to prevent duplicates.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search use cases by title…"
+            className="pl-9"
+          />
+        </div>
+        <div className="max-h-[420px] space-y-2 overflow-y-auto">
+          {repo.isLoading && (
+            <div className="py-10 text-center text-sm text-muted-foreground">
+              <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" /> Loading repository…
+            </div>
+          )}
+          {repo.error && (
+            <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+              {(repo.error as Error).message}
+            </div>
+          )}
+          {repo.data && repo.data.length === 0 && (
+            <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+              No use cases found.
+            </div>
+          )}
+          {repo.data?.map((r) => {
+            const isSelected = selected.has(r.use_case_id);
+            return (
+              <button
+                key={r.use_case_id}
+                type="button"
+                disabled={r.already_on_board}
+                onClick={() => toggle(r.use_case_id)}
+                className={`flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                  isSelected ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border bg-card hover:border-primary/40"
+                }`}
+              >
+                <span
+                  className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded border text-[11px] font-bold ${
+                    isSelected ? "border-primary bg-primary text-primary-foreground" : "border-border text-transparent"
+                  }`}
+                >
+                  ✓
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold text-foreground">{r.title}</span>
+                  {r.summary && <span className="mt-1 line-clamp-2 block text-xs text-muted-foreground">{r.summary}</span>}
+                </span>
+                {r.already_on_board && (
+                  <span className="shrink-0 rounded-md bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    On board
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => setOpen(false)} disabled={add.isPending}>Cancel</Button>
+          <Button onClick={() => add.mutate([...selected])} disabled={add.isPending || selected.size === 0}>
+            {add.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Add {selected.size > 0 ? `${selected.size} ` : ""}to board
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
