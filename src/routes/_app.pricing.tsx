@@ -8,7 +8,6 @@ import { PageHero } from "@/components/usecasex/PageHero";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { FoundingAccessBanner } from "@/components/FoundingAccessBanner";
 import { useEntitlement } from "@/hooks/useEntitlement";
-import { FOUNDING_UNTIL_LABEL } from "@/lib/entitlements";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
