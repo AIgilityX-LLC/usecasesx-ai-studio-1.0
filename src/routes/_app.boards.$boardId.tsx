@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -152,7 +152,7 @@ function BoardDetailPage() {
             </div>
           </div>
         ) : (
-          <BoardItemList boardId={boardId} items={list} />
+          <BoardItemList boardId={boardId} items={list} userId={session!.user.id} />
         )}
 
         <BoardMetadataPanel board={b} itemCount={list.length} auditNotes={auditNotes} />
@@ -209,34 +209,98 @@ function BoardMetadataPanel({
           </div>
         </dl>
       </div>
-      <div className="rounded-xl border border-border bg-card p-5 lg:col-span-2">
-        <h2 className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-          <History className="h-3.5 w-3.5" /> Activity &amp; audit notes
-        </h2>
-        {auditNotes.length === 0 ? (
-          <p className="mt-4 text-sm text-muted-foreground">
-            No recorded activity yet. Board changes are captured in your workspace audit trail.
-          </p>
-        ) : (
-          <ul className="mt-4 space-y-3">
-            {auditNotes.map((n) => (
-              <li key={n.id} className="flex items-start gap-3 border-l-2 border-primary/40 pl-3">
-                <div>
-                  <p className="text-sm font-medium capitalize text-foreground">{n.summary}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(n.created_at).toLocaleString()}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <AuditNotesPanel auditNotes={auditNotes} fmt={fmt} />
     </div>
   );
 }
 
-function BoardItemList({ boardId, items }: { boardId: string; items: LoadedBoardItem[] }) {
+const AUDIT_PAGE_SIZE = 5;
+
+function auditActionLabel(eventType: string): string {
+  const t = eventType.toLowerCase();
+  if (t.includes("delete") || t.includes("remove")) return "Removed";
+  if (t.includes("create") || t.includes("add")) return "Added";
+  if (t.includes("rename") || t.includes("update") || t.includes("edit")) return "Updated";
+  if (t.includes("reorder") || t.includes("move")) return "Reordered";
+  return "Activity";
+}
+
+function auditLabelClass(label: string): string {
+  switch (label) {
+    case "Removed": return "bg-destructive/10 text-destructive";
+    case "Added": return "bg-primary/10 text-primary";
+    case "Updated": return "bg-amber-500/10 text-amber-600 dark:text-amber-400";
+    case "Reordered": return "bg-secondary text-muted-foreground";
+    default: return "bg-secondary text-muted-foreground";
+  }
+}
+
+function relativeTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.round(diff / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m}m ago`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.round(h / 24);
+  if (d < 30) return `${d}d ago`;
+  return `${Math.round(d / 30)}mo ago`;
+}
+
+function AuditNotesPanel({
+  auditNotes, fmt,
+}: { auditNotes: BoardAuditNote[]; fmt: (iso: string) => string }) {
+  const [visible, setVisible] = useState(AUDIT_PAGE_SIZE);
+  const shown = auditNotes.slice(0, visible);
+  return (
+    <div className="rounded-xl border border-border bg-card p-5 lg:col-span-2">
+      <h2 className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+        <History className="h-3.5 w-3.5" /> Activity &amp; audit notes
+      </h2>
+      {auditNotes.length === 0 ? (
+        <p className="mt-4 text-sm text-muted-foreground">
+          No recorded activity yet. Board changes are captured in your workspace audit trail.
+        </p>
+      ) : (
+        <>
+          <ul className="mt-4 space-y-3">
+            {shown.map((n) => {
+              const label = auditActionLabel(n.event_type);
+              return (
+                <li key={n.id} className="flex items-start gap-3 border-l-2 border-primary/40 pl-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${auditLabelClass(label)}`}>
+                        {label}
+                      </span>
+                      <p className="text-sm font-medium capitalize text-foreground">{n.summary}</p>
+                    </div>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      <time dateTime={n.created_at} title={fmt(n.created_at)}>
+                        {fmt(n.created_at)} · {relativeTime(n.created_at)}
+                      </time>
+                    </p>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          {visible < auditNotes.length && (
+            <button
+              type="button"
+              onClick={() => setVisible((v) => v + AUDIT_PAGE_SIZE)}
+              className="mt-4 text-[11px] font-bold uppercase tracking-widest text-primary hover:underline"
+            >
+              Load more ({auditNotes.length - visible} older)
+            </button>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function BoardItemList({ boardId, items, userId }: { boardId: string; items: LoadedBoardItem[]; userId: string }) {
   const qc = useQueryClient();
   // Local order for snappy reordering; resynced when server items change.
   const [order, setOrder] = useState<LoadedBoardItem[]>(items);
@@ -255,12 +319,34 @@ function BoardItemList({ boardId, items }: { boardId: string; items: LoadedBoard
     },
   });
 
-  const remove = useMutation({
-    mutationFn: (id: string) => removeBoardUseCase(id),
+  const [pendingRemove, setPendingRemove] = useState<LoadedBoardItem | null>(null);
+
+  const restore = useMutation({
+    mutationFn: (item: LoadedBoardItem) =>
+      createBoardUseCase({
+        userId,
+        boardId,
+        title: item.title,
+        problem: item.problem_statement ?? undefined,
+        aiType: item.ai_type ?? undefined,
+      }),
     onSuccess: () => {
-      toast.success("Use case removed from board.");
+      toast.success("Use case restored to board.");
       qc.invalidateQueries({ queryKey: ["board", boardId, "full"] });
       qc.invalidateQueries({ queryKey: ["boards", "list"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const remove = useMutation({
+    mutationFn: (item: LoadedBoardItem) => removeBoardUseCase(item.id),
+    onSuccess: (_data, item) => {
+      qc.invalidateQueries({ queryKey: ["board", boardId, "full"] });
+      qc.invalidateQueries({ queryKey: ["boards", "list"] });
+      toast.success(`"${item.title}" removed from board.`, {
+        action: { label: "Undo", onClick: () => restore.mutate(item) },
+        duration: 8000,
+      });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -360,17 +446,40 @@ function BoardItemList({ boardId, items }: { boardId: string; items: LoadedBoard
             </Link>
           </div>
           <button
-            onClick={() => {
-              if (confirm(`Remove "${uc.title}" from this board?`)) remove.mutate(uc.id);
-            }}
+            onClick={() => setPendingRemove(uc)}
             disabled={remove.isPending}
             className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-            aria-label="Remove from board"
+            aria-label={`Remove ${uc.title} from board`}
           >
             <X className="h-4 w-4" />
           </button>
         </div>
       ))}
+
+      <AlertDialog open={!!pendingRemove} onOpenChange={(o) => { if (!o) setPendingRemove(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove use case from board?</AlertDialogTitle>
+            <AlertDialogDescription>
+              “{pendingRemove?.title}” will be removed from this board. You can undo this from the toast right after.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={remove.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                if (pendingRemove) remove.mutate(pendingRemove);
+                setPendingRemove(null);
+              }}
+              disabled={remove.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -662,6 +771,27 @@ function AddFromRepositoryDialog({ userId, boardId }: { userId: string; boardId:
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const listRef = useRef<HTMLDivElement>(null);
+
+  // Roving keyboard navigation across the option buttons. Radix Dialog already
+  // provides focus trapping + escape-to-close; this adds arrow/Home/End nav and
+  // skips disabled ("On board") items.
+  const onListKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) return;
+    const buttons = Array.from(
+      listRef.current?.querySelectorAll<HTMLButtonElement>("button:not([disabled])") ?? [],
+    );
+    if (buttons.length === 0) return;
+    e.preventDefault();
+    const current = document.activeElement as HTMLElement | null;
+    const idx = buttons.findIndex((b) => b === current);
+    let next = 0;
+    if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = buttons.length - 1;
+    else if (e.key === "ArrowDown") next = idx < 0 ? 0 : Math.min(idx + 1, buttons.length - 1);
+    else if (e.key === "ArrowUp") next = idx < 0 ? buttons.length - 1 : Math.max(idx - 1, 0);
+    buttons[next]?.focus();
+  };
 
   const repo = useQuery({
     queryKey: ["repo-usecases", boardId, search],
@@ -729,7 +859,14 @@ function AddFromRepositoryDialog({ userId, boardId }: { userId: string; boardId:
             className="pl-9"
           />
         </div>
-        <div className="max-h-[420px] space-y-2 overflow-y-auto">
+        <div
+          ref={listRef}
+          role="listbox"
+          aria-label="Repository use cases"
+          aria-multiselectable="true"
+          onKeyDown={onListKeyDown}
+          className="max-h-[420px] space-y-2 overflow-y-auto"
+        >
           {repo.isLoading && (
             <div className="py-10 text-center text-sm text-muted-foreground">
               <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" /> Loading repository…
@@ -751,6 +888,8 @@ function AddFromRepositoryDialog({ userId, boardId }: { userId: string; boardId:
               <button
                 key={r.use_case_id}
                 type="button"
+                role="option"
+                aria-selected={isSelected}
                 disabled={r.already_on_board}
                 onClick={() => toggle(r.use_case_id)}
                 className={`flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
