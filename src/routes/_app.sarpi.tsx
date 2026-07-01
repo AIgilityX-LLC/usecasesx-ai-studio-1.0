@@ -20,6 +20,10 @@ import { PageHero } from "@/components/usecasex/PageHero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Lock } from "lucide-react";
+import { FoundingAccessBanner } from "@/components/FoundingAccessBanner";
+import { useEntitlement } from "@/hooks/useEntitlement";
+import { tierUnlocks, type EntTier } from "@/lib/entitlements";
 
 export const Route = createFileRoute("/_app/sarpi")({
   head: () => ({
@@ -104,7 +108,11 @@ function tierBadgeClass(tier: string) {
   return "bg-amber-500/15 text-amber-700 dark:text-amber-300";
 }
 
+const MODULE_TIER: Record<string, EntTier> = { Lite: "lite", Pro: "pro", Enterprise: "enterprise" };
+
 function SarpiFeaturesPage() {
+  const ent = useEntitlement();
+  const tierLabel = ent.tier === "enterprise" ? "Enterprise" : ent.tier === "pro" ? "Pro" : "Lite";
   return (
     <>
       {/* Founding member beta banner */}
@@ -147,6 +155,29 @@ function SarpiFeaturesPage() {
         }
       />
 
+      {/* Signed-in entitlement gate */}
+      {ent.isAuthed && !ent.loading && (
+        <section className="border-b border-border bg-secondary/40">
+          <div className="mx-auto max-w-[1200px] space-y-4 px-6 py-8">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm text-muted-foreground">Your SARPI access:</span>
+              <Badge className={tierBadgeClass(tierLabel)} variant="secondary">
+                SARPI {tierLabel}
+              </Badge>
+              {ent.isFounding && ent.tier !== "lite" && (
+                <span className="text-xs text-muted-foreground">Founding Member · gratis until 31 Dec 2026</span>
+              )}
+              {ent.expired && (
+                <span className="text-xs text-amber-600 dark:text-amber-400">
+                  Your founding access has expired — reverted to Lite.
+                </span>
+              )}
+            </div>
+            <FoundingAccessBanner sourcePage="/sarpi" />
+          </div>
+        </section>
+      )}
+
       {/* 12 modules */}
       <section className="bg-background">
         <div className="mx-auto max-w-[1200px] px-6 py-16">
@@ -158,24 +189,45 @@ function SarpiFeaturesPage() {
             Modular engines across the full AI value lifecycle — plan, measure, govern, and scale AI value across the enterprise.
           </p>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {MODULES.map(({ tier, icon: Icon, title, desc }) => (
-              <Card key={title} className="flex flex-col">
-                <CardHeader className="flex flex-row items-start gap-3 space-y-0">
-                  <div className="rounded-md bg-primary/10 p-2 text-primary">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div className="flex-1">
-                    <Badge variant="secondary" className={tierBadgeClass(tier)}>
-                      {tier}
-                    </Badge>
-                    <CardTitle className="mt-2 text-base">{title}</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{desc}</p>
-                </CardContent>
-              </Card>
-            ))}
+            {MODULES.map(({ tier, icon: Icon, title, desc }) => {
+              const unlocked = ent.isAuthed && !ent.loading && tierUnlocks(ent.tier, MODULE_TIER[tier]);
+              const locked = ent.isAuthed && !ent.loading && !unlocked;
+              return (
+                <Card key={title} className={`flex flex-col ${locked ? "opacity-70" : ""}`}>
+                  <CardHeader className="flex flex-row items-start gap-3 space-y-0">
+                    <div className="rounded-md bg-primary/10 p-2 text-primary">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className={tierBadgeClass(tier)}>
+                          {tier}
+                        </Badge>
+                        {unlocked && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                            <Check className="h-3 w-3" /> Included
+                          </span>
+                        )}
+                        {locked && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                            <Lock className="h-3 w-3" /> Locked
+                          </span>
+                        )}
+                      </div>
+                      <CardTitle className="mt-2 text-base">{title}</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">{desc}</p>
+                    {locked && (
+                      <Link to="/pricing" className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
+                        Upgrade to unlock <ArrowRight className="h-3 w-3" />
+                      </Link>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
