@@ -243,6 +243,10 @@ function StudioPage() {
           </div>
         )}
       </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-10">
+        <SampleDataDisclaimer />
+      </section>
     </div>
   );
 }
