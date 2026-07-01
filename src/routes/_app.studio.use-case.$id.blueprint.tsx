@@ -384,6 +384,8 @@ function BlueprintPage() {
           </Card>
         ))}
       </div>
+
+      <SampleDataDisclaimer />
     </div>
   );
 }
