@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Sparkles, Lightbulb, Gauge, Database, Hammer, Rocket, Shield, Plus, FolderOpen, BookOpen,
-  ArrowRight, CheckCircle2,
+  ArrowRight, CheckCircle2, FolderKanban, Layers, MoveVertical, Copy, Users, ClipboardList,
 } from "lucide-react";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 
@@ -71,6 +71,39 @@ const BENEFITS = [
   "Board-ready blueprints in hours, not weeks",
   "Governance, risk and compliance built in from day one",
   "Reusable pattern library across every industry",
+];
+
+const BOARD_FEATURES = [
+  {
+    icon: FolderKanban,
+    title: "Build multiple boards",
+    desc: "Organize AI use cases into as many boards as you need — quick-win sprints, portfolio reviews, or innovation backlogs.",
+  },
+  {
+    icon: Copy,
+    title: "Add from the repository",
+    desc: "Send any use case pattern straight to a board. Duplicate entries are blocked automatically with a clear message.",
+  },
+  {
+    icon: MoveVertical,
+    title: "Reorder & curate",
+    desc: "Drag or move use cases up and down, remove items, and see a friendly empty state when a board is cleared.",
+  },
+  {
+    icon: Layers,
+    title: "Rename, save & delete",
+    desc: "Rename boards inline, save your changes, and delete boards with a confirmation prompt so nothing is lost by accident.",
+  },
+  {
+    icon: Users,
+    title: "Shared workspaces",
+    desc: "Boards live in your team workspace with plan-based access, so the right people can collaborate on the right use cases.",
+  },
+  {
+    icon: ClipboardList,
+    title: "Audit trail",
+    desc: "Every create, save, reorder, and delete is captured in your workspace audit trail for full decision provenance.",
+  },
 ];
 
 function AIUseCaseStudioPage() {
@@ -170,6 +203,47 @@ function AIUseCaseStudioPage() {
                 <p className="mt-1.5 text-sm text-muted-foreground">{s.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="dark border-t border-border bg-background text-foreground">
+        <div className="mx-auto max-w-[1280px] px-6 py-14">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">Use Case Boards</p>
+              <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                Organize, curate, and act on your AI use cases
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
+                Group AI use cases into shared boards for portfolio reviews, quick-win sprints, and
+                innovation backlogs — then prioritize, reorder, and hand off with confidence.
+              </p>
+            </div>
+            <Link
+              to="/boards"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-sm hover:brightness-110"
+            >
+              <FolderOpen className="h-4 w-4" /> Open Use Case Boards
+            </Link>
+          </div>
+
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {BOARD_FEATURES.map((f) => {
+              const Icon = f.icon;
+              return (
+                <article
+                  key={f.title}
+                  className="rounded-2xl border border-border bg-card p-6 transition-colors hover:border-primary/40"
+                >
+                  <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/30">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="mt-4 text-lg font-bold tracking-tight text-foreground">{f.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">{f.desc}</p>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
