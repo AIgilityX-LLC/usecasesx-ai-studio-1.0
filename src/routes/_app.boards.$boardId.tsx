@@ -161,6 +161,8 @@ function BoardItemList({ boardId, items }: { boardId: string; items: LoadedBoard
   const qc = useQueryClient();
   // Local order for snappy reordering; resynced when server items change.
   const [order, setOrder] = useState<LoadedBoardItem[]>(items);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
   useEffect(() => {
     setOrder(items);
   }, [items]);
@@ -193,17 +195,43 @@ function BoardItemList({ boardId, items }: { boardId: string; items: LoadedBoard
     reorder.mutate(next.map((i) => i.id));
   };
 
+  const commitDrop = (from: number, to: number) => {
+    if (from === to || to < 0 || to >= order.length) return;
+    const next = [...order];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    setOrder(next);
+    reorder.mutate(next.map((i) => i.id));
+  };
+
   return (
     <div className="space-y-3">
       <p className="text-xs text-muted-foreground">
-        Use the up/down arrows to reorder use cases on this board.
+        Drag the handle to reorder use cases, or use the up/down arrows.
       </p>
       {order.map((uc, index) => (
         <div
           key={uc.id}
-          className="group flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/30 hover:shadow-[var(--shadow-elegant)]"
+          draggable
+          onDragStart={() => setDragIndex(index)}
+          onDragOver={(e) => { e.preventDefault(); setOverIndex(index); }}
+          onDragEnd={() => { setDragIndex(null); setOverIndex(null); }}
+          onDrop={(e) => {
+            e.preventDefault();
+            if (dragIndex !== null) commitDrop(dragIndex, index);
+            setDragIndex(null);
+            setOverIndex(null);
+          }}
+          className={`group flex items-start gap-3 rounded-xl border bg-card p-4 transition-all hover:border-primary/30 hover:shadow-[var(--shadow-elegant)] ${
+            overIndex === index && dragIndex !== null && dragIndex !== index
+              ? "border-primary ring-1 ring-primary"
+              : "border-border"
+          } ${dragIndex === index ? "opacity-50" : ""}`}
         >
-          <div className="flex flex-col gap-1 pt-0.5">
+          <div className="flex flex-col items-center gap-1 pt-0.5">
+            <span className="cursor-grab text-muted-foreground/60 active:cursor-grabbing" aria-hidden>
+              <GripVertical className="h-4 w-4" />
+            </span>
             <button
               onClick={() => move(index, -1)}
               disabled={index === 0 || reorder.isPending}
