@@ -771,6 +771,27 @@ function AddFromRepositoryDialog({ userId, boardId }: { userId: string; boardId:
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const listRef = useRef<HTMLDivElement>(null);
+
+  // Roving keyboard navigation across the option buttons. Radix Dialog already
+  // provides focus trapping + escape-to-close; this adds arrow/Home/End nav and
+  // skips disabled ("On board") items.
+  const onListKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) return;
+    const buttons = Array.from(
+      listRef.current?.querySelectorAll<HTMLButtonElement>("button:not([disabled])") ?? [],
+    );
+    if (buttons.length === 0) return;
+    e.preventDefault();
+    const current = document.activeElement as HTMLElement | null;
+    const idx = buttons.findIndex((b) => b === current);
+    let next = 0;
+    if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = buttons.length - 1;
+    else if (e.key === "ArrowDown") next = idx < 0 ? 0 : Math.min(idx + 1, buttons.length - 1);
+    else if (e.key === "ArrowUp") next = idx < 0 ? buttons.length - 1 : Math.max(idx - 1, 0);
+    buttons[next]?.focus();
+  };
 
   const repo = useQuery({
     queryKey: ["repo-usecases", boardId, search],
@@ -838,7 +859,14 @@ function AddFromRepositoryDialog({ userId, boardId }: { userId: string; boardId:
             className="pl-9"
           />
         </div>
-        <div className="max-h-[420px] space-y-2 overflow-y-auto">
+        <div
+          ref={listRef}
+          role="listbox"
+          aria-label="Repository use cases"
+          aria-multiselectable="true"
+          onKeyDown={onListKeyDown}
+          className="max-h-[420px] space-y-2 overflow-y-auto"
+        >
           {repo.isLoading && (
             <div className="py-10 text-center text-sm text-muted-foreground">
               <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" /> Loading repository…
@@ -860,6 +888,8 @@ function AddFromRepositoryDialog({ userId, boardId }: { userId: string; boardId:
               <button
                 key={r.use_case_id}
                 type="button"
+                role="option"
+                aria-selected={isSelected}
                 disabled={r.already_on_board}
                 onClick={() => toggle(r.use_case_id)}
                 className={`flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
