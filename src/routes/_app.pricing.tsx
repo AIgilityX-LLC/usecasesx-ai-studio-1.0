@@ -6,6 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageHero } from "@/components/usecasex/PageHero";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
+import { FoundingAccessBanner } from "@/components/FoundingAccessBanner";
+import { useEntitlement } from "@/hooks/useEntitlement";
+import { FOUNDING_UNTIL_LABEL } from "@/lib/entitlements";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -155,6 +159,9 @@ const COMPARISON: CmpGroup[] = [
 
 function PricingPage() {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
+  const ent = useEntitlement();
+  const [highlightMine, setHighlightMine] = useState(true);
+  const myPlan = ent.isAuthed && !ent.loading ? ent.tier : null;
   return (
     <>
       {/* Founding member banner */}
@@ -193,6 +200,11 @@ function PricingPage() {
       {/* Founding member offer */}
       <section className="border-b border-border bg-background">
         <div className="mx-auto max-w-6xl px-6 py-14">
+          {ent.isAuthed && (
+            <div className="mb-8">
+              <FoundingAccessBanner sourcePage="/pricing" />
+            </div>
+          )}
           <Card className="border-primary/40 bg-gradient-to-br from-primary/10 via-card to-card ring-1 ring-primary/20">
             <CardContent className="flex flex-col items-start gap-6 p-8 md:flex-row md:items-center md:justify-between">
               <div className="max-w-2xl">
