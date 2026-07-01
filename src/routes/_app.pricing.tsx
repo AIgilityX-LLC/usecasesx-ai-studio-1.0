@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageHero } from "@/components/usecasex/PageHero";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
+import { FoundingAccessBanner } from "@/components/FoundingAccessBanner";
+import { useEntitlement } from "@/hooks/useEntitlement";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -155,6 +158,10 @@ const COMPARISON: CmpGroup[] = [
 
 function PricingPage() {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
+  const ent = useEntitlement();
+  const [highlightMine, setHighlightMine] = useState(true);
+  const myPlan = ent.isAuthed && !ent.loading ? ent.tier : null;
+  const mineOn = highlightMine && !!myPlan;
   return (
     <>
       {/* Founding member banner */}
@@ -193,6 +200,11 @@ function PricingPage() {
       {/* Founding member offer */}
       <section className="border-b border-border bg-background">
         <div className="mx-auto max-w-6xl px-6 py-14">
+          {ent.isAuthed && (
+            <div className="mb-8">
+              <FoundingAccessBanner sourcePage="/pricing" />
+            </div>
+          )}
           <Card className="border-primary/40 bg-gradient-to-br from-primary/10 via-card to-card ring-1 ring-primary/20">
             <CardContent className="flex flex-col items-start gap-6 p-8 md:flex-row md:items-center md:justify-between">
               <div className="max-w-2xl">
@@ -244,6 +256,11 @@ function PricingPage() {
                 <Badge className="bg-primary text-primary-foreground">
                   {p.badge}
                 </Badge>
+              </div>
+            )}
+            {myPlan === p.key && (
+              <div className="absolute -top-3 right-3">
+                <Badge className="bg-emerald-600 text-white">Your plan</Badge>
               </div>
             )}
             <CardHeader>
@@ -302,19 +319,35 @@ function PricingPage() {
             Every capability across UseCasesX™ discovery, design, governance, and roadmap. Pro is
             <span className="font-semibold text-foreground"> free until {FREE_UNTIL}</span> for founding members.
           </p>
+          {myPlan && (
+            <div className="mt-5 inline-flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-2.5">
+              <Switch id="highlight-plan" checked={highlightMine} onCheckedChange={setHighlightMine} />
+              <label htmlFor="highlight-plan" className="cursor-pointer text-sm font-medium">
+                Highlight my plan
+                <span className="ml-1.5 rounded bg-emerald-600/15 px-1.5 py-0.5 text-[10px] font-bold uppercase text-emerald-700 dark:text-emerald-400">
+                  {myPlan}
+                </span>
+              </label>
+            </div>
+          )}
           <div className="mt-8 overflow-hidden rounded-xl border">
             <Table>
               <TableHeader>
                 <TableRow className="bg-secondary/60">
                   <TableHead className="min-w-[220px] text-foreground">Feature</TableHead>
-                  <TableHead className="text-center text-foreground">Lite</TableHead>
-                  <TableHead className="text-center text-foreground">
+                  <TableHead className={`text-center text-foreground ${mineOn && myPlan === "lite" ? "bg-emerald-500/10" : ""}`}>
+                    Lite {mineOn && myPlan === "lite" && <span className="ml-1 text-[9px] font-bold uppercase text-emerald-600 dark:text-emerald-400">You</span>}
+                  </TableHead>
+                  <TableHead className={`text-center text-foreground ${mineOn && myPlan === "pro" ? "bg-emerald-500/10" : ""}`}>
                     Pro
                     <span className="ml-1 rounded bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase text-primary">
                       Free
                     </span>
+                    {mineOn && myPlan === "pro" && <span className="ml-1 text-[9px] font-bold uppercase text-emerald-600 dark:text-emerald-400">You</span>}
                   </TableHead>
-                  <TableHead className="text-center text-foreground">Enterprise</TableHead>
+                  <TableHead className={`text-center text-foreground ${mineOn && myPlan === "enterprise" ? "bg-emerald-500/10" : ""}`}>
+                    Enterprise {mineOn && myPlan === "enterprise" && <span className="ml-1 text-[9px] font-bold uppercase text-emerald-600 dark:text-emerald-400">You</span>}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -328,9 +361,9 @@ function PricingPage() {
                     {group.rows.map((row) => (
                       <TableRow key={row.label}>
                         <TableCell className="font-medium">{row.label}</TableCell>
-                        <Cell value={row.lite} />
-                        <Cell value={row.pro} />
-                        <Cell value={row.enterprise} />
+                        <Cell value={row.lite} highlight={mineOn && myPlan === "lite"} />
+                        <Cell value={row.pro} highlight={mineOn && myPlan === "pro"} />
+                        <Cell value={row.enterprise} highlight={mineOn && myPlan === "enterprise"} />
                       </TableRow>
                     ))}
                   </Fragment>
@@ -356,20 +389,21 @@ function PricingPage() {
   );
 }
 
-function Cell({ value }: { value: boolean | string }) {
+function Cell({ value, highlight = false }: { value: boolean | string; highlight?: boolean }) {
+  const hl = highlight ? "bg-emerald-500/10" : "";
   if (value === true) {
     return (
-      <TableCell className="text-center">
+      <TableCell className={`text-center ${hl}`}>
         <Check className="mx-auto h-4 w-4 text-emerald-500" />
       </TableCell>
     );
   }
   if (value === false) {
     return (
-      <TableCell className="text-center">
+      <TableCell className={`text-center ${hl}`}>
         <Minus className="mx-auto h-4 w-4 text-muted-foreground/50" />
       </TableCell>
     );
   }
-  return <TableCell className="text-center text-sm text-muted-foreground">{value}</TableCell>;
+  return <TableCell className={`text-center text-sm text-muted-foreground ${hl}`}>{value}</TableCell>;
 }

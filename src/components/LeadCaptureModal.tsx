@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { saveLeadCapture, type LeadCapturePayload } from "@/lib/leadCapture";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
+import { isEligibleEmail, FOUNDING_UNTIL_LABEL } from "@/lib/entitlements";
 
 // -----------------------------------------------------------------------------
 // Public API
@@ -182,6 +183,7 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [eligibleResult, setEligibleResult] = useState<boolean | null>(null);
 
   // Reset on close / trigger change.
   useEffect(() => {
@@ -247,6 +249,7 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
       };
 
       const result = await saveLeadCapture(payload);
+      setEligibleResult(isEligibleEmail(parsed.data.email));
       trackCTAEvent("lead_submitted", {
         trigger,
         interest: payload.interestArea,
@@ -288,7 +291,12 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
         </button>
 
         {done ? (
-          <SuccessView triggerCase={trigger} message={copy.success} onClose={onClose} />
+          <SuccessView
+            triggerCase={trigger}
+            message={copy.success}
+            eligible={eligibleResult}
+            onClose={onClose}
+          />
         ) : (
           <form onSubmit={onSubmit} noValidate className="px-7 py-7 sm:px-8">
             <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
@@ -393,15 +401,21 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
 // Success view
 // -----------------------------------------------------------------------------
 function SuccessView({
-  triggerCase, message, onClose,
-}: { triggerCase: LeadTriggerCase; message: string; onClose: () => void }) {
+  triggerCase, message, eligible, onClose,
+}: { triggerCase: LeadTriggerCase; message: string; eligible?: boolean | null; onClose: () => void }) {
+  const foundingMsg =
+    triggerCase === "founding-member" && eligible != null
+      ? eligible
+        ? `Great news — your work email qualifies for founding-member access. Sign in with a verified account to unlock Pro gratis until ${FOUNDING_UNTIL_LABEL}.`
+        : `You're on the Free Pro waitlist. We'll review your submission and email you about early access.`
+      : message;
   return (
     <div className="px-8 py-12 text-center">
       <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full bg-primary/15 text-primary">
         ✓
       </div>
       <h3 className="text-xl font-bold text-foreground">Thank you.</h3>
-      <p className="mt-2 text-sm text-muted-foreground">{message}</p>
+      <p className="mt-2 text-sm text-muted-foreground">{foundingMsg}</p>
       {triggerCase === "lite-pdf" && (
         <p className="mt-2 text-xs text-muted-foreground">
           If your download doesn't start, check your browser's download bar.

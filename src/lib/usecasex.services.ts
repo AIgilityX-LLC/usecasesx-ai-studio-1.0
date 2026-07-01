@@ -270,6 +270,8 @@ export interface LeadCapturePayload {
   sourceUseCase?: string | null;
   sourcePage?: string | null;
   cta?: string | null;
+  eligible?: boolean | null;
+  waitlistStatus?: string | null;
 }
 
 export async function createLeadCapture(payload: LeadCapturePayload) {
@@ -284,6 +286,8 @@ export async function createLeadCapture(payload: LeadCapturePayload) {
     source_use_case: payload.sourceUseCase ?? null,
     source_page: payload.sourcePage ?? null,
     cta: payload.cta ?? null,
+    eligible: payload.eligible ?? null,
+    waitlist_status: payload.waitlistStatus ?? "pending",
   });
   if (error) throw new ServiceError(error.message, error);
   return { ok: true as const };
