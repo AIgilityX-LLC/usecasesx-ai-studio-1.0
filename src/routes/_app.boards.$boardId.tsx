@@ -14,7 +14,7 @@ import {
   renameBoard, deleteBoard, removeBoardUseCase, reorderBoardUseCases,
   DuplicateBoardItemError, listRepositoryUseCasesForBoard,
 } from "@/lib/boards";
-import { loadBoardWithItems, type LoadedBoardItem } from "@/lib/boards.functions";
+import { loadBoardWithItems, type LoadedBoardItem, type LoadedBoard, type BoardAuditNote } from "@/lib/boards.functions";
 import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
