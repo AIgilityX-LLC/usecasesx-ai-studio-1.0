@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2, FolderKanban, ExternalLink } from "lucide-react";
+import { Loader2, Plus, Trash2, FolderKanban, ExternalLink, Search, X } from "lucide-react";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { listBoards, createBoard, deleteBoard, type BoardRow } from "@/lib/boards";
 import { PageHero } from "@/components/usecasex/PageHero";
@@ -13,7 +13,19 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 import { Can } from "@/components/Can";
+
+type SortKey = "updated_desc" | "updated_asc" | "created_desc" | "name_asc";
+type UpdatedWindow = "all" | "7d" | "30d" | "90d";
+
+const WINDOW_MS: Record<Exclude<UpdatedWindow, "all">, number> = {
+  "7d": 7 * 864e5,
+  "30d": 30 * 864e5,
+  "90d": 90 * 864e5,
+};
 
 export const Route = createFileRoute("/_app/boards/")({
   head: () => ({
@@ -93,15 +105,104 @@ function BoardsPage() {
             </Can>
           </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((b) => (
-              <BoardCard key={b.id} board={b} onDelete={() => del.mutate(b.id)} />
-            ))}
-          </div>
+          <BoardsBrowser items={items} onDelete={(id) => del.mutate(id)} />
         )}
       </div>
     </section>
     </>
+  );
+}
+
+function BoardsBrowser({ items, onDelete }: { items: BoardRow[]; onDelete: (id: string) => void }) {
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<SortKey>("updated_desc");
+  const [win, setWin] = useState<UpdatedWindow>("all");
+
+  const q = query.trim().toLowerCase();
+  const now = Date.now();
+  const filtered = items
+    .filter((b) => (q ? b.title.toLowerCase().includes(q) || (b.description ?? "").toLowerCase().includes(q) : true))
+    .filter((b) => {
+      if (win === "all") return true;
+      return now - new Date(b.updated_at).getTime() <= WINDOW_MS[win];
+    })
+    .sort((a, b) => {
+      switch (sort) {
+        case "name_asc": return a.title.localeCompare(b.title);
+        case "created_desc": return +new Date(b.created_at) - +new Date(a.created_at) < 0 ? 1 : -1;
+        case "updated_asc": return +new Date(a.updated_at) - +new Date(b.updated_at);
+        case "updated_desc":
+        default: return +new Date(b.updated_at) - +new Date(a.updated_at);
+      }
+    });
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative w-full sm:max-w-sm">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search boards by name…"
+            aria-label="Search boards by name"
+            className="pl-9 pr-9"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              aria-label="Clear search"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Select value={win} onValueChange={(v) => setWin(v as UpdatedWindow)}>
+            <SelectTrigger className="w-[170px]" aria-label="Filter by last updated">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Any time</SelectItem>
+              <SelectItem value="7d">Updated in 7 days</SelectItem>
+              <SelectItem value="30d">Updated in 30 days</SelectItem>
+              <SelectItem value="90d">Updated in 90 days</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
+            <SelectTrigger className="w-[180px]" aria-label="Sort boards">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="updated_desc">Recently updated</SelectItem>
+              <SelectItem value="updated_asc">Least recently updated</SelectItem>
+              <SelectItem value="created_desc">Newest first</SelectItem>
+              <SelectItem value="name_asc">Name (A–Z)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <p className="text-xs text-muted-foreground" aria-live="polite">
+        Showing {filtered.length} of {items.length} board{items.length === 1 ? "" : "s"}
+      </p>
+
+      {filtered.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-border bg-card py-16 text-center">
+          <FolderKanban className="mx-auto h-9 w-9 text-muted-foreground/60" />
+          <p className="mt-3 text-sm font-semibold text-foreground">No boards match your filters</p>
+          <p className="mt-1 text-xs text-muted-foreground">Try a different search term or time window.</p>
+        </div>
+      ) : (
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((b) => (
+            <BoardCard key={b.id} board={b} onDelete={() => onDelete(b.id)} />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
