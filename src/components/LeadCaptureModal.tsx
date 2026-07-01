@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { saveLeadCapture, type LeadCapturePayload } from "@/lib/leadCapture";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
+import { isEligibleEmail, FOUNDING_UNTIL_LABEL } from "@/lib/entitlements";
 
 // -----------------------------------------------------------------------------
 // Public API
@@ -182,6 +183,7 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [eligibleResult, setEligibleResult] = useState<boolean | null>(null);
 
   // Reset on close / trigger change.
   useEffect(() => {
@@ -247,6 +249,7 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
       };
 
       const result = await saveLeadCapture(payload);
+      setEligibleResult(isEligibleEmail(parsed.data.email));
       trackCTAEvent("lead_submitted", {
         trigger,
         interest: payload.interestArea,
@@ -288,7 +291,12 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
         </button>
 
         {done ? (
-          <SuccessView triggerCase={trigger} message={copy.success} onClose={onClose} />
+          <SuccessView
+            triggerCase={trigger}
+            message={copy.success}
+            eligible={eligibleResult}
+            onClose={onClose}
+          />
         ) : (
           <form onSubmit={onSubmit} noValidate className="px-7 py-7 sm:px-8">
             <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
