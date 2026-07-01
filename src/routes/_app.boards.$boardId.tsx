@@ -300,7 +300,7 @@ function AuditNotesPanel({
   );
 }
 
-function BoardItemList({ boardId, items }: { boardId: string; items: LoadedBoardItem[] }) {
+function BoardItemList({ boardId, items, userId }: { boardId: string; items: LoadedBoardItem[]; userId: string }) {
   const qc = useQueryClient();
   // Local order for snappy reordering; resynced when server items change.
   const [order, setOrder] = useState<LoadedBoardItem[]>(items);
@@ -319,12 +319,34 @@ function BoardItemList({ boardId, items }: { boardId: string; items: LoadedBoard
     },
   });
 
-  const remove = useMutation({
-    mutationFn: (id: string) => removeBoardUseCase(id),
+  const [pendingRemove, setPendingRemove] = useState<LoadedBoardItem | null>(null);
+
+  const restore = useMutation({
+    mutationFn: (item: LoadedBoardItem) =>
+      createBoardUseCase({
+        userId,
+        boardId,
+        title: item.title,
+        problem: item.problem_statement ?? undefined,
+        aiType: item.ai_type ?? undefined,
+      }),
     onSuccess: () => {
-      toast.success("Use case removed from board.");
+      toast.success("Use case restored to board.");
       qc.invalidateQueries({ queryKey: ["board", boardId, "full"] });
       qc.invalidateQueries({ queryKey: ["boards", "list"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const remove = useMutation({
+    mutationFn: (item: LoadedBoardItem) => removeBoardUseCase(item.id),
+    onSuccess: (_data, item) => {
+      qc.invalidateQueries({ queryKey: ["board", boardId, "full"] });
+      qc.invalidateQueries({ queryKey: ["boards", "list"] });
+      toast.success(`"${item.title}" removed from board.`, {
+        action: { label: "Undo", onClick: () => restore.mutate(item) },
+        duration: 8000,
+      });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -424,17 +446,40 @@ function BoardItemList({ boardId, items }: { boardId: string; items: LoadedBoard
             </Link>
           </div>
           <button
-            onClick={() => {
-              if (confirm(`Remove "${uc.title}" from this board?`)) remove.mutate(uc.id);
-            }}
+            onClick={() => setPendingRemove(uc)}
             disabled={remove.isPending}
             className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-            aria-label="Remove from board"
+            aria-label={`Remove ${uc.title} from board`}
           >
             <X className="h-4 w-4" />
           </button>
         </div>
       ))}
+
+      <AlertDialog open={!!pendingRemove} onOpenChange={(o) => { if (!o) setPendingRemove(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove use case from board?</AlertDialogTitle>
+            <AlertDialogDescription>
+              “{pendingRemove?.title}” will be removed from this board. You can undo this from the toast right after.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={remove.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                if (pendingRemove) remove.mutate(pendingRemove);
+                setPendingRemove(null);
+              }}
+              disabled={remove.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
