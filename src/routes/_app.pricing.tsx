@@ -105,14 +105,81 @@ const PLANS: Plan[] = [
 ];
 
 function PricingPage() {
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
   return (
     <>
+      {/* Founding member banner */}
+      <div className="dark border-b border-border bg-gradient-to-r from-primary/20 via-background to-background">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-2 px-6 py-3 text-center text-sm text-foreground">
+          <Sparkles className="h-4 w-4 text-primary" />
+          <span className="font-semibold">
+            Founding Member early access — free SARPI Pro, gratis until {FREE_UNTIL}
+          </span>
+          <button
+            onClick={() => setWaitlistOpen(true)}
+            className="inline-flex items-center gap-1 font-bold text-primary underline underline-offset-4"
+          >
+            Join the waitlist <ArrowRight className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+
       <PageHero
         tone="dark"
         eyebrow="Plans"
         title="Pricing built for AI use case maturity"
         description="Start free with the Lite plan. Unlock the full discovery, scoring, blueprint, and governance workflow with Pro. Run sovereign, regulator-grade deployments with Enterprise."
+        actions={
+          <>
+            <Button size="lg" onClick={() => setWaitlistOpen(true)}>
+              <Sparkles className="mr-2 h-4 w-4" /> Get Pro free until {FREE_UNTIL}
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link to="/auth">Start free</Link>
+            </Button>
+          </>
+        }
       />
+
+      {/* Founding member offer */}
+      <section className="border-b border-border bg-background">
+        <div className="mx-auto max-w-6xl px-6 py-14">
+          <Card className="border-primary/40 bg-gradient-to-br from-primary/10 via-card to-card ring-1 ring-primary/20">
+            <CardContent className="flex flex-col items-start gap-6 p-8 md:flex-row md:items-center md:justify-between">
+              <div className="max-w-2xl">
+                <Badge className="bg-primary text-primary-foreground">Founding Member Program</Badge>
+                <h2 className="mt-3 text-2xl font-bold tracking-tight">
+                  Free Pro access — gratis until {FREE_UNTIL}
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Eligible founding members unlock the full UseCasesX™ Pro experience — repository, Studio, boards,
+                  SARPI™, AdvisorX™, C3G™ governance, and portfolio roadmap — completely free through {FREE_UNTIL}.
+                  Join the early-access waitlist and we'll confirm your spot.
+                </p>
+                <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
+                  {[
+                    "No credit card required",
+                    "Full Pro feature set unlocked",
+                    "Priority onboarding & support",
+                    "Lock in founding-member pricing after 2026",
+                  ].map((f) => (
+                    <li key={f} className="flex items-start gap-2">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="shrink-0">
+                <Button size="lg" onClick={() => setWaitlistOpen(true)}>
+                  <Sparkles className="mr-2 h-4 w-4" /> Join the Free Pro waitlist
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
       <section className="bg-secondary/40">
       <div className="mx-auto max-w-6xl px-6 py-16">
       <div className="grid gap-6 md:grid-cols-3">
@@ -174,6 +241,86 @@ function PricingPage() {
       </p>
     </div>
       </section>
+
+      {/* Feature comparison table */}
+      <section className="bg-background">
+        <div className="mx-auto max-w-6xl px-6 py-16">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">Compare plans</p>
+          <h2 className="mt-2 text-2xl font-bold tracking-tight md:text-3xl">
+            Lite vs Pro vs Enterprise — feature by feature
+          </h2>
+          <p className="mt-3 max-w-2xl text-muted-foreground">
+            Every capability across UseCasesX™ discovery, design, governance, and roadmap. Pro is
+            <span className="font-semibold text-foreground"> free until {FREE_UNTIL}</span> for founding members.
+          </p>
+          <div className="mt-8 overflow-hidden rounded-xl border">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-secondary/60">
+                  <TableHead className="min-w-[220px] text-foreground">Feature</TableHead>
+                  <TableHead className="text-center text-foreground">Lite</TableHead>
+                  <TableHead className="text-center text-foreground">
+                    Pro
+                    <span className="ml-1 rounded bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase text-primary">
+                      Free
+                    </span>
+                  </TableHead>
+                  <TableHead className="text-center text-foreground">Enterprise</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {COMPARISON.map((group) => (
+                  <>
+                    <TableRow key={group.group} className="bg-muted/40">
+                      <TableCell colSpan={4} className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                        {group.group}
+                      </TableCell>
+                    </TableRow>
+                    {group.rows.map((row) => (
+                      <TableRow key={row.label}>
+                        <TableCell className="font-medium">{row.label}</TableCell>
+                        <Cell value={row.lite} />
+                        <Cell value={row.pro} />
+                        <Cell value={row.enterprise} />
+                      </TableRow>
+                    ))}
+                  </>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="mt-8 flex justify-center">
+            <Button size="lg" onClick={() => setWaitlistOpen(true)}>
+              <Crown className="mr-2 h-4 w-4" /> Claim free Pro until {FREE_UNTIL}
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <LeadCaptureModal
+        open={waitlistOpen}
+        onClose={() => setWaitlistOpen(false)}
+        triggerCase="founding-member"
+        sourcePage="/pricing"
+      />
     </>
   );
+}
+
+function Cell({ value }: { value: boolean | string }) {
+  if (value === true) {
+    return (
+      <TableCell className="text-center">
+        <Check className="mx-auto h-4 w-4 text-emerald-500" />
+      </TableCell>
+    );
+  }
+  if (value === false) {
+    return (
+      <TableCell className="text-center">
+        <Minus className="mx-auto h-4 w-4 text-muted-foreground/50" />
+      </TableCell>
+    );
+  }
+  return <TableCell className="text-center text-sm text-muted-foreground">{value}</TableCell>;
 }
