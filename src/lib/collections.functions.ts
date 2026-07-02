@@ -37,9 +37,12 @@ export const getPublicCollection = createServerFn({ method: "GET" })
       .eq("collection_id", col.id)
       .order("position", { ascending: true });
 
-    const mapped = (items ?? [])
-      .map((r: { use_cases: { title: string; slug: string; summary: string | null } | null }) => r.use_cases)
-      .filter((u): u is { title: string; slug: string; summary: string | null } => !!u);
+    type UC = { title: string; slug: string; summary: string | null };
+    const mapped: UC[] = [];
+    for (const r of items ?? []) {
+      const uc = (Array.isArray(r.use_cases) ? r.use_cases[0] : r.use_cases) as UC | null | undefined;
+      if (uc) mapped.push(uc);
+    }
 
     return { name: col.name, description: col.description, items: mapped };
   });
