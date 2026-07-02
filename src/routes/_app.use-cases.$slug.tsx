@@ -437,8 +437,9 @@ function UseCaseDetailPage() {
                   ))}
                 </div>
               )}
-              <div className="mt-4">
+              <div className="mt-4 flex flex-wrap items-center gap-2">
                 <CompareToggle slug={c.slug} />
+                <AddToCollectionButton useCaseId={c.id} />
               </div>
             </div>
           </div>
