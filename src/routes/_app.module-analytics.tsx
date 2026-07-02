@@ -75,6 +75,17 @@ function ModuleAnalyticsPage() {
     { label: "Unlock attempts", value: totals.unlock_attempt, icon: Unlock },
   ];
   const maxTotal = Math.max(1, ...rows.map((r) => r.total));
+  const maxInteraction = Math.max(1, ...interactions.map((i) => i.count));
+  const INTERACTION_LABELS: Record<string, string> = {
+    filter_change: "Filter changes",
+    preset_select: "Preset selections",
+    save_view: "Saved views",
+    apply_saved_view: "Applied saved views",
+    add_to_compare: "Add to compare",
+    view_pattern: "View pattern",
+    add_to_studio_board: "Add to Studio Board",
+    search: "Searches",
+  };
 
   return (
     <>
@@ -128,6 +139,27 @@ function ModuleAnalyticsPage() {
               )}
             </CardContent>
           </Card>
+
+          {interactions.length > 0 && (
+            <Card>
+              <CardHeader><CardTitle className="text-base">Repository interaction breakdown</CardTitle></CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {interactions.map((i) => (
+                    <div key={i.key}>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="font-medium">{INTERACTION_LABELS[i.key] ?? i.key}</span>
+                        <span className="text-muted-foreground">{i.count.toLocaleString()}</span>
+                      </div>
+                      <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-muted">
+                        <div className="h-full rounded-full bg-primary" style={{ width: `${(i.count / maxInteraction) * 100}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </section>
     </>
