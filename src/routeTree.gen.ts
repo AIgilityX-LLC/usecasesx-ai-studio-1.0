@@ -39,6 +39,7 @@ import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integra
 import { Route as AppAiUseCaseStudioRouteImport } from './routes/_app.ai-use-case-studio'
 import { Route as AppAdvisorxRouteImport } from './routes/_app.advisorx'
 import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
+import { Route as AppAdminWaitlistRouteImport } from './routes/_app.admin-waitlist'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
 import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
@@ -204,6 +205,11 @@ const AppAdministrationRoute = AppAdministrationRouteImport.update({
   path: '/administration',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminWaitlistRoute = AppAdminWaitlistRouteImport.update({
+  id: '/admin-waitlist',
+  path: '/admin-waitlist',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppBoardsIndexRoute = AppBoardsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -291,6 +297,7 @@ const AppStudioUseCaseIdAdvisorxRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
   '/advisorx': typeof AppAdvisorxRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
@@ -337,6 +344,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
   '/advisorx': typeof AppAdvisorxRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
@@ -384,6 +392,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_app/admin-waitlist': typeof AppAdminWaitlistRoute
   '/_app/administration': typeof AppAdministrationRoute
   '/_app/advisorx': typeof AppAdvisorxRoute
   '/_app/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
@@ -432,6 +441,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/admin-waitlist'
     | '/administration'
     | '/advisorx'
     | '/ai-use-case-studio'
@@ -478,6 +488,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/admin-waitlist'
     | '/administration'
     | '/advisorx'
     | '/ai-use-case-studio'
@@ -524,6 +535,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_app'
     | '/auth'
+    | '/_app/admin-waitlist'
     | '/_app/administration'
     | '/_app/advisorx'
     | '/_app/ai-use-case-studio'
@@ -788,6 +800,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdministrationRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin-waitlist': {
+      id: '/_app/admin-waitlist'
+      path: '/admin-waitlist'
+      fullPath: '/admin-waitlist'
+      preLoaderRoute: typeof AppAdminWaitlistRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/boards/': {
       id: '/_app/boards/'
       path: '/'
@@ -937,6 +956,7 @@ const AppStudioRouteWithChildren = AppStudioRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
+  AppAdminWaitlistRoute: typeof AppAdminWaitlistRoute
   AppAdministrationRoute: typeof AppAdministrationRoute
   AppAdvisorxRoute: typeof AppAdvisorxRoute
   AppAiUseCaseStudioRoute: typeof AppAiUseCaseStudioRoute
@@ -969,6 +989,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAdminWaitlistRoute: AppAdminWaitlistRoute,
   AppAdministrationRoute: AppAdministrationRoute,
   AppAdvisorxRoute: AppAdvisorxRoute,
   AppAiUseCaseStudioRoute: AppAiUseCaseStudioRoute,

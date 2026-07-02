@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, Library, Sparkles, FolderHeart, KanbanSquare,
   BookOpen, Gauge, Database, Hammer, Map, Rocket, Compass, Shield, BarChart3,
-  FileBarChart, Settings, Lock,
+  FileBarChart, Settings, Lock, Crown, Users,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -37,7 +37,9 @@ const INTEGRATIONS: Item[] = [
 
 const ADMIN: Item[] = [
   { to: "/reports", label: "Reports", icon: FileBarChart },
+  { to: "/entitlement", label: "My Plan", icon: Crown },
   { to: "/administration", label: "Admin Panel", icon: Settings, admin: true },
+  { to: "/admin-waitlist", label: "Free Pro Waitlist", icon: Users, admin: true },
 ];
 
 export function AppSidebar() {
