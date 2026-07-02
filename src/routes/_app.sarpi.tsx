@@ -25,6 +25,8 @@ import { FoundingAccessBanner } from "@/components/FoundingAccessBanner";
 import { EntitlementLockCard } from "@/components/EntitlementLockCard";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import { tierUnlocks, type EntTier } from "@/lib/entitlements";
+import { trackModuleEvent } from "@/lib/module-analytics";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/_app/sarpi")({
   head: () => ({
@@ -114,6 +116,7 @@ const MODULE_TIER: Record<string, EntTier> = { Lite: "lite", Pro: "pro", Enterpr
 function SarpiFeaturesPage() {
   const ent = useEntitlement();
   const tierLabel = ent.tier === "enterprise" ? "Enterprise" : ent.tier === "pro" ? "Pro" : "Lite";
+  useEffect(() => { trackModuleEvent("sarpi", "view"); }, []);
   return (
     <>
       {/* Founding member beta banner */}
