@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_app/module-analytics")({
   component: ModuleAnalyticsPage,
 });
 
-type Ev = { module_key: string; event_type: ModuleEventType; created_at: string };
+type Ev = { module_key: string; event_type: ModuleEventType; created_at: string; metadata: Record<string, unknown> | null };
 type Agg = { key: string; view: number; click: number; lock_attempt: number; unlock_attempt: number; total: number };
 
 function ModuleAnalyticsPage() {
@@ -31,7 +31,7 @@ function ModuleAnalyticsPage() {
     setLoading(true);
     const { data } = await supabase
       .from("module_events")
-      .select("module_key, event_type, created_at")
+      .select("module_key, event_type, created_at, metadata")
       .order("created_at", { ascending: false })
       .limit(5000);
     setEvents((data as Ev[]) ?? []);
@@ -39,17 +39,24 @@ function ModuleAnalyticsPage() {
   };
   useEffect(() => { if (session) load(); else if (session === null) setLoading(false); }, [session]);
 
-  const { rows, totals } = useMemo(() => {
+  const { rows, totals, interactions } = useMemo(() => {
     const map = new Map<string, Agg>();
     const t = { view: 0, click: 0, lock_attempt: 0, unlock_attempt: 0 };
+    const ix = new Map<string, number>();
     for (const e of events) {
       const a = map.get(e.module_key) ?? { key: e.module_key, view: 0, click: 0, lock_attempt: 0, unlock_attempt: 0, total: 0 };
       a[e.event_type] = (a[e.event_type] ?? 0) + 1;
       a.total += 1;
       map.set(e.module_key, a);
       if (e.event_type in t) t[e.event_type as keyof typeof t] += 1;
+      const label = typeof e.metadata?.interaction === "string" ? (e.metadata.interaction as string) : null;
+      if (label) ix.set(label, (ix.get(label) ?? 0) + 1);
     }
-    return { rows: [...map.values()].sort((a, b) => b.total - a.total), totals: t };
+    return {
+      rows: [...map.values()].sort((a, b) => b.total - a.total),
+      totals: t,
+      interactions: [...ix.entries()].map(([key, count]) => ({ key, count })).sort((a, b) => b.count - a.count),
+    };
   }, [events]);
 
   if (session === null) {
