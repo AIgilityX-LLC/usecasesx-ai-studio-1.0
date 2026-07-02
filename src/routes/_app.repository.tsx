@@ -110,6 +110,7 @@ function Page() {
   const handleAddToBoard = (c: UseCaseCardData) => {
     if (!plan.isAuthed) {
       toast.message("Sign in to add patterns to a Studio Board.");
+      void trackModuleEvent("repository", "lock_attempt", { interaction: "add_to_studio_board", reason: "unauthenticated", use_case_id: c.id });
       return;
     }
     if (isLite && c.visibility === "pro") {
@@ -117,9 +118,11 @@ function Page() {
         description: "Upgrade to unlock all premium AI use case patterns.",
         action: { label: "Upgrade", onClick: () => window.location.assign("/pro") },
       });
+      void trackModuleEvent("repository", "lock_attempt", { interaction: "add_to_studio_board", reason: "pro_locked", use_case_id: c.id });
       return;
     }
     track("cta_clicked", { cta: "add_to_studio_board", use_case_id: c.id });
+    void trackModuleEvent("repository", "click", { interaction: "add_to_studio_board", use_case_id: c.id });
     setBoardPattern(c);
   };
 
@@ -205,11 +208,13 @@ function Page() {
     if (key === "industries") {
       update({ industries: effectiveIndustries.filter((x: string) => x !== value), industry: undefined });
       track("filter_used", { facet: key, value, action: "remove" });
+      void trackModuleEvent("repository", "click", { interaction: "filter_change", facet: key, action: "remove" });
       return;
     }
     const cur = (search as Record<string, string[] | undefined>)[key] ?? [];
     update({ [key]: cur.filter((x) => x !== value) } as Partial<Search>);
     track("filter_used", { facet: key, value, action: "remove" });
+    void trackModuleEvent("repository", "click", { interaction: "filter_change", facet: key, action: "remove" });
   };
 
   const clearAll = () => {
@@ -220,17 +225,20 @@ function Page() {
       sectors: undefined, tags: undefined,
     });
     track("filter_used", { action: "clear_all" });
+    void trackModuleEvent("repository", "click", { interaction: "filter_change", action: "clear_all" });
   };
 
   const handleFilterChange = (patch: Partial<Search>) => {
     update(patch);
     Object.entries(patch).forEach(([facet, value]) => track("filter_used", { facet, value }));
+    Object.keys(patch).forEach((facet) => void trackModuleEvent("repository", "click", { interaction: "filter_change", facet }));
   };
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
     update({ q: q || undefined });
     if (q) track("search_used", { q });
+    if (q) void trackModuleEvent("repository", "click", { interaction: "search" });
   };
 
   const openCustomRequest = () => {
