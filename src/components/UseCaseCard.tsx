@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { CompareToggle } from "@/components/usecasex/CompareTray";
+import { trackModuleEvent } from "@/lib/module-analytics";
 
 type Tag = { slug?: string; name?: string };
 
@@ -119,6 +120,7 @@ export function UseCaseCard({
           to="/use-cases/$slug"
           params={{ slug: c.slug }}
           search={detailSearch}
+          onClick={() => void trackModuleEvent("repository", "click", { interaction: "view_pattern", use_case_id: c.id, slug: c.slug })}
           className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline"
         >
           View Pattern →

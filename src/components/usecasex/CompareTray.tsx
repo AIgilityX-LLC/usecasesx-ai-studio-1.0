@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { compareStore, useCompare } from "@/lib/usecasex.compare.store";
+import { trackModuleEvent } from "@/lib/module-analytics";
 
 /** Floating bottom-right tray that shows current compare selection. */
 export function CompareTray() {
@@ -40,7 +41,10 @@ export function CompareToggle({ slug, className = "" }: { slug: string; classNam
   return (
     <button
       type="button"
-      onClick={() => compareStore.toggle(slug)}
+      onClick={() => {
+        compareStore.toggle(slug);
+        void trackModuleEvent("repository", "click", { interaction: "add_to_compare", slug, active: !active });
+      }}
       disabled={full}
       className={
         "rounded-md border px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition disabled:cursor-not-allowed disabled:opacity-40 " +

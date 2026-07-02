@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Bookmark, Check, Pencil, Trash2, X } from "lucide-react";
 import { presetsStore, useSavedPresets } from "@/lib/usecasex.presets";
+import { trackModuleEvent } from "@/lib/module-analytics";
 
 /**
  * Dropdown to manage saved repository views (filter configurations):
@@ -30,6 +31,7 @@ export function SavedViewsMenu() {
 
   const apply = (search: Record<string, unknown>) => {
     navigate({ to: "/repository", search: search as never });
+    void trackModuleEvent("repository", "click", { interaction: "apply_saved_view" });
     setOpen(false);
   };
 
