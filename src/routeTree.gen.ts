@@ -34,6 +34,7 @@ import { Route as AppDecisionRouteImport } from './routes/_app.decision'
 import { Route as AppDataReadinessRouteImport } from './routes/_app.data-readiness'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppCompareRouteImport } from './routes/_app.compare'
+import { Route as AppCollectionsRouteImport } from './routes/_app.collections'
 import { Route as AppBoardsRouteImport } from './routes/_app.boards'
 import { Route as AppBlueprintRouteImport } from './routes/_app.blueprint'
 import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integration'
@@ -182,6 +183,11 @@ const AppCompareRoute = AppCompareRouteImport.update({
   path: '/compare',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCollectionsRoute = AppCollectionsRouteImport.update({
+  id: '/collections',
+  path: '/collections',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppBoardsRoute = AppBoardsRouteImport.update({
   id: '/boards',
   path: '/boards',
@@ -317,6 +323,7 @@ export interface FileRoutesByFullPath {
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
   '/boards': typeof AppBoardsRouteWithChildren
+  '/collections': typeof AppCollectionsRoute
   '/compare': typeof AppCompareRoute
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
@@ -365,6 +372,7 @@ export interface FileRoutesByTo {
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
+  '/collections': typeof AppCollectionsRoute
   '/compare': typeof AppCompareRoute
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
@@ -416,6 +424,7 @@ export interface FileRoutesById {
   '/_app/api-integration': typeof AppApiIntegrationRoute
   '/_app/blueprint': typeof AppBlueprintRoute
   '/_app/boards': typeof AppBoardsRouteWithChildren
+  '/_app/collections': typeof AppCollectionsRoute
   '/_app/compare': typeof AppCompareRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/data-readiness': typeof AppDataReadinessRoute
@@ -467,6 +476,7 @@ export interface FileRouteTypes {
     | '/api-integration'
     | '/blueprint'
     | '/boards'
+    | '/collections'
     | '/compare'
     | '/dashboard'
     | '/data-readiness'
@@ -515,6 +525,7 @@ export interface FileRouteTypes {
     | '/ai-use-case-studio'
     | '/api-integration'
     | '/blueprint'
+    | '/collections'
     | '/compare'
     | '/dashboard'
     | '/data-readiness'
@@ -565,6 +576,7 @@ export interface FileRouteTypes {
     | '/_app/api-integration'
     | '/_app/blueprint'
     | '/_app/boards'
+    | '/_app/collections'
     | '/_app/compare'
     | '/_app/dashboard'
     | '/_app/data-readiness'
@@ -789,6 +801,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCompareRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/collections': {
+      id: '/_app/collections'
+      path: '/collections'
+      fullPath: '/collections'
+      preLoaderRoute: typeof AppCollectionsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/boards': {
       id: '/_app/boards'
       path: '/boards'
@@ -1002,6 +1021,7 @@ interface AppRouteChildren {
   AppApiIntegrationRoute: typeof AppApiIntegrationRoute
   AppBlueprintRoute: typeof AppBlueprintRoute
   AppBoardsRoute: typeof AppBoardsRouteWithChildren
+  AppCollectionsRoute: typeof AppCollectionsRoute
   AppCompareRoute: typeof AppCompareRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppDataReadinessRoute: typeof AppDataReadinessRoute
@@ -1037,6 +1057,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppApiIntegrationRoute: AppApiIntegrationRoute,
   AppBlueprintRoute: AppBlueprintRoute,
   AppBoardsRoute: AppBoardsRouteWithChildren,
+  AppCollectionsRoute: AppCollectionsRoute,
   AppCompareRoute: AppCompareRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppDataReadinessRoute: AppDataReadinessRoute,
