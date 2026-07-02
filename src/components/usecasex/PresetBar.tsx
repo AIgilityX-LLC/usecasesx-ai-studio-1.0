@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { BUILTIN_PRESETS, presetsStore } from "@/lib/usecasex.presets";
 import { SavedViewsMenu } from "@/components/usecasex/SavedViewsMenu";
+import { trackModuleEvent } from "@/lib/module-analytics";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChevronDown } from "lucide-react";
 
@@ -24,6 +25,7 @@ export function PresetBar({ currentSearch }: { currentSearch: Record<string, unk
     const p = presetsStore.save(name, currentSearch);
     if (p) {
       toast.success(`Saved preset "${p.name}"`);
+      void trackModuleEvent("repository", "click", { interaction: "save_view", name: p.name });
       setName("");
       setShowSave(false);
     }
@@ -54,6 +56,7 @@ export function PresetBar({ currentSearch }: { currentSearch: Record<string, unk
                   to="/repository"
                   search={p.search as never}
                   title={p.description}
+                  onClick={() => void trackModuleEvent("repository", "click", { interaction: "preset_select", preset: p.label })}
                   className="block rounded-md px-2 py-1.5 text-[13px] font-semibold text-foreground/80 transition hover:bg-primary/5 hover:text-primary"
                 >
                   {p.label}
