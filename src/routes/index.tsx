@@ -279,7 +279,7 @@ function AboutUseCasesX() {
   );
 }
 
-function WhyUseCasesXReal() {
+function WhyUseCasesX() {
   const pillars = [
     { t: "Beyond a repository", d: "Not a content library — an AI Use Case Operating System with lifecycle workflows." },
     { t: "Beyond a marketplace", d: "No sponsored listings. Every use case is curated, governed, and sovereign-aware." },
