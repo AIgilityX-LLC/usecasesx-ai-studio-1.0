@@ -7,6 +7,7 @@ import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { MissingDataFallback } from "@/components/MissingDataFallback";
 import { CompareToggle } from "@/components/usecasex/CompareTray";
+import { AddToCollectionButton } from "@/components/AddToCollectionButton";
 import { RatingWidget } from "@/components/usecasex/RatingWidget";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { CaseStudy } from "@/components/usecasex/CaseStudy";
@@ -437,8 +438,9 @@ function UseCaseDetailPage() {
                   ))}
                 </div>
               )}
-              <div className="mt-4">
+              <div className="mt-4 flex flex-wrap items-center gap-2">
                 <CompareToggle slug={c.slug} />
+                <AddToCollectionButton useCaseId={c.id} />
               </div>
             </div>
           </div>

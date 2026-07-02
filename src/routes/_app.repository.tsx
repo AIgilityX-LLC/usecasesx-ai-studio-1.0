@@ -13,6 +13,7 @@ import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { PresetBar } from "@/components/usecasex/PresetBar";
 import { CompareTray } from "@/components/usecasex/CompareTray";
 import { track } from "@/lib/usecasex.tracking";
+import { trackModuleEvent } from "@/lib/module-analytics";
 import { AddToStudioBoardDialog } from "@/components/AddToStudioBoardDialog";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { usePlan } from "@/hooks/usePlan";
@@ -133,6 +134,8 @@ function Page() {
       navigate({ search: (prev: Search) => ({ ...prev, industries: [search.industry as string], industry: undefined }), replace: true });
     }
   }, [search.industry, search.industries, navigate]);
+
+  useEffect(() => { void trackModuleEvent("repository", "view"); }, []);
 
   const update = (p: Partial<Search>) =>
     navigate({

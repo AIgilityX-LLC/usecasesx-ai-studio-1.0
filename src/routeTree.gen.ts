@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CTokenRouteImport } from './routes/c.$token'
+import { Route as AppSubmitRouteImport } from './routes/_app.submit'
 import { Route as AppStudioRouteImport } from './routes/_app.studio'
 import { Route as AppSarpiRouteImport } from './routes/_app.sarpi'
 import { Route as AppRoadmapRouteImport } from './routes/_app.roadmap'
@@ -24,6 +26,7 @@ import { Route as AppPricingRouteImport } from './routes/_app.pricing'
 import { Route as AppPortfolioxRouteImport } from './routes/_app.portfoliox'
 import { Route as AppPatternsRouteImport } from './routes/_app.patterns'
 import { Route as AppMyUseCasesRouteImport } from './routes/_app.my-use-cases'
+import { Route as AppModuleAnalyticsRouteImport } from './routes/_app.module-analytics'
 import { Route as AppInsightsRouteImport } from './routes/_app.insights'
 import { Route as AppImpactAssessmentRouteImport } from './routes/_app.impact-assessment'
 import { Route as AppGovernanceRouteImport } from './routes/_app.governance'
@@ -33,6 +36,7 @@ import { Route as AppDecisionRouteImport } from './routes/_app.decision'
 import { Route as AppDataReadinessRouteImport } from './routes/_app.data-readiness'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppCompareRouteImport } from './routes/_app.compare'
+import { Route as AppCollectionsRouteImport } from './routes/_app.collections'
 import { Route as AppBoardsRouteImport } from './routes/_app.boards'
 import { Route as AppBlueprintRouteImport } from './routes/_app.blueprint'
 import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integration'
@@ -40,6 +44,7 @@ import { Route as AppAiUseCaseStudioRouteImport } from './routes/_app.ai-use-cas
 import { Route as AppAdvisorxRouteImport } from './routes/_app.advisorx'
 import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
 import { Route as AppAdminWaitlistRouteImport } from './routes/_app.admin-waitlist'
+import { Route as AppAdminSubmissionsRouteImport } from './routes/_app.admin-submissions'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
 import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
@@ -69,6 +74,16 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CTokenRoute = CTokenRouteImport.update({
+  id: '/c/$token',
+  path: '/c/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppSubmitRoute = AppSubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppStudioRoute = AppStudioRouteImport.update({
   id: '/studio',
@@ -130,6 +145,11 @@ const AppMyUseCasesRoute = AppMyUseCasesRouteImport.update({
   path: '/my-use-cases',
   getParentRoute: () => AppRoute,
 } as any)
+const AppModuleAnalyticsRoute = AppModuleAnalyticsRouteImport.update({
+  id: '/module-analytics',
+  path: '/module-analytics',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppInsightsRoute = AppInsightsRouteImport.update({
   id: '/insights',
   path: '/insights',
@@ -175,6 +195,11 @@ const AppCompareRoute = AppCompareRouteImport.update({
   path: '/compare',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCollectionsRoute = AppCollectionsRouteImport.update({
+  id: '/collections',
+  path: '/collections',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppBoardsRoute = AppBoardsRouteImport.update({
   id: '/boards',
   path: '/boards',
@@ -208,6 +233,11 @@ const AppAdministrationRoute = AppAdministrationRouteImport.update({
 const AppAdminWaitlistRoute = AppAdminWaitlistRouteImport.update({
   id: '/admin-waitlist',
   path: '/admin-waitlist',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminSubmissionsRoute = AppAdminSubmissionsRouteImport.update({
+  id: '/admin-submissions',
+  path: '/admin-submissions',
   getParentRoute: () => AppRoute,
 } as any)
 const AppBoardsIndexRoute = AppBoardsIndexRouteImport.update({
@@ -297,6 +327,7 @@ const AppStudioUseCaseIdAdvisorxRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
   '/advisorx': typeof AppAdvisorxRoute
@@ -304,6 +335,7 @@ export interface FileRoutesByFullPath {
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
   '/boards': typeof AppBoardsRouteWithChildren
+  '/collections': typeof AppCollectionsRoute
   '/compare': typeof AppCompareRoute
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
@@ -313,6 +345,7 @@ export interface FileRoutesByFullPath {
   '/governance': typeof AppGovernanceRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
   '/insights': typeof AppInsightsRoute
+  '/module-analytics': typeof AppModuleAnalyticsRoute
   '/my-use-cases': typeof AppMyUseCasesRoute
   '/patterns': typeof AppPatternsRoute
   '/portfoliox': typeof AppPortfolioxRoute
@@ -325,6 +358,8 @@ export interface FileRoutesByFullPath {
   '/roadmap': typeof AppRoadmapRoute
   '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
+  '/submit': typeof AppSubmitRoute
+  '/c/$token': typeof CTokenRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
@@ -344,12 +379,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
   '/advisorx': typeof AppAdvisorxRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
+  '/collections': typeof AppCollectionsRoute
   '/compare': typeof AppCompareRoute
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
@@ -359,6 +396,7 @@ export interface FileRoutesByTo {
   '/governance': typeof AppGovernanceRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
   '/insights': typeof AppInsightsRoute
+  '/module-analytics': typeof AppModuleAnalyticsRoute
   '/my-use-cases': typeof AppMyUseCasesRoute
   '/patterns': typeof AppPatternsRoute
   '/portfoliox': typeof AppPortfolioxRoute
@@ -371,6 +409,8 @@ export interface FileRoutesByTo {
   '/roadmap': typeof AppRoadmapRoute
   '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
+  '/submit': typeof AppSubmitRoute
+  '/c/$token': typeof CTokenRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
@@ -392,6 +432,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_app/admin-submissions': typeof AppAdminSubmissionsRoute
   '/_app/admin-waitlist': typeof AppAdminWaitlistRoute
   '/_app/administration': typeof AppAdministrationRoute
   '/_app/advisorx': typeof AppAdvisorxRoute
@@ -399,6 +440,7 @@ export interface FileRoutesById {
   '/_app/api-integration': typeof AppApiIntegrationRoute
   '/_app/blueprint': typeof AppBlueprintRoute
   '/_app/boards': typeof AppBoardsRouteWithChildren
+  '/_app/collections': typeof AppCollectionsRoute
   '/_app/compare': typeof AppCompareRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/data-readiness': typeof AppDataReadinessRoute
@@ -408,6 +450,7 @@ export interface FileRoutesById {
   '/_app/governance': typeof AppGovernanceRoute
   '/_app/impact-assessment': typeof AppImpactAssessmentRoute
   '/_app/insights': typeof AppInsightsRoute
+  '/_app/module-analytics': typeof AppModuleAnalyticsRoute
   '/_app/my-use-cases': typeof AppMyUseCasesRoute
   '/_app/patterns': typeof AppPatternsRoute
   '/_app/portfoliox': typeof AppPortfolioxRoute
@@ -420,6 +463,8 @@ export interface FileRoutesById {
   '/_app/roadmap': typeof AppRoadmapRoute
   '/_app/sarpi': typeof AppSarpiRoute
   '/_app/studio': typeof AppStudioRouteWithChildren
+  '/_app/submit': typeof AppSubmitRoute
+  '/c/$token': typeof CTokenRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
@@ -441,6 +486,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/admin-submissions'
     | '/admin-waitlist'
     | '/administration'
     | '/advisorx'
@@ -448,6 +494,7 @@ export interface FileRouteTypes {
     | '/api-integration'
     | '/blueprint'
     | '/boards'
+    | '/collections'
     | '/compare'
     | '/dashboard'
     | '/data-readiness'
@@ -457,6 +504,7 @@ export interface FileRouteTypes {
     | '/governance'
     | '/impact-assessment'
     | '/insights'
+    | '/module-analytics'
     | '/my-use-cases'
     | '/patterns'
     | '/portfoliox'
@@ -469,6 +517,8 @@ export interface FileRouteTypes {
     | '/roadmap'
     | '/sarpi'
     | '/studio'
+    | '/submit'
+    | '/c/$token'
     | '/boards/$boardId'
     | '/studio/portfolio'
     | '/use-cases/$slug'
@@ -488,12 +538,14 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/admin-submissions'
     | '/admin-waitlist'
     | '/administration'
     | '/advisorx'
     | '/ai-use-case-studio'
     | '/api-integration'
     | '/blueprint'
+    | '/collections'
     | '/compare'
     | '/dashboard'
     | '/data-readiness'
@@ -503,6 +555,7 @@ export interface FileRouteTypes {
     | '/governance'
     | '/impact-assessment'
     | '/insights'
+    | '/module-analytics'
     | '/my-use-cases'
     | '/patterns'
     | '/portfoliox'
@@ -515,6 +568,8 @@ export interface FileRouteTypes {
     | '/roadmap'
     | '/sarpi'
     | '/studio'
+    | '/submit'
+    | '/c/$token'
     | '/boards/$boardId'
     | '/studio/portfolio'
     | '/use-cases/$slug'
@@ -535,6 +590,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_app'
     | '/auth'
+    | '/_app/admin-submissions'
     | '/_app/admin-waitlist'
     | '/_app/administration'
     | '/_app/advisorx'
@@ -542,6 +598,7 @@ export interface FileRouteTypes {
     | '/_app/api-integration'
     | '/_app/blueprint'
     | '/_app/boards'
+    | '/_app/collections'
     | '/_app/compare'
     | '/_app/dashboard'
     | '/_app/data-readiness'
@@ -551,6 +608,7 @@ export interface FileRouteTypes {
     | '/_app/governance'
     | '/_app/impact-assessment'
     | '/_app/insights'
+    | '/_app/module-analytics'
     | '/_app/my-use-cases'
     | '/_app/patterns'
     | '/_app/portfoliox'
@@ -563,6 +621,8 @@ export interface FileRouteTypes {
     | '/_app/roadmap'
     | '/_app/sarpi'
     | '/_app/studio'
+    | '/_app/submit'
+    | '/c/$token'
     | '/_app/boards/$boardId'
     | '/_app/studio/portfolio'
     | '/_app/use-cases/$slug'
@@ -584,6 +644,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CTokenRoute: typeof CTokenRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
 }
@@ -610,6 +671,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/c/$token': {
+      id: '/c/$token'
+      path: '/c/$token'
+      fullPath: '/c/$token'
+      preLoaderRoute: typeof CTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/submit': {
+      id: '/_app/submit'
+      path: '/submit'
+      fullPath: '/submit'
+      preLoaderRoute: typeof AppSubmitRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/studio': {
       id: '/_app/studio'
@@ -695,6 +770,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMyUseCasesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/module-analytics': {
+      id: '/_app/module-analytics'
+      path: '/module-analytics'
+      fullPath: '/module-analytics'
+      preLoaderRoute: typeof AppModuleAnalyticsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/insights': {
       id: '/_app/insights'
       path: '/insights'
@@ -758,6 +840,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCompareRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/collections': {
+      id: '/_app/collections'
+      path: '/collections'
+      fullPath: '/collections'
+      preLoaderRoute: typeof AppCollectionsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/boards': {
       id: '/_app/boards'
       path: '/boards'
@@ -805,6 +894,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-waitlist'
       fullPath: '/admin-waitlist'
       preLoaderRoute: typeof AppAdminWaitlistRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin-submissions': {
+      id: '/_app/admin-submissions'
+      path: '/admin-submissions'
+      fullPath: '/admin-submissions'
+      preLoaderRoute: typeof AppAdminSubmissionsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/boards/': {
@@ -956,6 +1052,7 @@ const AppStudioRouteWithChildren = AppStudioRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
+  AppAdminSubmissionsRoute: typeof AppAdminSubmissionsRoute
   AppAdminWaitlistRoute: typeof AppAdminWaitlistRoute
   AppAdministrationRoute: typeof AppAdministrationRoute
   AppAdvisorxRoute: typeof AppAdvisorxRoute
@@ -963,6 +1060,7 @@ interface AppRouteChildren {
   AppApiIntegrationRoute: typeof AppApiIntegrationRoute
   AppBlueprintRoute: typeof AppBlueprintRoute
   AppBoardsRoute: typeof AppBoardsRouteWithChildren
+  AppCollectionsRoute: typeof AppCollectionsRoute
   AppCompareRoute: typeof AppCompareRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppDataReadinessRoute: typeof AppDataReadinessRoute
@@ -972,6 +1070,7 @@ interface AppRouteChildren {
   AppGovernanceRoute: typeof AppGovernanceRoute
   AppImpactAssessmentRoute: typeof AppImpactAssessmentRoute
   AppInsightsRoute: typeof AppInsightsRoute
+  AppModuleAnalyticsRoute: typeof AppModuleAnalyticsRoute
   AppMyUseCasesRoute: typeof AppMyUseCasesRoute
   AppPatternsRoute: typeof AppPatternsRoute
   AppPortfolioxRoute: typeof AppPortfolioxRoute
@@ -984,11 +1083,13 @@ interface AppRouteChildren {
   AppRoadmapRoute: typeof AppRoadmapRoute
   AppSarpiRoute: typeof AppSarpiRoute
   AppStudioRoute: typeof AppStudioRouteWithChildren
+  AppSubmitRoute: typeof AppSubmitRoute
   AppUseCasesSlugRoute: typeof AppUseCasesSlugRoute
   AppCyberxC3gIntakeRoute: typeof AppCyberxC3gIntakeRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAdminSubmissionsRoute: AppAdminSubmissionsRoute,
   AppAdminWaitlistRoute: AppAdminWaitlistRoute,
   AppAdministrationRoute: AppAdministrationRoute,
   AppAdvisorxRoute: AppAdvisorxRoute,
@@ -996,6 +1097,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppApiIntegrationRoute: AppApiIntegrationRoute,
   AppBlueprintRoute: AppBlueprintRoute,
   AppBoardsRoute: AppBoardsRouteWithChildren,
+  AppCollectionsRoute: AppCollectionsRoute,
   AppCompareRoute: AppCompareRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppDataReadinessRoute: AppDataReadinessRoute,
@@ -1005,6 +1107,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppGovernanceRoute: AppGovernanceRoute,
   AppImpactAssessmentRoute: AppImpactAssessmentRoute,
   AppInsightsRoute: AppInsightsRoute,
+  AppModuleAnalyticsRoute: AppModuleAnalyticsRoute,
   AppMyUseCasesRoute: AppMyUseCasesRoute,
   AppPatternsRoute: AppPatternsRoute,
   AppPortfolioxRoute: AppPortfolioxRoute,
@@ -1017,6 +1120,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppRoadmapRoute: AppRoadmapRoute,
   AppSarpiRoute: AppSarpiRoute,
   AppStudioRoute: AppStudioRouteWithChildren,
+  AppSubmitRoute: AppSubmitRoute,
   AppUseCasesSlugRoute: AppUseCasesSlugRoute,
   AppCyberxC3gIntakeRoute: AppCyberxC3gIntakeRoute,
 }
@@ -1041,6 +1145,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
+  CTokenRoute: CTokenRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
   ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRouteWithChildren,
 }

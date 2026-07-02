@@ -266,6 +266,81 @@ export type Database = {
         }
         Relationships: []
       }
+      collection_items: {
+        Row: {
+          collection_id: string
+          created_at: string
+          id: string
+          note: string | null
+          position: number
+          use_case_id: string
+        }
+        Insert: {
+          collection_id: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          position?: number
+          use_case_id: string
+        }
+        Update: {
+          collection_id?: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          position?: number
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_items_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_items_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collections: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_public: boolean
+          name: string
+          share_token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          name: string
+          share_token?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          name?: string
+          share_token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       countries: {
         Row: {
           code: string
@@ -662,6 +737,33 @@ export type Database = {
           source_page?: string | null
           source_use_case?: string | null
           waitlist_status?: string
+        }
+        Relationships: []
+      }
+      module_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json
+          module_key: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json
+          module_key: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          module_key?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1586,6 +1688,63 @@ export type Database = {
         }
         Relationships: []
       }
+      use_case_submissions: {
+        Row: {
+          ai_solution: string | null
+          business_problem: string | null
+          created_at: string
+          id: string
+          industry: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sector: string | null
+          sources: string[]
+          status: Database["public"]["Enums"]["submission_status"]
+          summary: string | null
+          tags: string[]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_solution?: string | null
+          business_problem?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sector?: string | null
+          sources?: string[]
+          status?: Database["public"]["Enums"]["submission_status"]
+          summary?: string | null
+          tags?: string[]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_solution?: string | null
+          business_problem?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sector?: string | null
+          sources?: string[]
+          status?: Database["public"]["Enums"]["submission_status"]
+          summary?: string | null
+          tags?: string[]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       use_case_views: {
         Row: {
           created_at: string
@@ -1834,6 +1993,14 @@ export type Database = {
       }
     }
     Functions: {
+      collection_is_accessible: {
+        Args: { _collection_id: string; _user_id: string }
+        Returns: boolean
+      }
+      collection_is_owned: {
+        Args: { _collection_id: string; _user_id: string }
+        Returns: boolean
+      }
       ensure_user_workspace: { Args: never; Returns: string }
       get_use_case_integration_package: {
         Args: { use_case_uuid: string }
@@ -1877,6 +2044,12 @@ export type Database = {
         | "pilot"
         | "production"
         | "scaled"
+      submission_status:
+        | "draft"
+        | "submitted"
+        | "in_review"
+        | "approved"
+        | "rejected"
       use_case_status:
         | "draft"
         | "review"
@@ -2027,6 +2200,13 @@ export const Constants = {
         "user",
       ],
       maturity_stage: ["concept", "prototype", "pilot", "production", "scaled"],
+      submission_status: [
+        "draft",
+        "submitted",
+        "in_review",
+        "approved",
+        "rejected",
+      ],
       use_case_status: [
         "draft",
         "review",
