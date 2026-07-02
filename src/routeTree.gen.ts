@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CTokenRouteImport } from './routes/c.$token'
 import { Route as AppSubmitRouteImport } from './routes/_app.submit'
 import { Route as AppStudioRouteImport } from './routes/_app.studio'
 import { Route as AppSarpiRouteImport } from './routes/_app.sarpi'
@@ -71,6 +72,11 @@ const AppRoute = AppRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CTokenRoute = CTokenRouteImport.update({
+  id: '/c/$token',
+  path: '/c/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppSubmitRoute = AppSubmitRouteImport.update({
@@ -346,6 +352,7 @@ export interface FileRoutesByFullPath {
   '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
+  '/c/$token': typeof CTokenRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
@@ -395,6 +402,7 @@ export interface FileRoutesByTo {
   '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
+  '/c/$token': typeof CTokenRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
@@ -447,6 +455,7 @@ export interface FileRoutesById {
   '/_app/sarpi': typeof AppSarpiRoute
   '/_app/studio': typeof AppStudioRouteWithChildren
   '/_app/submit': typeof AppSubmitRoute
+  '/c/$token': typeof CTokenRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
@@ -499,6 +508,7 @@ export interface FileRouteTypes {
     | '/sarpi'
     | '/studio'
     | '/submit'
+    | '/c/$token'
     | '/boards/$boardId'
     | '/studio/portfolio'
     | '/use-cases/$slug'
@@ -548,6 +558,7 @@ export interface FileRouteTypes {
     | '/sarpi'
     | '/studio'
     | '/submit'
+    | '/c/$token'
     | '/boards/$boardId'
     | '/studio/portfolio'
     | '/use-cases/$slug'
@@ -599,6 +610,7 @@ export interface FileRouteTypes {
     | '/_app/sarpi'
     | '/_app/studio'
     | '/_app/submit'
+    | '/c/$token'
     | '/_app/boards/$boardId'
     | '/_app/studio/portfolio'
     | '/_app/use-cases/$slug'
@@ -620,6 +632,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CTokenRoute: typeof CTokenRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
 }
@@ -645,6 +658,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/c/$token': {
+      id: '/c/$token'
+      path: '/c/$token'
+      fullPath: '/c/$token'
+      preLoaderRoute: typeof CTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/submit': {
@@ -1104,6 +1124,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
+  CTokenRoute: CTokenRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
   ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRouteWithChildren,
 }
