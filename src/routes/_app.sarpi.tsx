@@ -232,7 +232,11 @@ function SarpiFeaturesPage() {
                   <CardContent>
                     <p className="text-sm text-muted-foreground">{desc}</p>
                     {locked && (
-                      <Link to="/pricing" className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
+                      <Link
+                        to="/pricing"
+                        onClick={() => trackModuleEvent("sarpi", "lock_attempt", { module: title, tier })}
+                        className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                      >
                         Upgrade to unlock <ArrowRight className="h-3 w-3" />
                       </Link>
                     )}
