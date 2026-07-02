@@ -219,10 +219,6 @@ function Hero() {
 }
 
 /* 2 — WHY USECASESX */
-function WhyUseCasesX() {
-  return null as never;
-}
-
 /* ABOUT USECASESX */
 function AboutUseCasesX() {
   const points = [
