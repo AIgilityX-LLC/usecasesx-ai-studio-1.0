@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, Library, Sparkles, FolderHeart, KanbanSquare,
   BookOpen, Gauge, Database, Hammer, Map, Rocket, Compass, Shield, BarChart3,
-  FileBarChart, Settings, Lock, Crown, Users,
+  FileBarChart, Settings, Lock, Crown, Users, Star, Send, LineChart, Inbox,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -19,6 +19,8 @@ const CORE: Item[] = [
   { to: "/studio", label: "AI Use Case Studio", icon: Sparkles },
   { to: "/my-use-cases", label: "My Use Cases", icon: FolderHeart },
   { to: "/boards", label: "Use Case Boards", icon: KanbanSquare },
+  { to: "/collections", label: "Collections", icon: Star },
+  { to: "/submit", label: "Submit a Use Case", icon: Send },
   { to: "/patterns", label: "Pattern Library", icon: BookOpen },
 ];
 
@@ -38,7 +40,9 @@ const INTEGRATIONS: Item[] = [
 const ADMIN: Item[] = [
   { to: "/reports", label: "Reports", icon: FileBarChart },
   { to: "/entitlement", label: "My Plan", icon: Crown },
+  { to: "/module-analytics", label: "Module Analytics", icon: LineChart },
   { to: "/administration", label: "Admin Panel", icon: Settings, admin: true },
+  { to: "/admin-submissions", label: "Submission Review", icon: Inbox, admin: true },
   { to: "/admin-waitlist", label: "Free Pro Waitlist", icon: Users, admin: true },
 ];
 

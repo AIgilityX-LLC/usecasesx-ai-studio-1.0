@@ -26,6 +26,7 @@ import { Route as AppPricingRouteImport } from './routes/_app.pricing'
 import { Route as AppPortfolioxRouteImport } from './routes/_app.portfoliox'
 import { Route as AppPatternsRouteImport } from './routes/_app.patterns'
 import { Route as AppMyUseCasesRouteImport } from './routes/_app.my-use-cases'
+import { Route as AppModuleAnalyticsRouteImport } from './routes/_app.module-analytics'
 import { Route as AppInsightsRouteImport } from './routes/_app.insights'
 import { Route as AppImpactAssessmentRouteImport } from './routes/_app.impact-assessment'
 import { Route as AppGovernanceRouteImport } from './routes/_app.governance'
@@ -142,6 +143,11 @@ const AppPatternsRoute = AppPatternsRouteImport.update({
 const AppMyUseCasesRoute = AppMyUseCasesRouteImport.update({
   id: '/my-use-cases',
   path: '/my-use-cases',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppModuleAnalyticsRoute = AppModuleAnalyticsRouteImport.update({
+  id: '/module-analytics',
+  path: '/module-analytics',
   getParentRoute: () => AppRoute,
 } as any)
 const AppInsightsRoute = AppInsightsRouteImport.update({
@@ -339,6 +345,7 @@ export interface FileRoutesByFullPath {
   '/governance': typeof AppGovernanceRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
   '/insights': typeof AppInsightsRoute
+  '/module-analytics': typeof AppModuleAnalyticsRoute
   '/my-use-cases': typeof AppMyUseCasesRoute
   '/patterns': typeof AppPatternsRoute
   '/portfoliox': typeof AppPortfolioxRoute
@@ -389,6 +396,7 @@ export interface FileRoutesByTo {
   '/governance': typeof AppGovernanceRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
   '/insights': typeof AppInsightsRoute
+  '/module-analytics': typeof AppModuleAnalyticsRoute
   '/my-use-cases': typeof AppMyUseCasesRoute
   '/patterns': typeof AppPatternsRoute
   '/portfoliox': typeof AppPortfolioxRoute
@@ -442,6 +450,7 @@ export interface FileRoutesById {
   '/_app/governance': typeof AppGovernanceRoute
   '/_app/impact-assessment': typeof AppImpactAssessmentRoute
   '/_app/insights': typeof AppInsightsRoute
+  '/_app/module-analytics': typeof AppModuleAnalyticsRoute
   '/_app/my-use-cases': typeof AppMyUseCasesRoute
   '/_app/patterns': typeof AppPatternsRoute
   '/_app/portfoliox': typeof AppPortfolioxRoute
@@ -495,6 +504,7 @@ export interface FileRouteTypes {
     | '/governance'
     | '/impact-assessment'
     | '/insights'
+    | '/module-analytics'
     | '/my-use-cases'
     | '/patterns'
     | '/portfoliox'
@@ -545,6 +555,7 @@ export interface FileRouteTypes {
     | '/governance'
     | '/impact-assessment'
     | '/insights'
+    | '/module-analytics'
     | '/my-use-cases'
     | '/patterns'
     | '/portfoliox'
@@ -597,6 +608,7 @@ export interface FileRouteTypes {
     | '/_app/governance'
     | '/_app/impact-assessment'
     | '/_app/insights'
+    | '/_app/module-analytics'
     | '/_app/my-use-cases'
     | '/_app/patterns'
     | '/_app/portfoliox'
@@ -756,6 +768,13 @@ declare module '@tanstack/react-router' {
       path: '/my-use-cases'
       fullPath: '/my-use-cases'
       preLoaderRoute: typeof AppMyUseCasesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/module-analytics': {
+      id: '/_app/module-analytics'
+      path: '/module-analytics'
+      fullPath: '/module-analytics'
+      preLoaderRoute: typeof AppModuleAnalyticsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/insights': {
@@ -1051,6 +1070,7 @@ interface AppRouteChildren {
   AppGovernanceRoute: typeof AppGovernanceRoute
   AppImpactAssessmentRoute: typeof AppImpactAssessmentRoute
   AppInsightsRoute: typeof AppInsightsRoute
+  AppModuleAnalyticsRoute: typeof AppModuleAnalyticsRoute
   AppMyUseCasesRoute: typeof AppMyUseCasesRoute
   AppPatternsRoute: typeof AppPatternsRoute
   AppPortfolioxRoute: typeof AppPortfolioxRoute
@@ -1087,6 +1107,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppGovernanceRoute: AppGovernanceRoute,
   AppImpactAssessmentRoute: AppImpactAssessmentRoute,
   AppInsightsRoute: AppInsightsRoute,
+  AppModuleAnalyticsRoute: AppModuleAnalyticsRoute,
   AppMyUseCasesRoute: AppMyUseCasesRoute,
   AppPatternsRoute: AppPatternsRoute,
   AppPortfolioxRoute: AppPortfolioxRoute,
