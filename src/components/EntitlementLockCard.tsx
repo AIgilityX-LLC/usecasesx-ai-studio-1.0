@@ -2,12 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { Lock, Sparkles, CalendarClock, ShieldAlert } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import { FOUNDING_UNTIL_LABEL, isEligibleEmail, type EntTier } from "@/lib/entitlements";
-import { useState } from "react";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
 
 type Props = {
   feature: string;
