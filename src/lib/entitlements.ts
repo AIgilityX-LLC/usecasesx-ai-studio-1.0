@@ -55,3 +55,24 @@ export function daysUntil(expiresAt: string | Date | null | undefined, now: Date
 export function tierUnlocks(tier: EntTier, required: EntTier): boolean {
   return TIER_RANK[tier] >= TIER_RANK[required];
 }
+
+/** Canonical SARPI module catalogue with the tier required to unlock each. */
+export type SarpiModule = { title: string; required: EntTier };
+export const SARPI_MODULES: SarpiModule[] = [
+  { title: "AI Readiness Navigator™", required: "lite" },
+  { title: "AI Cost/ROI Navigator™", required: "lite" },
+  { title: "AI Performance Index™", required: "lite" },
+  { title: "Risk-Adjusted ROI Snapshot™", required: "lite" },
+  { title: "Agentic AI Readiness Scorecard™", required: "pro" },
+  { title: "Agentic AI ROI Scorecard™", required: "pro" },
+  { title: "AI Value Gap Analyzer™", required: "pro" },
+  { title: "AI Investment Engine™", required: "pro" },
+  { title: "Sovereign AI Maturity Snapshot™", required: "pro" },
+  { title: "SERT™ Value Confidence Layer", required: "enterprise" },
+  { title: "AI Impact & Value Realization Engine™", required: "enterprise" },
+  { title: "AI Portfolio & Board Value Center™", required: "enterprise" },
+];
+
+export function tierLabel(tier: EntTier): string {
+  return tier === "enterprise" ? "Enterprise" : tier === "pro" ? "Pro" : "Lite";
+}

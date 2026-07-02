@@ -28,6 +28,7 @@ import { Route as AppInsightsRouteImport } from './routes/_app.insights'
 import { Route as AppImpactAssessmentRouteImport } from './routes/_app.impact-assessment'
 import { Route as AppGovernanceRouteImport } from './routes/_app.governance'
 import { Route as AppFeasibilityRouteImport } from './routes/_app.feasibility'
+import { Route as AppEntitlementRouteImport } from './routes/_app.entitlement'
 import { Route as AppDecisionRouteImport } from './routes/_app.decision'
 import { Route as AppDataReadinessRouteImport } from './routes/_app.data-readiness'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
@@ -38,6 +39,7 @@ import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integra
 import { Route as AppAiUseCaseStudioRouteImport } from './routes/_app.ai-use-case-studio'
 import { Route as AppAdvisorxRouteImport } from './routes/_app.advisorx'
 import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
+import { Route as AppAdminWaitlistRouteImport } from './routes/_app.admin-waitlist'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
 import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
@@ -148,6 +150,11 @@ const AppFeasibilityRoute = AppFeasibilityRouteImport.update({
   path: '/feasibility',
   getParentRoute: () => AppRoute,
 } as any)
+const AppEntitlementRoute = AppEntitlementRouteImport.update({
+  id: '/entitlement',
+  path: '/entitlement',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDecisionRoute = AppDecisionRouteImport.update({
   id: '/decision',
   path: '/decision',
@@ -196,6 +203,11 @@ const AppAdvisorxRoute = AppAdvisorxRouteImport.update({
 const AppAdministrationRoute = AppAdministrationRouteImport.update({
   id: '/administration',
   path: '/administration',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminWaitlistRoute = AppAdminWaitlistRouteImport.update({
+  id: '/admin-waitlist',
+  path: '/admin-waitlist',
   getParentRoute: () => AppRoute,
 } as any)
 const AppBoardsIndexRoute = AppBoardsIndexRouteImport.update({
@@ -285,6 +297,7 @@ const AppStudioUseCaseIdAdvisorxRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
   '/advisorx': typeof AppAdvisorxRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
@@ -295,6 +308,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
   '/decision': typeof AppDecisionRoute
+  '/entitlement': typeof AppEntitlementRoute
   '/feasibility': typeof AppFeasibilityRoute
   '/governance': typeof AppGovernanceRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
@@ -330,6 +344,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
   '/advisorx': typeof AppAdvisorxRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
@@ -339,6 +354,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
   '/decision': typeof AppDecisionRoute
+  '/entitlement': typeof AppEntitlementRoute
   '/feasibility': typeof AppFeasibilityRoute
   '/governance': typeof AppGovernanceRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
@@ -376,6 +392,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_app/admin-waitlist': typeof AppAdminWaitlistRoute
   '/_app/administration': typeof AppAdministrationRoute
   '/_app/advisorx': typeof AppAdvisorxRoute
   '/_app/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
@@ -386,6 +403,7 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/data-readiness': typeof AppDataReadinessRoute
   '/_app/decision': typeof AppDecisionRoute
+  '/_app/entitlement': typeof AppEntitlementRoute
   '/_app/feasibility': typeof AppFeasibilityRoute
   '/_app/governance': typeof AppGovernanceRoute
   '/_app/impact-assessment': typeof AppImpactAssessmentRoute
@@ -423,6 +441,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/admin-waitlist'
     | '/administration'
     | '/advisorx'
     | '/ai-use-case-studio'
@@ -433,6 +452,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/data-readiness'
     | '/decision'
+    | '/entitlement'
     | '/feasibility'
     | '/governance'
     | '/impact-assessment'
@@ -468,6 +488,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/admin-waitlist'
     | '/administration'
     | '/advisorx'
     | '/ai-use-case-studio'
@@ -477,6 +498,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/data-readiness'
     | '/decision'
+    | '/entitlement'
     | '/feasibility'
     | '/governance'
     | '/impact-assessment'
@@ -513,6 +535,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_app'
     | '/auth'
+    | '/_app/admin-waitlist'
     | '/_app/administration'
     | '/_app/advisorx'
     | '/_app/ai-use-case-studio'
@@ -523,6 +546,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard'
     | '/_app/data-readiness'
     | '/_app/decision'
+    | '/_app/entitlement'
     | '/_app/feasibility'
     | '/_app/governance'
     | '/_app/impact-assessment'
@@ -699,6 +723,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFeasibilityRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/entitlement': {
+      id: '/_app/entitlement'
+      path: '/entitlement'
+      fullPath: '/entitlement'
+      preLoaderRoute: typeof AppEntitlementRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/decision': {
       id: '/_app/decision'
       path: '/decision'
@@ -767,6 +798,13 @@ declare module '@tanstack/react-router' {
       path: '/administration'
       fullPath: '/administration'
       preLoaderRoute: typeof AppAdministrationRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin-waitlist': {
+      id: '/_app/admin-waitlist'
+      path: '/admin-waitlist'
+      fullPath: '/admin-waitlist'
+      preLoaderRoute: typeof AppAdminWaitlistRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/boards/': {
@@ -918,6 +956,7 @@ const AppStudioRouteWithChildren = AppStudioRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
+  AppAdminWaitlistRoute: typeof AppAdminWaitlistRoute
   AppAdministrationRoute: typeof AppAdministrationRoute
   AppAdvisorxRoute: typeof AppAdvisorxRoute
   AppAiUseCaseStudioRoute: typeof AppAiUseCaseStudioRoute
@@ -928,6 +967,7 @@ interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppDataReadinessRoute: typeof AppDataReadinessRoute
   AppDecisionRoute: typeof AppDecisionRoute
+  AppEntitlementRoute: typeof AppEntitlementRoute
   AppFeasibilityRoute: typeof AppFeasibilityRoute
   AppGovernanceRoute: typeof AppGovernanceRoute
   AppImpactAssessmentRoute: typeof AppImpactAssessmentRoute
@@ -949,6 +989,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAdminWaitlistRoute: AppAdminWaitlistRoute,
   AppAdministrationRoute: AppAdministrationRoute,
   AppAdvisorxRoute: AppAdvisorxRoute,
   AppAiUseCaseStudioRoute: AppAiUseCaseStudioRoute,
@@ -959,6 +1000,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppDataReadinessRoute: AppDataReadinessRoute,
   AppDecisionRoute: AppDecisionRoute,
+  AppEntitlementRoute: AppEntitlementRoute,
   AppFeasibilityRoute: AppFeasibilityRoute,
   AppGovernanceRoute: AppGovernanceRoute,
   AppImpactAssessmentRoute: AppImpactAssessmentRoute,
