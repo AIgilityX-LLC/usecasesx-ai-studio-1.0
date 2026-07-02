@@ -28,6 +28,7 @@ import { Route as AppInsightsRouteImport } from './routes/_app.insights'
 import { Route as AppImpactAssessmentRouteImport } from './routes/_app.impact-assessment'
 import { Route as AppGovernanceRouteImport } from './routes/_app.governance'
 import { Route as AppFeasibilityRouteImport } from './routes/_app.feasibility'
+import { Route as AppEntitlementRouteImport } from './routes/_app.entitlement'
 import { Route as AppDecisionRouteImport } from './routes/_app.decision'
 import { Route as AppDataReadinessRouteImport } from './routes/_app.data-readiness'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
@@ -146,6 +147,11 @@ const AppGovernanceRoute = AppGovernanceRouteImport.update({
 const AppFeasibilityRoute = AppFeasibilityRouteImport.update({
   id: '/feasibility',
   path: '/feasibility',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEntitlementRoute = AppEntitlementRouteImport.update({
+  id: '/entitlement',
+  path: '/entitlement',
   getParentRoute: () => AppRoute,
 } as any)
 const AppDecisionRoute = AppDecisionRouteImport.update({
@@ -295,6 +301,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
   '/decision': typeof AppDecisionRoute
+  '/entitlement': typeof AppEntitlementRoute
   '/feasibility': typeof AppFeasibilityRoute
   '/governance': typeof AppGovernanceRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
@@ -339,6 +346,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
   '/decision': typeof AppDecisionRoute
+  '/entitlement': typeof AppEntitlementRoute
   '/feasibility': typeof AppFeasibilityRoute
   '/governance': typeof AppGovernanceRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
@@ -386,6 +394,7 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/data-readiness': typeof AppDataReadinessRoute
   '/_app/decision': typeof AppDecisionRoute
+  '/_app/entitlement': typeof AppEntitlementRoute
   '/_app/feasibility': typeof AppFeasibilityRoute
   '/_app/governance': typeof AppGovernanceRoute
   '/_app/impact-assessment': typeof AppImpactAssessmentRoute
@@ -433,6 +442,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/data-readiness'
     | '/decision'
+    | '/entitlement'
     | '/feasibility'
     | '/governance'
     | '/impact-assessment'
@@ -477,6 +487,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/data-readiness'
     | '/decision'
+    | '/entitlement'
     | '/feasibility'
     | '/governance'
     | '/impact-assessment'
@@ -523,6 +534,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard'
     | '/_app/data-readiness'
     | '/_app/decision'
+    | '/_app/entitlement'
     | '/_app/feasibility'
     | '/_app/governance'
     | '/_app/impact-assessment'
@@ -697,6 +709,13 @@ declare module '@tanstack/react-router' {
       path: '/feasibility'
       fullPath: '/feasibility'
       preLoaderRoute: typeof AppFeasibilityRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/entitlement': {
+      id: '/_app/entitlement'
+      path: '/entitlement'
+      fullPath: '/entitlement'
+      preLoaderRoute: typeof AppEntitlementRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/decision': {
@@ -928,6 +947,7 @@ interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppDataReadinessRoute: typeof AppDataReadinessRoute
   AppDecisionRoute: typeof AppDecisionRoute
+  AppEntitlementRoute: typeof AppEntitlementRoute
   AppFeasibilityRoute: typeof AppFeasibilityRoute
   AppGovernanceRoute: typeof AppGovernanceRoute
   AppImpactAssessmentRoute: typeof AppImpactAssessmentRoute
@@ -959,6 +979,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppDataReadinessRoute: AppDataReadinessRoute,
   AppDecisionRoute: AppDecisionRoute,
+  AppEntitlementRoute: AppEntitlementRoute,
   AppFeasibilityRoute: AppFeasibilityRoute,
   AppGovernanceRoute: AppGovernanceRoute,
   AppImpactAssessmentRoute: AppImpactAssessmentRoute,
