@@ -220,6 +220,70 @@ function Hero() {
 
 /* 2 — WHY USECASESX */
 function WhyUseCasesX() {
+  return null as never;
+}
+
+/* ABOUT USECASESX */
+function AboutUseCasesX() {
+  const points = [
+    "A curated, governed repository of 1,000+ enterprise and sovereign AI use cases.",
+    "Built for governments, regulators, banks, healthcare, defense and critical infrastructure.",
+    "Lifecycle workflows — discover, design, validate, govern, prioritize and scale.",
+    "Sovereign-ready by design, from public SaaS to air-gapped deployments.",
+  ];
+  return (
+    <section className="border-b border-border bg-background">
+      <div className="mx-auto grid max-w-[1400px] items-center gap-12 px-6 py-20 lg:grid-cols-2">
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">About UseCasesX</div>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            The AI Use Case Operating System — built for real-world impact.
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            UseCasesX™ by AIgilityX™ helps organizations move from AI ambition to governed,
+            measurable value. It is more than a repository — it is an operating system that
+            takes every initiative from discovery through design, validation, governance and
+            scale, with sovereignty and compliance built in from day one.
+          </p>
+          <ul className="mt-6 space-y-3">
+            {points.map((p) => (
+              <li key={p} className="flex items-start gap-3 text-sm text-foreground">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                <span>{p}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              to="/repository"
+              className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110"
+            >
+              Explore the Repository →
+            </Link>
+            <Link
+              to="/pricing"
+              className="rounded-md border border-border px-5 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
+            >
+              See Plans
+            </Link>
+          </div>
+        </div>
+        <div className="relative">
+          <img
+            src={aboutImg}
+            alt="UseCasesX AI use case operating system overview"
+            width={1280}
+            height={1024}
+            loading="lazy"
+            className="w-full rounded-2xl border border-border object-cover shadow-xl"
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function WhyUseCasesXReal() {
   const pillars = [
     { t: "Beyond a repository", d: "Not a content library — an AI Use Case Operating System with lifecycle workflows." },
     { t: "Beyond a marketplace", d: "No sponsored listings. Every use case is curated, governed, and sovereign-aware." },
