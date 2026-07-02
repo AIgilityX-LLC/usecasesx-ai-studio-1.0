@@ -45,7 +45,7 @@ function SharedCollectionPage() {
             <p className="text-center text-sm text-muted-foreground">This collection has no use cases yet.</p>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2">
-              {col.items.map((u) => (
+              {col.items.map((u: { title: string; slug: string; summary: string | null }) => (
                 <Card key={u.slug}>
                   <CardContent className="py-5">
                     <Link to="/use-cases/$slug" params={{ slug: u.slug }} className="font-semibold text-foreground hover:text-primary">{u.title}</Link>
