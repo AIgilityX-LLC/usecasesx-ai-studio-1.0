@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppSubmitRouteImport } from './routes/_app.submit'
 import { Route as AppStudioRouteImport } from './routes/_app.studio'
 import { Route as AppSarpiRouteImport } from './routes/_app.sarpi'
 import { Route as AppRoadmapRouteImport } from './routes/_app.roadmap'
@@ -69,6 +70,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppSubmitRoute = AppSubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppStudioRoute = AppStudioRouteImport.update({
   id: '/studio',
@@ -325,6 +331,7 @@ export interface FileRoutesByFullPath {
   '/roadmap': typeof AppRoadmapRoute
   '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
+  '/submit': typeof AppSubmitRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
@@ -371,6 +378,7 @@ export interface FileRoutesByTo {
   '/roadmap': typeof AppRoadmapRoute
   '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
+  '/submit': typeof AppSubmitRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
@@ -420,6 +428,7 @@ export interface FileRoutesById {
   '/_app/roadmap': typeof AppRoadmapRoute
   '/_app/sarpi': typeof AppSarpiRoute
   '/_app/studio': typeof AppStudioRouteWithChildren
+  '/_app/submit': typeof AppSubmitRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
@@ -469,6 +478,7 @@ export interface FileRouteTypes {
     | '/roadmap'
     | '/sarpi'
     | '/studio'
+    | '/submit'
     | '/boards/$boardId'
     | '/studio/portfolio'
     | '/use-cases/$slug'
@@ -515,6 +525,7 @@ export interface FileRouteTypes {
     | '/roadmap'
     | '/sarpi'
     | '/studio'
+    | '/submit'
     | '/boards/$boardId'
     | '/studio/portfolio'
     | '/use-cases/$slug'
@@ -563,6 +574,7 @@ export interface FileRouteTypes {
     | '/_app/roadmap'
     | '/_app/sarpi'
     | '/_app/studio'
+    | '/_app/submit'
     | '/_app/boards/$boardId'
     | '/_app/studio/portfolio'
     | '/_app/use-cases/$slug'
@@ -610,6 +622,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_app/submit': {
+      id: '/_app/submit'
+      path: '/submit'
+      fullPath: '/submit'
+      preLoaderRoute: typeof AppSubmitRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/studio': {
       id: '/_app/studio'
@@ -984,6 +1003,7 @@ interface AppRouteChildren {
   AppRoadmapRoute: typeof AppRoadmapRoute
   AppSarpiRoute: typeof AppSarpiRoute
   AppStudioRoute: typeof AppStudioRouteWithChildren
+  AppSubmitRoute: typeof AppSubmitRoute
   AppUseCasesSlugRoute: typeof AppUseCasesSlugRoute
   AppCyberxC3gIntakeRoute: typeof AppCyberxC3gIntakeRoute
 }
@@ -1017,6 +1037,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppRoadmapRoute: AppRoadmapRoute,
   AppSarpiRoute: AppSarpiRoute,
   AppStudioRoute: AppStudioRouteWithChildren,
+  AppSubmitRoute: AppSubmitRoute,
   AppUseCasesSlugRoute: AppUseCasesSlugRoute,
   AppCyberxC3gIntakeRoute: AppCyberxC3gIntakeRoute,
 }
