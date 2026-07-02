@@ -59,6 +59,7 @@ function ComparePage() {
       queryKey: ["use-case", slug],
       queryFn: () => getUseCase({ data: { slug } }),
       staleTime: 60 * 1000,
+      retry: false,
     })),
   });
 
@@ -66,6 +67,7 @@ function ComparePage() {
     .map((r) => r.data as Row | undefined)
     .filter((x): x is Row => Boolean(x));
   const loading = results.some((r) => r.isLoading);
+  const allSettled = results.every((r) => !r.isLoading);
 
   if (slugs.length === 0) {
     return (
@@ -86,6 +88,36 @@ function ComparePage() {
 
   if (loading && items.length === 0) {
     return <div className="mx-auto max-w-3xl px-6 py-20 text-center text-muted-foreground">Loading comparison…</div>;
+  }
+
+  // All queries have resolved but none returned a use case — the slugs in the
+  // URL are invalid or unpublished. Show a graceful fallback instead of an
+  // empty table.
+  if (allSettled && items.length === 0) {
+    return (
+      <div className="mx-auto max-w-3xl px-6 py-20 text-center">
+        <h1 className="text-3xl font-bold text-foreground">These use cases aren't available</h1>
+        <p className="mt-3 text-muted-foreground">
+          The comparison link points to use cases that no longer exist or aren't published.
+          Pick some from the Explore page to build a fresh comparison.
+        </p>
+        <button
+          onClick={() => {
+            compareStore.clear();
+            navigate({ search: { ids: undefined } as never, replace: true });
+          }}
+          className="mt-6 mr-2 inline-block rounded-md border border-border px-5 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
+        >
+          Clear comparison
+        </button>
+        <Link
+          to="/repository"
+          className="mt-6 inline-block rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110"
+        >
+          Browse use cases →
+        </Link>
+      </div>
+    );
   }
 
   const ind = (c: Row) => c.use_case_industries?.[0]?.industries?.name ?? "—";
