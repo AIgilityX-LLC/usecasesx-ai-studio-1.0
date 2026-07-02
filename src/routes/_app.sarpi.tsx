@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Lock } from "lucide-react";
 import { FoundingAccessBanner } from "@/components/FoundingAccessBanner";
+import { EntitlementLockCard } from "@/components/EntitlementLockCard";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import { tierUnlocks, type EntTier } from "@/lib/entitlements";
 
@@ -174,6 +175,14 @@ function SarpiFeaturesPage() {
               )}
             </div>
             <FoundingAccessBanner sourcePage="/sarpi" />
+            {(ent.expired || ent.tier === "lite") && (
+              <EntitlementLockCard
+                feature="SARPI Pro modules"
+                requiredTier="pro"
+                description="Pro and Enterprise modules are locked on your current plan. Upgrade or rejoin the Free Pro waitlist to unlock the full SARPI Suite."
+                sourcePage="/sarpi"
+              />
+            )}
           </div>
         </section>
       )}
