@@ -6,6 +6,7 @@ import heroImg from "@/assets/landing-hero.jpg";
 import repositoryImg from "@/assets/landing-repository.jpg";
 import studioImg from "@/assets/landing-studio.jpg";
 import sovereignImg from "@/assets/landing-sovereign.jpg";
+import aboutImg from "@/assets/landing-about.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -34,6 +35,7 @@ function LandingPage() {
   return (
     <SiteShell>
       <Hero />
+      <AboutUseCasesX />
       <WhyUseCasesX />
       <HowItWorks />
       <RepositorySection />
