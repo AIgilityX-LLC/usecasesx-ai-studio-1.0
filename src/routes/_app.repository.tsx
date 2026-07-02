@@ -134,6 +134,8 @@ function Page() {
     }
   }, [search.industry, search.industries, navigate]);
 
+  useEffect(() => { void trackModuleEvent("repository", "view"); }, []);
+
   const update = (p: Partial<Search>) =>
     navigate({
       search: (prev: Search) => {
