@@ -56,9 +56,9 @@ export function tierUnlocks(tier: EntTier, required: EntTier): boolean {
   return TIER_RANK[tier] >= TIER_RANK[required];
 }
 
-/** Canonical SARPI module catalogue with the tier required to unlock each. */
-export type SarpiModule = { title: string; required: EntTier };
-export const SARPI_MODULES: SarpiModule[] = [
+/** Canonical UseCasesX module catalogue with the tier required to unlock each. */
+export type UseCasesXModule = { title: string; required: EntTier };
+export const USECASEX_MODULES: UseCasesXModule[] = [
   { title: "AI Readiness Navigator™", required: "lite" },
   { title: "AI Cost/ROI Navigator™", required: "lite" },
   { title: "AI Performance Index™", required: "lite" },
