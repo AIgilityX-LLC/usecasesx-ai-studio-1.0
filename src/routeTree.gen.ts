@@ -16,10 +16,12 @@ import { Route as CTokenRouteImport } from './routes/c.$token'
 import { Route as AppSubmitRouteImport } from './routes/_app.submit'
 import { Route as AppStudioRouteImport } from './routes/_app.studio'
 import { Route as AppSarpiRouteImport } from './routes/_app.sarpi'
+import { Route as AppRoiCalculatorRouteImport } from './routes/_app.roi-calculator'
 import { Route as AppRoadmapRouteImport } from './routes/_app.roadmap'
 import { Route as AppResourcesRouteImport } from './routes/_app.resources'
 import { Route as AppRepositoryRouteImport } from './routes/_app.repository'
 import { Route as AppReportsRouteImport } from './routes/_app.reports'
+import { Route as AppQuickWinsRouteImport } from './routes/_app.quick-wins'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
 import { Route as AppProRouteImport } from './routes/_app.pro'
 import { Route as AppPricingRouteImport } from './routes/_app.pricing'
@@ -48,6 +50,8 @@ import { Route as AppAdminSubmissionsRouteImport } from './routes/_app.admin-sub
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
 import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
+import { Route as AppSegmentsSegmentRouteImport } from './routes/_app.segments.$segment'
+import { Route as AppSectorsSectorRouteImport } from './routes/_app.sectors.$sector'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
@@ -95,6 +99,11 @@ const AppSarpiRoute = AppSarpiRouteImport.update({
   path: '/sarpi',
   getParentRoute: () => AppRoute,
 } as any)
+const AppRoiCalculatorRoute = AppRoiCalculatorRouteImport.update({
+  id: '/roi-calculator',
+  path: '/roi-calculator',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppRoadmapRoute = AppRoadmapRouteImport.update({
   id: '/roadmap',
   path: '/roadmap',
@@ -113,6 +122,11 @@ const AppRepositoryRoute = AppRepositoryRouteImport.update({
 const AppReportsRoute = AppReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppQuickWinsRoute = AppQuickWinsRouteImport.update({
+  id: '/quick-wins',
+  path: '/quick-wins',
   getParentRoute: () => AppRoute,
 } as any)
 const AppProfileRoute = AppProfileRouteImport.update({
@@ -255,6 +269,16 @@ const AppStudioPortfolioRoute = AppStudioPortfolioRouteImport.update({
   path: '/portfolio',
   getParentRoute: () => AppStudioRoute,
 } as any)
+const AppSegmentsSegmentRoute = AppSegmentsSegmentRouteImport.update({
+  id: '/segments/$segment',
+  path: '/segments/$segment',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSectorsSectorRoute = AppSectorsSectorRouteImport.update({
+  id: '/sectors/$sector',
+  path: '/sectors/$sector',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppBoardsBoardIdRoute = AppBoardsBoardIdRouteImport.update({
   id: '/$boardId',
   path: '/$boardId',
@@ -352,15 +376,19 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof AppPricingRoute
   '/pro': typeof AppProRoute
   '/profile': typeof AppProfileRoute
+  '/quick-wins': typeof AppQuickWinsRoute
   '/reports': typeof AppReportsRoute
   '/repository': typeof AppRepositoryRoute
   '/resources': typeof AppResourcesRoute
   '/roadmap': typeof AppRoadmapRoute
+  '/roi-calculator': typeof AppRoiCalculatorRoute
   '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
   '/c/$token': typeof CTokenRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
+  '/sectors/$sector': typeof AppSectorsSectorRoute
+  '/segments/$segment': typeof AppSegmentsSegmentRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/boards/': typeof AppBoardsIndexRoute
@@ -403,15 +431,19 @@ export interface FileRoutesByTo {
   '/pricing': typeof AppPricingRoute
   '/pro': typeof AppProRoute
   '/profile': typeof AppProfileRoute
+  '/quick-wins': typeof AppQuickWinsRoute
   '/reports': typeof AppReportsRoute
   '/repository': typeof AppRepositoryRoute
   '/resources': typeof AppResourcesRoute
   '/roadmap': typeof AppRoadmapRoute
+  '/roi-calculator': typeof AppRoiCalculatorRoute
   '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
   '/c/$token': typeof CTokenRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
+  '/sectors/$sector': typeof AppSectorsSectorRoute
+  '/segments/$segment': typeof AppSegmentsSegmentRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/boards': typeof AppBoardsIndexRoute
@@ -457,15 +489,19 @@ export interface FileRoutesById {
   '/_app/pricing': typeof AppPricingRoute
   '/_app/pro': typeof AppProRoute
   '/_app/profile': typeof AppProfileRoute
+  '/_app/quick-wins': typeof AppQuickWinsRoute
   '/_app/reports': typeof AppReportsRoute
   '/_app/repository': typeof AppRepositoryRoute
   '/_app/resources': typeof AppResourcesRoute
   '/_app/roadmap': typeof AppRoadmapRoute
+  '/_app/roi-calculator': typeof AppRoiCalculatorRoute
   '/_app/sarpi': typeof AppSarpiRoute
   '/_app/studio': typeof AppStudioRouteWithChildren
   '/_app/submit': typeof AppSubmitRoute
   '/c/$token': typeof CTokenRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
+  '/_app/sectors/$sector': typeof AppSectorsSectorRoute
+  '/_app/segments/$segment': typeof AppSegmentsSegmentRoute
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/_app/boards/': typeof AppBoardsIndexRoute
@@ -511,15 +547,19 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/pro'
     | '/profile'
+    | '/quick-wins'
     | '/reports'
     | '/repository'
     | '/resources'
     | '/roadmap'
+    | '/roi-calculator'
     | '/sarpi'
     | '/studio'
     | '/submit'
     | '/c/$token'
     | '/boards/$boardId'
+    | '/sectors/$sector'
+    | '/segments/$segment'
     | '/studio/portfolio'
     | '/use-cases/$slug'
     | '/boards/'
@@ -562,15 +602,19 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/pro'
     | '/profile'
+    | '/quick-wins'
     | '/reports'
     | '/repository'
     | '/resources'
     | '/roadmap'
+    | '/roi-calculator'
     | '/sarpi'
     | '/studio'
     | '/submit'
     | '/c/$token'
     | '/boards/$boardId'
+    | '/sectors/$sector'
+    | '/segments/$segment'
     | '/studio/portfolio'
     | '/use-cases/$slug'
     | '/boards'
@@ -615,15 +659,19 @@ export interface FileRouteTypes {
     | '/_app/pricing'
     | '/_app/pro'
     | '/_app/profile'
+    | '/_app/quick-wins'
     | '/_app/reports'
     | '/_app/repository'
     | '/_app/resources'
     | '/_app/roadmap'
+    | '/_app/roi-calculator'
     | '/_app/sarpi'
     | '/_app/studio'
     | '/_app/submit'
     | '/c/$token'
     | '/_app/boards/$boardId'
+    | '/_app/sectors/$sector'
+    | '/_app/segments/$segment'
     | '/_app/studio/portfolio'
     | '/_app/use-cases/$slug'
     | '/_app/boards/'
@@ -700,6 +748,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSarpiRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/roi-calculator': {
+      id: '/_app/roi-calculator'
+      path: '/roi-calculator'
+      fullPath: '/roi-calculator'
+      preLoaderRoute: typeof AppRoiCalculatorRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/roadmap': {
       id: '/_app/roadmap'
       path: '/roadmap'
@@ -726,6 +781,13 @@ declare module '@tanstack/react-router' {
       path: '/reports'
       fullPath: '/reports'
       preLoaderRoute: typeof AppReportsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/quick-wins': {
+      id: '/_app/quick-wins'
+      path: '/quick-wins'
+      fullPath: '/quick-wins'
+      preLoaderRoute: typeof AppQuickWinsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/profile': {
@@ -924,6 +986,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudioPortfolioRouteImport
       parentRoute: typeof AppStudioRoute
     }
+    '/_app/segments/$segment': {
+      id: '/_app/segments/$segment'
+      path: '/segments/$segment'
+      fullPath: '/segments/$segment'
+      preLoaderRoute: typeof AppSegmentsSegmentRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/sectors/$sector': {
+      id: '/_app/sectors/$sector'
+      path: '/sectors/$sector'
+      fullPath: '/sectors/$sector'
+      preLoaderRoute: typeof AppSectorsSectorRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/boards/$boardId': {
       id: '/_app/boards/$boardId'
       path: '/$boardId'
@@ -1077,13 +1153,17 @@ interface AppRouteChildren {
   AppPricingRoute: typeof AppPricingRoute
   AppProRoute: typeof AppProRoute
   AppProfileRoute: typeof AppProfileRoute
+  AppQuickWinsRoute: typeof AppQuickWinsRoute
   AppReportsRoute: typeof AppReportsRoute
   AppRepositoryRoute: typeof AppRepositoryRoute
   AppResourcesRoute: typeof AppResourcesRoute
   AppRoadmapRoute: typeof AppRoadmapRoute
+  AppRoiCalculatorRoute: typeof AppRoiCalculatorRoute
   AppSarpiRoute: typeof AppSarpiRoute
   AppStudioRoute: typeof AppStudioRouteWithChildren
   AppSubmitRoute: typeof AppSubmitRoute
+  AppSectorsSectorRoute: typeof AppSectorsSectorRoute
+  AppSegmentsSegmentRoute: typeof AppSegmentsSegmentRoute
   AppUseCasesSlugRoute: typeof AppUseCasesSlugRoute
   AppCyberxC3gIntakeRoute: typeof AppCyberxC3gIntakeRoute
 }
@@ -1114,13 +1194,17 @@ const AppRouteChildren: AppRouteChildren = {
   AppPricingRoute: AppPricingRoute,
   AppProRoute: AppProRoute,
   AppProfileRoute: AppProfileRoute,
+  AppQuickWinsRoute: AppQuickWinsRoute,
   AppReportsRoute: AppReportsRoute,
   AppRepositoryRoute: AppRepositoryRoute,
   AppResourcesRoute: AppResourcesRoute,
   AppRoadmapRoute: AppRoadmapRoute,
+  AppRoiCalculatorRoute: AppRoiCalculatorRoute,
   AppSarpiRoute: AppSarpiRoute,
   AppStudioRoute: AppStudioRouteWithChildren,
   AppSubmitRoute: AppSubmitRoute,
+  AppSectorsSectorRoute: AppSectorsSectorRoute,
+  AppSegmentsSegmentRoute: AppSegmentsSegmentRoute,
   AppUseCasesSlugRoute: AppUseCasesSlugRoute,
   AppCyberxC3gIntakeRoute: AppCyberxC3gIntakeRoute,
 }
@@ -1152,13 +1236,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
