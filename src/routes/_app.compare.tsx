@@ -176,6 +176,7 @@ function ComparePage() {
 
   const exportPdf = () => {
     if (typeof window === "undefined") return;
+    void trackModuleEvent("compare", "click", { interaction: "export_pdf", count: items.length, slugs: items.map((c) => c.slug) });
     const esc = (v: unknown) =>
       String(v ?? "—").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     const origin = window.location.origin;
