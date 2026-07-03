@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useRouterState, Outlet } from "@tanstack/react-router";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -38,6 +38,8 @@ function StudioPage() {
   const navigate = useNavigate();
   const [authChecked, setAuthChecked] = useState(false);
   const drafts = useStudioDrafts();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isStudioChild = pathname !== "/studio" && pathname !== "/studio/";
 
   useEffect(() => {
     (async () => {
@@ -100,12 +102,15 @@ function StudioPage() {
   }
 
   if (!authChecked) {
+    if (isStudioChild) return <Outlet />;
     return (
       <div className="min-h-screen flex items-center justify-center text-muted-foreground">
         <Loader2 className="h-5 w-5 animate-spin mr-2" /> Loading studio…
       </div>
     );
   }
+
+  if (isStudioChild) return <Outlet />;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
