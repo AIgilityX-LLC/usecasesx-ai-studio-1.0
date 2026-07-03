@@ -18,6 +18,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   FileDown, FileText, BarChart3, Loader2,
 } from "lucide-react";
+import jsPDF from "jspdf";
 
 export const Route = createFileRoute("/_app/studio/portfolio")({
   component: () => (<RequirePlan min="pro" feature="Portfolio Roadmap"><PortfolioRoadmapPage /></RequirePlan>),
