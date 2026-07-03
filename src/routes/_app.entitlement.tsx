@@ -31,7 +31,7 @@ function EntitlementPage() {
         tone="dark"
         eyebrow="Account · Plan & Entitlement"
         title="Your plan, access, and module entitlements"
-        description="See exactly what your account unlocks today, when gratis founding access expires, and which SARPI Suite™ modules are included or locked."
+        description="See exactly what your account unlocks today, when gratis founding access expires, and which UseCasesX™ modules are included or locked."
       />
 
       {!ent.isAuthed && !ent.loading && (
@@ -100,7 +100,7 @@ function EntitlementPage() {
                     {SARPI_MODULES.filter((m) => tierUnlocks(ent.tier, m.required)).length}
                     <span className="text-base font-medium text-muted-foreground"> / {SARPI_MODULES.length}</span>
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">SARPI Suite™ modules</p>
+                  <p className="mt-1 text-xs text-muted-foreground">UseCasesX™ modules</p>
                 </CardContent>
               </Card>
             </div>
@@ -117,7 +117,7 @@ function EntitlementPage() {
           <section className="bg-background">
             <div className="mx-auto max-w-[1100px] px-6 py-12">
               <h2 className="text-xl font-bold tracking-tight">Module access</h2>
-              <p className="mt-2 text-sm text-muted-foreground">Included and locked SARPI modules for your current tier.</p>
+              <p className="mt-2 text-sm text-muted-foreground">Included and locked UseCasesX modules for your current tier.</p>
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
                 {SARPI_MODULES.map((m) => {
                   const unlocked = tierUnlocks(ent.tier, m.required);
