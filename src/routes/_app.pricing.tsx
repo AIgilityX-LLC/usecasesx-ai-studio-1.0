@@ -8,6 +8,7 @@ import { PageHero } from "@/components/usecasex/PageHero";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { FoundingAccessBanner } from "@/components/FoundingAccessBanner";
 import { useEntitlement } from "@/hooks/useEntitlement";
+import { NEXT_RELEASE_LABEL, PRO_BETA_LABEL, isComingSoon } from "@/lib/launch";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -69,8 +70,8 @@ const PLANS: Plan[] = [
     key: "pro",
     name: "Pro",
     tagline: "End-to-end discovery, design, governance, and roadmap.",
-    price: "Contact sales",
-    cta: "Upgrade to Pro",
+    price: PRO_BETA_LABEL,
+    cta: "Join the Waitlist — Get Early Access",
     highlight: true,
     badge: "Most popular",
     features: [
@@ -276,7 +277,14 @@ function PricingPage() {
                 {p.features.map((f) => (
                   <li key={f} className="flex items-start gap-2">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
-                    <span>{f}</span>
+                    <span>
+                      {f}
+                      {isComingSoon(f) && (
+                        <span className="ml-1.5 rounded bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                          Coming {NEXT_RELEASE_LABEL}
+                        </span>
+                      )}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -288,13 +296,19 @@ function PricingPage() {
                 </ul>
               )}
               <div className="mt-auto pt-4">
-                <Button
-                  className="w-full"
-                  variant={p.highlight ? "default" : "outline"}
-                  asChild
-                >
-                  <Link to={p.key === "lite" ? "/auth" : "/"}>{p.cta}</Link>
-                </Button>
+                {p.key === "pro" ? (
+                  <Button className="w-full" onClick={() => setWaitlistOpen(true)}>
+                    <Sparkles className="mr-2 h-4 w-4" /> {p.cta}
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full"
+                    variant={p.highlight ? "default" : "outline"}
+                    asChild
+                  >
+                    <Link to={p.key === "lite" ? "/auth" : "/"}>{p.cta}</Link>
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -362,7 +376,7 @@ function PricingPage() {
                       <TableRow key={row.label}>
                         <TableCell className="font-medium">{row.label}</TableCell>
                         <Cell value={row.lite} highlight={mineOn && myPlan === "lite"} />
-                        <Cell value={row.pro} highlight={mineOn && myPlan === "pro"} />
+                        <Cell value={row.pro} highlight={mineOn && myPlan === "pro"} soon={isComingSoon(row.label)} />
                         <Cell value={row.enterprise} highlight={mineOn && myPlan === "enterprise"} />
                       </TableRow>
                     ))}
@@ -389,12 +403,20 @@ function PricingPage() {
   );
 }
 
-function Cell({ value, highlight = false }: { value: boolean | string; highlight?: boolean }) {
+function Cell({ value, highlight = false, soon = false }: { value: boolean | string; highlight?: boolean; soon?: boolean }) {
   const hl = highlight ? "bg-emerald-500/10" : "";
+  const soonBadge = soon ? (
+    <span className="ml-1.5 rounded bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+      {NEXT_RELEASE_LABEL}
+    </span>
+  ) : null;
   if (value === true) {
     return (
       <TableCell className={`text-center ${hl}`}>
-        <Check className="mx-auto h-4 w-4 text-emerald-500" />
+        <span className="inline-flex items-center">
+          <Check className="h-4 w-4 text-emerald-500" />
+          {soonBadge}
+        </span>
       </TableCell>
     );
   }
@@ -405,5 +427,5 @@ function Cell({ value, highlight = false }: { value: boolean | string; highlight
       </TableCell>
     );
   }
-  return <TableCell className={`text-center text-sm text-muted-foreground ${hl}`}>{value}</TableCell>;
+  return <TableCell className={`text-center text-sm text-muted-foreground ${hl}`}>{value}{soonBadge}</TableCell>;
 }
