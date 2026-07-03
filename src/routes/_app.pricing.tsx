@@ -169,7 +169,7 @@ function PricingPage() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-2 px-6 py-3 text-center text-sm text-foreground">
           <Sparkles className="h-4 w-4 text-primary" />
           <span className="font-semibold">
-            Founding Member early access — free SARPI Pro, gratis until {FREE_UNTIL}
+            Founding Member early access — free UseCasesX Pro, gratis until {FREE_UNTIL}
           </span>
           <button
             onClick={() => setWaitlistOpen(true)}
