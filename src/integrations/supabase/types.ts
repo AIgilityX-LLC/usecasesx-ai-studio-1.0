@@ -1351,6 +1351,47 @@ export type Database = {
           },
         ]
       }
+      use_case_deliverables: {
+        Row: {
+          content: Json
+          created_at: string
+          created_by: string | null
+          deliverable_type: string
+          id: string
+          status: string
+          updated_at: string
+          use_case_id: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          deliverable_type: string
+          id?: string
+          status?: string
+          updated_at?: string
+          use_case_id: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          created_by?: string | null
+          deliverable_type?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "use_case_deliverables_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "ai_use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       use_case_downloads: {
         Row: {
           asset_kind: string | null
