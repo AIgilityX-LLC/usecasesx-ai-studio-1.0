@@ -8,6 +8,7 @@ import { PageHero } from "@/components/usecasex/PageHero";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { FoundingAccessBanner } from "@/components/FoundingAccessBanner";
 import { useEntitlement } from "@/hooks/useEntitlement";
+import { NEXT_RELEASE_LABEL, PRO_BETA_LABEL, isComingSoon } from "@/lib/launch";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -69,8 +70,8 @@ const PLANS: Plan[] = [
     key: "pro",
     name: "Pro",
     tagline: "End-to-end discovery, design, governance, and roadmap.",
-    price: "Contact sales",
-    cta: "Upgrade to Pro",
+    price: PRO_BETA_LABEL,
+    cta: "Join the Waitlist — Get Early Access",
     highlight: true,
     badge: "Most popular",
     features: [
