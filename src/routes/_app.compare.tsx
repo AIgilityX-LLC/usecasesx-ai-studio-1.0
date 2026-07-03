@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQueries } from "@tanstack/react-query";
 import { Download, Share2, ArrowUpDown, ChevronDown, ChevronRight, ChevronLeft } from "lucide-react";
 import { compareStore } from "@/lib/usecasex.compare.store";
