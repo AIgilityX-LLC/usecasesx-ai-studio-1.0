@@ -309,6 +309,29 @@ function ComparePage() {
       />
 
       <div className="mx-auto max-w-[1400px] px-6 py-10">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            <ArrowUpDown className="h-3.5 w-3.5" /> Sort rows
+          </span>
+          {([
+            { key: "default", label: "Default" },
+            { key: "diff-first", label: "Differences first" },
+            { key: "alpha", label: "A–Z" },
+          ] as const).map((opt) => (
+            <button
+              key={opt.key}
+              onClick={() => changeSort(opt.key)}
+              className={
+                "rounded-md border px-3 py-1.5 text-xs font-semibold transition " +
+                (sortMode === opt.key
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border text-muted-foreground hover:bg-secondary")
+              }
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
         <div className="overflow-x-auto rounded-xl border border-border bg-card">
           <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead>
@@ -333,21 +356,53 @@ function ComparePage() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => (
-                <tr key={r.label} className={"border-b border-border " + (diffSet.has(r.label) ? "bg-primary/[0.03]" : "")}>
-                  <td className="px-4 py-3 align-top text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                    {r.label}
-                    {diffSet.has(r.label) && (
-                      <span className="ml-2 rounded bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-primary">DIFFERS</span>
+              {pageRows.map((r) => {
+                const expanded = expandedRows.has(r.label);
+                return (
+                  <React.Fragment key={r.label}>
+                    <tr className={"border-b border-border " + (diffSet.has(r.label) ? "bg-primary/[0.03]" : "")}>
+                      <td className="px-4 py-3 align-top text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                        <button
+                          onClick={() => toggleRow(r.label)}
+                          className="flex items-start gap-1 text-left hover:text-foreground"
+                          aria-expanded={expanded}
+                        >
+                          {expanded ? (
+                            <ChevronDown className="mt-0.5 h-3 w-3 shrink-0" />
+                          ) : (
+                            <ChevronRight className="mt-0.5 h-3 w-3 shrink-0" />
+                          )}
+                          <span>
+                            {r.label}
+                            {diffSet.has(r.label) && (
+                              <span className="ml-2 rounded bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-primary">DIFFERS</span>
+                            )}
+                          </span>
+                        </button>
+                      </td>
+                      {items.map((c) => (
+                        <td key={c.slug} className="px-4 py-3 align-top text-sm text-foreground">
+                          {r.render(c)}
+                        </td>
+                      ))}
+                    </tr>
+                    {expanded && (
+                      <tr className="border-b border-border bg-secondary/40">
+                        <td colSpan={items.length + 1} className="px-4 py-3">
+                          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            {items.map((c) => (
+                              <div key={c.slug} className="rounded-md border border-border bg-card px-3 py-2">
+                                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{c.title}</div>
+                                <div className="mt-1 text-sm text-foreground">{r.render(c)}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
                     )}
-                  </td>
-                  {items.map((c) => (
-                    <td key={c.slug} className="px-4 py-3 align-top text-sm text-foreground">
-                      {r.render(c)}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+                  </React.Fragment>
+                );
+              })}
               <tr>
                 <td className="px-4 py-4 align-top text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                   Evidence
