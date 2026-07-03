@@ -31,7 +31,7 @@ const QUAD: Record<Q, { label: string; desc: string; cls: string }> = {
 };
 
 const valueScore = (v?: string | null) => (v === "High" ? 1 : 0);
-const cplxLow = (c?: string | null) => c === "Low"; // Low = low complexity; Medium/High = high
+const cplxLow = (c?: string | null) => c === "Low" || c === "Medium"; // High = high complexity
 
 function quadrantOf(v?: string | null, c?: string | null): Q {
   const highValue = valueScore(v) === 1;
@@ -65,7 +65,7 @@ function QuickWinsPage() {
     return rows.map((r) => {
       const q = quadrantOf(r.value_potential as string, r.complexity as string);
       // x: complexity axis 0..1 (low→high); y: value axis 0..1 (low→high)
-      const cx = (cplxLow(r.complexity as string) ? 0.27 : (r.complexity === "High" ? 0.78 : 0.6)) + jitter(String(r.id), 0.14);
+      const cx = (r.complexity === "Low" ? 0.2 : r.complexity === "Medium" ? 0.42 : 0.76) + jitter(String(r.id), 0.12);
       const cy = (valueScore(r.value_potential as string) === 1 ? 0.75 : 0.28) + jitter(String(r.id) + "y", 0.16);
       return { id: String(r.id), slug: String(r.slug), title: String(r.title), q, cx: Math.min(0.96, Math.max(0.04, cx)), cy: Math.min(0.96, Math.max(0.04, cy)) };
     });
