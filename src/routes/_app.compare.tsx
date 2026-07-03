@@ -170,6 +170,38 @@ function ComparePage() {
       .map((r) => r.label),
   );
 
+  // --- Sorting / pagination / row-expansion of the attribute rows ---
+  const orderedRows = [...rows];
+  if (sortMode === "diff-first") {
+    orderedRows.sort((a, b) => (diffSet.has(b.label) ? 1 : 0) - (diffSet.has(a.label) ? 1 : 0));
+  } else if (sortMode === "alpha") {
+    orderedRows.sort((a, b) => a.label.localeCompare(b.label));
+  }
+  const totalPages = Math.max(1, Math.ceil(orderedRows.length / ROWS_PER_PAGE));
+  const safePage = Math.min(page, totalPages - 1);
+  const pageRows = orderedRows.slice(safePage * ROWS_PER_PAGE, safePage * ROWS_PER_PAGE + ROWS_PER_PAGE);
+
+  const changeSort = (mode: "default" | "diff-first" | "alpha") => {
+    setSortMode(mode);
+    setPage(0);
+    void trackModuleEvent("compare", "click", { interaction: "sort_table", order: mode });
+  };
+  const goToPage = (p: number) => {
+    const next = Math.max(0, Math.min(p, totalPages - 1));
+    setPage(next);
+    void trackModuleEvent("compare", "click", { interaction: "paginate_table", page: next + 1, total_pages: totalPages });
+  };
+  const toggleRow = (label: string) => {
+    setExpandedRows((prev) => {
+      const nextSet = new Set(prev);
+      const willExpand = !nextSet.has(label);
+      if (willExpand) nextSet.add(label);
+      else nextSet.delete(label);
+      void trackModuleEvent("compare", "click", { interaction: "row_expand", row: label, expanded: willExpand });
+      return nextSet;
+    });
+  };
+
   const evidenceFor = (c: Row): { problem?: string; approach?: string; value?: string; metrics: Row[]; links: Row[] } => ({
     problem: c.business_problem ?? c.summary ?? undefined,
     approach: c.ai_solution_concept ?? undefined,
