@@ -15,7 +15,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test:navbar": "playwright test tests/navbar.spec.ts",
-    "check:nav-integrity": "node scripts/check-nav-integrity.mjs"
+    "check:nav-integrity": "node scripts/check-nav-integrity.mjs",
+    "check:compare": "node scripts/check-compare-analytics.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

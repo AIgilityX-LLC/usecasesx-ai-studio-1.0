@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useQueries } from "@tanstack/react-query";
-import { Download, Share2 } from "lucide-react";
+import { Download, Share2, ArrowUpDown, ChevronDown, ChevronRight, ChevronLeft } from "lucide-react";
 import { compareStore } from "@/lib/usecasex.compare.store";
 import { getUseCase } from "@/lib/use-cases.functions";
 import { trackModuleEvent } from "@/lib/module-analytics";
@@ -33,6 +33,10 @@ type Row = Record<string, any>;
 function ComparePage() {
   const search = Route.useSearch() as { ids?: string };
   const navigate = Route.useNavigate();
+  const ROWS_PER_PAGE = 5;
+  const [sortMode, setSortMode] = useState<"default" | "diff-first" | "alpha">("default");
+  const [page, setPage] = useState(0);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const slugs: string[] = (search.ids ?? "")
     .split(",")
     .map((s) => s.trim())
@@ -166,6 +170,38 @@ function ComparePage() {
       .map((r) => r.label),
   );
 
+  // --- Sorting / pagination / row-expansion of the attribute rows ---
+  const orderedRows = [...rows];
+  if (sortMode === "diff-first") {
+    orderedRows.sort((a, b) => (diffSet.has(b.label) ? 1 : 0) - (diffSet.has(a.label) ? 1 : 0));
+  } else if (sortMode === "alpha") {
+    orderedRows.sort((a, b) => a.label.localeCompare(b.label));
+  }
+  const totalPages = Math.max(1, Math.ceil(orderedRows.length / ROWS_PER_PAGE));
+  const safePage = Math.min(page, totalPages - 1);
+  const pageRows = orderedRows.slice(safePage * ROWS_PER_PAGE, safePage * ROWS_PER_PAGE + ROWS_PER_PAGE);
+
+  const changeSort = (mode: "default" | "diff-first" | "alpha") => {
+    setSortMode(mode);
+    setPage(0);
+    void trackModuleEvent("compare", "click", { interaction: "sort_table", order: mode });
+  };
+  const goToPage = (p: number) => {
+    const next = Math.max(0, Math.min(p, totalPages - 1));
+    setPage(next);
+    void trackModuleEvent("compare", "click", { interaction: "paginate_table", page: next + 1, total_pages: totalPages });
+  };
+  const toggleRow = (label: string) => {
+    setExpandedRows((prev) => {
+      const nextSet = new Set(prev);
+      const willExpand = !nextSet.has(label);
+      if (willExpand) nextSet.add(label);
+      else nextSet.delete(label);
+      void trackModuleEvent("compare", "click", { interaction: "row_expand", row: label, expanded: willExpand });
+      return nextSet;
+    });
+  };
+
   const evidenceFor = (c: Row): { problem?: string; approach?: string; value?: string; metrics: Row[]; links: Row[] } => ({
     problem: c.business_problem ?? c.summary ?? undefined,
     approach: c.ai_solution_concept ?? undefined,
@@ -273,6 +309,29 @@ function ComparePage() {
       />
 
       <div className="mx-auto max-w-[1400px] px-6 py-10">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            <ArrowUpDown className="h-3.5 w-3.5" /> Sort rows
+          </span>
+          {([
+            { key: "default", label: "Default" },
+            { key: "diff-first", label: "Differences first" },
+            { key: "alpha", label: "A–Z" },
+          ] as const).map((opt) => (
+            <button
+              key={opt.key}
+              onClick={() => changeSort(opt.key)}
+              className={
+                "rounded-md border px-3 py-1.5 text-xs font-semibold transition " +
+                (sortMode === opt.key
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border text-muted-foreground hover:bg-secondary")
+              }
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
         <div className="overflow-x-auto rounded-xl border border-border bg-card">
           <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead>
@@ -297,21 +356,53 @@ function ComparePage() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => (
-                <tr key={r.label} className={"border-b border-border " + (diffSet.has(r.label) ? "bg-primary/[0.03]" : "")}>
-                  <td className="px-4 py-3 align-top text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                    {r.label}
-                    {diffSet.has(r.label) && (
-                      <span className="ml-2 rounded bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-primary">DIFFERS</span>
+              {pageRows.map((r) => {
+                const expanded = expandedRows.has(r.label);
+                return (
+                  <React.Fragment key={r.label}>
+                    <tr className={"border-b border-border " + (diffSet.has(r.label) ? "bg-primary/[0.03]" : "")}>
+                      <td className="px-4 py-3 align-top text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                        <button
+                          onClick={() => toggleRow(r.label)}
+                          className="flex items-start gap-1 text-left hover:text-foreground"
+                          aria-expanded={expanded}
+                        >
+                          {expanded ? (
+                            <ChevronDown className="mt-0.5 h-3 w-3 shrink-0" />
+                          ) : (
+                            <ChevronRight className="mt-0.5 h-3 w-3 shrink-0" />
+                          )}
+                          <span>
+                            {r.label}
+                            {diffSet.has(r.label) && (
+                              <span className="ml-2 rounded bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-primary">DIFFERS</span>
+                            )}
+                          </span>
+                        </button>
+                      </td>
+                      {items.map((c) => (
+                        <td key={c.slug} className="px-4 py-3 align-top text-sm text-foreground">
+                          {r.render(c)}
+                        </td>
+                      ))}
+                    </tr>
+                    {expanded && (
+                      <tr className="border-b border-border bg-secondary/40">
+                        <td colSpan={items.length + 1} className="px-4 py-3">
+                          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            {items.map((c) => (
+                              <div key={c.slug} className="rounded-md border border-border bg-card px-3 py-2">
+                                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{c.title}</div>
+                                <div className="mt-1 text-sm text-foreground">{r.render(c)}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
                     )}
-                  </td>
-                  {items.map((c) => (
-                    <td key={c.slug} className="px-4 py-3 align-top text-sm text-foreground">
-                      {r.render(c)}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+                  </React.Fragment>
+                );
+              })}
               <tr>
                 <td className="px-4 py-4 align-top text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                   Evidence
@@ -376,6 +467,32 @@ function ComparePage() {
             </tbody>
           </table>
         </div>
+        {totalPages > 1 && (
+          <div className="mt-4 flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">
+              Showing rows {safePage * ROWS_PER_PAGE + 1}–{Math.min((safePage + 1) * ROWS_PER_PAGE, orderedRows.length)} of {orderedRows.length}
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => goToPage(safePage - 1)}
+                disabled={safePage === 0}
+                className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs font-semibold disabled:opacity-40 hover:bg-secondary"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" /> Prev
+              </button>
+              <span className="text-xs font-semibold text-foreground">
+                {safePage + 1} / {totalPages}
+              </span>
+              <button
+                onClick={() => goToPage(safePage + 1)}
+                disabled={safePage >= totalPages - 1}
+                className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs font-semibold disabled:opacity-40 hover:bg-secondary"
+              >
+                Next <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </article>
   );

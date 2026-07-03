@@ -1,0 +1,25 @@
+name: Compare analytics check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: compare-analytics-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compare-analytics:
+    name: /compare compiles & analytics wired
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Verify /compare analytics events & compilation
+        run: bun run check:compare
