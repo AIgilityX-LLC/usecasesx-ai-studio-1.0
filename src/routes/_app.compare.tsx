@@ -257,6 +257,12 @@ function ComparePage() {
               ← Back to Explore
             </Link>
             <button
+              onClick={shareComparison}
+              className="inline-flex items-center gap-1.5 rounded-md border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary"
+            >
+              <Share2 className="h-3.5 w-3.5" /> Share
+            </button>
+            <button
               onClick={exportPdf}
               className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-110"
             >
