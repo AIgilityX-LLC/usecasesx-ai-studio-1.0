@@ -60,7 +60,10 @@ export function AppSidebar() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const { isPro, isAdmin } = usePlan();
 
-  const isActive = (to: string) => to === "/" ? pathname === to : pathname.startsWith(to);
+  const isActive = (to: string) =>
+    to === "/" || to === "/account"
+      ? pathname === to || pathname === `${to}/`
+      : pathname.startsWith(to);
 
   const renderItem = (item: Item) => {
     const locked = item.pro && !isPro;
@@ -140,6 +143,13 @@ export function AppSidebar() {
             <SidebarMenu>
               {ADMIN.filter((i) => !i.admin || isAdmin).map(renderItem)}
             </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          {!collapsed && <SidebarGroupLabel>Account</SidebarGroupLabel>}
+          <SidebarGroupContent>
+            <SidebarMenu>{ACCOUNT.map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
