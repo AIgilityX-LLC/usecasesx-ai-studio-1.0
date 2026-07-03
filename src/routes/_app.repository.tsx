@@ -200,7 +200,7 @@ function Page() {
     return cases.filter((c) => {
       if (segs.length) {
         const cSegs = segmentsForIndustries(industrySlugsOf(c));
-        if (!segs.some((s) => cSegs.includes(s))) return false;
+        if (!segs.some((s: string) => cSegs.includes(s))) return false;
       }
       if (prio.length && !prio.includes(derivePriority(c))) return false;
       if (roi.length && !roi.includes(deriveRoiRange(c))) return false;
