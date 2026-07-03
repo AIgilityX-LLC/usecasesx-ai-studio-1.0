@@ -156,6 +156,7 @@ function UseCasesTab() {
   const [query, setQuery] = useState("");
   const [statusF, setStatusF] = useState<string>("all");
   const [visF, setVisF] = useState<string>("all");
+  const [segmentF, setSegmentF] = useState<string>("all");
   const [industryF, setIndustryF] = useState<string>("all");
   const [fnF, setFnF] = useState<string>("all");
   const [aiF, setAiF] = useState<string>("all");
@@ -171,10 +172,12 @@ function UseCasesTab() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
+    const segIndustries = segmentF !== "all" ? new Set(industryNamesInSegment(segmentF)) : null;
     return store.list.filter((u) => {
       if (q && !`${u.title} ${u.slug} ${u.shortDescription}`.toLowerCase().includes(q)) return false;
       if (statusF !== "all" && u.status !== statusF) return false;
       if (visF !== "all" && u.visibility !== visF) return false;
+      if (segIndustries && !segIndustries.has(u.industry ?? "")) return false;
       if (industryF !== "all" && u.industry !== industryF) return false;
       if (fnF !== "all" && u.businessFunction !== fnF) return false;
       if (aiF !== "all" && u.aiType !== aiF) return false;
@@ -182,9 +185,9 @@ function UseCasesTab() {
       if (valueF !== "all" && u.valuePotential !== valueF) return false;
       return true;
     });
-  }, [store.list, query, statusF, visF, industryF, fnF, aiF, riskF, valueF]);
+  }, [store.list, query, statusF, visF, segmentF, industryF, fnF, aiF, riskF, valueF]);
 
-  const clearFilters = () => { setQuery(""); setStatusF("all"); setVisF("all"); setIndustryF("all"); setFnF("all"); setAiF("all"); setRiskF("all"); setValueF("all"); };
+  const clearFilters = () => { setQuery(""); setStatusF("all"); setVisF("all"); setSegmentF("all"); setIndustryF("all"); setFnF("all"); setAiF("all"); setRiskF("all"); setValueF("all"); };
 
   return (
     <div className="space-y-4">
@@ -198,6 +201,7 @@ function UseCasesTab() {
           <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-2">
             <FilterSelect label="Status" value={statusF} onChange={setStatusF} options={STATUSES} />
             <FilterSelect label="Visibility" value={visF} onChange={setVisF} options={VISIBILITIES} />
+            <FilterSelect label="Market Segment" value={segmentF} onChange={setSegmentF} options={SEGMENT_NAMES} />
             <FilterSelect label="Industry" value={industryF} onChange={setIndustryF} options={opts.industries} />
             <FilterSelect label="Function" value={fnF} onChange={setFnF} options={opts.functions} />
             <FilterSelect label="AI type" value={aiF} onChange={setAiF} options={opts.aiTypes} />
