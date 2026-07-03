@@ -19,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const FREE_UNTIL = "31 Dec 2026";
+const FREE_UNTIL = "31 Dec 2027";
 
 export const Route = createFileRoute("/_app/pricing")({
   head: () => ({
@@ -223,7 +223,7 @@ function PricingPage() {
                     "No credit card required",
                     "Full Pro feature set unlocked",
                     "Priority onboarding & support",
-                    "Lock in founding-member pricing after 2026",
+                    "Lock in founding-member pricing after 2027",
                   ].map((f) => (
                     <li key={f} className="flex items-start gap-2">
                       <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
