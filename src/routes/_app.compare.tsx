@@ -33,6 +33,10 @@ type Row = Record<string, any>;
 function ComparePage() {
   const search = Route.useSearch() as { ids?: string };
   const navigate = Route.useNavigate();
+  const ROWS_PER_PAGE = 5;
+  const [sortMode, setSortMode] = useState<"default" | "diff-first" | "alpha">("default");
+  const [page, setPage] = useState(0);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const slugs: string[] = (search.ids ?? "")
     .split(",")
     .map((s) => s.trim())
