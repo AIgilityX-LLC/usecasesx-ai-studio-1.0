@@ -10,7 +10,7 @@ import {
   TableCell,
   WidthType,
 } from "docx";
-import { saveAs } from "file-saver";
+import saveAs from "file-saver";
 
 export type ExportSection =
   | { heading: string; kind: "text"; body: string }
