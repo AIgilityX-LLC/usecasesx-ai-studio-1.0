@@ -35,13 +35,13 @@ export const Route = createFileRoute("/_app/sarpi")({
       {
         name: "description",
         content:
-          "SARPI Suite™: the executive AI value operating system. Measure AI readiness, ROI, risk, governance, and real business value. SARPI Pro gratis (free) until 31 Dec 2026.",
+          "SARPI Suite™: the executive AI value operating system. Measure AI readiness, ROI, risk, governance, and real business value. SARPI Pro gratis (free) until 31 Dec 2027.",
       },
       { property: "og:title", content: "SARPI Suite™ — The AI Value Operating System" },
       {
         property: "og:description",
         content:
-          "Twelve connected modules. One executive view. Join SARPI Pro gratis (free) until 31 Dec 2026.",
+          "Twelve connected modules. One executive view. Join SARPI Pro gratis (free) until 31 Dec 2027.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -50,7 +50,7 @@ export const Route = createFileRoute("/_app/sarpi")({
   component: SarpiFeaturesPage,
 });
 
-const FREE_UNTIL = "31 Dec 2026";
+const FREE_UNTIL = "31 Dec 2027";
 
 const MODULES = [
   { tier: "Lite", icon: Gauge, title: "AI Readiness Navigator™", desc: "Assess maturity across strategy, leadership, data, technology, skills, culture, governance, process, and change." },
@@ -169,7 +169,7 @@ function SarpiFeaturesPage() {
                 SARPI {tierLabel}
               </Badge>
               {ent.isFounding && ent.tier !== "lite" && (
-                <span className="text-xs text-muted-foreground">Founding Member · gratis until 31 Dec 2026</span>
+                <span className="text-xs text-muted-foreground">Founding Member · gratis until 31 Dec 2027</span>
               )}
               {ent.expired && (
                 <span className="text-xs text-amber-600 dark:text-amber-400">

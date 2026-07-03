@@ -2,8 +2,8 @@
 // No React / Supabase imports here so this file is safe to import inside
 // server-function modules.
 
-export const FOUNDING_UNTIL_ISO = "2026-12-31T23:59:59.000Z";
-export const FOUNDING_UNTIL_LABEL = "31 Dec 2026";
+export const FOUNDING_UNTIL_ISO = "2027-12-31T23:59:59.000Z";
+export const FOUNDING_UNTIL_LABEL = "31 Dec 2027";
 
 export type EntTier = "lite" | "pro" | "enterprise";
 export const TIER_RANK: Record<EntTier, number> = { lite: 0, pro: 1, enterprise: 2 };
