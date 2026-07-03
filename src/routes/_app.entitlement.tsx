@@ -56,7 +56,7 @@ function EntitlementPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold">SARPI {label}</span>
+                    <span className="text-2xl font-bold">UseCasesX {label}</span>
                   </div>
                   {ent.isFounding && ent.tier !== "lite" && (
                     <Badge variant="secondary" className="mt-2 bg-primary/15 text-primary">Founding Member</Badge>
