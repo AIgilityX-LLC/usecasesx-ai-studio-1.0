@@ -229,6 +229,21 @@ function ComparePage() {
     }
   };
 
+  const shareComparison = async () => {
+    if (typeof window === "undefined") return;
+    const url = window.location.href;
+    void trackModuleEvent("compare", "click", { interaction: "share_comparison", count: items.length, slugs: items.map((c) => c.slug) });
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "AI Use Case Comparison — UseCasesX™", url });
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+      }
+    } catch {
+      /* user cancelled share or clipboard blocked — non-fatal */
+    }
+  };
+
   return (
     <article className="bg-background">
       <PageHero
