@@ -107,6 +107,7 @@ function ComparePage() {
           onClick={() => {
             compareStore.clear();
             navigate({ search: { ids: undefined } as never, replace: true });
+            void trackModuleEvent("compare", "click", { interaction: "clear_comparison", source: "unavailable_fallback" });
           }}
           className="mt-6 mr-2 inline-block rounded-md border border-border px-5 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
         >
