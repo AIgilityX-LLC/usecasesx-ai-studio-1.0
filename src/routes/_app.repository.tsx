@@ -319,7 +319,7 @@ function Page() {
       <div className="sticky top-14 z-20 border-b border-border bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70">
         <div className="mx-auto max-w-[1400px] px-6 py-3">
           <HorizontalFilters
-            tax={tax}
+            tax={{ ...tax, segments: SEGMENTS.map((s) => ({ slug: s.slug, name: s.name })) }}
             value={{ ...search, industries: effectiveIndustries } as Partial<FacetState>}
             onChange={(p) => handleFilterChange(p as Partial<Search>)}
             onClear={clearAll}
