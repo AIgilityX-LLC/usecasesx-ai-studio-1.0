@@ -22,6 +22,8 @@ const ListInput = z.object({
   complexity: z.array(z.string()).optional().default([]),
   riskLevel: z.array(z.string()).optional().default([]),
   timeToValue: z.array(z.string()).optional().default([]),
+  deploymentModel: z.array(z.string()).optional().default([]),
+  securityClassification: z.array(z.string()).optional().default([]),
   sort: z.enum(["recent", "impact", "maturity", "featured"]).optional().default("recent"),
   featuredOnly: z.boolean().optional().default(false),
   landingOnly: z.boolean().optional().default(false),
@@ -31,6 +33,7 @@ const ListInput = z.object({
 const SELECT = `id, slug, title, summary, organization, organization_type, region,
   maturity, maturity_level, maturity_score, impact_score,
   value_potential, complexity, risk_level, time_to_value, visibility,
+  deployment_model, security_classification, cost_range,
   is_featured, show_on_landing, display_order, published_at,
   use_case_industries ( industries ( slug, name ) ),
   use_case_capabilities ( ai_capabilities ( slug, name ) ),
@@ -61,6 +64,9 @@ export const listUseCases = createServerFn({ method: "GET" })
     if (data.complexity.length) query = query.in("complexity", data.complexity);
     if (data.riskLevel.length) query = query.in("risk_level", data.riskLevel);
     if (data.timeToValue.length) query = query.in("time_to_value", data.timeToValue);
+    if (data.deploymentModel.length) query = query.in("deployment_model", data.deploymentModel);
+    if (data.securityClassification.length)
+      query = query.in("security_classification", data.securityClassification);
 
     if (data.sort === "impact")
       query = query.order("impact_score", { ascending: false, nullsFirst: false });
