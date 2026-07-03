@@ -5,6 +5,7 @@ import { useQueries } from "@tanstack/react-query";
 import { Download } from "lucide-react";
 import { compareStore } from "@/lib/usecasex.compare.store";
 import { getUseCase } from "@/lib/use-cases.functions";
+import { trackModuleEvent } from "@/lib/module-analytics";
 import { MissingDataFallback } from "@/components/MissingDataFallback";
 import { PageHero } from "@/components/usecasex/PageHero";
 
@@ -52,6 +53,7 @@ function ComparePage() {
     const next = slugs.filter((s) => s !== slug);
     compareStore.set(next);
     navigate({ search: { ids: next.join(",") || undefined } as never, replace: true });
+    void trackModuleEvent("compare", "click", { interaction: "remove_from_compare", slug, remaining: next.length });
   };
 
   const results = useQueries({
