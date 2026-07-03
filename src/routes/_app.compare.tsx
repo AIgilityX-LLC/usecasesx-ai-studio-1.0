@@ -467,6 +467,32 @@ function ComparePage() {
             </tbody>
           </table>
         </div>
+        {totalPages > 1 && (
+          <div className="mt-4 flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">
+              Showing rows {safePage * ROWS_PER_PAGE + 1}–{Math.min((safePage + 1) * ROWS_PER_PAGE, orderedRows.length)} of {orderedRows.length}
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => goToPage(safePage - 1)}
+                disabled={safePage === 0}
+                className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs font-semibold disabled:opacity-40 hover:bg-secondary"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" /> Prev
+              </button>
+              <span className="text-xs font-semibold text-foreground">
+                {safePage + 1} / {totalPages}
+              </span>
+              <button
+                onClick={() => goToPage(safePage + 1)}
+                disabled={safePage >= totalPages - 1}
+                className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs font-semibold disabled:opacity-40 hover:bg-secondary"
+              >
+                Next <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </article>
   );
