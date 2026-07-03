@@ -10,6 +10,7 @@ interface Props {
     objectives: { slug: string; name: string }[];
     sectors?: { slug: string; name: string }[];
     tags?: { slug: string; name: string }[];
+    segments?: { slug: string; name: string }[];
   };
   value: Partial<FacetState>;
   onChange: (patch: Partial<FacetState>) => void;
@@ -31,13 +32,20 @@ export function HorizontalFilters({ tax, value, onChange, onClear, activeCount }
   };
 
   const facets: { key: keyof FacetState; label: string; options: { slug: string; name: string }[] }[] = [
+    ...(tax.segments && tax.segments.length ? [{ key: "segments" as const, label: "Market Segment", options: tax.segments }] : []),
     ...(tax.sectors && tax.sectors.length ? [{ key: "sectors" as const, label: "Sector", options: tax.sectors }] : []),
     { key: "industries", label: "Industry", options: tax.industries },
-    { key: "capabilities", label: "AI Type", options: tax.capabilities },
+    { key: "capabilities", label: "AI Pattern", options: tax.capabilities },
     { key: "businessFunctions", label: "Business Function", options: tax.businessFunctions },
     { key: "objectives", label: "Objective", options: tax.objectives },
+    { key: "priority", label: "Priority", options: LEVEL(["Quick Win", "Strategic Bet", "Easy Extra", "Moonshot"]) },
     { key: "maturity", label: "Maturity", options: LEVEL(["Beginner", "Intermediate", "Advanced"]) },
     { key: "valuePotential", label: "Value", options: LEVEL(["Low", "Medium", "High"]) },
+    { key: "roiRange", label: "ROI Range", options: [
+      { slug: "high", name: "High ROI (top tier)" },
+      { slug: "medium", name: "Medium ROI" },
+      { slug: "low", name: "Emerging ROI" },
+    ] },
     { key: "complexity", label: "Complexity", options: LEVEL(["Low", "Medium", "High"]) },
     { key: "riskLevel", label: "Risk", options: LEVEL(["Low", "Medium", "High", "Critical"]) },
     { key: "timeToValue", label: "Time to Value", options: [
@@ -45,6 +53,8 @@ export function HorizontalFilters({ tax, value, onChange, onClear, activeCount }
       { slug: "Medium", name: "Medium (3–9 months)" },
       { slug: "Long", name: "Long (9+ months)" },
     ] },
+    { key: "deploymentModel", label: "Deployment", options: LEVEL(["Cloud", "Hybrid", "On-Premise", "Sovereign Cloud", "Air-Gapped"]) },
+    { key: "securityClassification", label: "Security", options: LEVEL(["Public", "Official", "Confidential", "Secret", "Top Secret"]) },
     ...(tax.tags && tax.tags.length ? [{ key: "tags" as const, label: "Tags", options: tax.tags }] : []),
   ];
 
