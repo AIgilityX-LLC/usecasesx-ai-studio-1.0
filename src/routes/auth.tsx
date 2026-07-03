@@ -116,6 +116,12 @@ function AuthPage() {
             </button>
           </form>
 
+          {mode === "signin" && (
+            <p className="mt-3 text-center text-sm">
+              <Link to="/forgot-password" className="font-semibold text-primary hover:underline">Forgot your password?</Link>
+            </p>
+          )}
+
           <p className="mt-6 text-center text-sm text-muted-foreground">
             {mode === "signin" ? (
               <>No account? <button onClick={() => setMode("signup")} className="font-semibold text-primary hover:underline">Create one</button></>
