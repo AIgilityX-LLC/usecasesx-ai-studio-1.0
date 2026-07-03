@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Library, Sparkles, FolderHeart, KanbanSquare,
   BookOpen, Gauge, Database, Hammer, Map, Rocket, Compass, Shield, BarChart3,
   FileBarChart, Settings, Lock, Crown, Users, Send, LineChart, Inbox,
-  Grid2x2, Calculator, Wand2,
+  Grid2x2, Calculator, Wand2, UserCog,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -43,6 +43,7 @@ const INTEGRATIONS: Item[] = [
 const ADMIN: Item[] = [
   { to: "/reports", label: "Reports", icon: FileBarChart },
   { to: "/entitlement", label: "My Plan", icon: Crown },
+  { to: "/account", label: "Account Settings", icon: UserCog },
   { to: "/module-analytics", label: "Module Analytics", icon: LineChart },
   { to: "/administration", label: "Admin Panel", icon: Settings, admin: true },
   { to: "/admin-submissions", label: "Submission Review", icon: Inbox, admin: true },
