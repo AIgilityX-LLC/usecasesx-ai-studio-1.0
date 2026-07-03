@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Library, Sparkles, FolderHeart, KanbanSquare,
   BookOpen, Gauge, Database, Hammer, Map, Rocket, Compass, Shield, BarChart3,
   FileBarChart, Settings, Lock, Crown, Users, Send, LineChart, Inbox,
-  Grid2x2, Calculator, Wand2, UserCog,
+  Grid2x2, Calculator, Wand2, UserCog, ShieldCheck,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -42,12 +42,16 @@ const INTEGRATIONS: Item[] = [
 
 const ADMIN: Item[] = [
   { to: "/reports", label: "Reports", icon: FileBarChart },
-  { to: "/entitlement", label: "My Plan", icon: Crown },
-  { to: "/account", label: "Account Settings", icon: UserCog },
-  { to: "/module-analytics", label: "Module Analytics", icon: LineChart },
   { to: "/administration", label: "Admin Panel", icon: Settings, admin: true },
   { to: "/admin-submissions", label: "Submission Review", icon: Inbox, admin: true },
   { to: "/admin-waitlist", label: "Free Pro Waitlist", icon: Users, admin: true },
+];
+
+const ACCOUNT: Item[] = [
+  { to: "/account", label: "Account Settings", icon: UserCog },
+  { to: "/account/security", label: "Security", icon: ShieldCheck },
+  { to: "/entitlement", label: "My Plan", icon: Crown },
+  { to: "/module-analytics", label: "Module Analytics", icon: LineChart },
 ];
 
 export function AppSidebar() {
@@ -56,7 +60,10 @@ export function AppSidebar() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const { isPro, isAdmin } = usePlan();
 
-  const isActive = (to: string) => to === "/" ? pathname === to : pathname.startsWith(to);
+  const isActive = (to: string) =>
+    to === "/" || to === "/account"
+      ? pathname === to || pathname === `${to}/`
+      : pathname.startsWith(to);
 
   const renderItem = (item: Item) => {
     const locked = item.pro && !isPro;
@@ -136,6 +143,13 @@ export function AppSidebar() {
             <SidebarMenu>
               {ADMIN.filter((i) => !i.admin || isAdmin).map(renderItem)}
             </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          {!collapsed && <SidebarGroupLabel>Account</SidebarGroupLabel>}
+          <SidebarGroupContent>
+            <SidebarMenu>{ACCOUNT.map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

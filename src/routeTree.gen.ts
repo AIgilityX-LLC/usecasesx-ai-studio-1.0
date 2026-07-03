@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
@@ -49,12 +51,14 @@ import { Route as AppAdminWaitlistRouteImport } from './routes/_app.admin-waitli
 import { Route as AppAdminSubmissionsRouteImport } from './routes/_app.admin-submissions'
 import { Route as AppAccountRouteImport } from './routes/_app.account'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
+import { Route as AppAccountIndexRouteImport } from './routes/_app.account.index'
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
 import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
 import { Route as AppSegmentsSegmentRouteImport } from './routes/_app.segments.$segment'
 import { Route as AppSectorsSectorRouteImport } from './routes/_app.sectors.$sector'
 import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
+import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.security'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
 import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
@@ -69,6 +73,16 @@ import { Route as AppStudioUseCaseIdBlueprintRouteImport } from './routes/_app.s
 import { Route as AppStudioUseCaseIdAdvisorxRouteImport } from './routes/_app.studio.use-case.$id.advisorx'
 import { Route as AppStudioUseCaseIdDeliverableTypeRouteImport } from './routes/_app.studio.use-case.$id.deliverable.$type'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -268,6 +282,11 @@ const AppBoardsIndexRoute = AppBoardsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppBoardsRoute,
 } as any)
+const AppAccountIndexRoute = AppAccountIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppAccountRoute,
+} as any)
 const AppUseCasesSlugRoute = AppUseCasesSlugRouteImport.update({
   id: '/use-cases/$slug',
   path: '/use-cases/$slug',
@@ -297,6 +316,11 @@ const AppBoardsBoardIdRoute = AppBoardsBoardIdRouteImport.update({
   id: '/$boardId',
   path: '/$boardId',
   getParentRoute: () => AppBoardsRoute,
+} as any)
+const AppAccountSecurityRoute = AppAccountSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => AppAccountRoute,
 } as any)
 const ApiPublicUsecasexUseCasesRoute =
   ApiPublicUsecasexUseCasesRouteImport.update({
@@ -377,7 +401,9 @@ const AppStudioUseCaseIdDeliverableTypeRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/account': typeof AppAccountRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/account': typeof AppAccountRouteWithChildren
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
@@ -413,12 +439,14 @@ export interface FileRoutesByFullPath {
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
   '/c/$token': typeof CTokenRoute
+  '/account/security': typeof AppAccountSecurityRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
   '/segments/$segment': typeof AppSegmentsSegmentRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
+  '/account/': typeof AppAccountIndexRoute
   '/boards/': typeof AppBoardsIndexRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
@@ -437,7 +465,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/account': typeof AppAccountRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
@@ -472,12 +501,14 @@ export interface FileRoutesByTo {
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
   '/c/$token': typeof CTokenRoute
+  '/account/security': typeof AppAccountSecurityRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
   '/segments/$segment': typeof AppSegmentsSegmentRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
+  '/account': typeof AppAccountIndexRoute
   '/boards': typeof AppBoardsIndexRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
@@ -498,7 +529,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
-  '/_app/account': typeof AppAccountRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/_app/account': typeof AppAccountRouteWithChildren
   '/_app/admin-submissions': typeof AppAdminSubmissionsRoute
   '/_app/admin-waitlist': typeof AppAdminWaitlistRoute
   '/_app/administration': typeof AppAdministrationRoute
@@ -534,12 +567,14 @@ export interface FileRoutesById {
   '/_app/studio': typeof AppStudioRouteWithChildren
   '/_app/submit': typeof AppSubmitRoute
   '/c/$token': typeof CTokenRoute
+  '/_app/account/security': typeof AppAccountSecurityRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/boards/collections': typeof AppBoardsCollectionsRoute
   '/_app/sectors/$sector': typeof AppSectorsSectorRoute
   '/_app/segments/$segment': typeof AppSegmentsSegmentRoute
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
+  '/_app/account/': typeof AppAccountIndexRoute
   '/_app/boards/': typeof AppBoardsIndexRoute
   '/_app/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
@@ -560,6 +595,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/forgot-password'
+    | '/reset-password'
     | '/account'
     | '/admin-submissions'
     | '/admin-waitlist'
@@ -596,12 +633,14 @@ export interface FileRouteTypes {
     | '/studio'
     | '/submit'
     | '/c/$token'
+    | '/account/security'
     | '/boards/$boardId'
     | '/boards/collections'
     | '/sectors/$sector'
     | '/segments/$segment'
     | '/studio/portfolio'
     | '/use-cases/$slug'
+    | '/account/'
     | '/boards/'
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
@@ -620,7 +659,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/account'
+    | '/forgot-password'
+    | '/reset-password'
     | '/admin-submissions'
     | '/admin-waitlist'
     | '/administration'
@@ -655,12 +695,14 @@ export interface FileRouteTypes {
     | '/studio'
     | '/submit'
     | '/c/$token'
+    | '/account/security'
     | '/boards/$boardId'
     | '/boards/collections'
     | '/sectors/$sector'
     | '/segments/$segment'
     | '/studio/portfolio'
     | '/use-cases/$slug'
+    | '/account'
     | '/boards'
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
@@ -680,6 +722,8 @@ export interface FileRouteTypes {
     | '/'
     | '/_app'
     | '/auth'
+    | '/forgot-password'
+    | '/reset-password'
     | '/_app/account'
     | '/_app/admin-submissions'
     | '/_app/admin-waitlist'
@@ -716,12 +760,14 @@ export interface FileRouteTypes {
     | '/_app/studio'
     | '/_app/submit'
     | '/c/$token'
+    | '/_app/account/security'
     | '/_app/boards/$boardId'
     | '/_app/boards/collections'
     | '/_app/sectors/$sector'
     | '/_app/segments/$segment'
     | '/_app/studio/portfolio'
     | '/_app/use-cases/$slug'
+    | '/_app/account/'
     | '/_app/boards/'
     | '/_app/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
@@ -742,6 +788,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   CTokenRoute: typeof CTokenRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
@@ -749,6 +797,20 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -1029,6 +1091,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBoardsIndexRouteImport
       parentRoute: typeof AppBoardsRoute
     }
+    '/_app/account/': {
+      id: '/_app/account/'
+      path: '/'
+      fullPath: '/account/'
+      preLoaderRoute: typeof AppAccountIndexRouteImport
+      parentRoute: typeof AppAccountRoute
+    }
     '/_app/use-cases/$slug': {
       id: '/_app/use-cases/$slug'
       path: '/use-cases/$slug'
@@ -1070,6 +1139,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/boards/$boardId'
       preLoaderRoute: typeof AppBoardsBoardIdRouteImport
       parentRoute: typeof AppBoardsRoute
+    }
+    '/_app/account/security': {
+      id: '/_app/account/security'
+      path: '/security'
+      fullPath: '/account/security'
+      preLoaderRoute: typeof AppAccountSecurityRouteImport
+      parentRoute: typeof AppAccountRoute
     }
     '/api/public/usecasex/use-cases': {
       id: '/api/public/usecasex/use-cases'
@@ -1165,6 +1241,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AppAccountRouteChildren {
+  AppAccountSecurityRoute: typeof AppAccountSecurityRoute
+  AppAccountIndexRoute: typeof AppAccountIndexRoute
+}
+
+const AppAccountRouteChildren: AppAccountRouteChildren = {
+  AppAccountSecurityRoute: AppAccountSecurityRoute,
+  AppAccountIndexRoute: AppAccountIndexRoute,
+}
+
+const AppAccountRouteWithChildren = AppAccountRoute._addFileChildren(
+  AppAccountRouteChildren,
+)
+
 interface AppBoardsRouteChildren {
   AppBoardsBoardIdRoute: typeof AppBoardsBoardIdRoute
   AppBoardsCollectionsRoute: typeof AppBoardsCollectionsRoute
@@ -1213,7 +1303,7 @@ const AppStudioRouteWithChildren = AppStudioRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
-  AppAccountRoute: typeof AppAccountRoute
+  AppAccountRoute: typeof AppAccountRouteWithChildren
   AppAdminSubmissionsRoute: typeof AppAdminSubmissionsRoute
   AppAdminWaitlistRoute: typeof AppAdminWaitlistRoute
   AppAdministrationRoute: typeof AppAdministrationRoute
@@ -1255,7 +1345,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppAccountRoute: AppAccountRoute,
+  AppAccountRoute: AppAccountRouteWithChildren,
   AppAdminSubmissionsRoute: AppAdminSubmissionsRoute,
   AppAdminWaitlistRoute: AppAdminWaitlistRoute,
   AppAdministrationRoute: AppAdministrationRoute,
@@ -1316,6 +1406,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   CTokenRoute: CTokenRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
   ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRouteWithChildren,
