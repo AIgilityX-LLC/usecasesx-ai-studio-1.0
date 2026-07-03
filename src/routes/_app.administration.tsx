@@ -35,6 +35,7 @@ import {
   PatternsAdminTab, CategoriesAdminTab, OrganizationsAdminTab,
   StudioTemplatesAdminTab, IntegrationsAdminTab, ReportTemplatesAdminTab,
 } from "@/components/admin/StudioAdminTabs";
+import { SEGMENT_NAMES, industryNamesInSegment } from "@/lib/usecasex.derive";
 
 const ADMIN_ROLES = ["super_admin", "ai_hub_admin", "usecasex_admin", "content_manager", "reviewer"] as const;
 
