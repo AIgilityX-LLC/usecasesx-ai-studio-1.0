@@ -185,6 +185,11 @@ function ProPage() {
               <p className="mt-4 text-center text-xs text-muted-foreground">
                 <Link to="/repository" className="hover:text-foreground">← Browse use cases first</Link>
               </p>
+              {mode === "signin" && (
+                <p className="mt-2 text-center text-xs">
+                  <Link to="/forgot-password" className="font-semibold text-primary hover:underline">Forgot your password?</Link>
+                </p>
+              )}
             </div>
           </div>
         </div>
