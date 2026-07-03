@@ -3,7 +3,7 @@
  * These compute market segment, priority quadrant and ROI range from existing
  * use-case fields so no extra columns are required for them.
  */
-import { SEGMENTS } from "@/lib/segments";
+import { SEGMENTS, SECTORS } from "@/lib/segments";
 
 type LevelLike = string | null | undefined;
 
@@ -64,4 +64,25 @@ export function segmentsForIndustries(industrySlugs: string[]): string[] {
 export function industrySlugsOf(row: Record<string, unknown>): string[] {
   const rel = (row.use_case_industries as Array<{ industries?: { slug?: string } }> | undefined) ?? [];
   return rel.map((x) => x.industries?.slug).filter((s): s is string => Boolean(s));
+}
+
+// --- Admin helpers (industry *name* based, for the admin store) -----------
+const NAME_TO_SLUG: Record<string, string> = Object.fromEntries(
+  SECTORS.map((s) => [s.name, s.slug]),
+);
+
+export const SEGMENT_NAMES: string[] = SEGMENTS.map((s) => s.name);
+
+/** Industry display names that belong to a given segment name. */
+export function industryNamesInSegment(segmentName: string): string[] {
+  const seg = SEGMENTS.find((s) => s.name === segmentName);
+  if (!seg) return [];
+  return SECTORS.filter((sec) => seg.industries.includes(sec.slug)).map((sec) => sec.name);
+}
+
+/** Segment names an industry (by display name) belongs to. */
+export function segmentsForIndustryName(name: string): string[] {
+  const slug = NAME_TO_SLUG[name];
+  if (!slug) return [];
+  return segmentsForIndustries([slug]).map((s) => SEGMENTS.find((x) => x.slug === s)?.name ?? s);
 }
