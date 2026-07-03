@@ -376,7 +376,7 @@ function PricingPage() {
                       <TableRow key={row.label}>
                         <TableCell className="font-medium">{row.label}</TableCell>
                         <Cell value={row.lite} highlight={mineOn && myPlan === "lite"} />
-                        <Cell value={row.pro} highlight={mineOn && myPlan === "pro"} />
+                        <Cell value={row.pro} highlight={mineOn && myPlan === "pro"} soon={isComingSoon(row.label)} />
                         <Cell value={row.enterprise} highlight={mineOn && myPlan === "enterprise"} />
                       </TableRow>
                     ))}
