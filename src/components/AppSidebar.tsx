@@ -3,6 +3,7 @@ import {
   LayoutDashboard, Library, Sparkles, FolderHeart, KanbanSquare,
   BookOpen, Gauge, Database, Hammer, Map, Rocket, Compass, Shield, BarChart3,
   FileBarChart, Settings, Lock, Crown, Users, Star, Send, LineChart, Inbox,
+  Grid2x2, Calculator, Wand2,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -15,6 +16,9 @@ type Item = { to: string; label: string; icon: React.ComponentType<{ className?:
 const CORE: Item[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/repository", label: "Global Repository", icon: Library },
+  { to: "/discover", label: "Discovery Wizard", icon: Wand2 },
+  { to: "/quick-wins", label: "Quick Wins Matrix", icon: Grid2x2 },
+  { to: "/roi-calculator", label: "ROI & Mission Value", icon: Calculator },
   { to: "/insights", label: "Deployment Intelligence", icon: BarChart3 },
   { to: "/studio", label: "AI Use Case Studio", icon: Sparkles },
   { to: "/my-use-cases", label: "My Use Cases", icon: FolderHeart },

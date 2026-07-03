@@ -34,6 +34,7 @@ import { Route as AppImpactAssessmentRouteImport } from './routes/_app.impact-as
 import { Route as AppGovernanceRouteImport } from './routes/_app.governance'
 import { Route as AppFeasibilityRouteImport } from './routes/_app.feasibility'
 import { Route as AppEntitlementRouteImport } from './routes/_app.entitlement'
+import { Route as AppDiscoverRouteImport } from './routes/_app.discover'
 import { Route as AppDecisionRouteImport } from './routes/_app.decision'
 import { Route as AppDataReadinessRouteImport } from './routes/_app.data-readiness'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
@@ -187,6 +188,11 @@ const AppFeasibilityRoute = AppFeasibilityRouteImport.update({
 const AppEntitlementRoute = AppEntitlementRouteImport.update({
   id: '/entitlement',
   path: '/entitlement',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDiscoverRoute = AppDiscoverRouteImport.update({
+  id: '/discover',
+  path: '/discover',
   getParentRoute: () => AppRoute,
 } as any)
 const AppDecisionRoute = AppDecisionRouteImport.update({
@@ -364,6 +370,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
   '/decision': typeof AppDecisionRoute
+  '/discover': typeof AppDiscoverRoute
   '/entitlement': typeof AppEntitlementRoute
   '/feasibility': typeof AppFeasibilityRoute
   '/governance': typeof AppGovernanceRoute
@@ -419,6 +426,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
   '/decision': typeof AppDecisionRoute
+  '/discover': typeof AppDiscoverRoute
   '/entitlement': typeof AppEntitlementRoute
   '/feasibility': typeof AppFeasibilityRoute
   '/governance': typeof AppGovernanceRoute
@@ -477,6 +485,7 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/data-readiness': typeof AppDataReadinessRoute
   '/_app/decision': typeof AppDecisionRoute
+  '/_app/discover': typeof AppDiscoverRoute
   '/_app/entitlement': typeof AppEntitlementRoute
   '/_app/feasibility': typeof AppFeasibilityRoute
   '/_app/governance': typeof AppGovernanceRoute
@@ -535,6 +544,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/data-readiness'
     | '/decision'
+    | '/discover'
     | '/entitlement'
     | '/feasibility'
     | '/governance'
@@ -590,6 +600,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/data-readiness'
     | '/decision'
+    | '/discover'
     | '/entitlement'
     | '/feasibility'
     | '/governance'
@@ -647,6 +658,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard'
     | '/_app/data-readiness'
     | '/_app/decision'
+    | '/_app/discover'
     | '/_app/entitlement'
     | '/_app/feasibility'
     | '/_app/governance'
@@ -872,6 +884,13 @@ declare module '@tanstack/react-router' {
       path: '/entitlement'
       fullPath: '/entitlement'
       preLoaderRoute: typeof AppEntitlementRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/discover': {
+      id: '/_app/discover'
+      path: '/discover'
+      fullPath: '/discover'
+      preLoaderRoute: typeof AppDiscoverRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/decision': {
@@ -1141,6 +1160,7 @@ interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppDataReadinessRoute: typeof AppDataReadinessRoute
   AppDecisionRoute: typeof AppDecisionRoute
+  AppDiscoverRoute: typeof AppDiscoverRoute
   AppEntitlementRoute: typeof AppEntitlementRoute
   AppFeasibilityRoute: typeof AppFeasibilityRoute
   AppGovernanceRoute: typeof AppGovernanceRoute
@@ -1182,6 +1202,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppDataReadinessRoute: AppDataReadinessRoute,
   AppDecisionRoute: AppDecisionRoute,
+  AppDiscoverRoute: AppDiscoverRoute,
   AppEntitlementRoute: AppEntitlementRoute,
   AppFeasibilityRoute: AppFeasibilityRoute,
   AppGovernanceRoute: AppGovernanceRoute,
