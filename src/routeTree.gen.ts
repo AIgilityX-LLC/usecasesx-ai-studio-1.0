@@ -49,6 +49,7 @@ import { Route as AppAdminWaitlistRouteImport } from './routes/_app.admin-waitli
 import { Route as AppAdminSubmissionsRouteImport } from './routes/_app.admin-submissions'
 import { Route as AppAccountRouteImport } from './routes/_app.account'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
+import { Route as AppAccountIndexRouteImport } from './routes/_app.account.index'
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
 import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
 import { Route as AppSegmentsSegmentRouteImport } from './routes/_app.segments.$segment'
@@ -268,6 +269,11 @@ const AppBoardsIndexRoute = AppBoardsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppBoardsRoute,
 } as any)
+const AppAccountIndexRoute = AppAccountIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppAccountRoute,
+} as any)
 const AppUseCasesSlugRoute = AppUseCasesSlugRouteImport.update({
   id: '/use-cases/$slug',
   path: '/use-cases/$slug',
@@ -377,7 +383,7 @@ const AppStudioUseCaseIdDeliverableTypeRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/account': typeof AppAccountRoute
+  '/account': typeof AppAccountRouteWithChildren
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
@@ -419,6 +425,7 @@ export interface FileRoutesByFullPath {
   '/segments/$segment': typeof AppSegmentsSegmentRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
+  '/account/': typeof AppAccountIndexRoute
   '/boards/': typeof AppBoardsIndexRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
@@ -437,7 +444,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/account': typeof AppAccountRoute
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
@@ -478,6 +484,7 @@ export interface FileRoutesByTo {
   '/segments/$segment': typeof AppSegmentsSegmentRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
+  '/account': typeof AppAccountIndexRoute
   '/boards': typeof AppBoardsIndexRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
@@ -498,7 +505,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
-  '/_app/account': typeof AppAccountRoute
+  '/_app/account': typeof AppAccountRouteWithChildren
   '/_app/admin-submissions': typeof AppAdminSubmissionsRoute
   '/_app/admin-waitlist': typeof AppAdminWaitlistRoute
   '/_app/administration': typeof AppAdministrationRoute
@@ -540,6 +547,7 @@ export interface FileRoutesById {
   '/_app/segments/$segment': typeof AppSegmentsSegmentRoute
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
+  '/_app/account/': typeof AppAccountIndexRoute
   '/_app/boards/': typeof AppBoardsIndexRoute
   '/_app/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
@@ -602,6 +610,7 @@ export interface FileRouteTypes {
     | '/segments/$segment'
     | '/studio/portfolio'
     | '/use-cases/$slug'
+    | '/account/'
     | '/boards/'
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
@@ -620,7 +629,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/account'
     | '/admin-submissions'
     | '/admin-waitlist'
     | '/administration'
@@ -661,6 +669,7 @@ export interface FileRouteTypes {
     | '/segments/$segment'
     | '/studio/portfolio'
     | '/use-cases/$slug'
+    | '/account'
     | '/boards'
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
@@ -722,6 +731,7 @@ export interface FileRouteTypes {
     | '/_app/segments/$segment'
     | '/_app/studio/portfolio'
     | '/_app/use-cases/$slug'
+    | '/_app/account/'
     | '/_app/boards/'
     | '/_app/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
@@ -1029,6 +1039,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBoardsIndexRouteImport
       parentRoute: typeof AppBoardsRoute
     }
+    '/_app/account/': {
+      id: '/_app/account/'
+      path: '/'
+      fullPath: '/account/'
+      preLoaderRoute: typeof AppAccountIndexRouteImport
+      parentRoute: typeof AppAccountRoute
+    }
     '/_app/use-cases/$slug': {
       id: '/_app/use-cases/$slug'
       path: '/use-cases/$slug'
@@ -1165,6 +1182,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AppAccountRouteChildren {
+  AppAccountIndexRoute: typeof AppAccountIndexRoute
+}
+
+const AppAccountRouteChildren: AppAccountRouteChildren = {
+  AppAccountIndexRoute: AppAccountIndexRoute,
+}
+
+const AppAccountRouteWithChildren = AppAccountRoute._addFileChildren(
+  AppAccountRouteChildren,
+)
+
 interface AppBoardsRouteChildren {
   AppBoardsBoardIdRoute: typeof AppBoardsBoardIdRoute
   AppBoardsCollectionsRoute: typeof AppBoardsCollectionsRoute
@@ -1213,7 +1242,7 @@ const AppStudioRouteWithChildren = AppStudioRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
-  AppAccountRoute: typeof AppAccountRoute
+  AppAccountRoute: typeof AppAccountRouteWithChildren
   AppAdminSubmissionsRoute: typeof AppAdminSubmissionsRoute
   AppAdminWaitlistRoute: typeof AppAdminWaitlistRoute
   AppAdministrationRoute: typeof AppAdministrationRoute
@@ -1255,7 +1284,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppAccountRoute: AppAccountRoute,
+  AppAccountRoute: AppAccountRouteWithChildren,
   AppAdminSubmissionsRoute: AppAdminSubmissionsRoute,
   AppAdminWaitlistRoute: AppAdminWaitlistRoute,
   AppAdministrationRoute: AppAdministrationRoute,
