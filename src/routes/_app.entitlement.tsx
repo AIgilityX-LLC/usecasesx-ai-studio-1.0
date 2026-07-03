@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_app/entitlement")({
   head: () => ({
     meta: [
       { title: "Your Plan & Entitlement — UseCasesX™" },
-      { name: "description", content: "Review your current tier, gratis expiration date, and which SARPI modules are included or locked." },
+      { name: "description", content: "Review your current tier, gratis expiration date, and which UseCasesX modules are included or locked." },
       { name: "robots", content: "noindex" },
     ],
   }),
