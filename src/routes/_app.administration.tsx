@@ -198,7 +198,7 @@ function UseCasesTab() {
             <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search title, slug or description…" className="max-w-md" />
             <Button variant="ghost" size="sm" onClick={clearFilters}><Filter className="w-4 h-4 mr-1" /> Clear</Button>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-2">
+          <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-2">
             <FilterSelect label="Status" value={statusF} onChange={setStatusF} options={STATUSES} />
             <FilterSelect label="Visibility" value={visF} onChange={setVisF} options={VISIBILITIES} />
             <FilterSelect label="Market Segment" value={segmentF} onChange={setSegmentF} options={SEGMENT_NAMES} />
