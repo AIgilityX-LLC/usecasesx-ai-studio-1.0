@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import { FoundingAccessBanner } from "@/components/FoundingAccessBanner";
 import {
-  SARPI_MODULES, tierUnlocks, tierLabel, FOUNDING_UNTIL_LABEL,
+  USECASEX_MODULES, tierUnlocks, tierLabel, FOUNDING_UNTIL_LABEL,
 } from "@/lib/entitlements";
 
 export const Route = createFileRoute("/_app/entitlement")({
@@ -97,8 +97,8 @@ function EntitlementPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {SARPI_MODULES.filter((m) => tierUnlocks(ent.tier, m.required)).length}
-                    <span className="text-base font-medium text-muted-foreground"> / {SARPI_MODULES.length}</span>
+                    {USECASEX_MODULES.filter((m) => tierUnlocks(ent.tier, m.required)).length}
+                    <span className="text-base font-medium text-muted-foreground"> / {USECASEX_MODULES.length}</span>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">UseCasesX™ modules</p>
                 </CardContent>
@@ -119,7 +119,7 @@ function EntitlementPage() {
               <h2 className="text-xl font-bold tracking-tight">Module access</h2>
               <p className="mt-2 text-sm text-muted-foreground">Included and locked UseCasesX modules for your current tier.</p>
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                {SARPI_MODULES.map((m) => {
+                {USECASEX_MODULES.map((m) => {
                   const unlocked = tierUnlocks(ent.tier, m.required);
                   return (
                     <div

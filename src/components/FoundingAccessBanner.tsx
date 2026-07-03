@@ -53,7 +53,7 @@ export function FoundingAccessBanner({ sourcePage = "/pricing" }: { sourcePage?:
             <p className="mt-1 text-sm text-muted-foreground">
               {ent.expiresAt
                 ? <>Gratis until <span className="font-semibold text-foreground">{FOUNDING_UNTIL_LABEL}</span>{days != null && days > 0 ? ` — ${days} day${days === 1 ? "" : "s"} remaining.` : "."}</>
-                : "Full Pro feature set unlocked across UseCasesX™ and SARPI Suite™."}
+                : "Full Pro feature set unlocked across all UseCasesX™ modules."}
             </p>
           </div>
         </div>
