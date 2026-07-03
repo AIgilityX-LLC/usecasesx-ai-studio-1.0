@@ -70,6 +70,8 @@ function BoardsPage() {
     );
   }
 
+  if (!session) return null;
+
   const items = boards.data ?? [];
 
   return (

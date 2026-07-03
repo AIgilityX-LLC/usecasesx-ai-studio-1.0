@@ -632,7 +632,6 @@ type TaxRow = {
 };
 
 const TAX_TABLES = {
-  sectors: { table: "taxonomy_sectors", label: "Sectors" },
   tags: { table: "taxonomy_tags", label: "Tags" },
   maturity: { table: "taxonomy_maturity_levels", label: "Maturity Levels" },
 } as const;
@@ -682,12 +681,144 @@ function TaxonomyTab() {
         </CardContent>
       </Card>
       {msg && <p className="text-xs text-muted-foreground">{msg}</p>}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <SectorWorkflowEditor />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {(Object.keys(TAX_TABLES) as Array<keyof typeof TAX_TABLES>).map((k) => (
           <TaxonomyEditor key={k} table={TAX_TABLES[k].table} title={TAX_TABLES[k].label} />
         ))}
       </div>
     </div>
+  );
+}
+
+type SectorRow = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  sort_order: number;
+  is_published: boolean;
+  status: string;
+  is_featured: boolean;
+  organization_id: string | null;
+  submitted_by: string | null;
+  submitted_at: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+};
+
+const SECTOR_STATUS_STYLE: Record<string, string> = {
+  draft: "bg-muted text-muted-foreground border-border",
+  pending: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30",
+  published: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
+  featured: "bg-primary/10 text-primary border-primary/30",
+  archived: "bg-orange-500/10 text-orange-700 dark:text-orange-300 border-orange-500/30",
+};
+
+function SectorWorkflowEditor() {
+  const [rows, setRows] = useState<SectorRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [statusF, setStatusF] = useState<string>("all");
+  const [newSlug, setNewSlug] = useState("");
+  const [newName, setNewName] = useState("");
+
+  const load = async () => {
+    setLoading(true);
+    const { data } = await supabase.from("taxonomy_sectors").select("*").order("sort_order").order("name");
+    setRows(((data as unknown) as SectorRow[]) ?? []);
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const add = async () => {
+    const slug = newSlug.trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-");
+    if (!slug || !newName.trim()) return;
+    const { data: u } = await supabase.auth.getUser();
+    const { error } = await supabase.from("taxonomy_sectors").insert({
+      slug, name: newName.trim(), sort_order: rows.length,
+      status: "pending", submitted_by: u.user?.id ?? null, submitted_at: new Date().toISOString(),
+    } as any);
+    if (!error) { setNewSlug(""); setNewName(""); load(); trackCTAEvent("admin_sector_submitted", { slug }); }
+    else alert(error.message);
+  };
+
+  const setStatus = async (id: string, status: string) => {
+    const patch: Partial<SectorRow> = { status, is_featured: status === "featured" };
+    const { error } = await supabase.from("taxonomy_sectors").update(patch as any).eq("id", id);
+    if (!error) { load(); trackCTAEvent(`admin_sector_${status}`, { id }); } else alert(error.message);
+  };
+
+  const rename = async (id: string, name: string) => {
+    const { error } = await supabase.from("taxonomy_sectors").update({ name }).eq("id", id);
+    if (!error) load(); else alert(error.message);
+  };
+
+  const remove = async (id: string) => {
+    const { error } = await supabase.from("taxonomy_sectors").delete().eq("id", id);
+    if (!error) load(); else alert(error.message);
+  };
+
+  const filtered = statusF === "all" ? rows : rows.filter((r) => r.status === statusF);
+  const counts = rows.reduce<Record<string, number>>((m, r) => { m[r.status] = (m[r.status] ?? 0) + 1; return m; }, {});
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base flex flex-wrap items-center justify-between gap-2">
+          <span>Sectors — approval &amp; publishing <span className="text-xs text-muted-foreground">({rows.length})</span></span>
+          <div className="flex flex-wrap gap-1 text-[10px]">
+            {["pending", "published", "featured", "archived"].map((s) => (
+              <span key={s} className={`rounded border px-2 py-0.5 uppercase tracking-wider ${SECTOR_STATUS_STYLE[s]}`}>
+                {s} {counts[s] ?? 0}
+              </span>
+            ))}
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <Input value={newSlug} onChange={(e) => setNewSlug(e.target.value)} placeholder="slug" className="h-8 text-xs w-32" />
+          <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Sector name" className="h-8 text-xs flex-1 min-w-[160px]" />
+          <Button size="sm" variant="outline" onClick={add}><Plus className="w-4 h-4 mr-1" /> Submit for approval</Button>
+          <FilterSelect label="Status" value={statusF} onChange={setStatusF} options={["draft", "pending", "published", "featured", "archived"]} />
+        </div>
+        <ul className="space-y-1 max-h-[28rem] overflow-y-auto">
+          {loading && <li className="text-xs text-muted-foreground">Loading…</li>}
+          {!loading && filtered.length === 0 && <li className="text-xs text-muted-foreground">No sectors match this status.</li>}
+          {filtered.map((r) => (
+            <li key={r.id} className="flex flex-wrap items-center gap-2 border-b py-1.5">
+              <Input
+                defaultValue={r.name}
+                onBlur={(e) => e.target.value !== r.name && rename(r.id, e.target.value)}
+                className="h-7 text-xs flex-1 min-w-[140px]"
+              />
+              <code className="text-[10px] text-muted-foreground w-24 truncate" title={r.slug}>{r.slug}</code>
+              <span className={`rounded border px-2 py-0.5 text-[10px] uppercase tracking-wider ${SECTOR_STATUS_STYLE[r.status] ?? SECTOR_STATUS_STYLE.draft}`}>
+                {r.organization_id ? "org · " : ""}{r.status}
+              </span>
+              {r.status === "pending" && (
+                <Button size="sm" variant="ghost" title="Approve & publish" onClick={() => setStatus(r.id, "published")}>Approve</Button>
+              )}
+              {(r.status === "draft" || r.status === "archived") && (
+                <Button size="sm" variant="ghost" title="Publish" onClick={() => setStatus(r.id, "published")}>Publish</Button>
+              )}
+              {r.status === "published" && (
+                <Button size="sm" variant="ghost" title="Feature" onClick={() => setStatus(r.id, "featured")}>Feature</Button>
+              )}
+              {r.status === "featured" && (
+                <Button size="sm" variant="ghost" title="Unfeature" onClick={() => setStatus(r.id, "published")}>Unfeature</Button>
+              )}
+              {r.status !== "archived" && (
+                <Button size="sm" variant="ghost" title="Archive" onClick={() => setStatus(r.id, "archived")}>Archive</Button>
+              )}
+              <Button size="icon" variant="ghost" onClick={() => remove(r.id)} title="Delete">
+                <XCircle className="w-4 h-4 text-destructive" />
+              </Button>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
   );
 }
 

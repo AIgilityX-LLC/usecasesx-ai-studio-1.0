@@ -39,7 +39,6 @@ import { Route as AppDecisionRouteImport } from './routes/_app.decision'
 import { Route as AppDataReadinessRouteImport } from './routes/_app.data-readiness'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppCompareRouteImport } from './routes/_app.compare'
-import { Route as AppCollectionsRouteImport } from './routes/_app.collections'
 import { Route as AppBoardsRouteImport } from './routes/_app.boards'
 import { Route as AppBlueprintRouteImport } from './routes/_app.blueprint'
 import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integration'
@@ -53,6 +52,7 @@ import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$sl
 import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
 import { Route as AppSegmentsSegmentRouteImport } from './routes/_app.segments.$segment'
 import { Route as AppSectorsSectorRouteImport } from './routes/_app.sectors.$sector'
+import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
@@ -217,11 +217,6 @@ const AppCompareRoute = AppCompareRouteImport.update({
   path: '/compare',
   getParentRoute: () => AppRoute,
 } as any)
-const AppCollectionsRoute = AppCollectionsRouteImport.update({
-  id: '/collections',
-  path: '/collections',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppBoardsRoute = AppBoardsRouteImport.update({
   id: '/boards',
   path: '/boards',
@@ -286,6 +281,11 @@ const AppSectorsSectorRoute = AppSectorsSectorRouteImport.update({
   id: '/sectors/$sector',
   path: '/sectors/$sector',
   getParentRoute: () => AppRoute,
+} as any)
+const AppBoardsCollectionsRoute = AppBoardsCollectionsRouteImport.update({
+  id: '/collections',
+  path: '/collections',
+  getParentRoute: () => AppBoardsRoute,
 } as any)
 const AppBoardsBoardIdRoute = AppBoardsBoardIdRouteImport.update({
   id: '/$boardId',
@@ -379,7 +379,6 @@ export interface FileRoutesByFullPath {
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
   '/boards': typeof AppBoardsRouteWithChildren
-  '/collections': typeof AppCollectionsRoute
   '/compare': typeof AppCompareRoute
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
@@ -408,6 +407,7 @@ export interface FileRoutesByFullPath {
   '/submit': typeof AppSubmitRoute
   '/c/$token': typeof CTokenRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
+  '/boards/collections': typeof AppBoardsCollectionsRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
   '/segments/$segment': typeof AppSegmentsSegmentRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
@@ -437,7 +437,6 @@ export interface FileRoutesByTo {
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
-  '/collections': typeof AppCollectionsRoute
   '/compare': typeof AppCompareRoute
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
@@ -466,6 +465,7 @@ export interface FileRoutesByTo {
   '/submit': typeof AppSubmitRoute
   '/c/$token': typeof CTokenRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
+  '/boards/collections': typeof AppBoardsCollectionsRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
   '/segments/$segment': typeof AppSegmentsSegmentRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
@@ -498,7 +498,6 @@ export interface FileRoutesById {
   '/_app/api-integration': typeof AppApiIntegrationRoute
   '/_app/blueprint': typeof AppBlueprintRoute
   '/_app/boards': typeof AppBoardsRouteWithChildren
-  '/_app/collections': typeof AppCollectionsRoute
   '/_app/compare': typeof AppCompareRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/data-readiness': typeof AppDataReadinessRoute
@@ -527,6 +526,7 @@ export interface FileRoutesById {
   '/_app/submit': typeof AppSubmitRoute
   '/c/$token': typeof CTokenRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
+  '/_app/boards/collections': typeof AppBoardsCollectionsRoute
   '/_app/sectors/$sector': typeof AppSectorsSectorRoute
   '/_app/segments/$segment': typeof AppSegmentsSegmentRoute
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
@@ -559,7 +559,6 @@ export interface FileRouteTypes {
     | '/api-integration'
     | '/blueprint'
     | '/boards'
-    | '/collections'
     | '/compare'
     | '/dashboard'
     | '/data-readiness'
@@ -588,6 +587,7 @@ export interface FileRouteTypes {
     | '/submit'
     | '/c/$token'
     | '/boards/$boardId'
+    | '/boards/collections'
     | '/sectors/$sector'
     | '/segments/$segment'
     | '/studio/portfolio'
@@ -617,7 +617,6 @@ export interface FileRouteTypes {
     | '/ai-use-case-studio'
     | '/api-integration'
     | '/blueprint'
-    | '/collections'
     | '/compare'
     | '/dashboard'
     | '/data-readiness'
@@ -646,6 +645,7 @@ export interface FileRouteTypes {
     | '/submit'
     | '/c/$token'
     | '/boards/$boardId'
+    | '/boards/collections'
     | '/sectors/$sector'
     | '/segments/$segment'
     | '/studio/portfolio'
@@ -677,7 +677,6 @@ export interface FileRouteTypes {
     | '/_app/api-integration'
     | '/_app/blueprint'
     | '/_app/boards'
-    | '/_app/collections'
     | '/_app/compare'
     | '/_app/dashboard'
     | '/_app/data-readiness'
@@ -706,6 +705,7 @@ export interface FileRouteTypes {
     | '/_app/submit'
     | '/c/$token'
     | '/_app/boards/$boardId'
+    | '/_app/boards/collections'
     | '/_app/sectors/$sector'
     | '/_app/segments/$segment'
     | '/_app/studio/portfolio'
@@ -947,13 +947,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCompareRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/collections': {
-      id: '/_app/collections'
-      path: '/collections'
-      fullPath: '/collections'
-      preLoaderRoute: typeof AppCollectionsRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/boards': {
       id: '/_app/boards'
       path: '/boards'
@@ -1044,6 +1037,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/sectors/$sector'
       preLoaderRoute: typeof AppSectorsSectorRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/_app/boards/collections': {
+      id: '/_app/boards/collections'
+      path: '/collections'
+      fullPath: '/boards/collections'
+      preLoaderRoute: typeof AppBoardsCollectionsRouteImport
+      parentRoute: typeof AppBoardsRoute
     }
     '/_app/boards/$boardId': {
       id: '/_app/boards/$boardId'
@@ -1148,11 +1148,13 @@ declare module '@tanstack/react-router' {
 
 interface AppBoardsRouteChildren {
   AppBoardsBoardIdRoute: typeof AppBoardsBoardIdRoute
+  AppBoardsCollectionsRoute: typeof AppBoardsCollectionsRoute
   AppBoardsIndexRoute: typeof AppBoardsIndexRoute
 }
 
 const AppBoardsRouteChildren: AppBoardsRouteChildren = {
   AppBoardsBoardIdRoute: AppBoardsBoardIdRoute,
+  AppBoardsCollectionsRoute: AppBoardsCollectionsRoute,
   AppBoardsIndexRoute: AppBoardsIndexRoute,
 }
 
@@ -1200,7 +1202,6 @@ interface AppRouteChildren {
   AppApiIntegrationRoute: typeof AppApiIntegrationRoute
   AppBlueprintRoute: typeof AppBlueprintRoute
   AppBoardsRoute: typeof AppBoardsRouteWithChildren
-  AppCollectionsRoute: typeof AppCollectionsRoute
   AppCompareRoute: typeof AppCompareRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppDataReadinessRoute: typeof AppDataReadinessRoute
@@ -1242,7 +1243,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppApiIntegrationRoute: AppApiIntegrationRoute,
   AppBlueprintRoute: AppBlueprintRoute,
   AppBoardsRoute: AppBoardsRouteWithChildren,
-  AppCollectionsRoute: AppCollectionsRoute,
   AppCompareRoute: AppCompareRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppDataReadinessRoute: AppDataReadinessRoute,

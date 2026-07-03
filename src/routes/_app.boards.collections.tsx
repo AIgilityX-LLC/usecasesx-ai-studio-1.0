@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import { FolderPlus, Share2, Trash2, Globe, Lock, ExternalLink, X } from "lucide-react";
 import { trackModuleEvent } from "@/lib/module-analytics";
 
-export const Route = createFileRoute("/_app/collections")({
+export const Route = createFileRoute("/_app/boards/collections")({
   head: () => ({
     meta: [
       { title: "My Collections — UseCasesX™" },

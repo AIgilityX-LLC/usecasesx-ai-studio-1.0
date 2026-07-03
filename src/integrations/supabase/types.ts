@@ -1090,10 +1090,17 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_featured: boolean
           is_published: boolean
           name: string
+          organization_id: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           slug: string
           sort_order: number
+          status: string
+          submitted_at: string | null
+          submitted_by: string | null
           updated_at: string
           updated_by: string | null
         }
@@ -1101,10 +1108,17 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_featured?: boolean
           is_published?: boolean
           name: string
+          organization_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           slug: string
           sort_order?: number
+          status?: string
+          submitted_at?: string | null
+          submitted_by?: string | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -1112,14 +1126,29 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_featured?: boolean
           is_published?: boolean
           name?: string
+          organization_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           slug?: string
           sort_order?: number
+          status?: string
+          submitted_at?: string | null
+          submitted_by?: string | null
           updated_at?: string
           updated_by?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "taxonomy_sectors_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       taxonomy_tags: {
         Row: {
