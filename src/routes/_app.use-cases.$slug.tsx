@@ -13,6 +13,11 @@ import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer
 import { CaseStudy } from "@/components/usecasex/CaseStudy";
 import { supabase } from "@/integrations/supabase/client";
 import { getUseCase, listUseCases } from "@/lib/use-cases.functions";
+import { CtaTriad } from "@/components/usecasex/CtaTriad";
+import { segmentsForIndustries } from "@/lib/usecasex.derive";
+import {
+  DollarSign, Clock, TrendingUp, GaugeCircle, Layers, ShieldAlert, Scale, Lock, Server,
+} from "lucide-react";
 
 // ---------- Helpers ----------
 const PLATFORM_BLURB: Record<string, string> = {
