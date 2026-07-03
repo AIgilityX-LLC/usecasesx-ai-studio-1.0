@@ -353,6 +353,21 @@ function UseCaseDetailPage() {
 
   const relatedItems = (related.data?.cases ?? []).filter((r: any) => r.slug !== c.slug).slice(0, 3);
 
+  // Mission-oriented segments (defense / government) reframe ROI as mission value.
+  const caseSegments = segmentsForIndustries(industryEntries.map((i) => i.slug));
+  const isMission = caseSegments.includes("defense") || caseSegments.includes("government");
+  const execCards: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }[] = [
+    { icon: TrendingUp, label: isMission ? "Mission value" : "ROI / value", value: c.value_potential ?? "—" },
+    { icon: DollarSign, label: "Cost range", value: c.cost_range ?? "On request" },
+    { icon: Clock, label: "Timeline", value: c.time_to_value ?? "—" },
+    { icon: GaugeCircle, label: "Maturity required", value: c.maturity_level ?? c.maturity ?? "—" },
+    { icon: Layers, label: "Complexity", value: c.complexity ?? "—" },
+    { icon: ShieldAlert, label: "Risk", value: c.risk_level ?? "—" },
+    { icon: Scale, label: "Governance need", value: c.governance_required ? "Required" : "Standard" },
+    { icon: Lock, label: "Security", value: c.security_classification ?? "Unclassified" },
+    ...(c.deployment_model ? [{ icon: Server, label: "Deployment", value: c.deployment_model as string }] : []),
+  ];
+
   return (
     <>
       <article className="bg-background">
@@ -450,6 +465,23 @@ function UseCaseDetailPage() {
             </div>
           </div>
         </header>
+
+        {/* Executive summary cards */}
+        <section className="border-b border-border bg-background">
+          <div className="mx-auto max-w-[1320px] px-6 py-8">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {execCards.map((card) => (
+                <div key={card.label} className="rounded-xl border border-border bg-card/60 p-4">
+                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <card.icon className="h-3.5 w-3.5 text-primary" />
+                    {card.label}
+                  </div>
+                  <div className="mt-1.5 text-lg font-bold text-foreground">{card.value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* Body + Sidebar */}
         <div className="mx-auto grid max-w-[1320px] gap-10 px-6 py-12 lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -626,6 +658,8 @@ function UseCaseDetailPage() {
           </aside>
         </div>
       </article>
+
+      <CtaTriad />
 
       <LeadCaptureModal
         open={leadOpen}
