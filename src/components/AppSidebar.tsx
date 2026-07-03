@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, Library, Sparkles, FolderHeart, KanbanSquare,
   BookOpen, Gauge, Database, Hammer, Map, Rocket, Compass, Shield, BarChart3,
-  FileBarChart, Settings, Lock, Crown, Users, Star, Send, LineChart, Inbox,
+  FileBarChart, Settings, Lock, Crown, Users, Send, LineChart, Inbox,
   Grid2x2, Calculator, Wand2,
 } from "lucide-react";
 import {
@@ -23,7 +23,6 @@ const CORE: Item[] = [
   { to: "/studio", label: "AI Use Case Studio", icon: Sparkles },
   { to: "/my-use-cases", label: "My Use Cases", icon: FolderHeart },
   { to: "/boards", label: "Use Case Boards", icon: KanbanSquare },
-  { to: "/collections", label: "Collections", icon: Star },
   { to: "/submit", label: "Submit a Use Case", icon: Send },
   { to: "/patterns", label: "Pattern Library", icon: BookOpen },
 ];

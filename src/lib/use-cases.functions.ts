@@ -52,7 +52,7 @@ export const listUseCases = createServerFn({ method: "GET" })
     if (data.q.trim()) {
       const term = `%${data.q.trim()}%`;
       query = query.or(
-        `title.ilike.${term},summary.ilike.${term},organization.ilike.${term},business_problem.ilike.${term}`,
+        `title.ilike.${term},summary.ilike.${term},organization.ilike.${term},business_problem.ilike.${term},deployment_model.ilike.${term},security_classification.ilike.${term}`,
       );
     }
     if (data.maturity.length)

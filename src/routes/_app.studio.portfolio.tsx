@@ -36,6 +36,15 @@ type UseCase = {
   problem_statement: string | null;
   mvp_scope: string | null;
   created_at: string;
+  source_use_case_id: string | null;
+};
+
+type ExecMeta = {
+  value_potential: string | null;
+  cost_range: string | null;
+  time_to_value: string | null;
+  security_classification: string | null;
+  risk_level: string | null;
 };
 
 type Score = {
@@ -65,6 +74,7 @@ function PortfolioRoadmapPage() {
   const [useCases, setUseCases] = useState<UseCase[]>([]);
   const [scores, setScores] = useState<Record<string, Score>>({});
   const [links, setLinks] = useState<IntegrationLinkRow[]>([]);
+  const [execMeta, setExecMeta] = useState<Record<string, ExecMeta>>({});
   const [loading, setLoading] = useState(true);
 
   const [fDept, setFDept] = useState("all");
@@ -94,6 +104,18 @@ function PortfolioRoadmapPage() {
       (sc ?? []).forEach((s: any) => { scMap[s.use_case_id] = s; });
       setScores(scMap);
       setLinks((lk ?? []) as IntegrationLinkRow[]);
+      const srcIds = Array.from(
+        new Set((ucs ?? []).map((u: any) => u.source_use_case_id).filter(Boolean)),
+      ) as string[];
+      if (srcIds.length) {
+        const { data: srcRows } = await supabase
+          .from("use_cases")
+          .select("id, value_potential, cost_range, time_to_value, security_classification, risk_level")
+          .in("id", srcIds);
+        const em: Record<string, ExecMeta> = {};
+        (srcRows ?? []).forEach((r: any) => { em[r.id] = r as ExecMeta; });
+        setExecMeta(em);
+      }
       setLoading(false);
     })();
   }, [planLoading, features.portfolioRoadmap]);
@@ -245,13 +267,26 @@ function PortfolioRoadmapPage() {
     metaLines.forEach((line) => { pdf.text(line, margin, y); y += 16; });
     y += 8;
 
+    const missionMode = filtered.some((u) => {
+      const em = u.source_use_case_id ? execMeta[u.source_use_case_id] : undefined;
+      return (em?.security_classification ?? "").toLowerCase().match(/secret|confidential|official/);
+    });
+    pdf.text(
+      `Ranked by priority score · ${filtered.length} selected use case${filtered.length === 1 ? "" : "s"}`,
+      margin,
+      y,
+    );
+    y += 20;
+
     // Table header
     const cols = [
-      { label: "Use case", w: 210 },
-      { label: "Status", w: 80 },
-      { label: "Risk", w: 60 },
-      { label: "Priority", w: 55 },
-      { label: "Score", w: 50 },
+      { label: "#", w: 22 },
+      { label: "Use case", w: 150 },
+      { label: missionMode ? "Mission value" : "ROI potential", w: 78 },
+      { label: "Cost range", w: 72 },
+      { label: "Timeline", w: 62 },
+      { label: "Risk", w: 48 },
+      { label: "Security", w: 82 },
     ];
     const drawHeader = () => {
       pdf.setFillColor(24, 26, 40);
@@ -265,6 +300,12 @@ function PortfolioRoadmapPage() {
     };
     drawHeader();
 
+    const roiLabel = (u: UseCase, em?: ExecMeta) => {
+      const vp = em?.value_potential;
+      if (vp) return vp;
+      const ps = u.priority_score ?? 0;
+      return ps >= 70 ? "High" : ps >= 40 ? "Medium" : "Low";
+    };
     const ranked = filtered.slice().sort((a, b) => (b.priority_score ?? 0) - (a.priority_score ?? 0));
     pdf.setFontSize(9);
     ranked.forEach((u, i) => {
@@ -273,13 +314,15 @@ function PortfolioRoadmapPage() {
         pdf.setFillColor(245, 246, 250);
         pdf.rect(margin, y - 10, pageW - margin * 2, 18, "F");
       }
-      const s = scores[u.id];
+      const em = u.source_use_case_id ? execMeta[u.source_use_case_id] : undefined;
       const row = [
-        (u.title ?? "").slice(0, 48),
-        (u.status ?? "—").slice(0, 16),
-        u.risk_level ?? "—",
-        u.priority_score != null ? String(u.priority_score) : "—",
-        s?.total_score != null ? String(s.total_score) : "—",
+        String(i + 1),
+        (u.title ?? "").slice(0, 36),
+        roiLabel(u, em),
+        (em?.cost_range ?? "—").slice(0, 14),
+        (em?.time_to_value ?? "—").slice(0, 12),
+        (u.risk_level ?? em?.risk_level ?? "—").slice(0, 10),
+        (em?.security_classification ?? "—").slice(0, 16),
       ];
       let x = margin + 4;
       row.forEach((cell, ci) => { pdf.text(String(cell), x, y + 2); x += cols[ci].w; });

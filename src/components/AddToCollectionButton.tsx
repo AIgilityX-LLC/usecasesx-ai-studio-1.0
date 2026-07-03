@@ -90,7 +90,7 @@ export function AddToCollectionButton({ useCaseId, size = "sm" }: { useCaseId: s
           <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="New collection name" maxLength={120} />
           <Button onClick={createAndAdd} disabled={!newName.trim()}>Create & add</Button>
         </DialogFooter>
-        <Link to="/collections" className="text-center text-xs text-muted-foreground hover:text-primary">Manage collections →</Link>
+        <Link to="/boards/collections" className="text-center text-xs text-muted-foreground hover:text-primary">Manage collections →</Link>
       </DialogContent>
     </Dialog>
   );

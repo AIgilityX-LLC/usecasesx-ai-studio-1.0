@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import type { UseCaseCardData } from "@/components/UseCaseCard";
 import { Link } from "@tanstack/react-router";
 import { Can } from "@/components/Can";
-import { SEGMENTS } from "@/lib/segments";
+import { SEGMENTS, SECTORS } from "@/lib/segments";
 import { derivePriority, deriveRoiRange, industrySlugsOf, segmentsForIndustries } from "@/lib/usecasex.derive";
 
 const sortValues = ["relevant", "value", "complexity", "risk", "ttv", "newest"] as const;
@@ -196,17 +196,22 @@ function Page() {
     const segs = search.segments ?? [];
     const prio = search.priority ?? [];
     const roi = search.roiRange ?? [];
-    if (!segs.length && !prio.length && !roi.length) return cases;
+    const secs = search.sectors ?? [];
+    if (!segs.length && !prio.length && !roi.length && !secs.length) return cases;
     return cases.filter((c) => {
       if (segs.length) {
         const cSegs = segmentsForIndustries(industrySlugsOf(c));
         if (!segs.some((s: string) => cSegs.includes(s))) return false;
       }
+      if (secs.length) {
+        const cInds = industrySlugsOf(c);
+        if (!secs.some((s: string) => cInds.includes(s))) return false;
+      }
       if (prio.length && !prio.includes(derivePriority(c))) return false;
       if (roi.length && !roi.includes(deriveRoiRange(c))) return false;
       return true;
     });
-  }, [cases, search.segments, search.priority, search.roiRange]);
+  }, [cases, search.segments, search.sectors, search.priority, search.roiRange]);
 
   const sorted = useMemo(() => {
     // Client-side sort fallback for sort keys not natively supported by the server fn.
@@ -221,13 +226,14 @@ function Page() {
 
   type ChipKey = keyof FacetState;
   const chips: { key: ChipKey; value: string; label: string }[] = [];
-  const facetKeys: ChipKey[] = ["segments","industries","capabilities","businessFunctions","objectives","priority","maturity","valuePotential","roiRange","complexity","riskLevel","timeToValue","deploymentModel","securityClassification"];
+  const facetKeys: ChipKey[] = ["segments","sectors","industries","capabilities","businessFunctions","objectives","priority","maturity","valuePotential","roiRange","complexity","riskLevel","timeToValue","deploymentModel","securityClassification"];
   const labelMaps: Partial<Record<ChipKey, Record<string, string>>> = {
     industries: Object.fromEntries(tax.industries.map((i) => [i.slug, i.name])),
     capabilities: Object.fromEntries(tax.capabilities.map((i) => [i.slug, i.name])),
     businessFunctions: Object.fromEntries(tax.businessFunctions.map((i) => [i.slug, i.name])),
     objectives: Object.fromEntries(tax.objectives.map((i) => [i.slug, i.name])),
     segments: Object.fromEntries(SEGMENTS.map((s) => [s.slug, s.short])),
+    sectors: Object.fromEntries(SECTORS.map((s) => [s.slug, s.name])),
     roiRange: { high: "High ROI", medium: "Medium ROI", low: "Emerging ROI" },
   };
   for (const k of facetKeys) {
@@ -319,7 +325,11 @@ function Page() {
       <div className="sticky top-14 z-20 border-b border-border bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70">
         <div className="mx-auto max-w-[1400px] px-6 py-3">
           <HorizontalFilters
-            tax={{ ...tax, segments: SEGMENTS.map((s) => ({ slug: s.slug, name: s.name })) }}
+            tax={{
+              ...tax,
+              segments: SEGMENTS.map((s) => ({ slug: s.slug, name: s.name })),
+              sectors: SECTORS.map((s) => ({ slug: s.slug, name: s.name })),
+            }}
             value={{ ...search, industries: effectiveIndustries } as Partial<FacetState>}
             onChange={(p) => handleFilterChange(p as Partial<Search>)}
             onClear={clearAll}
@@ -372,6 +382,31 @@ function Page() {
 
             {isLoading ? (
               <CardSkeleton count={6} />
+            ) : sorted.length === 0 && (activeCount > 0 || (search.q ?? "").trim()) ? (
+              <EmptyState
+                title="No use cases match your search."
+                description={
+                  (search.q ?? "").trim()
+                    ? `No results for "${search.q}" with the current filters. Try broadening your search or clearing some filters.`
+                    : "No use cases match the selected filters. Try removing a facet — market segment, sector, AI pattern, priority, ROI range, deployment model or security classification — to widen your results."
+                }
+                action={
+                  <div className="flex flex-wrap items-center justify-center gap-3">
+                    <button
+                      onClick={() => { setQ(""); clearAll(); update({ q: undefined }); }}
+                      className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-sm hover:brightness-110"
+                    >
+                      Clear search & filters
+                    </button>
+                    <button
+                      onClick={openCustomRequest}
+                      className="rounded-md border border-border bg-card px-5 py-2.5 text-sm font-bold text-muted-foreground hover:bg-secondary"
+                    >
+                      Request a custom pack
+                    </button>
+                  </div>
+                }
+              />
             ) : sorted.length === 0 ? (
               <EmptyState
                 title="Your AI use case library is ready."
