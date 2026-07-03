@@ -1783,10 +1783,12 @@ export type Database = {
           business_value: string | null
           complexity: string | null
           content_status: string
+          cost_range: string | null
           created_at: string
           cyber_review_required: boolean
           cybersecurity_notes: string | null
           data_required: string | null
+          deployment_model: string | null
           display_order: number
           effort_score: number | null
           governance_notes: string | null
@@ -1811,6 +1813,7 @@ export type Database = {
           risk_level: string | null
           risk_score: number | null
           roi_areas: string[] | null
+          security_classification: string | null
           show_on_landing: boolean
           slug: string
           solution: string | null
@@ -1830,10 +1833,12 @@ export type Database = {
           business_value?: string | null
           complexity?: string | null
           content_status?: string
+          cost_range?: string | null
           created_at?: string
           cyber_review_required?: boolean
           cybersecurity_notes?: string | null
           data_required?: string | null
+          deployment_model?: string | null
           display_order?: number
           effort_score?: number | null
           governance_notes?: string | null
@@ -1858,6 +1863,7 @@ export type Database = {
           risk_level?: string | null
           risk_score?: number | null
           roi_areas?: string[] | null
+          security_classification?: string | null
           show_on_landing?: boolean
           slug: string
           solution?: string | null
@@ -1877,10 +1883,12 @@ export type Database = {
           business_value?: string | null
           complexity?: string | null
           content_status?: string
+          cost_range?: string | null
           created_at?: string
           cyber_review_required?: boolean
           cybersecurity_notes?: string | null
           data_required?: string | null
+          deployment_model?: string | null
           display_order?: number
           effort_score?: number | null
           governance_notes?: string | null
@@ -1905,6 +1913,7 @@ export type Database = {
           risk_level?: string | null
           risk_score?: number | null
           roi_areas?: string[] | null
+          security_classification?: string | null
           show_on_landing?: boolean
           slug?: string
           solution?: string | null

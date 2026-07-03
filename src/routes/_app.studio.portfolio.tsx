@@ -18,6 +18,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   FileDown, FileText, BarChart3, Loader2,
 } from "lucide-react";
+import jsPDF from "jspdf";
 
 export const Route = createFileRoute("/_app/studio/portfolio")({
   component: () => (<RequirePlan min="pro" feature="Portfolio Roadmap"><PortfolioRoadmapPage /></RequirePlan>),
@@ -191,6 +192,7 @@ function PortfolioRoadmapPage() {
   );
 
   const exportExecutiveSummary = () => {
+    // Plain-text executive summary retained for quick copy/paste.
     const text = [
       "Executive Summary",
       "==================",
@@ -214,6 +216,78 @@ function PortfolioRoadmapPage() {
     const a = document.createElement("a");
     a.href = url; a.download = "executive-summary.txt"; a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const exportPortfolioPDF = () => {
+    if (!filtered.length) { toast.info("Nothing to export."); return; }
+    const pdf = new jsPDF({ unit: "pt", format: "a4" });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const margin = 40;
+    let y = margin;
+
+    pdf.setFontSize(20);
+    pdf.setTextColor(20, 20, 30);
+    pdf.text("AI Use Case Portfolio Summary", margin, y);
+    y += 22;
+    pdf.setFontSize(10);
+    pdf.setTextColor(110, 110, 120);
+    pdf.text(`Generated ${new Date().toLocaleDateString()} · UseCasesX™ by AIgilityX`, margin, y);
+    y += 24;
+
+    // Portfolio meta
+    pdf.setFontSize(11);
+    pdf.setTextColor(40, 40, 50);
+    const metaLines = [
+      `Total use cases: ${stats.total}    Approved / Pursue: ${stats.approved}    High priority: ${stats.highPriority}`,
+      `High risk: ${stats.highRisk}    Ready for pilot: ${stats.readyForPilot}    Sent to SARPI: ${stats.sarpi}    Sent to C3G: ${stats.c3g}`,
+    ];
+    metaLines.forEach((line) => { pdf.text(line, margin, y); y += 16; });
+    y += 8;
+
+    // Table header
+    const cols = [
+      { label: "Use case", w: 210 },
+      { label: "Status", w: 80 },
+      { label: "Risk", w: 60 },
+      { label: "Priority", w: 55 },
+      { label: "Score", w: 50 },
+    ];
+    const drawHeader = () => {
+      pdf.setFillColor(24, 26, 40);
+      pdf.rect(margin, y - 12, pageW - margin * 2, 20, "F");
+      pdf.setTextColor(230, 200, 120);
+      pdf.setFontSize(9);
+      let x = margin + 4;
+      cols.forEach((c) => { pdf.text(c.label, x, y + 2); x += c.w; });
+      y += 16;
+      pdf.setTextColor(40, 40, 50);
+    };
+    drawHeader();
+
+    const ranked = filtered.slice().sort((a, b) => (b.priority_score ?? 0) - (a.priority_score ?? 0));
+    pdf.setFontSize(9);
+    ranked.forEach((u, i) => {
+      if (y > pageH - margin) { pdf.addPage(); y = margin; drawHeader(); }
+      if (i % 2 === 0) {
+        pdf.setFillColor(245, 246, 250);
+        pdf.rect(margin, y - 10, pageW - margin * 2, 18, "F");
+      }
+      const s = scores[u.id];
+      const row = [
+        (u.title ?? "").slice(0, 48),
+        (u.status ?? "—").slice(0, 16),
+        u.risk_level ?? "—",
+        u.priority_score != null ? String(u.priority_score) : "—",
+        s?.total_score != null ? String(s.total_score) : "—",
+      ];
+      let x = margin + 4;
+      row.forEach((cell, ci) => { pdf.text(String(cell), x, y + 2); x += cols[ci].w; });
+      y += 18;
+    });
+
+    pdf.save("portfolio-summary.pdf");
+    toast.success("Portfolio summary exported as PDF.");
   };
 
   if (!planLoading && !features.portfolioRoadmap) {
@@ -243,11 +317,11 @@ function PortfolioRoadmapPage() {
         description="Your full AI use case portfolio, prioritization matrix, and execution roadmap."
         actions={
           <>
-            <Button variant="outline" onClick={exportPortfolio}>
+            <Button variant="outline" onClick={exportPortfolioPDF}>
               <FileDown className="mr-2 h-4 w-4" /> Export Portfolio PDF
             </Button>
             <Button variant="outline" onClick={exportPortfolio}>
-              <FileDown className="mr-2 h-4 w-4" /> Export Roadmap
+              <FileDown className="mr-2 h-4 w-4" /> Export CSV
             </Button>
             <Button onClick={exportExecutiveSummary}>
               <FileText className="mr-2 h-4 w-4" /> Export Executive Summary
