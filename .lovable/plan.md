@@ -1,65 +1,46 @@
-# UseCasesX™ → World-Class Platform Roadmap
+# UseCasesX ← AIgilityX Platform 2.0 Alignment
 
-Benchmarked against appliedAI UCP, aiusecasehub, aiinuse.org, trail-ml, and Deloitte. Four capability gaps emerged. We deliver them in phases, all powered by **our existing database/taxonomy** (no scraping), starting with the highest-impact phase now.
+The platform is already mature (repository, studio, boards, collections, portfolios, insights, SARPI/C3G/AdvisorX, admin panels). The `use_cases` schema already carries most doc fields (value/ROI, complexity, risk, maturity, time-to-value, governance/security notes, KPIs, roi_areas, recommended_platforms, SARPI/C3G mappings). So this is **alignment + extension**, not a rebuild. Per your choices: curated segment views (no schema change), build all four new experiences, apply the gold/navy theme, sequenced multi-step.
 
-## Competitive gaps we close
-- **Deployment Intelligence** (aiusecasehub) — aggregate analytics over the whole corpus: top use-case types, Build vs Buy, hot AI capabilities, momentum.
-- **Rich case-study format** (aiinuse) — narrative business-problem → solution → outcome with evidence framing.
-- **Governance-first browsing** (trail-ml) — filter & badge by AI Act-style risk class.
-- **Public API + live Feed** (aiusecasehub /api, /feed).
+## Phase 1 — AIgilityX premium re-skin
+Apply the executive navy/black/gold identity across the app via design tokens only (no per-component color hacks).
+- Rewrite palette in `src/styles.css` (`@theme` + `:root`/`.dark`): deep navy background, near-black surfaces, gold primary accent, white/light foreground, subtle gradients + elegant shadows. Keep shadcn token names so all components inherit.
+- Typography: load a refined display + body pair via `<link>` in `__root.tsx` and map `--font-*` tokens.
+- Sweep for any hardcoded color utilities in shared components (Hero, SiteShell, PageHero, cards) and move to tokens.
+- Verify: typecheck + Playwright screenshot of landing, repository, a detail page in both light/dark.
 
----
+## Phase 2 — Market Segments & Sectors (curated views)
+Introduce the SME / Enterprise / Government & Public Sector / Defense & Security / Critical Infrastructure lens as curated pages mapped onto existing industries/tags — no new tagging column.
+- `src/lib/segments.ts`: static definitions of the 5 segments (slug, name, blurb, icon, hero copy, mapped industry/tag filters, priority themes from the doc).
+- Landing: add a **Segment cards** band (5 cards) after the hero linking to segment pages.
+- `_app.segments.$segment.tsx` (Segment Detail): hero, positioning, "what this segment cares about", curated use-case grid (queries repository filtered by mapped facets), and CTAs (SARPI / Advisory / Pro Waitlist).
+- `_app.sectors.$sector.tsx` (Sector Detail): per-industry landing reusing existing industry taxonomy with curated use cases + CTAs.
+- Add "Segments" entry to `AppSidebar` + breadcrumbs.
 
-## Phase 1 — Insights Hub + Landing Refresh (build now)
+## Phase 3 — Quick Wins Matrix
+`_app.quick-wins.tsx`: priority-vs-complexity 4-quadrant scatter (Quick Wins, Strategic Bets, Easy Extras, Moonshots) computed from `value_potential`/`complexity` on published use cases.
+- Reuse existing public read functions + Recharts primitives.
+- Clickable points → use-case detail; quadrant filters; segment/sector filter controls.
+- Analytics events via existing `trackModuleEvent`.
 
-### A. Insights / Deployment Intelligence
-New route `/_app.insights.tsx` with a hub of data-driven cards, computed live from `use_cases` + junction tables via a public read server function (`src/lib/insights.functions.ts`):
-- **Top use-case types** — counts grouped by AI capability / business function, horizontal bars (click → filtered Repository).
-- **By industry** — distribution across the 18 industries.
-- **Value vs Complexity** — portfolio-style scatter/heat summary across the corpus.
-- **Risk profile** — breakdown by `risk_level` (sets up Phase 3 governance).
-- **Coverage stats** — totals (use cases, industries, capabilities, objectives) as hero KPIs.
+## Phase 4 — ROI & Mission Value Calculator
+`_app.roi-calculator.tsx`: dual-mode calculator.
+- **Financial ROI**: inputs (investment range, expected annual benefit, payback) → ROI %, payback period, 3-yr value; seed defaults from a selected use case's ranges.
+- **Mission Value** (gov/defense): non-financial scoring — mission value, risk reduction, readiness, response time, resilience, compliance — weighted composite, since defense value isn't purely financial (per doc §12).
+- Export summary (reuse the compare PDF-print pattern); Pro-gated export via `usePlan`/`Can`.
 
-Reuses Recharts (already in `src/components/ui/chart.tsx`). Respects plan gating: summary KPIs public; deep insight drilldowns gated for Pro/Enterprise via existing `usePlan` / `Can`.
+## Phase 5 — Use Case Discovery Wizard
+`_app.discover.tsx`: guided Q&A (segment → sector → size → AI maturity → priorities → budget → data → regulation/security) that maps answers to repository facets and returns a ranked shortlist with "Add to Portfolio / Compare / Assess with SARPI" actions. Client-side stepper; results query the existing use-case read functions.
 
-### B. Landing page refresh (`src/routes/index.tsx`)
-Keep all current sections; update + add:
-- Refresh hero copy/positioning to lead with "the world's intelligence layer for AI use cases".
-- Add a **live stats band** (pulls corpus counts) — credibility like appliedAI/aiusecasehub.
-- Add an **Insights preview** section (top use-case types + "Explore Insights" CTA).
-- Add a **"How it works"** 3-step strip (Explore → Studio → Govern & Realize value).
-- Keep existing pricing cards, industry section, and disclaimer.
-- Apply a chosen visual direction (see Design step) consistently.
-
-### Design step (before building B)
-Capture the current landing, then run visual preference questions (palette / type / layout) and rendered directions, lock the winner, and apply tokens in `src/styles.css`. Existing sections restyled, not removed.
-
----
-
-## Phase 2 — Rich Case-Study Format
-Upgrade `src/components/UseCaseDetail.tsx` into a structured case study:
-- Clear **Business Problem → AI Solution → Outcomes/KPIs → ROI areas** narrative blocks (fields already exist on `use_cases`).
-- **Evidence & provenance** strip (reuses `DecisionHistory` / sample-data disclaimer; "AI-generated reference" badge).
-- "Similar use cases" rail and quick actions (Add to Board, Open in Studio).
-- Improved SEO/OG metadata + JSON-LD per case.
-
-## Phase 3 — Governance-First Browsing
-- Add **Risk Class** facet to `UseCaseFilters` (Minimal/Limited/High/Unacceptable, mapped from `risk_level` + `governance_required`).
-- Risk badges on `UseCaseCard`; a governance lens view in Insights (risk distribution by industry).
-- Deep-link from a use case to the existing C3G governance studio module.
-
-## Phase 4 — Public API + Live Feed
-- Extend existing `src/routes/api/public/usecasex/*` to serve **DB-backed** published use cases (currently mock) with pagination, filters, and an `/api/public/usecasex/feed` chronological endpoint (RSS/JSON).
-- New in-app `/_app.feed.tsx` chronological stream of newly published use cases.
-- A lightweight `/api-docs` page documenting the public endpoints.
-
----
+## Cross-cutting
+- **CTAs** standardized everywhere: Assess readiness with SARPI, Request AIgilityX Advisory, Join Pro Waitlist (existing lead-capture + waitlist).
+- **Responsive**: grid + `min-w-0`/`shrink-0` header patterns on every new page.
+- **SEO**: unique `head()` (title/description/OG) per new route; JSON-LD on detail pages.
+- No DB schema changes required (curated views reuse current taxonomy); `portfolios`/`portfolio_items`/`use_case_scores`/`leads`(lead_captures) already exist.
 
 ## Technical notes
-- **Data source:** all analytics computed from current Supabase tables via a publishable-key public read server function (narrow `TO anon` SELECT already exists on use-case taxonomy). No schema changes required for Phase 1.
-- **Charts:** Recharts via existing chart UI primitives — no new deps.
-- **Gating:** reuse `usePlan`, `Can`, `permissions.ts`; summary public, drilldowns Pro/Enterprise.
-- **Routing:** new flat routes `_app.insights.tsx`, later `_app.feed.tsx`; add nav entries in `AppSidebar` + breadcrumbs.
-- **Verification:** typecheck + Playwright smoke on `/insights` and refreshed landing; confirm counts match DB.
+- Segment/sector mapping lives in a typed config module; pages filter the existing published-use-case read path (publishable-key public reads, RLS-safe).
+- All new flat routes follow `_app.*` convention; nav added in `AppSidebar`; never edit `routeTree.gen.ts`.
+- Verification each phase: `tsgo` typecheck + Playwright smoke/screenshot on the new route.
 
-I'll implement Phase 1 (Insights Hub + landing refresh, after a quick design-direction pick) and we tackle Phases 2–4 in follow-ups.
+I'll start with **Phase 1 (re-skin)**, confirm the look, then proceed through Phases 2–5 in order.

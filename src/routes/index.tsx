@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { SiteShell } from "@/components/SiteShell";
 import { getInsights } from "@/lib/insights.functions";
+import { SEGMENTS } from "@/lib/segments";
 import heroImg from "@/assets/landing-hero.jpg";
 import repositoryImg from "@/assets/landing-repository.jpg";
 import studioImg from "@/assets/landing-studio.jpg";
@@ -36,6 +37,7 @@ function LandingPage() {
     <SiteShell>
       <Hero />
       <AboutUseCasesX />
+      <SegmentsBand />
       <WhyUseCasesX />
       <HowItWorks />
       <RepositorySection />
@@ -50,6 +52,38 @@ function LandingPage() {
       <SovereignSection />
       <TestimonialsSection />
     </SiteShell>
+  );
+}
+
+/* MARKET SEGMENTS */
+function SegmentsBand() {
+  return (
+    <section className="border-b border-border bg-background">
+      <div className="mx-auto max-w-[1400px] px-6 py-20">
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Market segments</div>
+        <h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          One platform for every organization type.
+        </h2>
+        <p className="mt-3 max-w-2xl text-muted-foreground">
+          From SMEs to national institutions — explore AI use cases curated for your mission, budget and governance context.
+        </p>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {SEGMENTS.map((s) => (
+            <Link
+              key={s.slug}
+              to="/segments/$segment"
+              params={{ segment: s.slug }}
+              className="group rounded-2xl border border-border bg-card p-6 transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-gold)]"
+            >
+              <s.icon className="h-7 w-7 text-primary" />
+              <h3 className="mt-4 text-base font-bold leading-tight text-foreground">{s.name}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{s.hero}</p>
+              <span className="mt-3 inline-block text-sm font-bold text-primary group-hover:underline">Explore →</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -165,18 +199,18 @@ function Hero() {
         }}
       />
       <div className="relative mx-auto max-w-[1400px] px-6 pb-24 pt-24 sm:pt-32">
-        <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-[oklch(0.85_0.12_215)] backdrop-blur">
-          <span className="h-1.5 w-1.5 rounded-full bg-[oklch(0.78_0.13_215)]" />
+        <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary backdrop-blur">
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           UseCasesX™ · by AIgilityX™
         </div>
         <h1 className="max-w-5xl text-[44px] font-bold leading-[1.05] tracking-tight text-white sm:text-6xl">
-          Global AI Use Cases <span className="text-[oklch(0.85_0.13_215)]">Repository</span> &amp; Development Studio
+          Global AI Use Cases <span className="text-primary">Repository</span> &amp; Development Studio
         </h1>
         <p className="mt-5 max-w-3xl text-lg text-white/85 sm:text-xl">
           Discover, design, validate, govern, prioritize, and scale AI use cases using an enterprise-grade and
           sovereign-ready platform.
         </p>
-        <p className="mt-3 max-w-3xl text-base font-semibold uppercase tracking-[0.22em] text-[oklch(0.85_0.13_215)]">
+        <p className="mt-3 max-w-3xl text-base font-semibold uppercase tracking-[0.22em] text-primary">
           Discover · Design · Validate · Govern · Scale
         </p>
 
@@ -425,7 +459,7 @@ function SarpiSection() {
       <div className="mx-auto max-w-[1400px] px-6 py-20">
         <div className="grid items-end gap-4 lg:grid-cols-[1fr_auto]">
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[oklch(0.85_0.13_215)]">AI Readiness · SARPI™</div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">AI Readiness · SARPI™</div>
             <h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
               Know where you stand. Track readiness, value, and risk in one index.
             </h2>
@@ -434,7 +468,7 @@ function SarpiSection() {
               realization across every prioritized use case from UseCasesX™.
             </p>
           </div>
-          <Link to="/sarpi" className="rounded-md bg-[oklch(0.78_0.13_215)] px-5 py-2.5 text-sm font-bold text-[oklch(0.18_0.05_258)] hover:brightness-110">Open SARPI™ →</Link>
+          <Link to="/sarpi" className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110">Open SARPI™ →</Link>
         </div>
       </div>
     </section>
@@ -602,7 +636,7 @@ function SovereignSection() {
     <section className="border-b border-border surface-dark">
       <div className="mx-auto grid max-w-[1400px] gap-12 px-6 py-20 lg:grid-cols-2 lg:items-center">
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[oklch(0.85_0.13_215)]">Government &amp; Sovereign AI</div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Government &amp; Sovereign AI</div>
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
             Built for ministries, regulators &amp; sovereign AI programs.
           </h2>
