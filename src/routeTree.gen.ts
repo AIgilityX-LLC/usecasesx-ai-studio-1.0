@@ -56,6 +56,7 @@ import { Route as AppSegmentsSegmentRouteImport } from './routes/_app.segments.$
 import { Route as AppSectorsSectorRouteImport } from './routes/_app.sectors.$sector'
 import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
+import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.security'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
 import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
@@ -304,6 +305,11 @@ const AppBoardsBoardIdRoute = AppBoardsBoardIdRouteImport.update({
   path: '/$boardId',
   getParentRoute: () => AppBoardsRoute,
 } as any)
+const AppAccountSecurityRoute = AppAccountSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => AppAccountRoute,
+} as any)
 const ApiPublicUsecasexUseCasesRoute =
   ApiPublicUsecasexUseCasesRouteImport.update({
     id: '/api/public/usecasex/use-cases',
@@ -419,6 +425,7 @@ export interface FileRoutesByFullPath {
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
   '/c/$token': typeof CTokenRoute
+  '/account/security': typeof AppAccountSecurityRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
@@ -478,6 +485,7 @@ export interface FileRoutesByTo {
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
   '/c/$token': typeof CTokenRoute
+  '/account/security': typeof AppAccountSecurityRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
@@ -541,6 +549,7 @@ export interface FileRoutesById {
   '/_app/studio': typeof AppStudioRouteWithChildren
   '/_app/submit': typeof AppSubmitRoute
   '/c/$token': typeof CTokenRoute
+  '/_app/account/security': typeof AppAccountSecurityRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/boards/collections': typeof AppBoardsCollectionsRoute
   '/_app/sectors/$sector': typeof AppSectorsSectorRoute
@@ -604,6 +613,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/submit'
     | '/c/$token'
+    | '/account/security'
     | '/boards/$boardId'
     | '/boards/collections'
     | '/sectors/$sector'
@@ -663,6 +673,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/submit'
     | '/c/$token'
+    | '/account/security'
     | '/boards/$boardId'
     | '/boards/collections'
     | '/sectors/$sector'
@@ -725,6 +736,7 @@ export interface FileRouteTypes {
     | '/_app/studio'
     | '/_app/submit'
     | '/c/$token'
+    | '/_app/account/security'
     | '/_app/boards/$boardId'
     | '/_app/boards/collections'
     | '/_app/sectors/$sector'
@@ -1088,6 +1100,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBoardsBoardIdRouteImport
       parentRoute: typeof AppBoardsRoute
     }
+    '/_app/account/security': {
+      id: '/_app/account/security'
+      path: '/security'
+      fullPath: '/account/security'
+      preLoaderRoute: typeof AppAccountSecurityRouteImport
+      parentRoute: typeof AppAccountRoute
+    }
     '/api/public/usecasex/use-cases': {
       id: '/api/public/usecasex/use-cases'
       path: '/api/public/usecasex/use-cases'
@@ -1183,10 +1202,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppAccountRouteChildren {
+  AppAccountSecurityRoute: typeof AppAccountSecurityRoute
   AppAccountIndexRoute: typeof AppAccountIndexRoute
 }
 
 const AppAccountRouteChildren: AppAccountRouteChildren = {
+  AppAccountSecurityRoute: AppAccountSecurityRoute,
   AppAccountIndexRoute: AppAccountIndexRoute,
 }
 
