@@ -4,6 +4,8 @@ export interface FacetState {
   industries: string[]; capabilities: string[]; businessFunctions: string[]; objectives: string[];
   maturity: string[]; valuePotential: string[]; complexity: string[]; riskLevel: string[]; timeToValue: string[];
   sectors: string[]; tags: string[];
+  segments: string[]; priority: string[]; roiRange: string[];
+  deploymentModel: string[]; securityClassification: string[];
 }
 
 interface Props {
