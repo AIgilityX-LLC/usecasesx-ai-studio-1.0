@@ -2,9 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { useEffect } from "react";
 import { useQueries } from "@tanstack/react-query";
-import { Download } from "lucide-react";
+import { Download, Share2 } from "lucide-react";
 import { compareStore } from "@/lib/usecasex.compare.store";
 import { getUseCase } from "@/lib/use-cases.functions";
+import { trackModuleEvent } from "@/lib/module-analytics";
 import { MissingDataFallback } from "@/components/MissingDataFallback";
 import { PageHero } from "@/components/usecasex/PageHero";
 
@@ -52,6 +53,7 @@ function ComparePage() {
     const next = slugs.filter((s) => s !== slug);
     compareStore.set(next);
     navigate({ search: { ids: next.join(",") || undefined } as never, replace: true });
+    void trackModuleEvent("compare", "click", { interaction: "remove_from_compare", slug, remaining: next.length });
   };
 
   const results = useQueries({
@@ -105,6 +107,7 @@ function ComparePage() {
           onClick={() => {
             compareStore.clear();
             navigate({ search: { ids: undefined } as never, replace: true });
+            void trackModuleEvent("compare", "click", { interaction: "clear_comparison", source: "unavailable_fallback" });
           }}
           className="mt-6 mr-2 inline-block rounded-md border border-border px-5 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
         >
@@ -173,6 +176,7 @@ function ComparePage() {
 
   const exportPdf = () => {
     if (typeof window === "undefined") return;
+    void trackModuleEvent("compare", "click", { interaction: "export_pdf", count: items.length, slugs: items.map((c) => c.slug) });
     const esc = (v: unknown) =>
       String(v ?? "—").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     const origin = window.location.origin;
@@ -225,6 +229,21 @@ function ComparePage() {
     }
   };
 
+  const shareComparison = async () => {
+    if (typeof window === "undefined") return;
+    const url = window.location.href;
+    void trackModuleEvent("compare", "click", { interaction: "share_comparison", count: items.length, slugs: items.map((c) => c.slug) });
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "AI Use Case Comparison — UseCasesX™", url });
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+      }
+    } catch {
+      /* user cancelled share or clipboard blocked — non-fatal */
+    }
+  };
+
   return (
     <article className="bg-background">
       <PageHero
@@ -237,6 +256,12 @@ function ComparePage() {
             <Link to="/repository" className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary">
               ← Back to Explore
             </Link>
+            <button
+              onClick={shareComparison}
+              className="inline-flex items-center gap-1.5 rounded-md border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary"
+            >
+              <Share2 className="h-3.5 w-3.5" /> Share
+            </button>
             <button
               onClick={exportPdf}
               className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-110"
