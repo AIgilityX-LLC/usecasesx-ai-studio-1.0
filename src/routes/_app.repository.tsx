@@ -21,6 +21,8 @@ import { toast } from "sonner";
 import type { UseCaseCardData } from "@/components/UseCaseCard";
 import { Link } from "@tanstack/react-router";
 import { Can } from "@/components/Can";
+import { SEGMENTS } from "@/lib/segments";
+import { derivePriority, deriveRoiRange, industrySlugsOf, segmentsForIndustries } from "@/lib/usecasex.derive";
 
 const sortValues = ["relevant", "value", "complexity", "risk", "ttv", "newest"] as const;
 type SortKey = (typeof sortValues)[number];
@@ -39,6 +41,11 @@ const searchSchema = z.object({
   timeToValue: z.array(z.string()).optional(),
   sectors: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
+  segments: z.array(z.string()).optional(),
+  priority: z.array(z.string()).optional(),
+  roiRange: z.array(z.string()).optional(),
+  deploymentModel: z.array(z.string()).optional(),
+  securityClassification: z.array(z.string()).optional(),
   sort: z.enum(sortValues).optional(),
   gov: z.boolean().optional(),
 });
@@ -55,7 +62,7 @@ const SORT_LABELS: Record<SortKey, string> = {
 
 const FACET_LABELS: Record<string, string> = {
   industries: "Industry",
-  capabilities: "AI Type",
+  capabilities: "AI Pattern",
   businessFunctions: "Business Function",
   objectives: "Objective",
   maturity: "Maturity",
@@ -65,6 +72,11 @@ const FACET_LABELS: Record<string, string> = {
   timeToValue: "Time to Value",
   sectors: "Sector",
   tags: "Tag",
+  segments: "Market Segment",
+  priority: "Priority",
+  roiRange: "ROI Range",
+  deploymentModel: "Deployment",
+  securityClassification: "Security",
 };
 
 const taxQ = queryOptions({
@@ -166,6 +178,8 @@ function Page() {
     complexity: search.complexity ?? [],
     riskLevel: search.riskLevel ?? [],
     timeToValue: search.timeToValue ?? [],
+    deploymentModel: search.deploymentModel ?? [],
+    securityClassification: search.securityClassification ?? [],
     sort: mapSort(sort),
     limit: 120,
   }), [search, effectiveIndustries, sort]);
@@ -178,25 +192,43 @@ function Page() {
   });
 
   const cases = data?.cases ?? [];
+  const derivedFiltered = useMemo(() => {
+    const segs = search.segments ?? [];
+    const prio = search.priority ?? [];
+    const roi = search.roiRange ?? [];
+    if (!segs.length && !prio.length && !roi.length) return cases;
+    return cases.filter((c) => {
+      if (segs.length) {
+        const cSegs = segmentsForIndustries(industrySlugsOf(c));
+        if (!segs.some((s) => cSegs.includes(s))) return false;
+      }
+      if (prio.length && !prio.includes(derivePriority(c))) return false;
+      if (roi.length && !roi.includes(deriveRoiRange(c))) return false;
+      return true;
+    });
+  }, [cases, search.segments, search.priority, search.roiRange]);
+
   const sorted = useMemo(() => {
     // Client-side sort fallback for sort keys not natively supported by the server fn.
     const rank: Record<string, number> = { Low: 1, Short: 1, Medium: 2, High: 3, Critical: 4, Long: 3 };
-    const arr = [...cases];
+    const arr = [...derivedFiltered];
     if (sort === "complexity") arr.sort((a, b) => (rank[a.complexity ?? ""] ?? 99) - (rank[b.complexity ?? ""] ?? 99));
     else if (sort === "risk") arr.sort((a, b) => (rank[a.risk_level ?? ""] ?? 99) - (rank[b.risk_level ?? ""] ?? 99));
     else if (sort === "ttv") arr.sort((a, b) => (rank[a.time_to_value ?? ""] ?? 99) - (rank[b.time_to_value ?? ""] ?? 99));
     if (governanceFirst) arr.sort((a, b) => (rank[b.risk_level ?? ""] ?? 0) - (rank[a.risk_level ?? ""] ?? 0));
     return arr;
-  }, [cases, sort, governanceFirst]);
+  }, [derivedFiltered, sort, governanceFirst]);
 
   type ChipKey = keyof FacetState;
   const chips: { key: ChipKey; value: string; label: string }[] = [];
-  const facetKeys: ChipKey[] = ["industries","capabilities","businessFunctions","objectives","maturity","valuePotential","complexity","riskLevel","timeToValue"];
+  const facetKeys: ChipKey[] = ["segments","industries","capabilities","businessFunctions","objectives","priority","maturity","valuePotential","roiRange","complexity","riskLevel","timeToValue","deploymentModel","securityClassification"];
   const labelMaps: Partial<Record<ChipKey, Record<string, string>>> = {
     industries: Object.fromEntries(tax.industries.map((i) => [i.slug, i.name])),
     capabilities: Object.fromEntries(tax.capabilities.map((i) => [i.slug, i.name])),
     businessFunctions: Object.fromEntries(tax.businessFunctions.map((i) => [i.slug, i.name])),
     objectives: Object.fromEntries(tax.objectives.map((i) => [i.slug, i.name])),
+    segments: Object.fromEntries(SEGMENTS.map((s) => [s.slug, s.short])),
+    roiRange: { high: "High ROI", medium: "Medium ROI", low: "Emerging ROI" },
   };
   for (const k of facetKeys) {
     const vals = k === "industries" ? effectiveIndustries : ((search as Record<string, string[] | undefined>)[k] ?? []);
@@ -223,6 +255,8 @@ function Page() {
       objectives: undefined, maturity: undefined, valuePotential: undefined,
       complexity: undefined, riskLevel: undefined, timeToValue: undefined,
       sectors: undefined, tags: undefined,
+      segments: undefined, priority: undefined, roiRange: undefined,
+      deploymentModel: undefined, securityClassification: undefined,
     });
     track("filter_used", { action: "clear_all" });
     void trackModuleEvent("repository", "click", { interaction: "filter_change", action: "clear_all" });
