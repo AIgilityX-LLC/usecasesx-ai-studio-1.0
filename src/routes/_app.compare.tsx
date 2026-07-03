@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQueries } from "@tanstack/react-query";
-import { Download, Share2 } from "lucide-react";
+import { Download, Share2, ArrowUpDown, ChevronDown, ChevronRight, ChevronLeft } from "lucide-react";
 import { compareStore } from "@/lib/usecasex.compare.store";
 import { getUseCase } from "@/lib/use-cases.functions";
 import { trackModuleEvent } from "@/lib/module-analytics";
