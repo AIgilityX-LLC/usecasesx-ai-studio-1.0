@@ -5,6 +5,7 @@ import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/s
 import { AppSidebar } from "./AppSidebar";
 import { AppBreadcrumb } from "./AppBreadcrumb";
 import { UseCasesXFooter } from "./UseCasesXFooter";
+import { EmailVerificationBanner } from "./EmailVerificationBanner";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavLinkIntegrityCheck } from "@/lib/nav-integrity";
@@ -126,6 +127,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
         </div>
         <SidebarInset className="flex min-w-0 flex-1 flex-col">
           {headerInner}
+          <EmailVerificationBanner />
           <main id="main-content" tabIndex={-1} className="flex-1 outline-none">{children}</main>
           <UseCasesXFooter />
         </SidebarInset>
