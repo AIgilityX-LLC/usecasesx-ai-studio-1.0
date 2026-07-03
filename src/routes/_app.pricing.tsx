@@ -277,7 +277,14 @@ function PricingPage() {
                 {p.features.map((f) => (
                   <li key={f} className="flex items-start gap-2">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
-                    <span>{f}</span>
+                    <span>
+                      {f}
+                      {isComingSoon(f) && (
+                        <span className="ml-1.5 rounded bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                          Coming {NEXT_RELEASE_LABEL}
+                        </span>
+                      )}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -289,13 +296,19 @@ function PricingPage() {
                 </ul>
               )}
               <div className="mt-auto pt-4">
-                <Button
-                  className="w-full"
-                  variant={p.highlight ? "default" : "outline"}
-                  asChild
-                >
-                  <Link to={p.key === "lite" ? "/auth" : "/"}>{p.cta}</Link>
-                </Button>
+                {p.key === "pro" ? (
+                  <Button className="w-full" onClick={() => setWaitlistOpen(true)}>
+                    <Sparkles className="mr-2 h-4 w-4" /> {p.cta}
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full"
+                    variant={p.highlight ? "default" : "outline"}
+                    asChild
+                  >
+                    <Link to={p.key === "lite" ? "/auth" : "/"}>{p.cta}</Link>
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
