@@ -61,10 +61,12 @@ import { Route as AppStudioUseCaseIdIndexRouteImport } from './routes/_app.studi
 import { Route as ApiPublicUsecasexUseCasesSlugRouteImport } from './routes/api/public/usecasex/use-cases.$slug'
 import { Route as AppStudioUseCaseIdSarpiRouteImport } from './routes/_app.studio.use-case.$id.sarpi'
 import { Route as AppStudioUseCaseIdFeasibilityRouteImport } from './routes/_app.studio.use-case.$id.feasibility'
+import { Route as AppStudioUseCaseIdDeliverablesRouteImport } from './routes/_app.studio.use-case.$id.deliverables'
 import { Route as AppStudioUseCaseIdDataReadinessRouteImport } from './routes/_app.studio.use-case.$id.data-readiness'
 import { Route as AppStudioUseCaseIdC3gGovernanceRouteImport } from './routes/_app.studio.use-case.$id.c3g-governance'
 import { Route as AppStudioUseCaseIdBlueprintRouteImport } from './routes/_app.studio.use-case.$id.blueprint'
 import { Route as AppStudioUseCaseIdAdvisorxRouteImport } from './routes/_app.studio.use-case.$id.advisorx'
+import { Route as AppStudioUseCaseIdDeliverableTypeRouteImport } from './routes/_app.studio.use-case.$id.deliverable.$type'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -329,6 +331,12 @@ const AppStudioUseCaseIdFeasibilityRoute =
     path: '/use-case/$id/feasibility',
     getParentRoute: () => AppStudioRoute,
   } as any)
+const AppStudioUseCaseIdDeliverablesRoute =
+  AppStudioUseCaseIdDeliverablesRouteImport.update({
+    id: '/use-case/$id/deliverables',
+    path: '/use-case/$id/deliverables',
+    getParentRoute: () => AppStudioRoute,
+  } as any)
 const AppStudioUseCaseIdDataReadinessRoute =
   AppStudioUseCaseIdDataReadinessRouteImport.update({
     id: '/use-case/$id/data-readiness',
@@ -351,6 +359,12 @@ const AppStudioUseCaseIdAdvisorxRoute =
   AppStudioUseCaseIdAdvisorxRouteImport.update({
     id: '/use-case/$id/advisorx',
     path: '/use-case/$id/advisorx',
+    getParentRoute: () => AppStudioRoute,
+  } as any)
+const AppStudioUseCaseIdDeliverableTypeRoute =
+  AppStudioUseCaseIdDeliverableTypeRouteImport.update({
+    id: '/use-case/$id/deliverable/$type',
+    path: '/use-case/$id/deliverable/$type',
     getParentRoute: () => AppStudioRoute,
   } as any)
 
@@ -406,10 +420,12 @@ export interface FileRoutesByFullPath {
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/studio/use-case/$id/c3g-governance': typeof AppStudioUseCaseIdC3gGovernanceRoute
   '/studio/use-case/$id/data-readiness': typeof AppStudioUseCaseIdDataReadinessRoute
+  '/studio/use-case/$id/deliverables': typeof AppStudioUseCaseIdDeliverablesRoute
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
   '/studio/use-case/$id/': typeof AppStudioUseCaseIdIndexRoute
+  '/studio/use-case/$id/deliverable/$type': typeof AppStudioUseCaseIdDeliverableTypeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -462,10 +478,12 @@ export interface FileRoutesByTo {
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/studio/use-case/$id/c3g-governance': typeof AppStudioUseCaseIdC3gGovernanceRoute
   '/studio/use-case/$id/data-readiness': typeof AppStudioUseCaseIdDataReadinessRoute
+  '/studio/use-case/$id/deliverables': typeof AppStudioUseCaseIdDeliverablesRoute
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
   '/studio/use-case/$id': typeof AppStudioUseCaseIdIndexRoute
+  '/studio/use-case/$id/deliverable/$type': typeof AppStudioUseCaseIdDeliverableTypeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -521,10 +539,12 @@ export interface FileRoutesById {
   '/_app/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/_app/studio/use-case/$id/c3g-governance': typeof AppStudioUseCaseIdC3gGovernanceRoute
   '/_app/studio/use-case/$id/data-readiness': typeof AppStudioUseCaseIdDataReadinessRoute
+  '/_app/studio/use-case/$id/deliverables': typeof AppStudioUseCaseIdDeliverablesRoute
   '/_app/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/_app/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
   '/_app/studio/use-case/$id/': typeof AppStudioUseCaseIdIndexRoute
+  '/_app/studio/use-case/$id/deliverable/$type': typeof AppStudioUseCaseIdDeliverableTypeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -580,10 +600,12 @@ export interface FileRouteTypes {
     | '/studio/use-case/$id/blueprint'
     | '/studio/use-case/$id/c3g-governance'
     | '/studio/use-case/$id/data-readiness'
+    | '/studio/use-case/$id/deliverables'
     | '/studio/use-case/$id/feasibility'
     | '/studio/use-case/$id/sarpi'
     | '/api/public/usecasex/use-cases/$slug'
     | '/studio/use-case/$id/'
+    | '/studio/use-case/$id/deliverable/$type'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -636,10 +658,12 @@ export interface FileRouteTypes {
     | '/studio/use-case/$id/blueprint'
     | '/studio/use-case/$id/c3g-governance'
     | '/studio/use-case/$id/data-readiness'
+    | '/studio/use-case/$id/deliverables'
     | '/studio/use-case/$id/feasibility'
     | '/studio/use-case/$id/sarpi'
     | '/api/public/usecasex/use-cases/$slug'
     | '/studio/use-case/$id'
+    | '/studio/use-case/$id/deliverable/$type'
   id:
     | '__root__'
     | '/'
@@ -694,10 +718,12 @@ export interface FileRouteTypes {
     | '/_app/studio/use-case/$id/blueprint'
     | '/_app/studio/use-case/$id/c3g-governance'
     | '/_app/studio/use-case/$id/data-readiness'
+    | '/_app/studio/use-case/$id/deliverables'
     | '/_app/studio/use-case/$id/feasibility'
     | '/_app/studio/use-case/$id/sarpi'
     | '/api/public/usecasex/use-cases/$slug'
     | '/_app/studio/use-case/$id/'
+    | '/_app/studio/use-case/$id/deliverable/$type'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1075,6 +1101,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudioUseCaseIdFeasibilityRouteImport
       parentRoute: typeof AppStudioRoute
     }
+    '/_app/studio/use-case/$id/deliverables': {
+      id: '/_app/studio/use-case/$id/deliverables'
+      path: '/use-case/$id/deliverables'
+      fullPath: '/studio/use-case/$id/deliverables'
+      preLoaderRoute: typeof AppStudioUseCaseIdDeliverablesRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
     '/_app/studio/use-case/$id/data-readiness': {
       id: '/_app/studio/use-case/$id/data-readiness'
       path: '/use-case/$id/data-readiness'
@@ -1103,6 +1136,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudioUseCaseIdAdvisorxRouteImport
       parentRoute: typeof AppStudioRoute
     }
+    '/_app/studio/use-case/$id/deliverable/$type': {
+      id: '/_app/studio/use-case/$id/deliverable/$type'
+      path: '/use-case/$id/deliverable/$type'
+      fullPath: '/studio/use-case/$id/deliverable/$type'
+      preLoaderRoute: typeof AppStudioUseCaseIdDeliverableTypeRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
   }
 }
 
@@ -1126,9 +1166,11 @@ interface AppStudioRouteChildren {
   AppStudioUseCaseIdBlueprintRoute: typeof AppStudioUseCaseIdBlueprintRoute
   AppStudioUseCaseIdC3gGovernanceRoute: typeof AppStudioUseCaseIdC3gGovernanceRoute
   AppStudioUseCaseIdDataReadinessRoute: typeof AppStudioUseCaseIdDataReadinessRoute
+  AppStudioUseCaseIdDeliverablesRoute: typeof AppStudioUseCaseIdDeliverablesRoute
   AppStudioUseCaseIdFeasibilityRoute: typeof AppStudioUseCaseIdFeasibilityRoute
   AppStudioUseCaseIdSarpiRoute: typeof AppStudioUseCaseIdSarpiRoute
   AppStudioUseCaseIdIndexRoute: typeof AppStudioUseCaseIdIndexRoute
+  AppStudioUseCaseIdDeliverableTypeRoute: typeof AppStudioUseCaseIdDeliverableTypeRoute
 }
 
 const AppStudioRouteChildren: AppStudioRouteChildren = {
@@ -1137,9 +1179,12 @@ const AppStudioRouteChildren: AppStudioRouteChildren = {
   AppStudioUseCaseIdBlueprintRoute: AppStudioUseCaseIdBlueprintRoute,
   AppStudioUseCaseIdC3gGovernanceRoute: AppStudioUseCaseIdC3gGovernanceRoute,
   AppStudioUseCaseIdDataReadinessRoute: AppStudioUseCaseIdDataReadinessRoute,
+  AppStudioUseCaseIdDeliverablesRoute: AppStudioUseCaseIdDeliverablesRoute,
   AppStudioUseCaseIdFeasibilityRoute: AppStudioUseCaseIdFeasibilityRoute,
   AppStudioUseCaseIdSarpiRoute: AppStudioUseCaseIdSarpiRoute,
   AppStudioUseCaseIdIndexRoute: AppStudioUseCaseIdIndexRoute,
+  AppStudioUseCaseIdDeliverableTypeRoute:
+    AppStudioUseCaseIdDeliverableTypeRoute,
 }
 
 const AppStudioRouteWithChildren = AppStudioRoute._addFileChildren(

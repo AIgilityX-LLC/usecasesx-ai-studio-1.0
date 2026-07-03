@@ -321,6 +321,11 @@ function BlueprintPage() {
         </div>
         <div className="flex flex-wrap justify-end gap-2">
           <Button variant="outline" asChild>
+            <Link to="/studio/use-case/$id/deliverables" params={{ id: useCaseId }}>
+              All Deliverables
+            </Link>
+          </Button>
+          <Button variant="outline" asChild>
             <Link to="/studio/use-case/$id/data-readiness" params={{ id: useCaseId }}>
               ← Data Readiness
             </Link>

@@ -71,6 +71,7 @@ function UseCaseDetailPage() {
               <Link className={linkClass} to="/studio/use-case/$id/feasibility" params={{ id }}>Feasibility</Link>
               <Link className={linkClass} to="/studio/use-case/$id/data-readiness" params={{ id }}>Data Readiness</Link>
               <Link className={linkClass} to="/studio/use-case/$id/blueprint" params={{ id }}>Blueprint</Link>
+              <Link className={linkClass} to="/studio/use-case/$id/deliverables" params={{ id }}>Deliverables</Link>
               <Link className={linkClass} to="/studio/use-case/$id/sarpi" params={{ id }}>SARPI</Link>
               <Link className={linkClass} to="/studio/use-case/$id/advisorx" params={{ id }}>AdvisorX</Link>
               <Link className={linkClass} to="/studio/use-case/$id/c3g-governance" params={{ id }}>C3G Governance</Link>
