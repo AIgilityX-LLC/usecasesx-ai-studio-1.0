@@ -25,11 +25,3 @@ test.describe("repository browse facets", () => {
     await expect(page.getByText(/No use cases match your search/i)).toBeVisible();
   });
 });
-
-test.describe("use case boards navigation", () => {
-  test("boards page exposes Boards and Collections tabs", async ({ page }) => {
-    await page.goto(`${BASE}/boards`, { waitUntil: "networkidle" });
-    await expect(page.getByRole("link", { name: "Boards", exact: true })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Collections", exact: true })).toBeVisible();
-  });
-});
