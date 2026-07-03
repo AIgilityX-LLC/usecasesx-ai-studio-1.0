@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
@@ -71,6 +72,11 @@ import { Route as AppStudioUseCaseIdBlueprintRouteImport } from './routes/_app.s
 import { Route as AppStudioUseCaseIdAdvisorxRouteImport } from './routes/_app.studio.use-case.$id.advisorx'
 import { Route as AppStudioUseCaseIdDeliverableTypeRouteImport } from './routes/_app.studio.use-case.$id.deliverable.$type'
 
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -389,6 +395,7 @@ const AppStudioUseCaseIdDeliverableTypeRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/account': typeof AppAccountRouteWithChildren
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
@@ -451,6 +458,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
@@ -513,6 +521,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/_app/account': typeof AppAccountRouteWithChildren
   '/_app/admin-submissions': typeof AppAdminSubmissionsRoute
   '/_app/admin-waitlist': typeof AppAdminWaitlistRoute
@@ -577,6 +586,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/forgot-password'
     | '/account'
     | '/admin-submissions'
     | '/admin-waitlist'
@@ -639,6 +649,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/forgot-password'
     | '/admin-submissions'
     | '/admin-waitlist'
     | '/administration'
@@ -700,6 +711,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_app'
     | '/auth'
+    | '/forgot-password'
     | '/_app/account'
     | '/_app/admin-submissions'
     | '/_app/admin-waitlist'
@@ -764,6 +776,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   CTokenRoute: typeof CTokenRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
@@ -771,6 +784,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -1366,6 +1386,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   CTokenRoute: CTokenRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
   ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRouteWithChildren,
