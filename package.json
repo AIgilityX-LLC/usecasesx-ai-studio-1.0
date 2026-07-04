@@ -15,6 +15,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test:navbar": "playwright test tests/navbar.spec.ts",
+    "test:mobile": "playwright test tests/mobile-responsive.spec.ts",
+    "test:rls": "bun run tests/rls-isolation.e2e.ts",
     "check:nav-integrity": "node scripts/check-nav-integrity.mjs",
     "check:compare": "node scripts/check-compare-analytics.mjs"
   },
