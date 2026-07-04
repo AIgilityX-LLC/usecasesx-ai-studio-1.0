@@ -512,7 +512,7 @@ function CyberXSection() {
           evidence capture, audit trail and assurance — built for sovereign and regulated environments.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link to="/cyberx/c3g/intake" className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110">Open CyberX C3G™ →</Link>
+          <Link to="/cyberx/c3g/intake" search={{ source: "home", use_case_id: undefined }} className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110">Open CyberX C3G™ →</Link>
           <Link to="/governance" className="rounded-md border border-border bg-background px-5 py-2.5 text-sm font-semibold hover:bg-secondary">GovernanceX™</Link>
         </div>
       </div>
