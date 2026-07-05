@@ -45,10 +45,10 @@ async function signInViaStorage(page: Page, email: string, password: string) {
   );
 }
 
-async function seedOnePortfolioItem(accessToken: string) {
+async function seedOnePortfolioItem(session: { access_token: string; user: { id: string } }) {
   const headers = {
     apikey: SUPABASE_KEY,
-    Authorization: `Bearer ${accessToken}`,
+    Authorization: `Bearer ${session.access_token}`,
     "Content-Type": "application/json",
     Prefer: "return=representation",
   };
@@ -66,10 +66,13 @@ async function seedOnePortfolioItem(accessToken: string) {
       title: `PDF-Test board ${Date.now()}`,
       board_type: "studio",
       status: "active",
+      created_by: session.user.id,
     }),
   });
-  const board = (await boardRes.json())[0];
-  await fetch(`${SUPABASE_URL}/rest/v1/ai_use_cases`, {
+  const boardJson = await boardRes.json();
+  const board = Array.isArray(boardJson) ? boardJson[0] : boardJson;
+  if (!board?.id) throw new Error(`board insert failed: ${JSON.stringify(boardJson)}`);
+  const ucRes = await fetch(`${SUPABASE_URL}/rest/v1/ai_use_cases`, {
     method: "POST",
     headers,
     body: JSON.stringify({
@@ -79,8 +82,10 @@ async function seedOnePortfolioItem(accessToken: string) {
       status: "approved",
       priority_score: 82,
       risk_level: "Medium",
+      created_by: session.user.id,
     }),
   });
+  if (!ucRes.ok) throw new Error(`use_case insert failed: ${ucRes.status} ${await ucRes.text()}`);
 }
 
 test("portfolio PDF export downloads a valid PDF", async ({ page }) => {
