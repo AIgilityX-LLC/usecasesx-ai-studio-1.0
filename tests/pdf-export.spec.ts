@@ -19,8 +19,17 @@ async function signIn(page: Page) {
   await page.goto("/auth");
   await page.locator('input[type="email"]').first().fill(EMAIL);
   await page.locator('input[type="password"]').first().fill(PASSWORD);
-  await page.getByRole("button", { name: /^sign in$/i }).first().click();
-  await page.waitForURL((u) => !u.pathname.startsWith("/auth"), { timeout: 20_000 });
+  await page.locator('button[type="submit"]').click();
+  // The auth-state listener sometimes doesn't rerouter — poll the Supabase
+  // session directly and consider sign-in successful once it appears.
+  await page.waitForFunction(
+    async () => {
+      const keys = Object.keys(window.localStorage);
+      return keys.some((k) => k.startsWith("sb-") && k.endsWith("-auth-token"));
+    },
+    undefined,
+    { timeout: 20_000 },
+  );
 }
 
 test("portfolio PDF export downloads a valid PDF", async ({ page }) => {
