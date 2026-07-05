@@ -104,6 +104,10 @@ test("portfolio PDF export downloads a valid PDF", async ({ page }) => {
   const btn = page.getByRole("button", { name: /export portfolio pdf/i });
   await expect(btn).toBeVisible({ timeout: 20_000 });
 
+  // Wait for the portfolio data to load (Total counter > 0)
+  await expect(page.locator('text=/Ranked by priority|1\\s*Total|Total\\s*1/').first()).toBeVisible({ timeout: 20_000 }).catch(() => {});
+  await page.waitForTimeout(2_000);
+
   const [download] = await Promise.all([
     page.waitForEvent("download", { timeout: 30_000 }),
     btn.click(),
