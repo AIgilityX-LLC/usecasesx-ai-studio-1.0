@@ -93,7 +93,7 @@ test("portfolio PDF export downloads a valid PDF", async ({ page }) => {
   if (!SUPABASE_URL || !SUPABASE_KEY) test.skip(true, "Supabase env not set");
 
   const session = await mintSession(EMAIL, PASSWORD);
-  await seedOnePortfolioItem(session.access_token);
+  await seedOnePortfolioItem(session);
   const ref = new URL(SUPABASE_URL).hostname.split(".")[0];
   await page.goto(`${BASE}/`);
   await page.evaluate(
