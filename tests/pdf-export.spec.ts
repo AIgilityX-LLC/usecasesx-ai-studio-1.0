@@ -45,11 +45,56 @@ async function signInViaStorage(page: Page, email: string, password: string) {
   );
 }
 
+async function seedOnePortfolioItem(accessToken: string) {
+  const headers = {
+    apikey: SUPABASE_KEY,
+    Authorization: `Bearer ${accessToken}`,
+    "Content-Type": "application/json",
+    Prefer: "return=representation",
+  };
+  const wsRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/ensure_user_workspace`, {
+    method: "POST",
+    headers,
+    body: "{}",
+  });
+  const workspaceId = (await wsRes.json()) as string;
+  const boardRes = await fetch(`${SUPABASE_URL}/rest/v1/use_case_boards`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      workspace_id: workspaceId,
+      title: `PDF-Test board ${Date.now()}`,
+      board_type: "studio",
+      status: "active",
+    }),
+  });
+  const board = (await boardRes.json())[0];
+  await fetch(`${SUPABASE_URL}/rest/v1/ai_use_cases`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      board_id: board.id,
+      title: "PDF export smoke case",
+      problem_statement: "Ensure Portfolio PDF export renders at least one row.",
+      status: "approved",
+      priority_score: 82,
+      risk_level: "Medium",
+    }),
+  });
+}
+
 test("portfolio PDF export downloads a valid PDF", async ({ page }) => {
   test.setTimeout(90_000);
   if (!SUPABASE_URL || !SUPABASE_KEY) test.skip(true, "Supabase env not set");
 
-  await signInViaStorage(page, EMAIL, PASSWORD);
+  const session = await mintSession(EMAIL, PASSWORD);
+  await seedOnePortfolioItem(session.access_token);
+  const ref = new URL(SUPABASE_URL).hostname.split(".")[0];
+  await page.goto(`${BASE}/`);
+  await page.evaluate(
+    ({ key, value }) => window.localStorage.setItem(key, value),
+    { key: `sb-${ref}-auth-token`, value: JSON.stringify(session) },
+  );
   await page.goto(`${BASE}/studio/portfolio`);
   const btn = page.getByRole("button", { name: /export portfolio pdf/i });
   await expect(btn).toBeVisible({ timeout: 20_000 });
