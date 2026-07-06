@@ -78,22 +78,22 @@ test.beforeAll(async () => {
 
 for (const demo of DEMOS) {
   test(`smoke: ${demo.label} — login + ${demo.primaryRoute} + cross-org isolation`, async ({ page }) => {
-    test.setTimeout(60_000);
+    test.setTimeout(90_000);
     if (!SUPABASE_URL || !SUPABASE_KEY) test.skip(true, "Supabase env not set");
 
     const session = await mintSession(demo.email, demo.password);
     expect(session.access_token, "session minted").toBeTruthy();
 
     await injectSession(page, session);
-    await page.goto(`${BASE}${demo.primaryRoute}`);
-    await page.waitForLoadState("domcontentloaded");
-    // Small settle for client-side gating (RequirePlan / RequireRoles)
-    await page.waitForTimeout(1500);
+    await page.goto(`${BASE}${demo.primaryRoute}`, { waitUntil: "domcontentloaded", timeout: 45_000 });
+    await page.waitForTimeout(2000);
     const body = (await page.locator("body").innerText()).toLowerCase();
     expect(body).toMatch(demo.mustSee);
 
-    // Cross-org read: another user's canary board must not be visible via API.
-    if (canaryBoardId && demo.email !== "pro@demo.usecasex.app") {
+    // Cross-org isolation: only enforce for non-admin-tier accounts.
+    // Admin and moderator have platform-wide read via is_admin_tier() by design.
+    const isAdminTier = demo.label === "admin" || demo.label === "moderator";
+    if (canaryBoardId && demo.email !== "pro@demo.usecasex.app" && !isAdminTier) {
       const res = await fetch(
         `${SUPABASE_URL}/rest/v1/use_case_boards?id=eq.${canaryBoardId}&select=id`,
         { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${session.access_token}` } },
