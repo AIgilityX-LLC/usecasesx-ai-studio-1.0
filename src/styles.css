@@ -185,3 +185,45 @@
     font-family: var(--font-display);
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Site-wide alternating section backgrounds                           */
+/* Every direct <section> child of <main id="main-content"> alternates */
+/* dark → light → dark → light. Footer stays dark via its own styles.  */
+/* ------------------------------------------------------------------ */
+main#main-content > section:nth-of-type(odd),
+main#main-content > article > section:nth-of-type(odd) {
+  background-color: var(--navy-950) !important;
+  background-image: none !important;
+  color: oklch(0.98 0.005 90);
+  border-color: oklch(1 0 0 / 0.08) !important;
+}
+main#main-content > section:nth-of-type(odd) .text-foreground,
+main#main-content > article > section:nth-of-type(odd) .text-foreground {
+  color: oklch(0.98 0.005 90);
+}
+main#main-content > section:nth-of-type(odd) .text-muted-foreground,
+main#main-content > article > section:nth-of-type(odd) .text-muted-foreground {
+  color: oklch(0.78 0.02 90);
+}
+main#main-content > section:nth-of-type(odd) .bg-background,
+main#main-content > article > section:nth-of-type(odd) .bg-background {
+  background-color: var(--navy-800);
+}
+main#main-content > section:nth-of-type(odd) .bg-card,
+main#main-content > article > section:nth-of-type(odd) .bg-card {
+  background-color: oklch(0.22 0.045 262);
+  color: oklch(0.98 0.005 90);
+}
+main#main-content > section:nth-of-type(odd) .border-border,
+main#main-content > article > section:nth-of-type(odd) .border-border {
+  border-color: oklch(1 0 0 / 0.1);
+}
+
+main#main-content > section:nth-of-type(even),
+main#main-content > article > section:nth-of-type(even) {
+  background-color: oklch(1 0 0) !important;
+  background-image: none !important;
+  color: var(--navy-950);
+}
+
