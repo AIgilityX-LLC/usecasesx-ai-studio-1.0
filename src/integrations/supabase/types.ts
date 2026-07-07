@@ -2088,6 +2088,7 @@ export type Database = {
         Args: { use_case_uuid: string }
         Returns: Json
       }
+      has_pro_entitlement: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
