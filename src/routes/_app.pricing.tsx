@@ -306,7 +306,7 @@ function PricingPage() {
                     variant={p.highlight ? "default" : "outline"}
                     asChild
                   >
-                    <Link to={p.key === "lite" ? "/auth" : "/"}>{p.cta}</Link>
+                    <Link to={p.key === "lite" ? "/repository" : "/"}>{p.cta}</Link>
                   </Button>
                 )}
               </div>
