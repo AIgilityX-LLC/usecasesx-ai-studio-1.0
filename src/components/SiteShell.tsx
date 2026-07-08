@@ -83,27 +83,32 @@ export function SiteShell({ children }: { children: ReactNode }) {
       )}
       <div className="flex items-center gap-2">
         {isAuthed ? (
-          <button
-            onClick={() => supabase.auth.signOut()}
-            className="hidden rounded-md border border-border px-3 py-1.5 text-[13px] font-medium hover:bg-secondary sm:inline-flex"
-          >
-            Sign out
-          </button>
+          <>
+            <button
+              onClick={() => supabase.auth.signOut()}
+              className="hidden rounded-md border border-border px-3 py-1.5 text-[13px] font-medium hover:bg-secondary sm:inline-flex"
+            >
+              Sign out
+            </button>
+            <Link
+              to="/pricing"
+              className="rounded-md bg-primary px-3.5 py-1.5 text-[13px] font-bold text-primary-foreground hover:brightness-110"
+            >
+              Plans
+            </Link>
+          </>
         ) : (
           <Link
-            to="/auth"
-            className="hidden rounded-md border border-border px-3 py-1.5 text-[13px] font-medium hover:bg-secondary sm:inline-flex"
+            to="/pricing"
+            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3.5 py-1.5 text-[13px] font-bold text-primary-foreground shadow-[var(--shadow-gold)] hover:brightness-110"
           >
-            Sign in
+            <span aria-hidden>👑</span>
+            <span className="hidden sm:inline">Join the Waitlist — Early Gratis Access</span>
+            <span className="sm:hidden">Join Waitlist</span>
           </Link>
         )}
-        <Link
-          to="/pricing"
-          className="rounded-md bg-primary px-3.5 py-1.5 text-[13px] font-bold text-primary-foreground hover:brightness-110"
-        >
-          {isAuthed ? "Plans" : "Get Pro — Free"}
-        </Link>
       </div>
+
     </header>
   );
 

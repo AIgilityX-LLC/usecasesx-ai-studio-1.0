@@ -567,7 +567,7 @@ function PlansSection() {
     },
     {
       name: "UseCasesX Pro™",
-      tag: "Free with registration",
+      tag: "Free Beta · Gratis until 31 Dec 2027 · Most Popular",
       highlight: true,
       features: [
         "Save, score &amp; prioritize use cases",
@@ -577,8 +577,9 @@ function PlansSection() {
         "AdvisorX™ AI co-pilot guidance",
         "Generate executive PDF reports",
       ],
-      cta: { label: "Create Free Pro Account", to: "/pro" },
+      cta: { label: "Join the Waitlist — Early Gratis Access", to: "/pricing" },
     },
+
     {
       name: "UseCasesX Enterprise™",
       tag: "Enterprise · Sovereign AI System included",

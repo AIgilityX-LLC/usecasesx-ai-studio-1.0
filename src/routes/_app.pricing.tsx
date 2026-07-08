@@ -48,65 +48,63 @@ type Plan = {
 const PLANS: Plan[] = [
   {
     key: "lite",
-    name: "Lite",
-    tagline: "Get started with AI use case discovery.",
+    name: "UseCasesX Lite / Free™",
+    tagline: "Professionals · Small teams · Early AI exploration.",
     price: "Free",
-    cta: "Start free",
+    cta: "Start Free Tools",
     features: [
-      "Global Repository — free patterns only",
-      "1 active discovery board",
-      "Up to 3 active use cases",
-      "Manual feasibility scoring",
-      "Basic blueprint PDF export",
+      "Free AI Readiness Navigator Lite",
+      "Free AI Cost/ROI Navigator Lite",
+      "Free AI Performance Index Lite",
+      "Free Risk-Adjusted ROI Snapshot Lite",
+      "Public Global AI Use Cases Repository",
     ],
     limits: [
-      "No SARPI™ integration",
-      "No AdvisorX™ integration",
-      "No C3G™ governance",
-      "No portfolio optimizer",
+      "No saved assessments",
+      "No use case workspace",
+      "No comparative scoring",
+      "No team collaboration",
     ],
   },
   {
     key: "pro",
-    name: "Pro",
-    tagline: "End-to-end discovery, design, governance, and roadmap.",
-    price: PRO_BETA_LABEL,
+    name: "UseCasesX Pro™",
+    tagline: "AI CoE · CIO · Transformation · Consultants.",
+    price: "Free Beta",
     cta: "Join the Waitlist — Get Early Access",
     highlight: true,
-    badge: "Most popular",
+    badge: "Most Popular",
     features: [
-      "Full Global Repository",
-      "Unlimited boards & use cases",
-      "AI ideation co-pilot",
-      "Data Readiness canvas",
-      "Blueprint Builder",
-      "SARPI™ draft link",
+      "Saved assessments & scenarios",
+      "Use case workspace",
+      "Comparative scoring",
+      "Pro dashboards & basic reports",
+      "Limited team collaboration",
       "AdvisorX™ review (simulation / API)",
-      "C3G™ governance draft link",
       "Portfolio Roadmap",
       "Advanced exports (PDF, Word, CSV)",
     ],
   },
   {
     key: "enterprise",
-    name: "Enterprise Sovereign AI System",
-    tagline: "For governments, regulators, and large enterprises.",
-    price: "Custom",
-    cta: "Talk to sales",
+    name: "UseCasesX Enterprise™",
+    tagline: "Enterprises · Banks · Telcos · Governments · Regulators.",
+    price: "Talk to Us",
+    cta: "Talk to Us",
     badge: "Sovereign",
     features: [
-      "Everything in Pro",
+      "All 12 UseCasesX modules",
+      "Enterprise dashboards & heatmaps",
+      "SERT™ trust layer",
+      "Value Realization Engine",
+      "API integrations & advisory",
       "Sovereign AI System label",
       "Multi-organization / agency hierarchy",
-      "Custom governance templates",
-      "Advanced audit trail",
-      "Local deployment readiness fields",
-      "Customer-managed framework settings",
-      "Decision Provenance Report",
       "Regulator / auditor views",
     ],
   },
 ];
+
 
 type Cmp = boolean | string;
 type CmpRow = { label: string; lite: Cmp; pro: Cmp; enterprise: Cmp };
@@ -189,14 +187,15 @@ function PricingPage() {
         actions={
           <>
             <Button size="lg" onClick={() => setWaitlistOpen(true)}>
-              <Sparkles className="mr-2 h-4 w-4" /> Get Pro free until {FREE_UNTIL}
+              <Crown className="mr-2 h-4 w-4" /> Join the Waitlist — Early Gratis Access
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link to="/auth">Start free</Link>
+              <Link to="/repository">Start Free Tools</Link>
             </Button>
           </>
         }
       />
+
 
       {/* Founding member offer */}
       <section className="border-b border-border bg-background">
