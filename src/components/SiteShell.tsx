@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { Crown } from "lucide-react";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { AppBreadcrumb } from "./AppBreadcrumb";
@@ -102,7 +103,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
             to="/pricing"
             className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3.5 py-1.5 text-[13px] font-bold text-primary-foreground shadow-[var(--shadow-gold)] hover:brightness-110"
           >
-            <span aria-hidden>👑</span>
+            <Crown className="h-3.5 w-3.5 shrink-0" aria-hidden />
             <span className="hidden sm:inline">Join the Waitlist — Early Gratis (Free) Access</span>
             <span className="sm:hidden">Join Waitlist</span>
           </Link>

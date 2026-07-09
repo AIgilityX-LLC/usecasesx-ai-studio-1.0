@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { Crown } from "lucide-react";
 import { SiteShell } from "@/components/SiteShell";
 import { getInsights } from "@/lib/insights.functions";
 import { SEGMENTS } from "@/lib/segments";
@@ -223,7 +224,7 @@ function Hero() {
             to="/pricing"
             className="inline-flex items-center justify-center gap-1.5 rounded-md bg-primary px-6 py-3 text-center text-sm font-bold text-primary-foreground shadow-lg hover:brightness-110"
           >
-            <span aria-hidden>👑</span>
+            <Crown className="h-4 w-4 shrink-0" aria-hidden />
             Join the Waitlist — Early Gratis (Free) Access
           </Link>
           <Link
