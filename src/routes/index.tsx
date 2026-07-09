@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { Crown } from "lucide-react";
 import { SiteShell } from "@/components/SiteShell";
 import { getInsights } from "@/lib/insights.functions";
 import { SEGMENTS } from "@/lib/segments";
@@ -12,22 +13,23 @@ import aboutImg from "@/assets/landing-about.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "UseCasesX™ — Global AI Use Cases Repository & Development Studio" },
+      { title: "AIgilityX AI Use Case Studio™ — Build a Validated AI Use Case" },
       {
         name: "description",
         content:
-          "Discover, design, validate, govern, prioritize, and scale AI use cases using an enterprise-grade and sovereign-ready platform by AIgilityX™.",
+          "Build a validated AI use case before you spend a dollar. Discover, design, validate, govern, and scale AI initiatives with AIgilityX.",
       },
-      { property: "og:title", content: "UseCasesX™ — by AIgilityX™" },
+      { property: "og:title", content: "AIgilityX AI Use Case Studio™ — Build a Validated AI Use Case" },
       {
         property: "og:description",
         content:
-          "The AI Use Case Operating System. Discover. Design. Validate. Govern. Scale.",
+          "Build a validated AI use case before you spend a dollar. Discover, design, validate, govern, and scale AI initiatives with AIgilityX.",
       },
       { property: "og:image", content: heroImg },
-      { property: "og:url", content: "/" },
+      { property: "og:url", content: "https://usecasesx.aigilityx.com/" },
+      { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: "https://usecasesx.aigilityx.com/" }],
   }),
   component: LandingPage,
 });
@@ -203,10 +205,11 @@ function Hero() {
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           UseCasesX™ · by AIgilityX™
         </div>
-        <h1 className="max-w-5xl text-[44px] font-bold leading-[1.05] tracking-tight text-white sm:text-6xl">
-          AIgilityX AI Use Case Studio™
-          <br className="hidden sm:block" />
-          <span className="text-primary">Build a Validated AI Use Case</span> — Before You Spend a Dollar Building It
+        <h1 className="max-w-5xl text-balance text-3xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
+          <span className="block">AIgilityX AI Use Case Studio™</span>
+          <span className="mt-2 block sm:mt-3">
+            <span className="text-primary">Build a Validated AI Use Case</span> — Before You Spend a Dollar Building It
+          </span>
         </h1>
         <p className="mt-5 max-w-3xl text-lg text-white/85 sm:text-xl">
           Discover, design, validate, govern, prioritize, and scale AI use cases using an enterprise-grade and
@@ -218,16 +221,17 @@ function Hero() {
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
-            to="/repository"
-            className="rounded-md bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-lg hover:brightness-110"
+            to="/pricing"
+            className="inline-flex items-center justify-center gap-1.5 rounded-md bg-primary px-6 py-3 text-center text-sm font-bold text-primary-foreground shadow-lg hover:brightness-110"
           >
-            Explore Repository →
+            <Crown className="h-4 w-4 shrink-0" aria-hidden />
+            Join the Waitlist — Early Gratis (Free) Access
           </Link>
           <Link
-            to="/studio"
+            to="/repository"
             className="rounded-md border border-white/30 bg-white/10 px-6 py-3 text-sm font-bold text-white backdrop-blur hover:bg-white/15"
           >
-            Launch AI Use Case Studio™
+            Explore Repository →
           </Link>
         </div>
 
