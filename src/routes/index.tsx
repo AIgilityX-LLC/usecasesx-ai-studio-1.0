@@ -567,7 +567,7 @@ function PlansSection() {
     },
     {
       name: "UseCasesX Pro™",
-      tag: "Free Beta · Gratis until 31 Dec 2027 · Most Popular",
+      tag: "Free Beta · Gratis until 31 Dec 2026 · Most Popular",
       highlight: true,
       features: [
         "Save, score &amp; prioritize use cases",
