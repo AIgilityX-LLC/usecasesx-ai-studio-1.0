@@ -204,7 +204,9 @@ function Hero() {
           UseCasesX™ · by AIgilityX™
         </div>
         <h1 className="max-w-5xl text-[44px] font-bold leading-[1.05] tracking-tight text-white sm:text-6xl">
-          Global AI Use Cases <span className="text-primary">Repository</span> &amp; Development Studio
+          AIgilityX AI Use Case Studio™
+          <br className="hidden sm:block" />
+          <span className="text-primary">Build a Validated AI Use Case</span> — Before You Spend a Dollar Building It
         </h1>
         <p className="mt-5 max-w-3xl text-lg text-white/85 sm:text-xl">
           Discover, design, validate, govern, prioritize, and scale AI use cases using an enterprise-grade and
