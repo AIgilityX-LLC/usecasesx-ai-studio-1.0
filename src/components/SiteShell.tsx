@@ -103,7 +103,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
             className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3.5 py-1.5 text-[13px] font-bold text-primary-foreground shadow-[var(--shadow-gold)] hover:brightness-110"
           >
             <span aria-hidden>👑</span>
-            <span className="hidden sm:inline">Join the Waitlist — Early Gratis Access</span>
+            <span className="hidden sm:inline">Join the Waitlist — Early Gratis (Free) Access</span>
             <span className="sm:hidden">Join Waitlist</span>
           </Link>
         )}
