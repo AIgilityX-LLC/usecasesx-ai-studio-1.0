@@ -26,9 +26,20 @@ export const Route = createFileRoute("/")({
         content:
           "Build a validated AI use case before you spend a dollar. Discover, design, validate, govern, and scale AI initiatives with AIgilityX.",
       },
-      { property: "og:image", content: heroImg },
+      { property: "og:image", content: "https://usecasesx.aigilityx.com/og-landing.jpg" },
+      { property: "og:image:alt", content: "AIgilityX AI Use Case Studio — Build a Validated AI Use Case" },
       { property: "og:url", content: "https://usecasesx.aigilityx.com/" },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "UseCasesX™ by AIgilityX™" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "AIgilityX AI Use Case Studio™ — Build a Validated AI Use Case" },
+      {
+        name: "twitter:description",
+        content:
+          "Build a validated AI use case before you spend a dollar. Discover, design, validate, govern, and scale AI initiatives with AIgilityX.",
+      },
+      { name: "twitter:image", content: "https://usecasesx.aigilityx.com/og-landing.jpg" },
+      { name: "twitter:image:alt", content: "AIgilityX AI Use Case Studio — Build a Validated AI Use Case" },
     ],
     links: [{ rel: "canonical", href: "https://usecasesx.aigilityx.com/" }],
   }),
