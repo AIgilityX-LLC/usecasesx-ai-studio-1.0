@@ -215,8 +215,8 @@ function Hero() {
         </div>
         <h1 className="max-w-5xl text-balance text-3xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
           <span className="block">Build a Validated AI Use Case</span>
-          <span className="mt-2 block sm:mt-3">
-            <span className="text-primary">Before You Spend a&nbsp; Dollar Building It</span>
+          <span className="mt-2 block whitespace-nowrap text-2xl font-semibold tracking-tight text-white/90 sm:mt-3 sm:text-3xl lg:text-4xl">
+            Before You Spend a&nbsp; Dollar Building It
           </span>
         </h1>
         <p className="mt-5 max-w-3xl text-lg text-white/85 sm:text-xl">
