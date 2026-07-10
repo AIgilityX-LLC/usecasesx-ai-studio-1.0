@@ -48,7 +48,6 @@ function LandingPage() {
       <Hero />
       <AboutUseCasesX />
       <SegmentsBand />
-      <WhyUseCasesX />
       <HowItWorks />
       <RepositorySection />
       <InsightsPreview />
