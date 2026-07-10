@@ -290,7 +290,7 @@ function AboutUseCasesX() {
         <div>
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">About UseCasesX</div>
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            The AI Use Case Operating System — built for real-world impact.
+            The AI Use Case Studio — built for real-world AI ROI & Business Impact.
           </h2>
           <p className="mt-4 text-muted-foreground">
             UseCasesX™ by AIgilityX™ helps organizations move from AI ambition to governed,
