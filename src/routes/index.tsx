@@ -4,6 +4,7 @@ import { Crown } from "lucide-react";
 import { SiteShell } from "@/components/SiteShell";
 import { getInsights } from "@/lib/insights.functions";
 import { SEGMENTS } from "@/lib/segments";
+import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import heroImg from "@/assets/landing-hero.jpg";
 import repositoryImg from "@/assets/landing-repository.jpg";
 import studioImg from "@/assets/landing-studio.jpg";
@@ -25,9 +26,16 @@ export const Route = createFileRoute("/")({
         content:
           "Build a validated AI use case before you spend a dollar. Discover, design, validate, govern, and scale AI initiatives with AIgilityX.",
       },
-      { property: "og:image", content: heroImg },
       { property: "og:url", content: "https://usecasesx.aigilityx.com/" },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "UseCasesX™ by AIgilityX™" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "AIgilityX AI Use Case Studio™ — Build a Validated AI Use Case" },
+      {
+        name: "twitter:description",
+        content:
+          "Build a validated AI use case before you spend a dollar. Discover, design, validate, govern, and scale AI initiatives with AIgilityX.",
+      },
     ],
     links: [{ rel: "canonical", href: "https://usecasesx.aigilityx.com/" }],
   }),
@@ -222,6 +230,15 @@ function Hero() {
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             to="/pricing"
+            hash="founding"
+            onClick={() =>
+              trackCTAEvent("waitlist_join_clicked", {
+                source_page: "/",
+                target_route: "/pricing#founding",
+                location: "landing_hero",
+              })
+            }
+            data-analytics-id="waitlist-cta-hero"
             className="inline-flex items-center justify-center gap-1.5 rounded-md bg-primary px-6 py-3 text-center text-sm font-bold text-primary-foreground shadow-lg hover:brightness-110"
           >
             <Crown className="h-4 w-4 shrink-0" aria-hidden />
