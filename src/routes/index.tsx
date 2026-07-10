@@ -282,14 +282,6 @@ function AboutUseCasesX() {
     "Lifecycle workflows — discover, design, validate, govern, prioritize and scale.",
     "Sovereign-ready by design, from public SaaS to air-gapped deployments.",
   ];
-  const pillars = [
-    { t: "Beyond a repository", d: "Not a content library — an AI Use Case Operating System with lifecycle workflows." },
-    { t: "Beyond a marketplace", d: "No sponsored listings. Every use case is curated, governed, and sovereign-aware." },
-    { t: "Built for regulated industries", d: "Designed for governments, banks, healthcare, defense, energy and critical infrastructure." },
-    { t: "Sovereign-ready by design", d: "From Public SaaS to Air-Gapped Sovereign Deployment — one product, six deployment models." },
-    { t: "Every initiative starts here", d: "We help you build the right AI solutions before investing in development." },
-    { t: "API-ready ecosystem", d: "Plugs into SARPI™, CyberX C3G™, AdvisorX™ and the wider AIgilityX platform stack." },
-  ];
   return (
     <section className="border-b border-border bg-background">
       <div className="mx-auto max-w-[1400px] px-6 py-20">
@@ -337,21 +329,6 @@ function AboutUseCasesX() {
               loading="lazy"
               className="w-full rounded-2xl border border-border object-cover shadow-xl"
             />
-          </div>
-        </div>
-
-        <div className="mt-20">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">WHY USECASESX - AI USECASE STUDIO</div>
-          <h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            The AI Use Case OS for SMEs, Enterprises&nbsp;Governments, & Regulators.
-          </h2>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {pillars.map((p) => (
-              <div key={p.t} className="rounded-xl border border-border bg-card p-6">
-                <h3 className="text-base font-bold text-foreground">{p.t}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{p.d}</p>
-              </div>
-            ))}
           </div>
         </div>
       </div>
@@ -469,8 +446,16 @@ function BoardsSection() {
   );
 }
 
-/* 5 — SARPI */
+/* 5 — SARPI + WHY USECASESX */
 function SarpiSection() {
+  const pillars = [
+    { t: "Beyond a repository", d: "Not a content library — an AI Use Case Operating System with lifecycle workflows." },
+    { t: "Beyond a marketplace", d: "No sponsored listings. Every use case is curated, governed, and sovereign-aware." },
+    { t: "Built for regulated industries", d: "Designed for governments, banks, healthcare, defense, energy and critical infrastructure." },
+    { t: "Sovereign-ready by design", d: "From Public SaaS to Air-Gapped Sovereign Deployment — one product, six deployment models." },
+    { t: "Every initiative starts here", d: "We help you build the right AI solutions before investing in development." },
+    { t: "API-ready ecosystem", d: "Plugs into SARPI™, CyberX C3G™, AdvisorX™ and the wider AIgilityX platform stack." },
+  ];
   return (
     <section className="border-b border-border surface-dark">
       <div className="mx-auto max-w-[1400px] px-6 py-20">
@@ -486,6 +471,21 @@ function SarpiSection() {
             </p>
           </div>
           <Link to="/sarpi" className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110">Open SARPI™ →</Link>
+        </div>
+
+        <div className="mt-20">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">WHY USECASESX - AI USECASE STUDIO</div>
+          <h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            The AI Use Case OS for SMEs, Enterprises&nbsp;Governments, & Regulators.
+          </h2>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {pillars.map((p) => (
+              <div key={p.t} className="rounded-xl border border-border bg-card p-6">
+                <h3 className="text-base font-bold text-foreground">{p.t}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{p.d}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
