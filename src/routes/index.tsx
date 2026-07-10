@@ -282,14 +282,6 @@ function AboutUseCasesX() {
     "Lifecycle workflows — discover, design, validate, govern, prioritize and scale.",
     "Sovereign-ready by design, from public SaaS to air-gapped deployments.",
   ];
-  const pillars = [
-    { t: "Beyond a repository", d: "Not a content library — an AI Use Case Operating System with lifecycle workflows." },
-    { t: "Beyond a marketplace", d: "No sponsored listings. Every use case is curated, governed, and sovereign-aware." },
-    { t: "Built for regulated industries", d: "Designed for governments, banks, healthcare, defense, energy and critical infrastructure." },
-    { t: "Sovereign-ready by design", d: "From Public SaaS to Air-Gapped Sovereign Deployment — one product, six deployment models." },
-    { t: "Every initiative starts here", d: "We help you build the right AI solutions before investing in development." },
-    { t: "API-ready ecosystem", d: "Plugs into SARPI™, CyberX C3G™, AdvisorX™ and the wider AIgilityX platform stack." },
-  ];
   return (
     <section className="border-b border-border bg-background">
       <div className="mx-auto max-w-[1400px] px-6 py-20">
