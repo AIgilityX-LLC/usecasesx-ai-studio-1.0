@@ -199,7 +199,7 @@ function PricingPage() {
 
 
       {/* Founding member offer */}
-      <section className="border-b border-border bg-background">
+      <section id="founding" className="scroll-mt-20 border-b border-border bg-background">
         <div className="mx-auto max-w-6xl px-6 py-14">
           {ent.isAuthed && (
             <div className="mb-8">
