@@ -211,12 +211,12 @@ function Hero() {
       <div className="relative mx-auto max-w-[1400px] px-6 pb-24 pt-24 sm:pt-32">
         <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary backdrop-blur">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-          UseCasesX™ · by AIgilityX™
+          AI USE CASE STUDIO™ BY AIGILITYX™
         </div>
         <h1 className="max-w-5xl text-balance text-3xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
-          <span className="block">AIgilityX AI Use Case Studio™</span>
+          <span className="block">Build a Validated AI Use Case</span>
           <span className="mt-2 block sm:mt-3">
-            <span className="text-primary">Build a Validated AI Use Case</span> — Before You Spend a Dollar Building It
+            <span className="text-primary">Before You Spend a&nbsp; Dollar Building It</span>
           </span>
         </h1>
         <p className="mt-5 max-w-3xl text-lg text-white/85 sm:text-xl">
