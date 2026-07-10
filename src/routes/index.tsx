@@ -230,6 +230,15 @@ function Hero() {
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             to="/pricing"
+            hash="founding"
+            onClick={() =>
+              trackCTAEvent("waitlist_join_clicked", {
+                source_page: "/",
+                target_route: "/pricing#founding",
+                location: "landing_hero",
+              })
+            }
+            data-analytics-id="waitlist-cta-hero"
             className="inline-flex items-center justify-center gap-1.5 rounded-md bg-primary px-6 py-3 text-center text-sm font-bold text-primary-foreground shadow-lg hover:brightness-110"
           >
             <Crown className="h-4 w-4 shrink-0" aria-hidden />
