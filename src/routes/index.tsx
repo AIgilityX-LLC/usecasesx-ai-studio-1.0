@@ -4,6 +4,7 @@ import { Crown } from "lucide-react";
 import { SiteShell } from "@/components/SiteShell";
 import { getInsights } from "@/lib/insights.functions";
 import { SEGMENTS } from "@/lib/segments";
+import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import heroImg from "@/assets/landing-hero.jpg";
 import repositoryImg from "@/assets/landing-repository.jpg";
 import studioImg from "@/assets/landing-studio.jpg";
