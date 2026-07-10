@@ -101,6 +101,16 @@ export function SiteShell({ children }: { children: ReactNode }) {
         ) : (
           <Link
             to="/pricing"
+            hash="founding"
+            onClick={() =>
+              void import("@/lib/usecasex.tracking").then(({ trackCTAEvent }) =>
+                trackCTAEvent("waitlist_join_clicked", {
+                  target_route: "/pricing#founding",
+                  location: "site_nav",
+                }),
+              )
+            }
+            data-analytics-id="waitlist-cta-nav"
             className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3.5 py-1.5 text-[13px] font-bold text-primary-foreground shadow-[var(--shadow-gold)] hover:brightness-110"
           >
             <Crown className="h-3.5 w-3.5 shrink-0" aria-hidden />
