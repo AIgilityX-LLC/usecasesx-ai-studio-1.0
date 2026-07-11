@@ -4,6 +4,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
+import { ensureUserWorkspaceFn } from "@/lib/workspace.functions";
 
 export interface BoardRow {
   id: string;
