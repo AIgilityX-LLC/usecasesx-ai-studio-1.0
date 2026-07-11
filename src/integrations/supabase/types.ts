@@ -2083,7 +2083,7 @@ export type Database = {
         Args: { _collection_id: string; _user_id: string }
         Returns: boolean
       }
-      ensure_user_workspace: { Args: never; Returns: string }
+      ensure_user_workspace: { Args: { _user_id: string }; Returns: string }
       get_use_case_integration_package: {
         Args: { use_case_uuid: string }
         Returns: Json

@@ -4,6 +4,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
+import { ensureUserWorkspaceFn } from "@/lib/workspace.functions";
 
 export interface BoardRow {
   id: string;
@@ -45,8 +46,7 @@ export async function ensureWorkspace(
 ): Promise<string> {
   const attempt = async () => {
     opts.onProgress?.("Provisioning your workspace…");
-    const { data, error } = await supabase.rpc("ensure_user_workspace" as any);
-    if (error) throw error;
+    const data = await ensureUserWorkspaceFn();
     if (!data) throw new Error("Workspace provisioning returned no workspace id.");
     return data as unknown as string;
   };
