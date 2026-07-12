@@ -14,14 +14,34 @@ export const Route = createFileRoute("/_app/pro")({
   component: () => (<RequirePlan min="pro" feature="Pro workspace"><ProPage /></RequirePlan>),
 });
 
-const FEATURES = [
-  { t: "Save use cases", d: "Bookmark high-potential opportunities to your private workspace." },
-  { t: "Add notes & priority", d: "Annotate and rank every saved use case for your context." },
-  { t: "Score opportunities", d: "Strategic · Value · Feasibility · Risk · Readiness · TTV." },
-  { t: "Build AI portfolios", d: "Group use cases into themed AI Opportunity Portfolios." },
-  { t: "Generate executive reports", d: "Board-ready PDFs with KPIs, scoring and roadmap." },
-  { t: "Trigger AIgilityX pathways", d: "Hand-off to SARPI, CyberX, AdvisorX, FlowX, PrivacyX, AssureX." },
+const STEPS = [
+  {
+    n: "01",
+    t: "Save",
+    d: "Bookmark high-potential use cases from the repository into your private workspace.",
+    icon: "🔖",
+  },
+  {
+    n: "02",
+    t: "Score",
+    d: "Rate each on Strategic · Value · Feasibility · Risk · Readiness · TTV — get a composite AIgilityX score.",
+    icon: "📊",
+  },
+  {
+    n: "03",
+    t: "Export board-ready PDF",
+    d: "One click: portfolio KPIs, top prioritized cases, risk posture and next actions — ready to present.",
+    icon: "📄",
+  },
 ];
+
+const EXTRAS = [
+  "Add notes & priority",
+  "Build themed AI portfolios",
+  "Trigger SARPI · CyberX · AdvisorX pathways",
+  "Free with registration — no credit card",
+];
+
 
 async function routeAfterAuth(navigate: ReturnType<typeof useNavigate>) {
   const { data: userData } = await supabase.auth.getUser();
