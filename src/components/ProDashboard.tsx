@@ -51,6 +51,13 @@ export function ProDashboard({ profile }: Props) {
 
   return (
     <div className="space-y-10">
+      <OnboardingChecklist
+        savedCount={saved.length}
+        scoredCount={scores.length}
+        portfolioCount={portfolios.length}
+        reportCount={reports.length}
+      />
+
       {/* 1. Welcome */}
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
