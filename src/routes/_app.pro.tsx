@@ -14,14 +14,34 @@ export const Route = createFileRoute("/_app/pro")({
   component: () => (<RequirePlan min="pro" feature="Pro workspace"><ProPage /></RequirePlan>),
 });
 
-const FEATURES = [
-  { t: "Save use cases", d: "Bookmark high-potential opportunities to your private workspace." },
-  { t: "Add notes & priority", d: "Annotate and rank every saved use case for your context." },
-  { t: "Score opportunities", d: "Strategic · Value · Feasibility · Risk · Readiness · TTV." },
-  { t: "Build AI portfolios", d: "Group use cases into themed AI Opportunity Portfolios." },
-  { t: "Generate executive reports", d: "Board-ready PDFs with KPIs, scoring and roadmap." },
-  { t: "Trigger AIgilityX pathways", d: "Hand-off to SARPI, CyberX, AdvisorX, FlowX, PrivacyX, AssureX." },
+const STEPS = [
+  {
+    n: "01",
+    t: "Save",
+    d: "Bookmark high-potential use cases from the repository into your private workspace.",
+    icon: "🔖",
+  },
+  {
+    n: "02",
+    t: "Score",
+    d: "Rate each on Strategic · Value · Feasibility · Risk · Readiness · TTV — get a composite AIgilityX score.",
+    icon: "📊",
+  },
+  {
+    n: "03",
+    t: "Export board-ready PDF",
+    d: "One click: portfolio KPIs, top prioritized cases, risk posture and next actions — ready to present.",
+    icon: "📄",
+  },
 ];
+
+const EXTRAS = [
+  "Add notes & priority",
+  "Build themed AI portfolios",
+  "Trigger SARPI · CyberX · AdvisorX pathways",
+  "Free with registration — no credit card",
+];
+
 
 async function routeAfterAuth(navigate: ReturnType<typeof useNavigate>) {
   const { data: userData } = await supabase.auth.getUser();
@@ -106,19 +126,51 @@ function ProPage() {
               Save, score, prioritize, and report AI use cases — free with registration.
             </p>
 
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {FEATURES.map((f) => (
-                <div key={f.t} className="rounded-xl border border-border bg-card p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-primary/10 text-xs font-bold text-primary">✓</div>
-                    <div>
-                      <h3 className="text-sm font-semibold text-foreground">{f.t}</h3>
-                      <p className="mt-1 text-xs text-muted-foreground">{f.d}</p>
+            <div className="mt-8">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                What you get in 60 seconds
+              </div>
+              <ol className="mt-3 grid gap-3 sm:grid-cols-3">
+                {STEPS.map((s) => (
+                  <li key={s.n} className="relative rounded-2xl border border-border bg-card p-5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold tracking-widest text-primary">STEP {s.n}</span>
+                      <span aria-hidden className="text-lg">{s.icon}</span>
                     </div>
-                  </div>
+                    <h3 className="mt-3 text-base font-bold text-foreground">{s.t}</h3>
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{s.d}</p>
+                  </li>
+                ))}
+              </ol>
+
+              <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4">
+                <div className="flex-1 min-w-[220px]">
+                  <div className="text-sm font-bold text-foreground">See a sample board-ready PDF</div>
+                  <p className="text-xs text-muted-foreground">
+                    Preview the exact output — no signup, no email required.
+                  </p>
                 </div>
-              ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    trackCTAEvent("pro_sample_pdf", { source_page: "usecasex-pro" });
+                    void import("@/lib/sample-report").then((m) => m.downloadSampleReport());
+                  }}
+                  className="rounded-lg border border-primary/50 bg-background px-4 py-2.5 text-sm font-bold text-primary hover:bg-primary/10"
+                >
+                  Download sample PDF ↓
+                </button>
+              </div>
+
+              <ul className="mt-5 flex flex-wrap gap-2">
+                {EXTRAS.map((x) => (
+                  <li key={x} className="rounded-full border border-border bg-card px-3 py-1 text-[11px] font-semibold text-muted-foreground">
+                    ✓ {x}
+                  </li>
+                ))}
+              </ul>
             </div>
+
 
             <p className="mt-6 text-xs text-muted-foreground">
               UseCasesX Pro is free with registration. By creating an account you agree to our terms and privacy policy.

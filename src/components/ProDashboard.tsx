@@ -5,6 +5,8 @@ import {
   type SavedUseCase, type UseCaseScore,
 } from "@/hooks/usecasex-dashboard";
 import { Can } from "@/components/Can";
+import { OnboardingChecklist } from "@/components/OnboardingChecklist";
+
 
 interface Props {
   profile?: { full_name?: string | null; industry?: string | null; main_ai_interest?: string | null } | null;
@@ -49,6 +51,13 @@ export function ProDashboard({ profile }: Props) {
 
   return (
     <div className="space-y-10">
+      <OnboardingChecklist
+        savedCount={saved.length}
+        scoredCount={scores.length}
+        portfolioCount={portfolios.length}
+        reportCount={reports.length}
+      />
+
       {/* 1. Welcome */}
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
