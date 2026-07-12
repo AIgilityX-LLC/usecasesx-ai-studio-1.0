@@ -5,6 +5,8 @@ import {
   type SavedUseCase, type UseCaseScore,
 } from "@/hooks/usecasex-dashboard";
 import { Can } from "@/components/Can";
+import { OnboardingChecklist } from "@/components/OnboardingChecklist";
+
 
 interface Props {
   profile?: { full_name?: string | null; industry?: string | null; main_ai_interest?: string | null } | null;
