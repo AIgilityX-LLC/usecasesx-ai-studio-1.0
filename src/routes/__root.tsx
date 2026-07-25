@@ -77,27 +77,30 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "AIgilityX UseCasesX™ — AI Use Cases Development Studio" },
+      { title: "AIgilityX UseCasesX™ — AI Use Case Discovery & Value Design Studio" },
       {
         name: "description",
         content:
-          "Discover, prioritize and activate high-value AI use cases across SME, enterprise, government, defense and critical infrastructure — with ROI, risk, governance and readiness intelligence.",
+          "Discover, design, validate, govern, prioritize, and scale AI use cases with AIgilityX UseCasesX™ — an enterprise-grade, sovereign-ready AI use case discovery and value design studio.",
       },
       { name: "author", content: "AIgilityX™" },
-      { property: "og:title", content: "AIgilityX UseCasesX™ — AI Use Cases Development Studio" },
+      { property: "og:site_name", content: "AIgilityX UseCasesX™" },
+      { property: "og:title", content: "AIgilityX UseCasesX™ — AI Use Case Discovery & Value Design Studio" },
       {
         property: "og:description",
-        content: "From AI Ideas to Mission-Ready Impact.",
+        content:
+          "Discover, design, validate, govern, prioritize, and scale AI use cases with AIgilityX UseCasesX™ — an enterprise-grade, sovereign-ready AI use case discovery and value design studio.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "AIgilityX UseCasesX™ — AI Use Cases Development Studio" },
-      { name: "description", content: "Discover, design, validate, govern, prioritize, and scale AI use cases using an enterprise-grade and sovereign-ready platform by AIgilityX™." },
-      { property: "og:description", content: "Discover, design, validate, govern, prioritize, and scale AI use cases using an enterprise-grade and sovereign-ready platform by AIgilityX™." },
-      { name: "twitter:description", content: "Discover, design, validate, govern, prioritize, and scale AI use cases using an enterprise-grade and sovereign-ready platform by AIgilityX™." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3b1a8a96-0087-494c-9fbb-670597cbe368/id-preview-a9307359--3035a59e-3ee4-44ff-8db6-f3a4afd7c3fa.lovable.app-1783414857745.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3b1a8a96-0087-494c-9fbb-670597cbe368/id-preview-a9307359--3035a59e-3ee4-44ff-8db6-f3a4afd7c3fa.lovable.app-1783414857745.png" },
+      { name: "twitter:title", content: "AIgilityX UseCasesX™ — AI Use Case Discovery & Value Design Studio" },
+      {
+        name: "twitter:description",
+        content:
+          "Discover, design, validate, govern, prioritize, and scale AI use cases with AIgilityX UseCasesX™ — an enterprise-grade, sovereign-ready AI use case discovery and value design studio.",
+      },
     ],
+
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
