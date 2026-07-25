@@ -1,0 +1,47 @@
+# Retain / Repair / Simplify / Feature-flag / Defer — 25 July 2026
+
+Effort: **S** ≤ ½ day · **M** ½–2 days · **L** > 2 days.
+Decisions sized for 26 Jul → 14 Aug window.
+
+| Capability | Route(s) | Decision | Effort | Rationale |
+|---|---|---|---|---|
+| Global Repository | `/repository` | **Retain** | — | Live data, gated up-sell, prod-ready. |
+| Discovery Wizard | `/discover` | **Retain** | — | Live segments, prod-ready. |
+| Quick Wins Matrix | `/quick-wins` | **Retain** | S | Add empty state polish. |
+| ROI Calculator | `/roi-calculator` | **Retain** | — | Client-side, self-contained. |
+| Insights | `/insights` | **Repair** | M | Confirm `getInsights` returns real numbers; add loading/empty. |
+| Studio hub | `/studio` | **Repair** | M | Persist drafts server-side (`use_cases` w/ draft flag or new `studio_drafts`) — currently local storage only. |
+| Studio landing | `/ai-use-case-studio` | **Retain** | S | Add `SampleDataDisclaimer` where sample cards are shown. |
+| My Use Cases | `/my-use-cases` | **Repair (P0)** | M | Replace `MOCK_USE_CASES` with `saved_use_cases` join → `use_cases`. |
+| Boards + Board detail | `/boards*` | **Retain** | S | Add pagination polish; already live. |
+| Collections share | `/c/$token`, `/boards/collections` | **Simplify** | S | Verify token flow or hide behind flag if not launch-critical. |
+| Submissions | `/submit` | **Retain** | S | Add "we'll email you" acknowledgement. |
+| Pattern Library | `/patterns` | **Feature-flag** | S | Keep `ModuleStub`; label as Q4 2026. |
+| Compare tray | `/compare` | **Retain** | S | Consolidate export CTAs. |
+| Feasibility / Data-Readiness / Blueprint (top-level) | `/feasibility`, `/data-readiness`, `/blueprint` | **Simplify** | S | Delist from sidebar; keep redirects. Real work lives per-use-case. |
+| Per-use-case Feasibility | `.../feasibility` | **Repair** | L | Wire form to `feasibility_scores`; add score summary card. |
+| Per-use-case Data Readiness | `.../data-readiness` | **Repair** | L | Wire to `data_readiness_assessments`. |
+| Per-use-case Blueprint | `.../blueprint` | **Simplify** | M | Ship read-only structured outline for launch; defer editor. |
+| Per-use-case SARPI | `.../sarpi` + `/sarpi` | **Feature-flag** | S | Keep landing with entitlement lock; hide detailed sub-tabs. |
+| Per-use-case AdvisorX | `.../advisorx` + `/advisorx` | **Defer** | S | Coming Soon banner; do not claim live. |
+| Per-use-case C3G | `.../c3g-governance` + `/cyberx/c3g/intake` | **Defer** | S | Coming Soon; keep for suite handoff. |
+| Deliverables hub | `.../deliverables`, `.../deliverable/$type` | **Repair** | L | Confirm export path; add empty state per type. |
+| Portfolio Roadmap page | `/studio/portfolio` | **Repair** | M | Live `portfolios` + `portfolio_items`; add empty/loading. |
+| Roadmap top-level | `/roadmap` | **Defer** | — | Keep `ComingSoonGate`. |
+| Governance top-level | `/governance` | **Simplify** | S | Keep redirect; delist. |
+| PortfolioX top-level | `/portfoliox` | **Simplify** | S | Keep redirect; already correct. |
+| Reports | `/reports` | **Repair (P0)** | M | Switch data source from `MOCK_USE_CASES` to live saved cases + portfolios; keep sample toggle only for signed-out demo. |
+| Dashboard | `/dashboard` | **Repair** | M | Verify `ProDashboard` reads live rows; remove any hard-coded KPIs. |
+| Administration | `/administration` | **Retain** | — | Role-gated, prod. |
+| Admin submissions / waitlist | `/admin-*` | **Retain** | — | Role-gated, prod. |
+| Module Analytics | `/module-analytics` | **Retain (orphan → link)** | S | Add to Admin group in sidebar. |
+| Decision / Impact Assessment / API Integration | `/decision`, `/impact-assessment`, `/api-integration` | **Defer** | S | Hide from build until wired; keep files. |
+| Sectors / Segments deep pages | `/sectors/$sector`, `/segments/$segment` | **Repair** | M | Reachable from `/discover`; verify content or delist. |
+| Entitlement debug | `/entitlement` | **Simplify** | S | Add `noindex` + role-gate to admin only. |
+| Duplicate stub primitives | `ComingSoonGate` vs `ModuleStub` | **Simplify** | M | Consolidate to one primitive post-launch. |
+
+## Effort roll-up
+
+- **P0 repairs (must for launch):** `/my-use-cases`, `/reports`, `/dashboard` data-truth cleanup, delist redirect-only sidebar items — ~M+M+M+S.
+- **P1 repairs:** Studio persistence, per-use-case Feasibility/Data-Readiness wiring, Portfolio Roadmap polish.
+- **Defer:** Roadmap, AdvisorX, C3G, Decision, Impact, API Integration, Blueprint editor.
