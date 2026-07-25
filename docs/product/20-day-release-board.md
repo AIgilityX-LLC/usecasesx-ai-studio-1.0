@@ -262,6 +262,60 @@ Append-only. One row per material decision (scope change, freeze override, defer
 | Date | Decision | Rationale | Prompt IDs affected | Displaced item (if P1 swap) | Decided by |
 |---|---|---|---|---|---|
 | 2026-07-26 | Adopt this 20-day board as the authoritative execution plan | Single source of truth; removes need for external PM tool | PROMPT-03 | - | @owner |
+| 2026-07-26 | Lock Phase 0 artifacts: `docs/audits/phase-0-current-state.md`, `docs/product/edition-capability-matrix.md`, `docs/architecture/data-migration-plan.md`, `docs/testing/launch-acceptance-matrix.md` | Consolidates 25–26 Jul audits into referenceable baselines; unblocks Phase 1 foundations freeze | PROMPT-09 → PROMPT-10 | - | @owner |
+| 2026-07-26 | Approve P0/P1/P2 backlog per §11 reconciliation | Every audited item classified; deferred register append-only | PROMPT-09 | - | @owner |
+
+## 11. Approved P0 / P1 / P2 reconciliation (Phase 0 close-out)
+
+Authoritative source: `docs/product/scope-2026-08-14/backlog-p0-p1-p2.md` and `deferred-register.md`. Mirrored here so the board is self-contained.
+
+### P0 — launch blockers (10)
+
+| # | Item | Prompt |
+|---|---|---|
+| P0-1 | `/my-use-cases` mock → live | PROMPT-14 |
+| P0-2 | `/reports` mock → live | PROMPT-15 |
+| P0-3 | Delist Feasibility/Data-Readiness/Blueprint top-level from sidebar | PROMPT-12 |
+| P0-4 | Mobile home overflow (390 px) | PROMPT-10 |
+| P0-5 | `/repository` empty-state + labelled search/sort | PROMPT-10 |
+| P0-6 | Lock `/entitlement` to admin + noindex | PROMPT-13 |
+| P0-7 | Gate `/module-analytics` with `RequireRoles` | PROMPT-13 |
+| P0-8 | DB A1 additive `WITH CHECK` tightening | PROMPT-11 |
+| P0-9 | `/auth` real `<label>`s | PROMPT-10 |
+| P0-10 | `/dashboard` live KPIs | PROMPT-16 |
+
+### P1 — required outcomes (12)
+
+| # | Item | Prompt |
+|---|---|---|
+| P1-1 | Studio server-persisted drafts | PROMPT-18 |
+| P1-2 | Per-use-case Feasibility wired | PROMPT-19 |
+| P1-3 | Per-use-case Data Readiness wired | PROMPT-20 |
+| P1-4 | Portfolio Roadmap live | PROMPT-21 |
+| P1-5 | Deliverables — one export path per type | PROMPT-22 |
+| P1-6 | Unify `RequirePlan` across Pro routes | PROMPT-23 (bundled) |
+| P1-7 | Consolidate nav sources of truth | PROMPT-12 (bundled) |
+| P1-8 | Sample-data disclaimer sweep | PROMPT-17 |
+| P1-9 | SEO/head sweep | PROMPT-25 |
+| P1-10 | Fair-use advisory meter | PROMPT-23 |
+| P1-11 | Activation event logging | PROMPT-24 |
+| P1-12 | SARPI/AdvisorX/C3G/RoadmapX Coming Soon flags | PROMPT-13 (bundled) |
+
+### P2 — post-launch (7)
+
+| # | Item |
+|---|---|
+| P2-1 | Hide `/decision`, `/impact-assessment`, `/api-integration` from nav; keep files |
+| P2-2 | Blueprint editor |
+| P2-3 | Consolidate `ComingSoonGate` vs `ModuleStub` primitives |
+| P2-4 | Collections share advanced flows if token flow unverified |
+| P2-5 | Fair-use hard enforcement + billing |
+| P2-6 | Enterprise roles beyond launch five, SSO, custom domains |
+| P2-7 | Terminology unification ("Portfolio Roadmap" vs "RoadmapX") |
+
+### Deferred (13)
+
+See `docs/product/scope-2026-08-14/deferred-register.md`. Append-only; no reopens after 9 Aug feature freeze without §7 override.
 
 ---
 
