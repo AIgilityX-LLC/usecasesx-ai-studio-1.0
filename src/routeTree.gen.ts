@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AppAccountRouteImport } from './routes/_app.account'
 import { Route as AppAdminSubmissionsRouteImport } from './routes/_app.admin-submissions'
 import { Route as AppAdminWaitlistRouteImport } from './routes/_app.admin-waitlist'
@@ -95,6 +96,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppAccountRoute = AppAccountRouteImport.update({
@@ -403,6 +409,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/account': typeof AppAccountRouteWithChildren
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
@@ -467,6 +474,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
@@ -531,6 +539,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_app/account': typeof AppAccountRouteWithChildren
   '/_app/admin-submissions': typeof AppAdminSubmissionsRoute
   '/_app/admin-waitlist': typeof AppAdminWaitlistRoute
@@ -597,6 +606,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/forgot-password'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/account'
     | '/admin-submissions'
     | '/admin-waitlist'
@@ -661,6 +671,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/forgot-password'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/admin-submissions'
     | '/admin-waitlist'
     | '/administration'
@@ -724,6 +735,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/forgot-password'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/_app/account'
     | '/_app/admin-submissions'
     | '/_app/admin-waitlist'
@@ -790,6 +802,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   CTokenRoute: typeof CTokenRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
@@ -830,6 +843,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/account': {
@@ -1408,6 +1428,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   CTokenRoute: CTokenRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
   ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRouteWithChildren,
