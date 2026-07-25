@@ -9,78 +9,77 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CTokenRouteImport } from './routes/c.$token'
-import { Route as AppSubmitRouteImport } from './routes/_app.submit'
-import { Route as AppStudioRouteImport } from './routes/_app.studio'
-import { Route as AppSarpiRouteImport } from './routes/_app.sarpi'
-import { Route as AppRoiCalculatorRouteImport } from './routes/_app.roi-calculator'
-import { Route as AppRoadmapRouteImport } from './routes/_app.roadmap'
-import { Route as AppResourcesRouteImport } from './routes/_app.resources'
-import { Route as AppRepositoryRouteImport } from './routes/_app.repository'
-import { Route as AppReportsRouteImport } from './routes/_app.reports'
-import { Route as AppQuickWinsRouteImport } from './routes/_app.quick-wins'
-import { Route as AppProfileRouteImport } from './routes/_app.profile'
-import { Route as AppProRouteImport } from './routes/_app.pro'
-import { Route as AppPricingRouteImport } from './routes/_app.pricing'
-import { Route as AppPortfolioxRouteImport } from './routes/_app.portfoliox'
-import { Route as AppPatternsRouteImport } from './routes/_app.patterns'
-import { Route as AppMyUseCasesRouteImport } from './routes/_app.my-use-cases'
-import { Route as AppModuleAnalyticsRouteImport } from './routes/_app.module-analytics'
-import { Route as AppInsightsRouteImport } from './routes/_app.insights'
-import { Route as AppImpactAssessmentRouteImport } from './routes/_app.impact-assessment'
-import { Route as AppGovernanceRouteImport } from './routes/_app.governance'
-import { Route as AppFeasibilityRouteImport } from './routes/_app.feasibility'
-import { Route as AppEntitlementRouteImport } from './routes/_app.entitlement'
-import { Route as AppDiscoverRouteImport } from './routes/_app.discover'
-import { Route as AppDecisionRouteImport } from './routes/_app.decision'
-import { Route as AppDataReadinessRouteImport } from './routes/_app.data-readiness'
-import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
-import { Route as AppCompareRouteImport } from './routes/_app.compare'
-import { Route as AppBoardsRouteImport } from './routes/_app.boards'
-import { Route as AppBlueprintRouteImport } from './routes/_app.blueprint'
-import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integration'
-import { Route as AppAiUseCaseStudioRouteImport } from './routes/_app.ai-use-case-studio'
-import { Route as AppAdvisorxRouteImport } from './routes/_app.advisorx'
-import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
-import { Route as AppAdminWaitlistRouteImport } from './routes/_app.admin-waitlist'
-import { Route as AppAdminSubmissionsRouteImport } from './routes/_app.admin-submissions'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AppAccountRouteImport } from './routes/_app.account'
-import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
+import { Route as AppAdminSubmissionsRouteImport } from './routes/_app.admin-submissions'
+import { Route as AppAdminWaitlistRouteImport } from './routes/_app.admin-waitlist'
+import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
+import { Route as AppAdvisorxRouteImport } from './routes/_app.advisorx'
+import { Route as AppAiUseCaseStudioRouteImport } from './routes/_app.ai-use-case-studio'
+import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integration'
+import { Route as AppBlueprintRouteImport } from './routes/_app.blueprint'
+import { Route as AppBoardsRouteImport } from './routes/_app.boards'
+import { Route as AppCompareRouteImport } from './routes/_app.compare'
+import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppDataReadinessRouteImport } from './routes/_app.data-readiness'
+import { Route as AppDecisionRouteImport } from './routes/_app.decision'
+import { Route as AppDiscoverRouteImport } from './routes/_app.discover'
+import { Route as AppEntitlementRouteImport } from './routes/_app.entitlement'
+import { Route as AppFeasibilityRouteImport } from './routes/_app.feasibility'
+import { Route as AppGovernanceRouteImport } from './routes/_app.governance'
+import { Route as AppImpactAssessmentRouteImport } from './routes/_app.impact-assessment'
+import { Route as AppInsightsRouteImport } from './routes/_app.insights'
+import { Route as AppModuleAnalyticsRouteImport } from './routes/_app.module-analytics'
+import { Route as AppMyUseCasesRouteImport } from './routes/_app.my-use-cases'
+import { Route as AppPatternsRouteImport } from './routes/_app.patterns'
+import { Route as AppPortfolioxRouteImport } from './routes/_app.portfoliox'
+import { Route as AppPricingRouteImport } from './routes/_app.pricing'
+import { Route as AppProRouteImport } from './routes/_app.pro'
+import { Route as AppProfileRouteImport } from './routes/_app.profile'
+import { Route as AppQuickWinsRouteImport } from './routes/_app.quick-wins'
+import { Route as AppReportsRouteImport } from './routes/_app.reports'
+import { Route as AppRepositoryRouteImport } from './routes/_app.repository'
+import { Route as AppResourcesRouteImport } from './routes/_app.resources'
+import { Route as AppRoadmapRouteImport } from './routes/_app.roadmap'
+import { Route as AppRoiCalculatorRouteImport } from './routes/_app.roi-calculator'
+import { Route as AppSarpiRouteImport } from './routes/_app.sarpi'
+import { Route as AppStudioRouteImport } from './routes/_app.studio'
+import { Route as AppSubmitRouteImport } from './routes/_app.submit'
+import { Route as CTokenRouteImport } from './routes/c.$token'
 import { Route as AppAccountIndexRouteImport } from './routes/_app.account.index'
-import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
-import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
-import { Route as AppSegmentsSegmentRouteImport } from './routes/_app.segments.$segment'
-import { Route as AppSectorsSectorRouteImport } from './routes/_app.sectors.$sector'
-import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
-import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
 import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.security'
-import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
-import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
+import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
+import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
+import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
+import { Route as AppSectorsSectorRouteImport } from './routes/_app.sectors.$sector'
+import { Route as AppSegmentsSegmentRouteImport } from './routes/_app.segments.$segment'
+import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
+import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
 import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
+import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
+import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
 import { Route as AppStudioUseCaseIdIndexRouteImport } from './routes/_app.studio.use-case.$id.index'
-import { Route as ApiPublicUsecasexUseCasesSlugRouteImport } from './routes/api/public/usecasex/use-cases.$slug'
-import { Route as AppStudioUseCaseIdSarpiRouteImport } from './routes/_app.studio.use-case.$id.sarpi'
-import { Route as AppStudioUseCaseIdFeasibilityRouteImport } from './routes/_app.studio.use-case.$id.feasibility'
-import { Route as AppStudioUseCaseIdDeliverablesRouteImport } from './routes/_app.studio.use-case.$id.deliverables'
-import { Route as AppStudioUseCaseIdDataReadinessRouteImport } from './routes/_app.studio.use-case.$id.data-readiness'
-import { Route as AppStudioUseCaseIdC3gGovernanceRouteImport } from './routes/_app.studio.use-case.$id.c3g-governance'
-import { Route as AppStudioUseCaseIdBlueprintRouteImport } from './routes/_app.studio.use-case.$id.blueprint'
 import { Route as AppStudioUseCaseIdAdvisorxRouteImport } from './routes/_app.studio.use-case.$id.advisorx'
+import { Route as AppStudioUseCaseIdBlueprintRouteImport } from './routes/_app.studio.use-case.$id.blueprint'
+import { Route as AppStudioUseCaseIdC3gGovernanceRouteImport } from './routes/_app.studio.use-case.$id.c3g-governance'
+import { Route as AppStudioUseCaseIdDataReadinessRouteImport } from './routes/_app.studio.use-case.$id.data-readiness'
+import { Route as AppStudioUseCaseIdDeliverablesRouteImport } from './routes/_app.studio.use-case.$id.deliverables'
+import { Route as AppStudioUseCaseIdFeasibilityRouteImport } from './routes/_app.studio.use-case.$id.feasibility'
+import { Route as AppStudioUseCaseIdSarpiRouteImport } from './routes/_app.studio.use-case.$id.sarpi'
+import { Route as ApiPublicUsecasexUseCasesSlugRouteImport } from './routes/api/public/usecasex/use-cases.$slug'
 import { Route as AppStudioUseCaseIdDeliverableTypeRouteImport } from './routes/_app.studio.use-case.$id.deliverable.$type'
 
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -88,183 +87,19 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppRoute = AppRouteImport.update({
-  id: '/_app',
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CTokenRoute = CTokenRouteImport.update({
-  id: '/c/$token',
-  path: '/c/$token',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppSubmitRoute = AppSubmitRouteImport.update({
-  id: '/submit',
-  path: '/submit',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppStudioRoute = AppStudioRouteImport.update({
-  id: '/studio',
-  path: '/studio',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSarpiRoute = AppSarpiRouteImport.update({
-  id: '/sarpi',
-  path: '/sarpi',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppRoiCalculatorRoute = AppRoiCalculatorRouteImport.update({
-  id: '/roi-calculator',
-  path: '/roi-calculator',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppRoadmapRoute = AppRoadmapRouteImport.update({
-  id: '/roadmap',
-  path: '/roadmap',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppResourcesRoute = AppResourcesRouteImport.update({
-  id: '/resources',
-  path: '/resources',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppRepositoryRoute = AppRepositoryRouteImport.update({
-  id: '/repository',
-  path: '/repository',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppReportsRoute = AppReportsRouteImport.update({
-  id: '/reports',
-  path: '/reports',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppQuickWinsRoute = AppQuickWinsRouteImport.update({
-  id: '/quick-wins',
-  path: '/quick-wins',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppProfileRoute = AppProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppProRoute = AppProRouteImport.update({
-  id: '/pro',
-  path: '/pro',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppPricingRoute = AppPricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppPortfolioxRoute = AppPortfolioxRouteImport.update({
-  id: '/portfoliox',
-  path: '/portfoliox',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppPatternsRoute = AppPatternsRouteImport.update({
-  id: '/patterns',
-  path: '/patterns',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppMyUseCasesRoute = AppMyUseCasesRouteImport.update({
-  id: '/my-use-cases',
-  path: '/my-use-cases',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppModuleAnalyticsRoute = AppModuleAnalyticsRouteImport.update({
-  id: '/module-analytics',
-  path: '/module-analytics',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppInsightsRoute = AppInsightsRouteImport.update({
-  id: '/insights',
-  path: '/insights',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppImpactAssessmentRoute = AppImpactAssessmentRouteImport.update({
-  id: '/impact-assessment',
-  path: '/impact-assessment',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppGovernanceRoute = AppGovernanceRouteImport.update({
-  id: '/governance',
-  path: '/governance',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppFeasibilityRoute = AppFeasibilityRouteImport.update({
-  id: '/feasibility',
-  path: '/feasibility',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppEntitlementRoute = AppEntitlementRouteImport.update({
-  id: '/entitlement',
-  path: '/entitlement',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppDiscoverRoute = AppDiscoverRouteImport.update({
-  id: '/discover',
-  path: '/discover',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppDecisionRoute = AppDecisionRouteImport.update({
-  id: '/decision',
-  path: '/decision',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppDataReadinessRoute = AppDataReadinessRouteImport.update({
-  id: '/data-readiness',
-  path: '/data-readiness',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppDashboardRoute = AppDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppCompareRoute = AppCompareRouteImport.update({
-  id: '/compare',
-  path: '/compare',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppBoardsRoute = AppBoardsRouteImport.update({
-  id: '/boards',
-  path: '/boards',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppBlueprintRoute = AppBlueprintRouteImport.update({
-  id: '/blueprint',
-  path: '/blueprint',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppApiIntegrationRoute = AppApiIntegrationRouteImport.update({
-  id: '/api-integration',
-  path: '/api-integration',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAiUseCaseStudioRoute = AppAiUseCaseStudioRouteImport.update({
-  id: '/ai-use-case-studio',
-  path: '/ai-use-case-studio',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdvisorxRoute = AppAdvisorxRouteImport.update({
-  id: '/advisorx',
-  path: '/advisorx',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdministrationRoute = AppAdministrationRouteImport.update({
-  id: '/administration',
-  path: '/administration',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAdminWaitlistRoute = AppAdminWaitlistRouteImport.update({
-  id: '/admin-waitlist',
-  path: '/admin-waitlist',
+const AppAccountRoute = AppAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAdminSubmissionsRoute = AppAdminSubmissionsRouteImport.update({
@@ -272,44 +107,189 @@ const AppAdminSubmissionsRoute = AppAdminSubmissionsRouteImport.update({
   path: '/admin-submissions',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAccountRoute = AppAccountRouteImport.update({
-  id: '/account',
-  path: '/account',
+const AppAdminWaitlistRoute = AppAdminWaitlistRouteImport.update({
+  id: '/admin-waitlist',
+  path: '/admin-waitlist',
   getParentRoute: () => AppRoute,
 } as any)
-const AppBoardsIndexRoute = AppBoardsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppBoardsRoute,
+const AppAdministrationRoute = AppAdministrationRouteImport.update({
+  id: '/administration',
+  path: '/administration',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdvisorxRoute = AppAdvisorxRouteImport.update({
+  id: '/advisorx',
+  path: '/advisorx',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAiUseCaseStudioRoute = AppAiUseCaseStudioRouteImport.update({
+  id: '/ai-use-case-studio',
+  path: '/ai-use-case-studio',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppApiIntegrationRoute = AppApiIntegrationRouteImport.update({
+  id: '/api-integration',
+  path: '/api-integration',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBlueprintRoute = AppBlueprintRouteImport.update({
+  id: '/blueprint',
+  path: '/blueprint',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBoardsRoute = AppBoardsRouteImport.update({
+  id: '/boards',
+  path: '/boards',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCompareRoute = AppCompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDataReadinessRoute = AppDataReadinessRouteImport.update({
+  id: '/data-readiness',
+  path: '/data-readiness',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDecisionRoute = AppDecisionRouteImport.update({
+  id: '/decision',
+  path: '/decision',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDiscoverRoute = AppDiscoverRouteImport.update({
+  id: '/discover',
+  path: '/discover',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEntitlementRoute = AppEntitlementRouteImport.update({
+  id: '/entitlement',
+  path: '/entitlement',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFeasibilityRoute = AppFeasibilityRouteImport.update({
+  id: '/feasibility',
+  path: '/feasibility',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGovernanceRoute = AppGovernanceRouteImport.update({
+  id: '/governance',
+  path: '/governance',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppImpactAssessmentRoute = AppImpactAssessmentRouteImport.update({
+  id: '/impact-assessment',
+  path: '/impact-assessment',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInsightsRoute = AppInsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppModuleAnalyticsRoute = AppModuleAnalyticsRouteImport.update({
+  id: '/module-analytics',
+  path: '/module-analytics',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMyUseCasesRoute = AppMyUseCasesRouteImport.update({
+  id: '/my-use-cases',
+  path: '/my-use-cases',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPatternsRoute = AppPatternsRouteImport.update({
+  id: '/patterns',
+  path: '/patterns',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPortfolioxRoute = AppPortfolioxRouteImport.update({
+  id: '/portfoliox',
+  path: '/portfoliox',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPricingRoute = AppPricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProRoute = AppProRouteImport.update({
+  id: '/pro',
+  path: '/pro',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppQuickWinsRoute = AppQuickWinsRouteImport.update({
+  id: '/quick-wins',
+  path: '/quick-wins',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportsRoute = AppReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRepositoryRoute = AppRepositoryRouteImport.update({
+  id: '/repository',
+  path: '/repository',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppResourcesRoute = AppResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRoadmapRoute = AppRoadmapRouteImport.update({
+  id: '/roadmap',
+  path: '/roadmap',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRoiCalculatorRoute = AppRoiCalculatorRouteImport.update({
+  id: '/roi-calculator',
+  path: '/roi-calculator',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSarpiRoute = AppSarpiRouteImport.update({
+  id: '/sarpi',
+  path: '/sarpi',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppStudioRoute = AppStudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSubmitRoute = AppSubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => AppRoute,
+} as any)
+const CTokenRoute = CTokenRouteImport.update({
+  id: '/c/$token',
+  path: '/c/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppAccountIndexRoute = AppAccountIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppAccountRoute,
 } as any)
-const AppUseCasesSlugRoute = AppUseCasesSlugRouteImport.update({
-  id: '/use-cases/$slug',
-  path: '/use-cases/$slug',
-  getParentRoute: () => AppRoute,
+const AppAccountSecurityRoute = AppAccountSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => AppAccountRoute,
 } as any)
-const AppStudioPortfolioRoute = AppStudioPortfolioRouteImport.update({
-  id: '/portfolio',
-  path: '/portfolio',
-  getParentRoute: () => AppStudioRoute,
-} as any)
-const AppSegmentsSegmentRoute = AppSegmentsSegmentRouteImport.update({
-  id: '/segments/$segment',
-  path: '/segments/$segment',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSectorsSectorRoute = AppSectorsSectorRouteImport.update({
-  id: '/sectors/$sector',
-  path: '/sectors/$sector',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppBoardsCollectionsRoute = AppBoardsCollectionsRouteImport.update({
-  id: '/collections',
-  path: '/collections',
+const AppBoardsIndexRoute = AppBoardsIndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => AppBoardsRoute,
 } as any)
 const AppBoardsBoardIdRoute = AppBoardsBoardIdRouteImport.update({
@@ -317,66 +297,57 @@ const AppBoardsBoardIdRoute = AppBoardsBoardIdRouteImport.update({
   path: '/$boardId',
   getParentRoute: () => AppBoardsRoute,
 } as any)
-const AppAccountSecurityRoute = AppAccountSecurityRouteImport.update({
-  id: '/security',
-  path: '/security',
-  getParentRoute: () => AppAccountRoute,
+const AppBoardsCollectionsRoute = AppBoardsCollectionsRouteImport.update({
+  id: '/collections',
+  path: '/collections',
+  getParentRoute: () => AppBoardsRoute,
 } as any)
-const ApiPublicUsecasexUseCasesRoute =
-  ApiPublicUsecasexUseCasesRouteImport.update({
-    id: '/api/public/usecasex/use-cases',
-    path: '/api/public/usecasex/use-cases',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const AppSectorsSectorRoute = AppSectorsSectorRouteImport.update({
+  id: '/sectors/$sector',
+  path: '/sectors/$sector',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSegmentsSegmentRoute = AppSegmentsSegmentRouteImport.update({
+  id: '/segments/$segment',
+  path: '/segments/$segment',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppStudioPortfolioRoute = AppStudioPortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => AppStudioRoute,
+} as any)
+const AppUseCasesSlugRoute = AppUseCasesSlugRouteImport.update({
+  id: '/use-cases/$slug',
+  path: '/use-cases/$slug',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCyberxC3gIntakeRoute = AppCyberxC3gIntakeRouteImport.update({
+  id: '/cyberx/c3g/intake',
+  path: '/cyberx/c3g/intake',
+  getParentRoute: () => AppRoute,
+} as any)
 const ApiPublicUsecasexTaxonomyRoute =
   ApiPublicUsecasexTaxonomyRouteImport.update({
     id: '/api/public/usecasex/taxonomy',
     path: '/api/public/usecasex/taxonomy',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AppCyberxC3gIntakeRoute = AppCyberxC3gIntakeRouteImport.update({
-  id: '/cyberx/c3g/intake',
-  path: '/cyberx/c3g/intake',
-  getParentRoute: () => AppRoute,
-} as any)
+const ApiPublicUsecasexUseCasesRoute =
+  ApiPublicUsecasexUseCasesRouteImport.update({
+    id: '/api/public/usecasex/use-cases',
+    path: '/api/public/usecasex/use-cases',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AppStudioUseCaseIdIndexRoute = AppStudioUseCaseIdIndexRouteImport.update({
   id: '/use-case/$id/',
   path: '/use-case/$id/',
   getParentRoute: () => AppStudioRoute,
 } as any)
-const ApiPublicUsecasexUseCasesSlugRoute =
-  ApiPublicUsecasexUseCasesSlugRouteImport.update({
-    id: '/$slug',
-    path: '/$slug',
-    getParentRoute: () => ApiPublicUsecasexUseCasesRoute,
-  } as any)
-const AppStudioUseCaseIdSarpiRoute = AppStudioUseCaseIdSarpiRouteImport.update({
-  id: '/use-case/$id/sarpi',
-  path: '/use-case/$id/sarpi',
-  getParentRoute: () => AppStudioRoute,
-} as any)
-const AppStudioUseCaseIdFeasibilityRoute =
-  AppStudioUseCaseIdFeasibilityRouteImport.update({
-    id: '/use-case/$id/feasibility',
-    path: '/use-case/$id/feasibility',
-    getParentRoute: () => AppStudioRoute,
-  } as any)
-const AppStudioUseCaseIdDeliverablesRoute =
-  AppStudioUseCaseIdDeliverablesRouteImport.update({
-    id: '/use-case/$id/deliverables',
-    path: '/use-case/$id/deliverables',
-    getParentRoute: () => AppStudioRoute,
-  } as any)
-const AppStudioUseCaseIdDataReadinessRoute =
-  AppStudioUseCaseIdDataReadinessRouteImport.update({
-    id: '/use-case/$id/data-readiness',
-    path: '/use-case/$id/data-readiness',
-    getParentRoute: () => AppStudioRoute,
-  } as any)
-const AppStudioUseCaseIdC3gGovernanceRoute =
-  AppStudioUseCaseIdC3gGovernanceRouteImport.update({
-    id: '/use-case/$id/c3g-governance',
-    path: '/use-case/$id/c3g-governance',
+const AppStudioUseCaseIdAdvisorxRoute =
+  AppStudioUseCaseIdAdvisorxRouteImport.update({
+    id: '/use-case/$id/advisorx',
+    path: '/use-case/$id/advisorx',
     getParentRoute: () => AppStudioRoute,
   } as any)
 const AppStudioUseCaseIdBlueprintRoute =
@@ -385,11 +356,40 @@ const AppStudioUseCaseIdBlueprintRoute =
     path: '/use-case/$id/blueprint',
     getParentRoute: () => AppStudioRoute,
   } as any)
-const AppStudioUseCaseIdAdvisorxRoute =
-  AppStudioUseCaseIdAdvisorxRouteImport.update({
-    id: '/use-case/$id/advisorx',
-    path: '/use-case/$id/advisorx',
+const AppStudioUseCaseIdC3gGovernanceRoute =
+  AppStudioUseCaseIdC3gGovernanceRouteImport.update({
+    id: '/use-case/$id/c3g-governance',
+    path: '/use-case/$id/c3g-governance',
     getParentRoute: () => AppStudioRoute,
+  } as any)
+const AppStudioUseCaseIdDataReadinessRoute =
+  AppStudioUseCaseIdDataReadinessRouteImport.update({
+    id: '/use-case/$id/data-readiness',
+    path: '/use-case/$id/data-readiness',
+    getParentRoute: () => AppStudioRoute,
+  } as any)
+const AppStudioUseCaseIdDeliverablesRoute =
+  AppStudioUseCaseIdDeliverablesRouteImport.update({
+    id: '/use-case/$id/deliverables',
+    path: '/use-case/$id/deliverables',
+    getParentRoute: () => AppStudioRoute,
+  } as any)
+const AppStudioUseCaseIdFeasibilityRoute =
+  AppStudioUseCaseIdFeasibilityRouteImport.update({
+    id: '/use-case/$id/feasibility',
+    path: '/use-case/$id/feasibility',
+    getParentRoute: () => AppStudioRoute,
+  } as any)
+const AppStudioUseCaseIdSarpiRoute = AppStudioUseCaseIdSarpiRouteImport.update({
+  id: '/use-case/$id/sarpi',
+  path: '/use-case/$id/sarpi',
+  getParentRoute: () => AppStudioRoute,
+} as any)
+const ApiPublicUsecasexUseCasesSlugRoute =
+  ApiPublicUsecasexUseCasesSlugRouteImport.update({
+    id: '/$slug',
+    path: '/$slug',
+    getParentRoute: () => ApiPublicUsecasexUseCasesRoute,
   } as any)
 const AppStudioUseCaseIdDeliverableTypeRoute =
   AppStudioUseCaseIdDeliverableTypeRouteImport.update({
@@ -797,25 +797,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forgot-password': {
-      id: '/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof ForgotPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app': {
@@ -825,249 +811,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/c/$token': {
-      id: '/c/$token'
-      path: '/c/$token'
-      fullPath: '/c/$token'
-      preLoaderRoute: typeof CTokenRouteImport
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/submit': {
-      id: '/_app/submit'
-      path: '/submit'
-      fullPath: '/submit'
-      preLoaderRoute: typeof AppSubmitRouteImport
-      parentRoute: typeof AppRoute
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_app/studio': {
-      id: '/_app/studio'
-      path: '/studio'
-      fullPath: '/studio'
-      preLoaderRoute: typeof AppStudioRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/sarpi': {
-      id: '/_app/sarpi'
-      path: '/sarpi'
-      fullPath: '/sarpi'
-      preLoaderRoute: typeof AppSarpiRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/roi-calculator': {
-      id: '/_app/roi-calculator'
-      path: '/roi-calculator'
-      fullPath: '/roi-calculator'
-      preLoaderRoute: typeof AppRoiCalculatorRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/roadmap': {
-      id: '/_app/roadmap'
-      path: '/roadmap'
-      fullPath: '/roadmap'
-      preLoaderRoute: typeof AppRoadmapRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/resources': {
-      id: '/_app/resources'
-      path: '/resources'
-      fullPath: '/resources'
-      preLoaderRoute: typeof AppResourcesRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/repository': {
-      id: '/_app/repository'
-      path: '/repository'
-      fullPath: '/repository'
-      preLoaderRoute: typeof AppRepositoryRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/reports': {
-      id: '/_app/reports'
-      path: '/reports'
-      fullPath: '/reports'
-      preLoaderRoute: typeof AppReportsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/quick-wins': {
-      id: '/_app/quick-wins'
-      path: '/quick-wins'
-      fullPath: '/quick-wins'
-      preLoaderRoute: typeof AppQuickWinsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/profile': {
-      id: '/_app/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AppProfileRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/pro': {
-      id: '/_app/pro'
-      path: '/pro'
-      fullPath: '/pro'
-      preLoaderRoute: typeof AppProRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/pricing': {
-      id: '/_app/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof AppPricingRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/portfoliox': {
-      id: '/_app/portfoliox'
-      path: '/portfoliox'
-      fullPath: '/portfoliox'
-      preLoaderRoute: typeof AppPortfolioxRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/patterns': {
-      id: '/_app/patterns'
-      path: '/patterns'
-      fullPath: '/patterns'
-      preLoaderRoute: typeof AppPatternsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/my-use-cases': {
-      id: '/_app/my-use-cases'
-      path: '/my-use-cases'
-      fullPath: '/my-use-cases'
-      preLoaderRoute: typeof AppMyUseCasesRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/module-analytics': {
-      id: '/_app/module-analytics'
-      path: '/module-analytics'
-      fullPath: '/module-analytics'
-      preLoaderRoute: typeof AppModuleAnalyticsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/insights': {
-      id: '/_app/insights'
-      path: '/insights'
-      fullPath: '/insights'
-      preLoaderRoute: typeof AppInsightsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/impact-assessment': {
-      id: '/_app/impact-assessment'
-      path: '/impact-assessment'
-      fullPath: '/impact-assessment'
-      preLoaderRoute: typeof AppImpactAssessmentRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/governance': {
-      id: '/_app/governance'
-      path: '/governance'
-      fullPath: '/governance'
-      preLoaderRoute: typeof AppGovernanceRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/feasibility': {
-      id: '/_app/feasibility'
-      path: '/feasibility'
-      fullPath: '/feasibility'
-      preLoaderRoute: typeof AppFeasibilityRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/entitlement': {
-      id: '/_app/entitlement'
-      path: '/entitlement'
-      fullPath: '/entitlement'
-      preLoaderRoute: typeof AppEntitlementRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/discover': {
-      id: '/_app/discover'
-      path: '/discover'
-      fullPath: '/discover'
-      preLoaderRoute: typeof AppDiscoverRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/decision': {
-      id: '/_app/decision'
-      path: '/decision'
-      fullPath: '/decision'
-      preLoaderRoute: typeof AppDecisionRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/data-readiness': {
-      id: '/_app/data-readiness'
-      path: '/data-readiness'
-      fullPath: '/data-readiness'
-      preLoaderRoute: typeof AppDataReadinessRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/dashboard': {
-      id: '/_app/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AppDashboardRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/compare': {
-      id: '/_app/compare'
-      path: '/compare'
-      fullPath: '/compare'
-      preLoaderRoute: typeof AppCompareRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/boards': {
-      id: '/_app/boards'
-      path: '/boards'
-      fullPath: '/boards'
-      preLoaderRoute: typeof AppBoardsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/blueprint': {
-      id: '/_app/blueprint'
-      path: '/blueprint'
-      fullPath: '/blueprint'
-      preLoaderRoute: typeof AppBlueprintRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/api-integration': {
-      id: '/_app/api-integration'
-      path: '/api-integration'
-      fullPath: '/api-integration'
-      preLoaderRoute: typeof AppApiIntegrationRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/ai-use-case-studio': {
-      id: '/_app/ai-use-case-studio'
-      path: '/ai-use-case-studio'
-      fullPath: '/ai-use-case-studio'
-      preLoaderRoute: typeof AppAiUseCaseStudioRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/advisorx': {
-      id: '/_app/advisorx'
-      path: '/advisorx'
-      fullPath: '/advisorx'
-      preLoaderRoute: typeof AppAdvisorxRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/administration': {
-      id: '/_app/administration'
-      path: '/administration'
-      fullPath: '/administration'
-      preLoaderRoute: typeof AppAdministrationRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/admin-waitlist': {
-      id: '/_app/admin-waitlist'
-      path: '/admin-waitlist'
-      fullPath: '/admin-waitlist'
-      preLoaderRoute: typeof AppAdminWaitlistRouteImport
+    '/_app/account': {
+      id: '/_app/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AppAccountRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/admin-submissions': {
@@ -1077,19 +846,243 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminSubmissionsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/account': {
-      id: '/_app/account'
-      path: '/account'
-      fullPath: '/account'
-      preLoaderRoute: typeof AppAccountRouteImport
+    '/_app/admin-waitlist': {
+      id: '/_app/admin-waitlist'
+      path: '/admin-waitlist'
+      fullPath: '/admin-waitlist'
+      preLoaderRoute: typeof AppAdminWaitlistRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/boards/': {
-      id: '/_app/boards/'
-      path: '/'
-      fullPath: '/boards/'
-      preLoaderRoute: typeof AppBoardsIndexRouteImport
-      parentRoute: typeof AppBoardsRoute
+    '/_app/administration': {
+      id: '/_app/administration'
+      path: '/administration'
+      fullPath: '/administration'
+      preLoaderRoute: typeof AppAdministrationRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/advisorx': {
+      id: '/_app/advisorx'
+      path: '/advisorx'
+      fullPath: '/advisorx'
+      preLoaderRoute: typeof AppAdvisorxRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/ai-use-case-studio': {
+      id: '/_app/ai-use-case-studio'
+      path: '/ai-use-case-studio'
+      fullPath: '/ai-use-case-studio'
+      preLoaderRoute: typeof AppAiUseCaseStudioRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/api-integration': {
+      id: '/_app/api-integration'
+      path: '/api-integration'
+      fullPath: '/api-integration'
+      preLoaderRoute: typeof AppApiIntegrationRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/blueprint': {
+      id: '/_app/blueprint'
+      path: '/blueprint'
+      fullPath: '/blueprint'
+      preLoaderRoute: typeof AppBlueprintRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/boards': {
+      id: '/_app/boards'
+      path: '/boards'
+      fullPath: '/boards'
+      preLoaderRoute: typeof AppBoardsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/compare': {
+      id: '/_app/compare'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof AppCompareRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/data-readiness': {
+      id: '/_app/data-readiness'
+      path: '/data-readiness'
+      fullPath: '/data-readiness'
+      preLoaderRoute: typeof AppDataReadinessRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/decision': {
+      id: '/_app/decision'
+      path: '/decision'
+      fullPath: '/decision'
+      preLoaderRoute: typeof AppDecisionRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/discover': {
+      id: '/_app/discover'
+      path: '/discover'
+      fullPath: '/discover'
+      preLoaderRoute: typeof AppDiscoverRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/entitlement': {
+      id: '/_app/entitlement'
+      path: '/entitlement'
+      fullPath: '/entitlement'
+      preLoaderRoute: typeof AppEntitlementRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/feasibility': {
+      id: '/_app/feasibility'
+      path: '/feasibility'
+      fullPath: '/feasibility'
+      preLoaderRoute: typeof AppFeasibilityRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/governance': {
+      id: '/_app/governance'
+      path: '/governance'
+      fullPath: '/governance'
+      preLoaderRoute: typeof AppGovernanceRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/impact-assessment': {
+      id: '/_app/impact-assessment'
+      path: '/impact-assessment'
+      fullPath: '/impact-assessment'
+      preLoaderRoute: typeof AppImpactAssessmentRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/insights': {
+      id: '/_app/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof AppInsightsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/module-analytics': {
+      id: '/_app/module-analytics'
+      path: '/module-analytics'
+      fullPath: '/module-analytics'
+      preLoaderRoute: typeof AppModuleAnalyticsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/my-use-cases': {
+      id: '/_app/my-use-cases'
+      path: '/my-use-cases'
+      fullPath: '/my-use-cases'
+      preLoaderRoute: typeof AppMyUseCasesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/patterns': {
+      id: '/_app/patterns'
+      path: '/patterns'
+      fullPath: '/patterns'
+      preLoaderRoute: typeof AppPatternsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/portfoliox': {
+      id: '/_app/portfoliox'
+      path: '/portfoliox'
+      fullPath: '/portfoliox'
+      preLoaderRoute: typeof AppPortfolioxRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/pricing': {
+      id: '/_app/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof AppPricingRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/pro': {
+      id: '/_app/pro'
+      path: '/pro'
+      fullPath: '/pro'
+      preLoaderRoute: typeof AppProRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/profile': {
+      id: '/_app/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/quick-wins': {
+      id: '/_app/quick-wins'
+      path: '/quick-wins'
+      fullPath: '/quick-wins'
+      preLoaderRoute: typeof AppQuickWinsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/reports': {
+      id: '/_app/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AppReportsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/repository': {
+      id: '/_app/repository'
+      path: '/repository'
+      fullPath: '/repository'
+      preLoaderRoute: typeof AppRepositoryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/resources': {
+      id: '/_app/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof AppResourcesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/roadmap': {
+      id: '/_app/roadmap'
+      path: '/roadmap'
+      fullPath: '/roadmap'
+      preLoaderRoute: typeof AppRoadmapRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/roi-calculator': {
+      id: '/_app/roi-calculator'
+      path: '/roi-calculator'
+      fullPath: '/roi-calculator'
+      preLoaderRoute: typeof AppRoiCalculatorRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/sarpi': {
+      id: '/_app/sarpi'
+      path: '/sarpi'
+      fullPath: '/sarpi'
+      preLoaderRoute: typeof AppSarpiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/studio': {
+      id: '/_app/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof AppStudioRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/submit': {
+      id: '/_app/submit'
+      path: '/submit'
+      fullPath: '/submit'
+      preLoaderRoute: typeof AppSubmitRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/c/$token': {
+      id: '/c/$token'
+      path: '/c/$token'
+      fullPath: '/c/$token'
+      preLoaderRoute: typeof CTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/account/': {
       id: '/_app/account/'
@@ -1098,39 +1091,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAccountIndexRouteImport
       parentRoute: typeof AppAccountRoute
     }
-    '/_app/use-cases/$slug': {
-      id: '/_app/use-cases/$slug'
-      path: '/use-cases/$slug'
-      fullPath: '/use-cases/$slug'
-      preLoaderRoute: typeof AppUseCasesSlugRouteImport
-      parentRoute: typeof AppRoute
+    '/_app/account/security': {
+      id: '/_app/account/security'
+      path: '/security'
+      fullPath: '/account/security'
+      preLoaderRoute: typeof AppAccountSecurityRouteImport
+      parentRoute: typeof AppAccountRoute
     }
-    '/_app/studio/portfolio': {
-      id: '/_app/studio/portfolio'
-      path: '/portfolio'
-      fullPath: '/studio/portfolio'
-      preLoaderRoute: typeof AppStudioPortfolioRouteImport
-      parentRoute: typeof AppStudioRoute
-    }
-    '/_app/segments/$segment': {
-      id: '/_app/segments/$segment'
-      path: '/segments/$segment'
-      fullPath: '/segments/$segment'
-      preLoaderRoute: typeof AppSegmentsSegmentRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/sectors/$sector': {
-      id: '/_app/sectors/$sector'
-      path: '/sectors/$sector'
-      fullPath: '/sectors/$sector'
-      preLoaderRoute: typeof AppSectorsSectorRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/boards/collections': {
-      id: '/_app/boards/collections'
-      path: '/collections'
-      fullPath: '/boards/collections'
-      preLoaderRoute: typeof AppBoardsCollectionsRouteImport
+    '/_app/boards/': {
+      id: '/_app/boards/'
+      path: '/'
+      fullPath: '/boards/'
+      preLoaderRoute: typeof AppBoardsIndexRouteImport
       parentRoute: typeof AppBoardsRoute
     }
     '/_app/boards/$boardId': {
@@ -1140,26 +1112,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBoardsBoardIdRouteImport
       parentRoute: typeof AppBoardsRoute
     }
-    '/_app/account/security': {
-      id: '/_app/account/security'
-      path: '/security'
-      fullPath: '/account/security'
-      preLoaderRoute: typeof AppAccountSecurityRouteImport
-      parentRoute: typeof AppAccountRoute
+    '/_app/boards/collections': {
+      id: '/_app/boards/collections'
+      path: '/collections'
+      fullPath: '/boards/collections'
+      preLoaderRoute: typeof AppBoardsCollectionsRouteImport
+      parentRoute: typeof AppBoardsRoute
     }
-    '/api/public/usecasex/use-cases': {
-      id: '/api/public/usecasex/use-cases'
-      path: '/api/public/usecasex/use-cases'
-      fullPath: '/api/public/usecasex/use-cases'
-      preLoaderRoute: typeof ApiPublicUsecasexUseCasesRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_app/sectors/$sector': {
+      id: '/_app/sectors/$sector'
+      path: '/sectors/$sector'
+      fullPath: '/sectors/$sector'
+      preLoaderRoute: typeof AppSectorsSectorRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/api/public/usecasex/taxonomy': {
-      id: '/api/public/usecasex/taxonomy'
-      path: '/api/public/usecasex/taxonomy'
-      fullPath: '/api/public/usecasex/taxonomy'
-      preLoaderRoute: typeof ApiPublicUsecasexTaxonomyRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_app/segments/$segment': {
+      id: '/_app/segments/$segment'
+      path: '/segments/$segment'
+      fullPath: '/segments/$segment'
+      preLoaderRoute: typeof AppSegmentsSegmentRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/studio/portfolio': {
+      id: '/_app/studio/portfolio'
+      path: '/portfolio'
+      fullPath: '/studio/portfolio'
+      preLoaderRoute: typeof AppStudioPortfolioRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
+    '/_app/use-cases/$slug': {
+      id: '/_app/use-cases/$slug'
+      path: '/use-cases/$slug'
+      fullPath: '/use-cases/$slug'
+      preLoaderRoute: typeof AppUseCasesSlugRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/cyberx/c3g/intake': {
       id: '/_app/cyberx/c3g/intake'
@@ -1168,6 +1154,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCyberxC3gIntakeRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/public/usecasex/taxonomy': {
+      id: '/api/public/usecasex/taxonomy'
+      path: '/api/public/usecasex/taxonomy'
+      fullPath: '/api/public/usecasex/taxonomy'
+      preLoaderRoute: typeof ApiPublicUsecasexTaxonomyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/usecasex/use-cases': {
+      id: '/api/public/usecasex/use-cases'
+      path: '/api/public/usecasex/use-cases'
+      fullPath: '/api/public/usecasex/use-cases'
+      preLoaderRoute: typeof ApiPublicUsecasexUseCasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app/studio/use-case/$id/': {
       id: '/_app/studio/use-case/$id/'
       path: '/use-case/$id'
@@ -1175,46 +1175,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudioUseCaseIdIndexRouteImport
       parentRoute: typeof AppStudioRoute
     }
-    '/api/public/usecasex/use-cases/$slug': {
-      id: '/api/public/usecasex/use-cases/$slug'
-      path: '/$slug'
-      fullPath: '/api/public/usecasex/use-cases/$slug'
-      preLoaderRoute: typeof ApiPublicUsecasexUseCasesSlugRouteImport
-      parentRoute: typeof ApiPublicUsecasexUseCasesRoute
-    }
-    '/_app/studio/use-case/$id/sarpi': {
-      id: '/_app/studio/use-case/$id/sarpi'
-      path: '/use-case/$id/sarpi'
-      fullPath: '/studio/use-case/$id/sarpi'
-      preLoaderRoute: typeof AppStudioUseCaseIdSarpiRouteImport
-      parentRoute: typeof AppStudioRoute
-    }
-    '/_app/studio/use-case/$id/feasibility': {
-      id: '/_app/studio/use-case/$id/feasibility'
-      path: '/use-case/$id/feasibility'
-      fullPath: '/studio/use-case/$id/feasibility'
-      preLoaderRoute: typeof AppStudioUseCaseIdFeasibilityRouteImport
-      parentRoute: typeof AppStudioRoute
-    }
-    '/_app/studio/use-case/$id/deliverables': {
-      id: '/_app/studio/use-case/$id/deliverables'
-      path: '/use-case/$id/deliverables'
-      fullPath: '/studio/use-case/$id/deliverables'
-      preLoaderRoute: typeof AppStudioUseCaseIdDeliverablesRouteImport
-      parentRoute: typeof AppStudioRoute
-    }
-    '/_app/studio/use-case/$id/data-readiness': {
-      id: '/_app/studio/use-case/$id/data-readiness'
-      path: '/use-case/$id/data-readiness'
-      fullPath: '/studio/use-case/$id/data-readiness'
-      preLoaderRoute: typeof AppStudioUseCaseIdDataReadinessRouteImport
-      parentRoute: typeof AppStudioRoute
-    }
-    '/_app/studio/use-case/$id/c3g-governance': {
-      id: '/_app/studio/use-case/$id/c3g-governance'
-      path: '/use-case/$id/c3g-governance'
-      fullPath: '/studio/use-case/$id/c3g-governance'
-      preLoaderRoute: typeof AppStudioUseCaseIdC3gGovernanceRouteImport
+    '/_app/studio/use-case/$id/advisorx': {
+      id: '/_app/studio/use-case/$id/advisorx'
+      path: '/use-case/$id/advisorx'
+      fullPath: '/studio/use-case/$id/advisorx'
+      preLoaderRoute: typeof AppStudioUseCaseIdAdvisorxRouteImport
       parentRoute: typeof AppStudioRoute
     }
     '/_app/studio/use-case/$id/blueprint': {
@@ -1224,12 +1189,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudioUseCaseIdBlueprintRouteImport
       parentRoute: typeof AppStudioRoute
     }
-    '/_app/studio/use-case/$id/advisorx': {
-      id: '/_app/studio/use-case/$id/advisorx'
-      path: '/use-case/$id/advisorx'
-      fullPath: '/studio/use-case/$id/advisorx'
-      preLoaderRoute: typeof AppStudioUseCaseIdAdvisorxRouteImport
+    '/_app/studio/use-case/$id/c3g-governance': {
+      id: '/_app/studio/use-case/$id/c3g-governance'
+      path: '/use-case/$id/c3g-governance'
+      fullPath: '/studio/use-case/$id/c3g-governance'
+      preLoaderRoute: typeof AppStudioUseCaseIdC3gGovernanceRouteImport
       parentRoute: typeof AppStudioRoute
+    }
+    '/_app/studio/use-case/$id/data-readiness': {
+      id: '/_app/studio/use-case/$id/data-readiness'
+      path: '/use-case/$id/data-readiness'
+      fullPath: '/studio/use-case/$id/data-readiness'
+      preLoaderRoute: typeof AppStudioUseCaseIdDataReadinessRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
+    '/_app/studio/use-case/$id/deliverables': {
+      id: '/_app/studio/use-case/$id/deliverables'
+      path: '/use-case/$id/deliverables'
+      fullPath: '/studio/use-case/$id/deliverables'
+      preLoaderRoute: typeof AppStudioUseCaseIdDeliverablesRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
+    '/_app/studio/use-case/$id/feasibility': {
+      id: '/_app/studio/use-case/$id/feasibility'
+      path: '/use-case/$id/feasibility'
+      fullPath: '/studio/use-case/$id/feasibility'
+      preLoaderRoute: typeof AppStudioUseCaseIdFeasibilityRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
+    '/_app/studio/use-case/$id/sarpi': {
+      id: '/_app/studio/use-case/$id/sarpi'
+      path: '/use-case/$id/sarpi'
+      fullPath: '/studio/use-case/$id/sarpi'
+      preLoaderRoute: typeof AppStudioUseCaseIdSarpiRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
+    '/api/public/usecasex/use-cases/$slug': {
+      id: '/api/public/usecasex/use-cases/$slug'
+      path: '/$slug'
+      fullPath: '/api/public/usecasex/use-cases/$slug'
+      preLoaderRoute: typeof ApiPublicUsecasexUseCasesSlugRouteImport
+      parentRoute: typeof ApiPublicUsecasexUseCasesRoute
     }
     '/_app/studio/use-case/$id/deliverable/$type': {
       id: '/_app/studio/use-case/$id/deliverable/$type'
