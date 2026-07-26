@@ -264,6 +264,7 @@ Append-only. One row per material decision (scope change, freeze override, defer
 | 2026-07-26 | Adopt this 20-day board as the authoritative execution plan | Single source of truth; removes need for external PM tool | PROMPT-03 | - | @owner |
 | 2026-07-26 | Lock Phase 0 artifacts: `docs/audits/phase-0-current-state.md`, `docs/product/edition-capability-matrix.md`, `docs/architecture/data-migration-plan.md`, `docs/testing/launch-acceptance-matrix.md` | Consolidates 25–26 Jul audits into referenceable baselines; unblocks Phase 1 foundations freeze | PROMPT-09 → PROMPT-10 | - | @owner |
 | 2026-07-26 | Approve P0/P1/P2 backlog per §11 reconciliation | Every audited item classified; deferred register append-only | PROMPT-09 | - | @owner |
+| 2026-07-26 | Adopt source-control workflow (`docs/process/source-control-workflow.md`, `release-branch-plan.md`, `pr-and-migration-checklist.md`, `release-notes-template.md`, `.github/PULL_REQUEST_TEMPLATE.md`, `CHANGELOG.md`). Lovable-tracked branch remains `main`; `develop` and `release/2026-08-14` are documented but NOT created — activation requires a separate Decision Log entry per source-control-workflow §4. | Establish conventions without risking Lovable ↔ GitHub sync | - | - | @owner |
 
 ## 11. Approved P0 / P1 / P2 reconciliation (Phase 0 close-out)
 
