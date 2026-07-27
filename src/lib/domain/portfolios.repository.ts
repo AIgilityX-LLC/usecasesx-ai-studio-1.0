@@ -48,7 +48,14 @@ export async function createPortfolio(userId: string | null, input: PortfolioCre
 
 /** Maps the domain patch onto database columns. Exported for unit tests. */
 export function toPortfolioColumns(patch: PortfolioPatchInput) {
-  const columns: Record<string, string | null> = {};
+  const columns: {
+    name?: string;
+    objective?: string | null;
+    portfolio_type?: string;
+    status?: string;
+    target_department?: string | null;
+    target_quarter?: string | null;
+  } = {};
   if (patch.name !== undefined) columns.name = patch.name;
   if (patch.objective !== undefined) columns.objective = patch.objective ?? null;
   if (patch.type !== undefined) columns.portfolio_type = patch.type;
