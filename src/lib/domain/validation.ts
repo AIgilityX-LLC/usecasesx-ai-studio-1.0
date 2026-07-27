@@ -66,7 +66,11 @@ export function parseInput<T extends z.ZodTypeAny>(schema: T, value: unknown): z
   const result = schema.safeParse(value);
   if (!result.success) {
     const first = result.error.issues[0];
-    throw new DomainError("validation", first?.message ?? "Please check your input and try again.", result.error);
+    throw new DomainError(
+      "validation",
+      first?.message ?? "Please check your input and try again.",
+      result.error,
+    );
   }
   return result.data;
 }

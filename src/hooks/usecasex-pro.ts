@@ -56,10 +56,16 @@ interface ProData {
 
 const EMPTY: ProData = { saved: [], portfolios: [], slugToId: {} };
 
-function normalizeScore(row: {
-  strategic: number; value: number; feasibility: number;
-  risk: number; readiness: number; ttv: number;
-} | null): ScoreDimensions | undefined {
+function normalizeScore(
+  row: {
+    strategic: number;
+    value: number;
+    feasibility: number;
+    risk: number;
+    readiness: number;
+    ttv: number;
+  } | null,
+): ScoreDimensions | undefined {
   if (!row) return undefined;
   return {
     strategicAlignment: row.strategic ?? 0,
@@ -74,11 +80,11 @@ function normalizeScore(row: {
 function scoreToColumns(s: ScoreDimensions) {
   const total = Math.round(
     s.strategicAlignment * SCORE_WEIGHTS.strategicAlignment +
-    s.valuePotential * SCORE_WEIGHTS.valuePotential +
-    s.feasibility * SCORE_WEIGHTS.feasibility +
-    s.timeToValue * SCORE_WEIGHTS.timeToValue +
-    s.riskManageability * SCORE_WEIGHTS.riskManageability +
-    s.governanceReadiness * SCORE_WEIGHTS.governanceReadiness,
+      s.valuePotential * SCORE_WEIGHTS.valuePotential +
+      s.feasibility * SCORE_WEIGHTS.feasibility +
+      s.timeToValue * SCORE_WEIGHTS.timeToValue +
+      s.riskManageability * SCORE_WEIGHTS.riskManageability +
+      s.governanceReadiness * SCORE_WEIGHTS.governanceReadiness,
   );
   return {
     strategic: s.strategicAlignment,
@@ -148,10 +154,7 @@ async function fetchProData(userId: string): Promise<ProData> {
   return { saved, portfolios, slugToId };
 }
 
-async function resolveSlugId(
-  slug: string,
-  cache: Record<string, string>,
-): Promise<string | null> {
+async function resolveSlugId(slug: string, cache: Record<string, string>): Promise<string | null> {
   if (cache[slug]) return cache[slug];
   const id = await resolveUseCaseIdBySlug(slug);
   if (id) cache[slug] = id;
@@ -180,7 +183,8 @@ export function useUseCaseXPro() {
   }, [qc]);
 
   const requireUser = useCallback(() => {
-    if (!userId) throw new DomainError("unauthenticated", "Sign in to manage your AI Opportunity Portfolio.");
+    if (!userId)
+      throw new DomainError("unauthenticated", "Sign in to manage your AI Opportunity Portfolio.");
     return userId;
   }, [userId]);
 
@@ -212,7 +216,13 @@ export function useUseCaseXPro() {
   });
 
   const updateSavedM = useMutation({
-    mutationFn: async ({ slug, patch }: { slug: string; patch: { note?: string; priority?: Priority } }) => {
+    mutationFn: async ({
+      slug,
+      patch,
+    }: {
+      slug: string;
+      patch: { note?: string; priority?: Priority };
+    }) => {
       const uid = requireUser();
       const id = data.slugToId[slug] ?? (await resolveSlugId(slug, { ...data.slugToId }));
       if (!id) throw new Error(`Unknown use case: ${slug}`);
@@ -307,7 +317,8 @@ export function useUseCaseXPro() {
       addSaved: (slug: string) => addSavedM.mutate(slug),
       removeSaved: (slug: string) => removeSavedM.mutate(slug),
       setNote: (slug: string, note: string) => updateSavedM.mutate({ slug, patch: { note } }),
-      setPriority: (slug: string, priority: Priority) => updateSavedM.mutate({ slug, patch: { priority } }),
+      setPriority: (slug: string, priority: Priority) =>
+        updateSavedM.mutate({ slug, patch: { priority } }),
       setScore: (slug: string, score: ScoreDimensions) => setScoreM.mutate({ slug, score }),
       createPortfolio: (input: {
         name: string;
@@ -316,18 +327,31 @@ export function useUseCaseXPro() {
         targetDepartment?: string;
         targetQuarter?: string;
       }) => createPortfolioM.mutate(input),
-      renamePortfolio: (id: string, name: string) => updatePortfolioM.mutate({ id, patch: { name } }),
-      updatePortfolio: (id: string, patch: Partial<Portfolio>) => updatePortfolioM.mutate({ id, patch }),
+      renamePortfolio: (id: string, name: string) =>
+        updatePortfolioM.mutate({ id, patch: { name } }),
+      updatePortfolio: (id: string, patch: Partial<Portfolio>) =>
+        updatePortfolioM.mutate({ id, patch }),
       deletePortfolio: (id: string) => deletePortfolioM.mutate(id),
-      addToPortfolio: (portfolioId: string, slug: string) => addToPortfolioM.mutate({ portfolioId, slug }),
+      addToPortfolio: (portfolioId: string, slug: string) =>
+        addToPortfolioM.mutate({ portfolioId, slug }),
       removeFromPortfolio: (portfolioId: string, slug: string) =>
         removeFromPortfolioM.mutate({ portfolioId, slug }),
     }),
     [
-      data, userId, query.isLoading, query.error, invalidate,
-      addSavedM, removeSavedM, updateSavedM, setScoreM,
-      createPortfolioM, updatePortfolioM, deletePortfolioM,
-      addToPortfolioM, removeFromPortfolioM,
+      data,
+      userId,
+      query.isLoading,
+      query.error,
+      invalidate,
+      addSavedM,
+      removeSavedM,
+      updateSavedM,
+      setScoreM,
+      createPortfolioM,
+      updatePortfolioM,
+      deletePortfolioM,
+      addToPortfolioM,
+      removeFromPortfolioM,
     ],
   );
 }

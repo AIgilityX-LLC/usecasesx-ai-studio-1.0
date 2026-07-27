@@ -60,7 +60,8 @@ export function toPortfolioColumns(patch: PortfolioPatchInput) {
   if (patch.objective !== undefined) columns.objective = patch.objective ?? null;
   if (patch.type !== undefined) columns.portfolio_type = patch.type;
   if (patch.status !== undefined) columns.status = patch.status;
-  if (patch.targetDepartment !== undefined) columns.target_department = patch.targetDepartment ?? null;
+  if (patch.targetDepartment !== undefined)
+    columns.target_department = patch.targetDepartment ?? null;
   if (patch.targetQuarter !== undefined) columns.target_quarter = patch.targetQuarter ?? null;
   return columns;
 }

@@ -26,7 +26,9 @@ const OTHER = "22222222-2222-4222-8222-222222222222";
 describe("error mapping", () => {
   test("classifies RLS denials as forbidden", () => {
     expect(classifyDatabaseError({ code: "42501" })).toBe("forbidden");
-    expect(classifyDatabaseError({ message: "new row violates row-level security policy" })).toBe("forbidden");
+    expect(classifyDatabaseError({ message: "new row violates row-level security policy" })).toBe(
+      "forbidden",
+    );
   });
 
   test("classifies unique violations and missing rows", () => {
@@ -35,7 +37,10 @@ describe("error mapping", () => {
   });
 
   test("never leaks raw database text to the user", () => {
-    const message = toUserMessage({ code: "42501", message: 'permission denied for table "portfolios"' });
+    const message = toUserMessage({
+      code: "42501",
+      message: 'permission denied for table "portfolios"',
+    });
     expect(message).toBe("You do not have access to this item.");
     expect(message).not.toContain("portfolios");
   });
@@ -65,30 +70,48 @@ describe("ownership", () => {
 
   test("workspace scoping accepts workspace or organization match", () => {
     expect(() => assertInWorkspace({ workspace_id: "w1" }, { workspaceId: "w1" })).not.toThrow();
-    expect(() => assertInWorkspace({ organization_id: "o1" }, { organizationId: "o1" })).not.toThrow();
-    expect(() => assertInWorkspace({ workspace_id: "w1" }, { workspaceId: "w2" })).toThrow(DomainError);
-    expect(() => assertInWorkspace({ workspace_id: null }, { workspaceId: null })).toThrow(DomainError);
+    expect(() =>
+      assertInWorkspace({ organization_id: "o1" }, { organizationId: "o1" }),
+    ).not.toThrow();
+    expect(() => assertInWorkspace({ workspace_id: "w1" }, { workspaceId: "w2" })).toThrow(
+      DomainError,
+    );
+    expect(() => assertInWorkspace({ workspace_id: null }, { workspaceId: null })).toThrow(
+      DomainError,
+    );
   });
 });
 
 describe("validation", () => {
   test("portfolio name is required and trimmed", () => {
-    expect(() => parseInput(portfolioCreateSchema, { name: "  ", type: "Custom Portfolio" })).toThrow(DomainError);
-    expect(parseInput(portfolioCreateSchema, { name: " Ops ", type: "Custom Portfolio" }).name).toBe("Ops");
+    expect(() =>
+      parseInput(portfolioCreateSchema, { name: "  ", type: "Custom Portfolio" }),
+    ).toThrow(DomainError);
+    expect(
+      parseInput(portfolioCreateSchema, { name: " Ops ", type: "Custom Portfolio" }).name,
+    ).toBe("Ops");
   });
 
   test("saved patch requires at least one field", () => {
     expect(() => parseInput(savedUseCasePatchSchema, {})).toThrow(DomainError);
-    expect(parseInput(savedUseCasePatchSchema, { priority: "Strategic" }).priority).toBe("Strategic");
+    expect(parseInput(savedUseCasePatchSchema, { priority: "Strategic" }).priority).toBe(
+      "Strategic",
+    );
   });
 
   test("scores stay inside the 0-10 band", () => {
     const valid = {
-      strategicAlignment: 5, valuePotential: 5, feasibility: 5,
-      timeToValue: 5, riskManageability: 5, governanceReadiness: 5,
+      strategicAlignment: 5,
+      valuePotential: 5,
+      feasibility: 5,
+      timeToValue: 5,
+      riskManageability: 5,
+      governanceReadiness: 5,
     };
     expect(parseInput(scoreDimensionsSchema, valid)).toEqual(valid);
-    expect(() => parseInput(scoreDimensionsSchema, { ...valid, feasibility: 11 })).toThrow(DomainError);
+    expect(() => parseInput(scoreDimensionsSchema, { ...valid, feasibility: 11 })).toThrow(
+      DomainError,
+    );
   });
 
   test("validation errors carry a user-safe message", () => {

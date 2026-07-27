@@ -48,16 +48,23 @@ type SupabaseLikeError = {
 };
 
 /** Maps Postgres / PostgREST codes onto domain error kinds. */
-export function classifyDatabaseError(error: SupabaseLikeError | null | undefined): DomainErrorKind {
+export function classifyDatabaseError(
+  error: SupabaseLikeError | null | undefined,
+): DomainErrorKind {
   if (!error) return "unknown";
   const code = (error.code ?? "").toUpperCase();
   const message = (error.message ?? "").toLowerCase();
 
-  if (code === "42501" || message.includes("row-level security") || message.includes("permission denied")) {
+  if (
+    code === "42501" ||
+    message.includes("row-level security") ||
+    message.includes("permission denied")
+  ) {
     return "forbidden";
   }
   if (code === "23505" || message.includes("duplicate key")) return "conflict";
-  if (code === "23503" || code === "23502" || code === "22P02" || code === "23514") return "validation";
+  if (code === "23503" || code === "23502" || code === "22P02" || code === "23514")
+    return "validation";
   if (code === "PGRST116" || error.status === 404) return "not_found";
   if (error.status === 401) return "unauthenticated";
   if (error.status === 403) return "forbidden";
@@ -78,7 +85,11 @@ export function normalizeError(error: unknown, fallbackMessage?: string): Domain
   }
   if (error instanceof Error) {
     const kind = classifyDatabaseError({ message: error.message });
-    return new DomainError(kind, kind === "unknown" ? (fallbackMessage ?? error.message) : undefined, error);
+    return new DomainError(
+      kind,
+      kind === "unknown" ? (fallbackMessage ?? error.message) : undefined,
+      error,
+    );
   }
   return new DomainError("unknown", fallbackMessage, error);
 }

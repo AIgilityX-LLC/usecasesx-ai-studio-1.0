@@ -58,7 +58,10 @@ export async function saveUseCase(
   const prio = parseInput(prioritySchema, priority);
   const result = await supabase
     .from("saved_use_cases")
-    .upsert({ user_id: uid, use_case_id: id, priority: prio }, { onConflict: "user_id,use_case_id" });
+    .upsert(
+      { user_id: uid, use_case_id: id, priority: prio },
+      { onConflict: "user_id,use_case_id" },
+    );
   if (result.error) throw normalizeError(result.error);
 }
 
@@ -100,7 +103,10 @@ export async function upsertUseCaseScore(
   const parsed = parseScore(score);
   const result = await supabase
     .from("use_case_scores")
-    .upsert({ user_id: uid, use_case_id: id, ...toColumns(parsed) }, { onConflict: "user_id,use_case_id" });
+    .upsert(
+      { user_id: uid, use_case_id: id, ...toColumns(parsed) },
+      { onConflict: "user_id,use_case_id" },
+    );
   if (result.error) throw normalizeError(result.error);
 }
 

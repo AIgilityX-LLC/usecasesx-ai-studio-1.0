@@ -30,7 +30,9 @@ export function assertInWorkspace(
 ): void {
   if (!row) throw new DomainError("not_found");
   const workspaceMatch =
-    row.workspace_id != null && context.workspaceId != null && row.workspace_id === context.workspaceId;
+    row.workspace_id != null &&
+    context.workspaceId != null &&
+    row.workspace_id === context.workspaceId;
   const orgMatch =
     row.organization_id != null &&
     context.organizationId != null &&
