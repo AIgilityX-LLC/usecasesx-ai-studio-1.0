@@ -32,6 +32,138 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_use_case_org_units: {
+        Row: {
+          created_at: string
+          org_unit_id: string
+          use_case_id: string
+        }
+        Insert: {
+          created_at?: string
+          org_unit_id: string
+          use_case_id: string
+        }
+        Update: {
+          created_at?: string
+          org_unit_id?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_use_case_org_units_org_unit_id_fkey"
+            columns: ["org_unit_id"]
+            isOneToOne: false
+            referencedRelation: "organization_units"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_use_case_org_units_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "ai_use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_use_case_processes: {
+        Row: {
+          created_at: string
+          process_id: string
+          use_case_id: string
+        }
+        Insert: {
+          created_at?: string
+          process_id: string
+          use_case_id: string
+        }
+        Update: {
+          created_at?: string
+          process_id?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_use_case_processes_process_id_fkey"
+            columns: ["process_id"]
+            isOneToOne: false
+            referencedRelation: "taxonomy_processes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_use_case_processes_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "ai_use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_use_case_strategic_themes: {
+        Row: {
+          created_at: string
+          theme_id: string
+          use_case_id: string
+        }
+        Insert: {
+          created_at?: string
+          theme_id: string
+          use_case_id: string
+        }
+        Update: {
+          created_at?: string
+          theme_id?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_use_case_strategic_themes_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "taxonomy_strategic_themes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_use_case_strategic_themes_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "ai_use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_use_case_value_themes: {
+        Row: {
+          created_at: string
+          theme_id: string
+          use_case_id: string
+        }
+        Insert: {
+          created_at?: string
+          theme_id: string
+          use_case_id: string
+        }
+        Update: {
+          created_at?: string
+          theme_id?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_use_case_value_themes_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "taxonomy_value_themes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_use_case_value_themes_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "ai_use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_use_cases: {
         Row: {
           ai_type: string | null
@@ -910,29 +1042,41 @@ export type Database = {
       organization_units: {
         Row: {
           created_at: string
+          description: string | null
           id: string
+          is_active: boolean
           name: string
           organization_id: string
           parent_id: string | null
           slug: string | null
+          sort_order: number
+          unit_type: Database["public"]["Enums"]["org_unit_type"]
           updated_at: string
         }
         Insert: {
           created_at?: string
+          description?: string | null
           id?: string
+          is_active?: boolean
           name: string
           organization_id: string
           parent_id?: string | null
           slug?: string | null
+          sort_order?: number
+          unit_type?: Database["public"]["Enums"]["org_unit_type"]
           updated_at?: string
         }
         Update: {
           created_at?: string
+          description?: string | null
           id?: string
+          is_active?: boolean
           name?: string
           organization_id?: string
           parent_id?: string | null
           slug?: string | null
+          sort_order?: number
+          unit_type?: Database["public"]["Enums"]["org_unit_type"]
           updated_at?: string
         }
         Relationships: [
@@ -1264,6 +1408,53 @@ export type Database = {
           },
         ]
       }
+      taxonomy_lifecycle_stages: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_published: boolean
+          name: string
+          organization_id: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name: string
+          organization_id?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name?: string
+          organization_id?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "taxonomy_lifecycle_stages_org_fk"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       taxonomy_maturity_levels: {
         Row: {
           created_at: string
@@ -1320,6 +1511,100 @@ export type Database = {
           version?: number
         }
         Relationships: []
+      }
+      taxonomy_processes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_published: boolean
+          name: string
+          organization_id: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name: string
+          organization_id?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name?: string
+          organization_id?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "taxonomy_processes_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      taxonomy_risk_levels: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_published: boolean
+          name: string
+          organization_id: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name: string
+          organization_id?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name?: string
+          organization_id?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "taxonomy_risk_levels_org_fk"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       taxonomy_sectors: {
         Row: {
@@ -1386,6 +1671,53 @@ export type Database = {
           },
         ]
       }
+      taxonomy_strategic_themes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_published: boolean
+          name: string
+          organization_id: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name: string
+          organization_id?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name?: string
+          organization_id?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "taxonomy_strategic_themes_org_fk"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       taxonomy_tags: {
         Row: {
           created_at: string
@@ -1421,6 +1753,53 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: []
+      }
+      taxonomy_value_themes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_published: boolean
+          name: string
+          organization_id: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name: string
+          organization_id?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          name?: string
+          organization_id?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "taxonomy_value_themes_org_fk"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       use_case_audit_log: {
         Row: {
@@ -1931,6 +2310,36 @@ export type Database = {
         }
         Relationships: []
       }
+      use_case_processes: {
+        Row: {
+          process_id: string
+          use_case_id: string
+        }
+        Insert: {
+          process_id: string
+          use_case_id: string
+        }
+        Update: {
+          process_id?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "use_case_processes_process_id_fkey"
+            columns: ["process_id"]
+            isOneToOne: false
+            referencedRelation: "taxonomy_processes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "use_case_processes_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       use_case_ratings: {
         Row: {
           created_at: string
@@ -2008,6 +2417,36 @@ export type Database = {
           workspace_id?: string | null
         }
         Relationships: []
+      }
+      use_case_strategic_themes: {
+        Row: {
+          theme_id: string
+          use_case_id: string
+        }
+        Insert: {
+          theme_id: string
+          use_case_id: string
+        }
+        Update: {
+          theme_id?: string
+          use_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "use_case_strategic_themes_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "taxonomy_strategic_themes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "use_case_strategic_themes_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       use_case_submissions: {
         Row: {
@@ -2436,6 +2875,14 @@ export type Database = {
         | "pilot"
         | "production"
         | "scaled"
+      org_unit_type:
+        | "group"
+        | "company"
+        | "business_unit"
+        | "department"
+        | "team"
+        | "program"
+        | "project"
       submission_status:
         | "draft"
         | "submitted"
@@ -2592,6 +3039,15 @@ export const Constants = {
         "user",
       ],
       maturity_stage: ["concept", "prototype", "pilot", "production", "scaled"],
+      org_unit_type: [
+        "group",
+        "company",
+        "business_unit",
+        "department",
+        "team",
+        "program",
+        "project",
+      ],
       submission_status: [
         "draft",
         "submitted",
