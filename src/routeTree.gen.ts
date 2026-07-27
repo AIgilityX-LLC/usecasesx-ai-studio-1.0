@@ -52,6 +52,7 @@ import { Route as AppStudioRouteImport } from './routes/_app.studio'
 import { Route as AppSubmitRouteImport } from './routes/_app.submit'
 import { Route as CTokenRouteImport } from './routes/c.$token'
 import { Route as AppAccountIndexRouteImport } from './routes/_app.account.index'
+import { Route as AppAccountOrganizationRouteImport } from './routes/_app.account.organization'
 import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.security'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
@@ -288,6 +289,11 @@ const AppAccountIndexRoute = AppAccountIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppAccountRoute,
 } as any)
+const AppAccountOrganizationRoute = AppAccountOrganizationRouteImport.update({
+  id: '/organization',
+  path: '/organization',
+  getParentRoute: () => AppAccountRoute,
+} as any)
 const AppAccountSecurityRoute = AppAccountSecurityRouteImport.update({
   id: '/security',
   path: '/security',
@@ -446,6 +452,7 @@ export interface FileRoutesByFullPath {
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
   '/c/$token': typeof CTokenRoute
+  '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
@@ -509,6 +516,7 @@ export interface FileRoutesByTo {
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
   '/c/$token': typeof CTokenRoute
+  '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
@@ -576,6 +584,7 @@ export interface FileRoutesById {
   '/_app/studio': typeof AppStudioRouteWithChildren
   '/_app/submit': typeof AppSubmitRoute
   '/c/$token': typeof CTokenRoute
+  '/_app/account/organization': typeof AppAccountOrganizationRoute
   '/_app/account/security': typeof AppAccountSecurityRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/boards/collections': typeof AppBoardsCollectionsRoute
@@ -643,6 +652,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/submit'
     | '/c/$token'
+    | '/account/organization'
     | '/account/security'
     | '/boards/$boardId'
     | '/boards/collections'
@@ -706,6 +716,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/submit'
     | '/c/$token'
+    | '/account/organization'
     | '/account/security'
     | '/boards/$boardId'
     | '/boards/collections'
@@ -772,6 +783,7 @@ export interface FileRouteTypes {
     | '/_app/studio'
     | '/_app/submit'
     | '/c/$token'
+    | '/_app/account/organization'
     | '/_app/account/security'
     | '/_app/boards/$boardId'
     | '/_app/boards/collections'
@@ -1111,6 +1123,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAccountIndexRouteImport
       parentRoute: typeof AppAccountRoute
     }
+    '/_app/account/organization': {
+      id: '/_app/account/organization'
+      path: '/organization'
+      fullPath: '/account/organization'
+      preLoaderRoute: typeof AppAccountOrganizationRouteImport
+      parentRoute: typeof AppAccountRoute
+    }
     '/_app/account/security': {
       id: '/_app/account/security'
       path: '/security'
@@ -1262,11 +1281,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppAccountRouteChildren {
+  AppAccountOrganizationRoute: typeof AppAccountOrganizationRoute
   AppAccountSecurityRoute: typeof AppAccountSecurityRoute
   AppAccountIndexRoute: typeof AppAccountIndexRoute
 }
 
 const AppAccountRouteChildren: AppAccountRouteChildren = {
+  AppAccountOrganizationRoute: AppAccountOrganizationRoute,
   AppAccountSecurityRoute: AppAccountSecurityRoute,
   AppAccountIndexRoute: AppAccountIndexRoute,
 }
