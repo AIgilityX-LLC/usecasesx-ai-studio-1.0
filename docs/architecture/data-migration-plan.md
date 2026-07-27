@@ -50,8 +50,16 @@ Order matters: each migration is atomic; every `CREATE TABLE public.<t>` in the 
 
 ## Phase B — Post-launch (after 14 Aug)
 
-- Introduce `memberships` (multi-workspace) and enforce workspace-scope on all owning tables. Requires staged migration + Enterprise DP sign-off.
+- Introduce membership-based tenancy per `docs/architecture/tenancy-migration-plan.md`
+  (steps T1–T7): `organization_members`, `workspace_members`, `organization_units`,
+  `plans`, `entitlements`, plus nullable `organization_id`/`workspace_id` on tenant
+  tables and membership-based RLS. Steps T1–T3 may be pulled into the launch window
+  because they are purely additive and unused by the app until the `tenancy_v2` flag is
+  enabled; T6 (policy replacement) and T7 (`SET NOT NULL`) stay post-launch.
+  RLS detail: `docs/architecture/tenancy-rls-design.md`.
+  Verification: `docs/architecture/tenancy-verification-queries.md`.
 - Reindex hot paths identified by `bun run test:e2e` p95 metrics.
+
 
 ---
 
