@@ -48,6 +48,7 @@ export type Database = {
           kpis: Json | null
           minimum_viable_prediction: string | null
           mvp_scope: string | null
+          organization_id: string | null
           pattern_id: string | null
           position: number
           priority_score: number | null
@@ -59,6 +60,7 @@ export type Database = {
           status: string
           title: string
           updated_at: string
+          workspace_id: string | null
         }
         Insert: {
           ai_type?: string | null
@@ -75,6 +77,7 @@ export type Database = {
           kpis?: Json | null
           minimum_viable_prediction?: string | null
           mvp_scope?: string | null
+          organization_id?: string | null
           pattern_id?: string | null
           position?: number
           priority_score?: number | null
@@ -86,6 +89,7 @@ export type Database = {
           status?: string
           title: string
           updated_at?: string
+          workspace_id?: string | null
         }
         Update: {
           ai_type?: string | null
@@ -102,6 +106,7 @@ export type Database = {
           kpis?: Json | null
           minimum_viable_prediction?: string | null
           mvp_scope?: string | null
+          organization_id?: string | null
           pattern_id?: string | null
           position?: number
           priority_score?: number | null
@@ -113,6 +118,7 @@ export type Database = {
           status?: string
           title?: string
           updated_at?: string
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -182,11 +188,13 @@ export type Database = {
           id: string
           implementation_roadmap: string | null
           model_approach: string | null
+          organization_id: string | null
           risk_summary: string | null
           success_metrics: string | null
           technical_scope: string | null
           updated_at: string
           use_case_id: string
+          workspace_id: string | null
         }
         Insert: {
           budget_assumptions?: string | null
@@ -198,11 +206,13 @@ export type Database = {
           id?: string
           implementation_roadmap?: string | null
           model_approach?: string | null
+          organization_id?: string | null
           risk_summary?: string | null
           success_metrics?: string | null
           technical_scope?: string | null
           updated_at?: string
           use_case_id: string
+          workspace_id?: string | null
         }
         Update: {
           budget_assumptions?: string | null
@@ -214,11 +224,13 @@ export type Database = {
           id?: string
           implementation_roadmap?: string | null
           model_approach?: string | null
+          organization_id?: string | null
           risk_summary?: string | null
           success_metrics?: string | null
           technical_scope?: string | null
           updated_at?: string
           use_case_id?: string
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -315,9 +327,11 @@ export type Database = {
           id: string
           is_public: boolean
           name: string
+          organization_id: string | null
           share_token: string
           updated_at: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string
@@ -325,9 +339,11 @@ export type Database = {
           id?: string
           is_public?: boolean
           name: string
+          organization_id?: string | null
           share_token?: string
           updated_at?: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string
@@ -335,9 +351,11 @@ export type Database = {
           id?: string
           is_public?: boolean
           name?: string
+          organization_id?: string | null
           share_token?: string
           updated_at?: string
           user_id?: string
+          workspace_id?: string | null
         }
         Relationships: []
       }
@@ -408,11 +426,13 @@ export type Database = {
           id: string
           missing_data_gaps: Json | null
           mitigation_recommendations: Json | null
+          organization_id: string | null
           overall_data_readiness_score: number | null
           ownership_clarity_score: number | null
           privacy_exposure_score: number | null
           updated_at: string
           use_case_id: string
+          workspace_id: string | null
         }
         Insert: {
           bias_risk_score?: number | null
@@ -423,11 +443,13 @@ export type Database = {
           id?: string
           missing_data_gaps?: Json | null
           mitigation_recommendations?: Json | null
+          organization_id?: string | null
           overall_data_readiness_score?: number | null
           ownership_clarity_score?: number | null
           privacy_exposure_score?: number | null
           updated_at?: string
           use_case_id: string
+          workspace_id?: string | null
         }
         Update: {
           bias_risk_score?: number | null
@@ -438,11 +460,13 @@ export type Database = {
           id?: string
           missing_data_gaps?: Json | null
           mitigation_recommendations?: Json | null
+          organization_id?: string | null
           overall_data_readiness_score?: number | null
           ownership_clarity_score?: number | null
           privacy_exposure_score?: number | null
           updated_at?: string
           use_case_id?: string
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -451,6 +475,60 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ai_use_cases"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      entitlements: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          granted_at: string
+          id: string
+          notes: string | null
+          organization_id: string
+          plan_code: string
+          revoked_at: string | null
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          granted_at?: string
+          id?: string
+          notes?: string | null
+          organization_id: string
+          plan_code: string
+          revoked_at?: string | null
+          source?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          granted_at?: string
+          id?: string
+          notes?: string | null
+          organization_id?: string
+          plan_code?: string
+          revoked_at?: string | null
+          source?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entitlements_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "entitlements_plan_code_fkey"
+            columns: ["plan_code"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["code"]
           },
         ]
       }
@@ -493,12 +571,14 @@ export type Database = {
           governability_score: number | null
           id: string
           notes: string | null
+          organization_id: string | null
           recommendation: string | null
           sustainability_score: number | null
           total_score: number | null
           updated_at: string
           use_case_id: string
           viability_score: number | null
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string
@@ -508,12 +588,14 @@ export type Database = {
           governability_score?: number | null
           id?: string
           notes?: string | null
+          organization_id?: string | null
           recommendation?: string | null
           sustainability_score?: number | null
           total_score?: number | null
           updated_at?: string
           use_case_id: string
           viability_score?: number | null
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string
@@ -523,12 +605,14 @@ export type Database = {
           governability_score?: number | null
           id?: string
           notes?: string | null
+          organization_id?: string | null
           recommendation?: string | null
           sustainability_score?: number | null
           total_score?: number | null
           updated_at?: string
           use_case_id?: string
           viability_score?: number | null
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -545,28 +629,34 @@ export type Database = {
           created_at: string
           id: string
           kind: string
+          organization_id: string | null
           payload: Json | null
           title: string
           use_case_count: number
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           kind: string
+          organization_id?: string | null
           payload?: Json | null
           title: string
           use_case_count?: number
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           kind?: string
+          organization_id?: string | null
           payload?: Json | null
           title?: string
           use_case_count?: number
           user_id?: string
+          workspace_id?: string | null
         }
         Relationships: []
       }
@@ -649,9 +739,11 @@ export type Database = {
           id: string
           integration_type: string
           metadata: Json | null
+          organization_id: string | null
           status: string | null
           updated_at: string
           use_case_id: string
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string
@@ -659,9 +751,11 @@ export type Database = {
           id?: string
           integration_type: string
           metadata?: Json | null
+          organization_id?: string | null
           status?: string | null
           updated_at?: string
           use_case_id: string
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string
@@ -669,9 +763,11 @@ export type Database = {
           id?: string
           integration_type?: string
           metadata?: Json | null
+          organization_id?: string | null
           status?: string | null
           updated_at?: string
           use_case_id?: string
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -767,6 +863,95 @@ export type Database = {
         }
         Relationships: []
       }
+      organization_members: {
+        Row: {
+          created_at: string
+          id: string
+          invited_by: string | null
+          joined_at: string
+          organization_id: string
+          role: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invited_by?: string | null
+          joined_at?: string
+          organization_id: string
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invited_by?: string | null
+          joined_at?: string
+          organization_id?: string
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_units: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          organization_id: string
+          parent_id: string | null
+          slug: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          organization_id: string
+          parent_id?: string | null
+          slug?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          organization_id?: string
+          parent_id?: string | null
+          slug?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_units_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_units_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "organization_units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organizations: {
         Row: {
           country: string | null
@@ -796,6 +981,36 @@ export type Database = {
           name?: string
           plan?: string
           type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      plans: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          limits: Json
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          limits?: Json
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          limits?: Json
+          name?: string
+          sort_order?: number
           updated_at?: string
         }
         Relationships: []
@@ -871,36 +1086,42 @@ export type Database = {
           id: string
           name: string
           objective: string | null
+          organization_id: string | null
           portfolio_type: string
           status: string
           target_department: string | null
           target_quarter: string | null
           updated_at: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           name: string
           objective?: string | null
+          organization_id?: string | null
           portfolio_type?: string
           status?: string
           target_department?: string | null
           target_quarter?: string | null
           updated_at?: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           name?: string
           objective?: string | null
+          organization_id?: string | null
           portfolio_type?: string
           status?: string
           target_department?: string | null
           target_quarter?: string | null
           updated_at?: string
           user_id?: string
+          workspace_id?: string | null
         }
         Relationships: []
       }
@@ -982,44 +1203,56 @@ export type Database = {
         Row: {
           id: string
           note: string | null
+          organization_id: string | null
           priority: string
           saved_at: string
           use_case_id: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           id?: string
           note?: string | null
+          organization_id?: string | null
           priority?: string
           saved_at?: string
           use_case_id: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           id?: string
           note?: string | null
+          organization_id?: string | null
           priority?: string
           saved_at?: string
           use_case_id?: string
           user_id?: string
+          workspace_id?: string | null
         }
         Relationships: []
       }
       shortlists: {
         Row: {
           added_at: string
+          organization_id: string | null
           use_case_id: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           added_at?: string
+          organization_id?: string | null
           use_case_id: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           added_at?: string
+          organization_id?: string | null
           use_case_id?: string
           user_id?: string
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -1226,6 +1459,7 @@ export type Database = {
           created_by: string
           description: string | null
           id: string
+          organization_id: string | null
           status: string
           title: string
           updated_at: string
@@ -1237,6 +1471,7 @@ export type Database = {
           created_by: string
           description?: string | null
           id?: string
+          organization_id?: string | null
           status?: string
           title: string
           updated_at?: string
@@ -1248,6 +1483,7 @@ export type Database = {
           created_by?: string
           description?: string | null
           id?: string
+          organization_id?: string | null
           status?: string
           title?: string
           updated_at?: string
@@ -1390,9 +1626,11 @@ export type Database = {
           created_by: string | null
           deliverable_type: string
           id: string
+          organization_id: string | null
           status: string
           updated_at: string
           use_case_id: string
+          workspace_id: string | null
         }
         Insert: {
           content?: Json
@@ -1400,9 +1638,11 @@ export type Database = {
           created_by?: string | null
           deliverable_type: string
           id?: string
+          organization_id?: string | null
           status?: string
           updated_at?: string
           use_case_id: string
+          workspace_id?: string | null
         }
         Update: {
           content?: Json
@@ -1410,9 +1650,11 @@ export type Database = {
           created_by?: string | null
           deliverable_type?: string
           id?: string
+          organization_id?: string | null
           status?: string
           updated_at?: string
           use_case_id?: string
+          workspace_id?: string | null
         }
         Relationships: [
           {
@@ -1721,6 +1963,7 @@ export type Database = {
           created_at: string
           feasibility: number
           id: string
+          organization_id: string | null
           readiness: number
           risk: number
           strategic: number
@@ -1730,11 +1973,13 @@ export type Database = {
           use_case_id: string
           user_id: string
           value: number
+          workspace_id: string | null
         }
         Insert: {
           created_at?: string
           feasibility?: number
           id?: string
+          organization_id?: string | null
           readiness?: number
           risk?: number
           strategic?: number
@@ -1744,11 +1989,13 @@ export type Database = {
           use_case_id: string
           user_id: string
           value?: number
+          workspace_id?: string | null
         }
         Update: {
           created_at?: string
           feasibility?: number
           id?: string
+          organization_id?: string | null
           readiness?: number
           risk?: number
           strategic?: number
@@ -1758,6 +2005,7 @@ export type Database = {
           use_case_id?: string
           user_id?: string
           value?: number
+          workspace_id?: string | null
         }
         Relationships: []
       }
@@ -1768,6 +2016,7 @@ export type Database = {
           created_at: string
           id: string
           industry: string | null
+          organization_id: string | null
           review_notes: string | null
           reviewed_at: string | null
           reviewed_by: string | null
@@ -1779,6 +2028,7 @@ export type Database = {
           title: string
           updated_at: string
           user_id: string
+          workspace_id: string | null
         }
         Insert: {
           ai_solution?: string | null
@@ -1786,6 +2036,7 @@ export type Database = {
           created_at?: string
           id?: string
           industry?: string | null
+          organization_id?: string | null
           review_notes?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
@@ -1797,6 +2048,7 @@ export type Database = {
           title: string
           updated_at?: string
           user_id: string
+          workspace_id?: string | null
         }
         Update: {
           ai_solution?: string | null
@@ -1804,6 +2056,7 @@ export type Database = {
           created_at?: string
           id?: string
           industry?: string | null
+          organization_id?: string | null
           review_notes?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
@@ -1815,6 +2068,7 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+          workspace_id?: string | null
         }
         Relationships: []
       }
@@ -2022,6 +2276,47 @@ export type Database = {
         }
         Relationships: []
       }
+      workspace_members: {
+        Row: {
+          added_by: string | null
+          created_at: string
+          id: string
+          joined_at: string
+          role: string
+          updated_at: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          added_by?: string | null
+          created_at?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          updated_at?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          added_by?: string | null
+          created_at?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_members_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workspaces: {
         Row: {
           created_at: string
@@ -2098,6 +2393,15 @@ export type Database = {
       }
       is_admin_tier: { Args: { _user_id: string }; Returns: boolean }
       is_editor_tier: { Args: { _user_id: string }; Returns: boolean }
+      is_org_member: {
+        Args: { _org_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_workspace_member: {
+        Args: { _user_id: string; _workspace_id: string }
+        Returns: boolean
+      }
+      org_role: { Args: { _org_id: string; _user_id: string }; Returns: string }
       user_can_access_use_case: {
         Args: { _use_case_id: string; _user_id: string }
         Returns: boolean
@@ -2107,6 +2411,11 @@ export type Database = {
         Returns: boolean
       }
       user_org_id: { Args: { _user_id: string }; Returns: string }
+      workspace_org: { Args: { _workspace_id: string }; Returns: string }
+      workspace_role: {
+        Args: { _user_id: string; _workspace_id: string }
+        Returns: string
+      }
     }
     Enums: {
       app_role:
