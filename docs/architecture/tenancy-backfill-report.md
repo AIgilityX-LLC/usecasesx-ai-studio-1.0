@@ -1,8 +1,9 @@
-# Tenancy Backfill Report — T1–T5 executed 2026-07-27
+# Tenancy Backfill Report — T1–T6 executed 2026-07-27
 
-Scope executed: steps **T1–T5** of `docs/architecture/tenancy-migration-plan.md`.
-Step **T6** (dual-predicate policy replacement on existing tenant tables) and **T7**
-(`SET NOT NULL`, legacy predicate removal) remain deferred, as approved.
+Scope executed: steps **T1–T6** of `docs/architecture/tenancy-migration-plan.md`.
+Step **T7** (`SET NOT NULL`, removal of the legacy `user_id = auth.uid()` compatibility
+predicate) remains deferred, as approved.
+
 
 ## Migrations applied
 
@@ -59,6 +60,28 @@ Existing routes and queries are untouched: legacy columns, legacy policies, and 
 
 Both require the seeded demo accounts and the service credentials; run with
 `bun run test:rls` and `bun tests/tenancy-isolation.e2e.ts`.
+
+## T6 — membership-scoped policy replacement (applied)
+
+Dual-predicate policies now cover the user-owned tenant tables `collections`,
+`portfolios`, `generated_reports`, `saved_use_cases`, `shortlists`, `use_case_scores`:
+
+- **read** — `user_id = auth.uid() OR is_workspace_member(auth.uid(), workspace_id)`
+- **insert/update** — `user_id = auth.uid() AND (workspace_id IS NULL OR is_workspace_member(...))`
+- **delete** — owner, plus `org_role(auth.uid(), organization_id) IN ('owner','admin')` on
+  `collections`, `portfolios`, `generated_reports`
+
+`use_case_submissions` gained an additive workspace-member SELECT policy alongside its
+existing own-row policy. Board / use case / blueprint / feasibility / deliverable tables
+already route through `user_in_workspace()`, which became membership-first at T1, so no
+policy edit was required there. Platform catalogue tables and anonymous ingest tables are
+untouched — public Lite discovery is unchanged.
+
+The `workspace_id IS NULL` allowance in the write predicates is the compatibility window:
+the `BEFORE INSERT` sync triggers stamp tenancy, so it only covers rows whose parent has
+no resolvable workspace. It is removed at T7 together with `SET NOT NULL`.
+
+
 
 ## Open risks
 
