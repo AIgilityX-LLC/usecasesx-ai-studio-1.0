@@ -18,7 +18,9 @@ import {
   uuidSchema,
 } from "./validation";
 
-export type SavedPatch = { note?: string; priority?: "High" | "Medium" | "Low" };
+export type Priority = "Low" | "Medium" | "High" | "Strategic";
+
+export type SavedPatch = { note?: string; priority?: Priority };
 
 export type ScoreColumns = {
   strategic: number;
@@ -49,7 +51,7 @@ export async function resolveUseCaseIdBySlug(slug: string): Promise<string | nul
 export async function saveUseCase(
   userId: string | null,
   useCaseId: string,
-  priority: "High" | "Medium" | "Low" = "Medium",
+  priority: Priority = "Medium",
 ): Promise<void> {
   const uid = requireUserId(userId);
   const id = parseInput(uuidSchema, useCaseId);

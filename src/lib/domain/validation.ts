@@ -17,7 +17,7 @@ export const slugSchema = z
   .min(1, { message: "Slug is required" })
   .max(160, { message: "Slug is too long" });
 
-export const prioritySchema = z.enum(["High", "Medium", "Low"]);
+export const prioritySchema = z.enum(["Low", "Medium", "High", "Strategic"]);
 
 export const scoreDimensionsSchema = z.object({
   strategicAlignment: z.number().int().min(0).max(10),
