@@ -14,8 +14,10 @@ export const Route = createFileRoute("/_app/account")({
 const TABS: { to: string; label: string }[] = [
   { to: "/account", label: "Profile" },
   { to: "/account/security", label: "Security" },
+  { to: "/account/organization", label: "Organization" },
   { to: "/entitlement", label: "My Plan" },
   { to: "/module-analytics", label: "Module Analytics" },
+
 ];
 
 function AccountLayout() {
