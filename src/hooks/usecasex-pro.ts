@@ -15,7 +15,24 @@
 import { useCallback, useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { supabase } from "@/integrations/supabase/client";
+import {
+  listSavedForUser,
+  listScoresForUser,
+  resolveUseCaseIdBySlug,
+  saveUseCase,
+  unsaveUseCase,
+  updateSavedUseCase,
+  upsertUseCaseScore,
+} from "@/lib/domain/saved-use-cases.repository";
+import {
+  addUseCaseToPortfolio,
+  createPortfolio,
+  deletePortfolio,
+  listPortfoliosForUser,
+  removeUseCaseFromPortfolio,
+  updatePortfolio,
+} from "@/lib/domain/portfolios.repository";
+import { DomainError } from "@/lib/domain/errors";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import {
@@ -39,10 +56,16 @@ interface ProData {
 
 const EMPTY: ProData = { saved: [], portfolios: [], slugToId: {} };
 
-function normalizeScore(row: {
-  strategic: number; value: number; feasibility: number;
-  risk: number; readiness: number; ttv: number;
-} | null): ScoreDimensions | undefined {
+function normalizeScore(
+  row: {
+    strategic: number;
+    value: number;
+    feasibility: number;
+    risk: number;
+    readiness: number;
+    ttv: number;
+  } | null,
+): ScoreDimensions | undefined {
   if (!row) return undefined;
   return {
     strategicAlignment: row.strategic ?? 0,
@@ -57,11 +80,11 @@ function normalizeScore(row: {
 function scoreToColumns(s: ScoreDimensions) {
   const total = Math.round(
     s.strategicAlignment * SCORE_WEIGHTS.strategicAlignment +
-    s.valuePotential * SCORE_WEIGHTS.valuePotential +
-    s.feasibility * SCORE_WEIGHTS.feasibility +
-    s.timeToValue * SCORE_WEIGHTS.timeToValue +
-    s.riskManageability * SCORE_WEIGHTS.riskManageability +
-    s.governanceReadiness * SCORE_WEIGHTS.governanceReadiness,
+      s.valuePotential * SCORE_WEIGHTS.valuePotential +
+      s.feasibility * SCORE_WEIGHTS.feasibility +
+      s.timeToValue * SCORE_WEIGHTS.timeToValue +
+      s.riskManageability * SCORE_WEIGHTS.riskManageability +
+      s.governanceReadiness * SCORE_WEIGHTS.governanceReadiness,
   );
   return {
     strategic: s.strategicAlignment,
@@ -75,28 +98,15 @@ function scoreToColumns(s: ScoreDimensions) {
 }
 
 async function fetchProData(userId: string): Promise<ProData> {
-  const [savedRes, scoresRes, portRes] = await Promise.all([
-    supabase
-      .from("saved_use_cases")
-      .select("use_case_id, priority, note, saved_at, use_cases ( slug )")
-      .eq("user_id", userId)
-      .order("saved_at", { ascending: false }),
-    supabase
-      .from("use_case_scores")
-      .select("use_case_id, strategic, value, feasibility, risk, readiness, ttv")
-      .eq("user_id", userId),
-    supabase
-      .from("portfolios")
-      .select(
-        "id, name, objective, created_at, portfolio_type, status, target_department, target_quarter, portfolio_items ( use_case_id, use_cases ( slug ) )",
-      )
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false }),
+  const [savedRows, scoreRows, portfolioRows] = await Promise.all([
+    listSavedForUser(userId),
+    listScoresForUser(userId),
+    listPortfoliosForUser(userId),
   ]);
 
-  if (savedRes.error) throw savedRes.error;
-  if (scoresRes.error) throw scoresRes.error;
-  if (portRes.error) throw portRes.error;
+  const savedRes = { data: savedRows };
+  const scoresRes = { data: scoreRows };
+  const portRes = { data: portfolioRows };
 
   const slugToId: Record<string, string> = {};
   const scoresByUcId = new Map<string, ScoreDimensions | undefined>();
@@ -144,19 +154,11 @@ async function fetchProData(userId: string): Promise<ProData> {
   return { saved, portfolios, slugToId };
 }
 
-async function resolveSlugId(
-  slug: string,
-  cache: Record<string, string>,
-): Promise<string | null> {
+async function resolveSlugId(slug: string, cache: Record<string, string>): Promise<string | null> {
   if (cache[slug]) return cache[slug];
-  const { data, error } = await supabase
-    .from("use_cases")
-    .select("id")
-    .eq("slug", slug)
-    .maybeSingle();
-  if (error) throw error;
-  if (data?.id) cache[slug] = data.id;
-  return data?.id ?? null;
+  const id = await resolveUseCaseIdBySlug(slug);
+  if (id) cache[slug] = id;
+  return id;
 }
 
 /**
@@ -181,7 +183,8 @@ export function useUseCaseXPro() {
   }, [qc]);
 
   const requireUser = useCallback(() => {
-    if (!userId) throw new Error("Sign in to manage your AI Opportunity Portfolio.");
+    if (!userId)
+      throw new DomainError("unauthenticated", "Sign in to manage your AI Opportunity Portfolio.");
     return userId;
   }, [userId]);
 
@@ -191,11 +194,7 @@ export function useUseCaseXPro() {
       const uid = requireUser();
       const id = await resolveSlugId(slug, { ...data.slugToId });
       if (!id) throw new Error(`Unknown use case: ${slug}`);
-      const { error } = await supabase.from("saved_use_cases").upsert(
-        { user_id: uid, use_case_id: id, priority: "Medium" },
-        { onConflict: "user_id,use_case_id" },
-      );
-      if (error) throw error;
+      await saveUseCase(uid, id);
     },
     onSuccess: (_data, slug) => {
       trackCTAEvent("use_case_saved", { slug, source_page: "/repository" });
@@ -208,12 +207,7 @@ export function useUseCaseXPro() {
       const uid = requireUser();
       const id = data.slugToId[slug] ?? (await resolveSlugId(slug, { ...data.slugToId }));
       if (!id) return;
-      const { error } = await supabase
-        .from("saved_use_cases")
-        .delete()
-        .eq("user_id", uid)
-        .eq("use_case_id", id);
-      if (error) throw error;
+      await unsaveUseCase(uid, id);
     },
     onSuccess: (_data, slug) => {
       trackCTAEvent("use_case_deleted", { slug, source_page: "/my-use-cases" });
@@ -222,16 +216,17 @@ export function useUseCaseXPro() {
   });
 
   const updateSavedM = useMutation({
-    mutationFn: async ({ slug, patch }: { slug: string; patch: { note?: string; priority?: Priority } }) => {
+    mutationFn: async ({
+      slug,
+      patch,
+    }: {
+      slug: string;
+      patch: { note?: string; priority?: Priority };
+    }) => {
       const uid = requireUser();
       const id = data.slugToId[slug] ?? (await resolveSlugId(slug, { ...data.slugToId }));
       if (!id) throw new Error(`Unknown use case: ${slug}`);
-      const { error } = await supabase
-        .from("saved_use_cases")
-        .update(patch)
-        .eq("user_id", uid)
-        .eq("use_case_id", id);
-      if (error) throw error;
+      await updateSavedUseCase(uid, id, patch);
     },
     onSuccess: (_data, variables) => {
       trackCTAEvent("use_case_edited", { slug: variables.slug, source_page: "/my-use-cases" });
@@ -244,12 +239,7 @@ export function useUseCaseXPro() {
       const uid = requireUser();
       const id = data.slugToId[slug] ?? (await resolveSlugId(slug, { ...data.slugToId }));
       if (!id) throw new Error(`Unknown use case: ${slug}`);
-      const cols = scoreToColumns(score);
-      const { error } = await supabase.from("use_case_scores").upsert(
-        { user_id: uid, use_case_id: id, ...cols },
-        { onConflict: "user_id,use_case_id" },
-      );
-      if (error) throw error;
+      await upsertUseCaseScore(uid, id, score, scoreToColumns);
     },
     onSuccess: invalidate,
   });
@@ -263,49 +253,30 @@ export function useUseCaseXPro() {
       targetQuarter?: string;
     }) => {
       const uid = requireUser();
-      const { error } = await supabase.from("portfolios").insert({
-        user_id: uid,
-        name: input.name,
-        portfolio_type: input.type,
-        status: "Draft",
-        objective: input.objective ?? null,
-        target_department: input.targetDepartment ?? null,
-        target_quarter: input.targetQuarter ?? null,
-      });
-      if (error) throw error;
+      await createPortfolio(uid, input);
     },
     onSuccess: invalidate,
   });
 
   const updatePortfolioM = useMutation({
     mutationFn: async ({ id, patch }: { id: string; patch: Partial<Portfolio> }) => {
-      requireUser();
-      const dbPatch: {
-        name?: string;
-        objective?: string | null;
-        portfolio_type?: string;
-        status?: string;
-        target_department?: string | null;
-        target_quarter?: string | null;
-      } = {};
-      if (patch.name !== undefined) dbPatch.name = patch.name;
-      if (patch.objective !== undefined) dbPatch.objective = patch.objective ?? null;
-      if (patch.type !== undefined) dbPatch.portfolio_type = patch.type;
-      if (patch.status !== undefined) dbPatch.status = patch.status;
-      if (patch.targetDepartment !== undefined) dbPatch.target_department = patch.targetDepartment ?? null;
-      if (patch.targetQuarter !== undefined) dbPatch.target_quarter = patch.targetQuarter ?? null;
-      if (Object.keys(dbPatch).length === 0) return;
-      const { error } = await supabase.from("portfolios").update(dbPatch).eq("id", id);
-      if (error) throw error;
+      const uid = requireUser();
+      await updatePortfolio(uid, id, {
+        name: patch.name,
+        objective: patch.objective,
+        type: patch.type,
+        status: patch.status,
+        targetDepartment: patch.targetDepartment,
+        targetQuarter: patch.targetQuarter,
+      });
     },
     onSuccess: invalidate,
   });
 
   const deletePortfolioM = useMutation({
     mutationFn: async (id: string) => {
-      requireUser();
-      const { error } = await supabase.from("portfolios").delete().eq("id", id);
-      if (error) throw error;
+      const uid = requireUser();
+      await deletePortfolio(uid, id);
     },
     onSuccess: invalidate,
   });
@@ -315,10 +286,7 @@ export function useUseCaseXPro() {
       requireUser();
       const id = data.slugToId[slug] ?? (await resolveSlugId(slug, { ...data.slugToId }));
       if (!id) throw new Error(`Unknown use case: ${slug}`);
-      const { error } = await supabase
-        .from("portfolio_items")
-        .upsert({ portfolio_id: portfolioId, use_case_id: id }, { onConflict: "portfolio_id,use_case_id" });
-      if (error) throw error;
+      await addUseCaseToPortfolio(userId, portfolioId, id);
     },
     onSuccess: invalidate,
   });
@@ -328,12 +296,7 @@ export function useUseCaseXPro() {
       requireUser();
       const id = data.slugToId[slug] ?? (await resolveSlugId(slug, { ...data.slugToId }));
       if (!id) return;
-      const { error } = await supabase
-        .from("portfolio_items")
-        .delete()
-        .eq("portfolio_id", portfolioId)
-        .eq("use_case_id", id);
-      if (error) throw error;
+      await removeUseCaseFromPortfolio(userId, portfolioId, id);
     },
     onSuccess: invalidate,
   });
@@ -354,7 +317,8 @@ export function useUseCaseXPro() {
       addSaved: (slug: string) => addSavedM.mutate(slug),
       removeSaved: (slug: string) => removeSavedM.mutate(slug),
       setNote: (slug: string, note: string) => updateSavedM.mutate({ slug, patch: { note } }),
-      setPriority: (slug: string, priority: Priority) => updateSavedM.mutate({ slug, patch: { priority } }),
+      setPriority: (slug: string, priority: Priority) =>
+        updateSavedM.mutate({ slug, patch: { priority } }),
       setScore: (slug: string, score: ScoreDimensions) => setScoreM.mutate({ slug, score }),
       createPortfolio: (input: {
         name: string;
@@ -363,18 +327,31 @@ export function useUseCaseXPro() {
         targetDepartment?: string;
         targetQuarter?: string;
       }) => createPortfolioM.mutate(input),
-      renamePortfolio: (id: string, name: string) => updatePortfolioM.mutate({ id, patch: { name } }),
-      updatePortfolio: (id: string, patch: Partial<Portfolio>) => updatePortfolioM.mutate({ id, patch }),
+      renamePortfolio: (id: string, name: string) =>
+        updatePortfolioM.mutate({ id, patch: { name } }),
+      updatePortfolio: (id: string, patch: Partial<Portfolio>) =>
+        updatePortfolioM.mutate({ id, patch }),
       deletePortfolio: (id: string) => deletePortfolioM.mutate(id),
-      addToPortfolio: (portfolioId: string, slug: string) => addToPortfolioM.mutate({ portfolioId, slug }),
+      addToPortfolio: (portfolioId: string, slug: string) =>
+        addToPortfolioM.mutate({ portfolioId, slug }),
       removeFromPortfolio: (portfolioId: string, slug: string) =>
         removeFromPortfolioM.mutate({ portfolioId, slug }),
     }),
     [
-      data, userId, query.isLoading, query.error, invalidate,
-      addSavedM, removeSavedM, updateSavedM, setScoreM,
-      createPortfolioM, updatePortfolioM, deletePortfolioM,
-      addToPortfolioM, removeFromPortfolioM,
+      data,
+      userId,
+      query.isLoading,
+      query.error,
+      invalidate,
+      addSavedM,
+      removeSavedM,
+      updateSavedM,
+      setScoreM,
+      createPortfolioM,
+      updatePortfolioM,
+      deletePortfolioM,
+      addToPortfolioM,
+      removeFromPortfolioM,
     ],
   );
 }
