@@ -1,6 +1,12 @@
+import { mergeCapabilityFlags, type CapabilityFlags } from "@/lib/authz/flags";
+
 /** Public-launch switches. Environment values may disable a surface for an emergency rollback. */
 function enabled(value: string | undefined): boolean {
   return value == null ? true : value !== "false";
+}
+
+function optional(value: string | undefined): boolean | undefined {
+  return value == null ? undefined : value === "true";
 }
 
 export const PUBLIC_LAUNCH_FEATURES = Object.freeze({
@@ -13,4 +19,19 @@ export const PUBLIC_LAUNCH_FEATURES = Object.freeze({
    * OFF by default — the data foundation ships before any UI does.
    */
   tenancyV2: import.meta.env.VITE_TENANCY_V2_ENABLED === "true",
+});
+
+/**
+ * Browser mirror of the capability flags used by the entitlement catalogue.
+ * Defaults live in `src/lib/authz/flags.ts`; Enterprise capabilities that are
+ * designed but not shipped stay OFF so no surface can claim they are live.
+ */
+export const CLIENT_CAPABILITY_FLAGS: CapabilityFlags = mergeCapabilityFlags({
+  opportunityMap: optional(import.meta.env.VITE_CAPABILITY_OPPORTUNITY_MAP),
+  workshopMode: optional(import.meta.env.VITE_CAPABILITY_WORKSHOP_MODE),
+  stageGates: optional(import.meta.env.VITE_CAPABILITY_STAGE_GATES),
+  multiEntity: optional(import.meta.env.VITE_CAPABILITY_MULTI_ENTITY),
+  integrations: optional(import.meta.env.VITE_CAPABILITY_INTEGRATIONS),
+  sso: optional(import.meta.env.VITE_CAPABILITY_SSO),
+  fullAudit: optional(import.meta.env.VITE_CAPABILITY_FULL_AUDIT),
 });
