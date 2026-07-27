@@ -18,7 +18,8 @@
     "test:mobile": "playwright test tests/mobile-responsive.spec.ts",
     "test:rls": "bun run tests/rls-isolation.e2e.ts",
     "check:nav-integrity": "node scripts/check-nav-integrity.mjs",
-    "check:compare": "node scripts/check-compare-analytics.mjs"
+    "check:compare": "node scripts/check-compare-analytics.mjs",
+    "test:authz": "bun run tests/authz-matrix.e2e.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
