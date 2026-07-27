@@ -1,8 +1,9 @@
-# Tenancy Backfill Report — T1–T5 executed 2026-07-27
+# Tenancy Backfill Report — T1–T6 executed 2026-07-27
 
-Scope executed: steps **T1–T5** of `docs/architecture/tenancy-migration-plan.md`.
-Step **T6** (dual-predicate policy replacement on existing tenant tables) and **T7**
-(`SET NOT NULL`, legacy predicate removal) remain deferred, as approved.
+Scope executed: steps **T1–T6** of `docs/architecture/tenancy-migration-plan.md`.
+Step **T7** (`SET NOT NULL`, removal of the legacy `user_id = auth.uid()` compatibility
+predicate) remains deferred, as approved.
+
 
 ## Migrations applied
 
