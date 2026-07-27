@@ -89,6 +89,43 @@ async function main() {
   if (!selfGrant) throw new Error("User A self-granted an entitlement");
   console.log("✓ entitlements cannot be self-granted or read cross-tenant");
 
+  // 6 — T6 dual-predicate policies on user-owned tenant records
+  const { data: created, error: createErr } = await a.client
+    .from("collections")
+    .insert({ user_id: a.userId, name: `tenancy-isolation ${Date.now()}` })
+    .select("id, workspace_id, organization_id")
+    .single();
+  if (createErr || !created) throw new Error(`Owner could not create their own collection: ${createErr?.message}`);
+  if (!created.workspace_id || !created.organization_id)
+    throw new Error("Sync trigger did not stamp workspace/organization on the new collection");
+
+  const { data: ownRead } = await a.client.from("collections").select("id").eq("id", created.id);
+  if (!ownRead || ownRead.length !== 1) throw new Error("Owner cannot read back their own collection");
+
+  const { data: crossRead } = await b.client.from("collections").select("id").eq("id", created.id);
+  if (crossRead && crossRead.length > 0)
+    throw new Error("User B can read a collection owned by tenant A's workspace");
+
+  const { error: crossWriteErr } = await b.client
+    .from("collections")
+    .insert({ user_id: b.userId, name: "cross-tenant", workspace_id: created.workspace_id });
+  if (!crossWriteErr) throw new Error("User B inserted a collection into tenant A's workspace");
+
+  const { error: forgeErr } = await b.client
+    .from("collections")
+    .insert({ user_id: a.userId, name: "forged owner" });
+  if (!forgeErr) throw new Error("User B forged a collection owned by user A");
+
+  const { error: crossDeleteErr } = await b.client.from("collections").delete().eq("id", created.id);
+  const { data: stillThere } = await a.client.from("collections").select("id").eq("id", created.id);
+  if (!stillThere || stillThere.length !== 1)
+    throw new Error(`User B deleted tenant A's collection (${crossDeleteErr?.message ?? "no error"})`);
+
+  await a.client.from("collections").delete().eq("id", created.id);
+  console.log("✓ user-owned tenant records: owner read/write ok, cross-workspace read/write/delete denied");
+
+
+
   await a.client.auth.signOut();
   await b.client.auth.signOut();
 }
