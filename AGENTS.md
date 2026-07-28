@@ -134,5 +134,7 @@ Any plan check must resolve through `useEntitlement`/`usePlan`. Gate UI with `<R
 - `CLAUDE.md` — repo layout, commands, high-risk files
 - `docs/product/release-2026-08-14.md` — launch scope
 - `docs/architecture/architecture-principles.md`
+- `docs/architecture/domain-boundaries.md` — domain/repository layer
+- `docs/architecture/ai-boundary.md` — provider-neutral AI services & fair use
 - `docs/security/security-baseline.md`
 - `docs/PRE_BETA_RELEASE_CHECKLIST.md`, `docs/PRE_BETA_TEST_PLAN.md`

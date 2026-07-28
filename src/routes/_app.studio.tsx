@@ -3,7 +3,12 @@ import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { draftUseCase, STUDIO_PROVIDERS, type StudioProvider, type StudioDraft } from "@/lib/usecasex.studio.functions";
+import {
+  draftUseCase,
+  STUDIO_PROVIDERS,
+  type StudioProvider,
+  type StudioDraft,
+} from "@/lib/usecasex.studio.functions";
 import { useStudioDrafts, type StudioSavedDraft } from "@/lib/usecasex.studio.store";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import { Button } from "@/components/ui/button";
@@ -13,7 +18,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Loader2, Sparkles, Save, Trash2, Wand2, Lightbulb } from "lucide-react";
@@ -22,7 +31,11 @@ export const Route = createFileRoute("/_app/studio")({
   head: () => ({
     meta: [
       { title: "Use Case Development Studio — UseCasesX™ Pro" },
-      { name: "description", content: "Research and draft AI use cases for your organization using OpenAI, ConversX, or Gemini — and save them to your Pro workspace." },
+      {
+        name: "description",
+        content:
+          "Research and draft AI use cases for your organization using OpenAI, ConversX, or Gemini — and save them to your Pro workspace.",
+      },
     ],
   }),
   component: StudioPage,
@@ -60,7 +73,11 @@ function StudioPage() {
   const [context, setContext] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [current, setCurrent] = useState<{ draft: StudioDraft; model: string } | null>(null);
+  const [current, setCurrent] = useState<{
+    draft: StudioDraft;
+    model: string;
+    provenance?: import("@/lib/ai/types").AiProvenance | null;
+  } | null>(null);
 
   const canSubmit = organization.trim().length > 0 && objective.trim().length > 0 && !loading;
 
@@ -77,7 +94,11 @@ function StudioPage() {
       if (!res.ok || !res.draft) {
         setError(res.error ?? "Failed to draft use case.");
       } else {
-        setCurrent({ draft: res.draft as StudioDraft, model: res.meta?.model ?? "" });
+        setCurrent({
+          draft: res.draft as StudioDraft,
+          model: res.meta?.model ?? "",
+          provenance: res.provenance,
+        });
       }
     } catch (e) {
       console.error(e);
@@ -96,6 +117,7 @@ function StudioPage() {
       provider,
       model: current.model,
       draft: current.draft,
+      provenance: current.provenance ?? undefined,
     });
     trackCTAEvent("studio_draft_saved", { provider });
     setCurrent(null);
@@ -124,12 +146,16 @@ function StudioPage() {
             Research and draft AI use cases for your organization
           </h1>
           <p className="mt-4 max-w-3xl text-muted-foreground">
-            Use OpenAI, ConversX, or Gemini to research, structure, and document custom AI use cases tailored to your
-            organization — then save them to your Pro workspace.
+            Use OpenAI, ConversX, or Gemini to research, structure, and document custom AI use cases
+            tailored to your organization — then save them to your Pro workspace.
           </p>
           <div className="mt-6 flex gap-3 text-sm">
-            <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">← Back to dashboard</Link>
-            <Link to="/my-use-cases" className="text-muted-foreground hover:text-foreground">Saved catalog use cases</Link>
+            <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">
+              ← Back to dashboard
+            </Link>
+            <Link to="/my-use-cases" className="text-muted-foreground hover:text-foreground">
+              Saved catalog use cases
+            </Link>
           </div>
         </div>
       </section>
@@ -138,7 +164,9 @@ function StudioPage() {
         {/* Form */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Wand2 className="h-4 w-4 text-primary" /> Draft a new use case</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Wand2 className="h-4 w-4 text-primary" /> Draft a new use case
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
             <div>
@@ -153,7 +181,9 @@ function StudioPage() {
                       type="button"
                       onClick={() => setProvider(p)}
                       className={`rounded-lg border px-3 py-2 text-left transition ${
-                        active ? "border-primary bg-primary/10" : "border-border hover:border-primary/40"
+                        active
+                          ? "border-primary bg-primary/10"
+                          : "border-border hover:border-primary/40"
                       }`}
                     >
                       <div className="text-sm font-semibold">{meta.label}</div>
@@ -167,11 +197,21 @@ function StudioPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <Label htmlFor="org">Organization *</Label>
-                <Input id="org" value={organization} onChange={(e) => setOrganization(e.target.value)} placeholder="Acme Corp" />
+                <Input
+                  id="org"
+                  value={organization}
+                  onChange={(e) => setOrganization(e.target.value)}
+                  placeholder="Acme Corp"
+                />
               </div>
               <div>
                 <Label htmlFor="ind">Industry</Label>
-                <Input id="ind" value={industry} onChange={(e) => setIndustry(e.target.value)} placeholder="Healthcare, Banking, Defense…" />
+                <Input
+                  id="ind"
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value)}
+                  placeholder="Healthcare, Banking, Defense…"
+                />
               </div>
             </div>
 
@@ -204,7 +244,15 @@ function StudioPage() {
             )}
 
             <Button onClick={handleGenerate} disabled={!canSubmit} className="w-full">
-              {loading ? (<><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Researching…</>) : (<><Sparkles className="h-4 w-4 mr-2" /> Generate AI Use Case</>)}
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Researching…
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 mr-2" /> Generate AI Use Case
+                </>
+              )}
             </Button>
           </CardContent>
         </Card>
@@ -212,17 +260,21 @@ function StudioPage() {
         {/* Result */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Lightbulb className="h-4 w-4 text-primary" /> Generated draft</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Lightbulb className="h-4 w-4 text-primary" /> Generated draft
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {!current && !loading && (
               <p className="text-sm text-muted-foreground">
-                Your generated use case draft will appear here. Save it to add it to your Pro workspace.
+                Your generated use case draft will appear here. Save it to add it to your Pro
+                workspace.
               </p>
             )}
             {loading && (
               <div className="flex items-center text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" /> {PROVIDER_META[provider].label} is drafting your use case…
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" /> {PROVIDER_META[provider].label} is
+                drafting your use case…
               </div>
             )}
             {current && (
@@ -240,7 +292,9 @@ function StudioPage() {
           <span className="text-sm text-muted-foreground">{drafts.items.length} saved</span>
         </div>
         {drafts.items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No saved drafts yet. Generate one above and save it to your workspace.</p>
+          <p className="text-sm text-muted-foreground">
+            No saved drafts yet. Generate one above and save it to your workspace.
+          </p>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {drafts.items.map((it) => (
@@ -257,7 +311,15 @@ function StudioPage() {
   );
 }
 
-function DraftView({ draft, model, onSave }: { draft: StudioDraft; model: string; onSave: () => void }) {
+function DraftView({
+  draft,
+  model,
+  onSave,
+}: {
+  draft: StudioDraft;
+  model: string;
+  onSave: () => void;
+}) {
   return (
     <div className="space-y-5">
       <div>
@@ -308,7 +370,9 @@ function ListBlock({ title, items }: { title: string; items: string[] }) {
     <div>
       <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">{title}</div>
       <ul className="text-sm list-disc pl-5 space-y-1">
-        {items.map((i, idx) => <li key={idx}>{i}</li>)}
+        {items.map((i, idx) => (
+          <li key={idx}>{i}</li>
+        ))}
       </ul>
     </div>
   );
@@ -326,7 +390,8 @@ function SavedDraftCard({ item, onRemove }: { item: StudioSavedDraft; onRemove: 
           <div>
             <CardTitle className="text-base">{item.draft.title}</CardTitle>
             <div className="text-xs text-muted-foreground mt-1">
-              {item.organization}{item.industry ? ` · ${item.industry}` : ""} · {provider} · {dateLabel}
+              {item.organization}
+              {item.industry ? ` · ${item.industry}` : ""} · {provider} · {dateLabel}
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={onRemove} aria-label="Remove">

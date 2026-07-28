@@ -32,6 +32,66 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_usage_events: {
+        Row: {
+          completion_tokens: number | null
+          created_at: string
+          duration_ms: number | null
+          entity_id: string | null
+          entity_type: string | null
+          error_kind: string | null
+          id: string
+          model: string
+          organization_id: string | null
+          prompt_tokens: number | null
+          prompt_version: string | null
+          provider_alias: string
+          status: string
+          task: string
+          total_tokens: number | null
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          completion_tokens?: number | null
+          created_at?: string
+          duration_ms?: number | null
+          entity_id?: string | null
+          entity_type?: string | null
+          error_kind?: string | null
+          id?: string
+          model: string
+          organization_id?: string | null
+          prompt_tokens?: number | null
+          prompt_version?: string | null
+          provider_alias: string
+          status?: string
+          task: string
+          total_tokens?: number | null
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          completion_tokens?: number | null
+          created_at?: string
+          duration_ms?: number | null
+          entity_id?: string | null
+          entity_type?: string | null
+          error_kind?: string | null
+          id?: string
+          model?: string
+          organization_id?: string | null
+          prompt_tokens?: number | null
+          prompt_version?: string | null
+          provider_alias?: string
+          status?: string
+          task?: string
+          total_tokens?: number | null
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
       ai_use_case_org_units: {
         Row: {
           created_at: string
