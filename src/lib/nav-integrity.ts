@@ -23,10 +23,14 @@ export const PRIMARY_NAV_TARGETS = [
 export const SIDEBAR_NAV_TARGETS = [
   "/dashboard",
   "/repository",
+  "/discover",
+  "/quick-wins",
+  "/roi-calculator",
   "/insights",
   "/studio",
   "/my-use-cases",
   "/boards",
+  "/submit",
   "/patterns",
   "/feasibility",
   "/data-readiness",
@@ -37,7 +41,14 @@ export const SIDEBAR_NAV_TARGETS = [
   "/cyberx/c3g/intake",
   "/reports",
   "/administration",
+  "/admin-submissions",
+  "/admin-waitlist",
+  "/account",
+  "/account/security",
+  "/entitlement",
+  "/module-analytics",
 ] as const;
+
 
 /**
  * Targets that intentionally redirect to another route. The integrity check
