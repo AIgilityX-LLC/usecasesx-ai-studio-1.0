@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getWorkspaceContextFn } from "@/lib/workspace.functions";
 import { useSupabaseSession } from "./useSupabaseSession";
+import { setTelemetryTenant } from "@/lib/telemetry";
 
 export type WorkspaceContext = Awaited<ReturnType<typeof getWorkspaceContextFn>>;
 
@@ -16,7 +17,14 @@ export function useWorkspaceContext() {
 
   return useQuery({
     queryKey: ["workspace-context", session?.user.id ?? null],
-    queryFn: () => fetchContext(),
+    queryFn: async () => {
+      const context = await fetchContext();
+      setTelemetryTenant({
+        organizationId: context.organization?.id ?? null,
+        workspaceId: context.workspace?.id ?? null,
+      });
+      return context;
+    },
     enabled: Boolean(session?.user.id),
     staleTime: 5 * 60 * 1000,
     retry: 1,
