@@ -36,9 +36,17 @@ const check = (name: string, ok: boolean, detail = "") => {
 
 for (const table of TAXONOMY) {
   const { data, error } = await anon.from(table as never).select("id, name, organization_id");
-  check(`${table}: anon can read global entries`, !error && (data?.length ?? 0) > 0, error?.message ?? "");
+  check(
+    `${table}: anon can read global entries`,
+    !error && (data?.length ?? 0) > 0,
+    error?.message ?? "",
+  );
   const leaked = (data ?? []).filter((r: any) => r.organization_id != null);
-  check(`${table}: anon sees no tenant-private entries`, leaked.length === 0, `${leaked.length} leaked`);
+  check(
+    `${table}: anon sees no tenant-private entries`,
+    leaked.length === 0,
+    `${leaked.length} leaked`,
+  );
 
   const { error: writeError } = await anon
     .from(table as never)
@@ -46,18 +54,25 @@ for (const table of TAXONOMY) {
   check(`${table}: anon write rejected`, !!writeError, writeError ? "" : "insert succeeded");
 }
 
-const { data: units, error: unitErr } = await anon
-  .from("organization_units" as never)
-  .select("id");
+const { data: units, error: unitErr } = await anon.from("organization_units" as never).select("id");
 check(
   "organization_units: anon sees nothing",
   (units?.length ?? 0) === 0 || !!unitErr,
   unitErr?.message ?? `${units?.length ?? 0} rows`,
 );
 
-for (const table of ["ai_use_case_org_units", "ai_use_case_processes", "ai_use_case_strategic_themes", "ai_use_case_value_themes"] as const) {
+for (const table of [
+  "ai_use_case_org_units",
+  "ai_use_case_processes",
+  "ai_use_case_strategic_themes",
+  "ai_use_case_value_themes",
+] as const) {
   const { data, error } = await anon.from(table as never).select("use_case_id");
-  check(`${table}: anon sees nothing`, (data?.length ?? 0) === 0 || !!error, error?.message ?? `${data?.length ?? 0} rows`);
+  check(
+    `${table}: anon sees nothing`,
+    (data?.length ?? 0) === 0 || !!error,
+    error?.message ?? `${data?.length ?? 0} rows`,
+  );
 }
 
 console.log(failures === 0 ? "\nAll RLS checks passed." : `\n${failures} check(s) failed.`);

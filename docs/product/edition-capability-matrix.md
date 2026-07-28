@@ -7,50 +7,50 @@ Legend: ✅ Live · 🚩 Feature-flagged / Coming Soon (visible, not live) · �
 
 ## Public / Lite surface
 
-| Capability | Lite | Pro FA | Enterprise DP |
-|---|---|---|---|
-| Landing `/` | ✅ | ✅ | ✅ |
-| Discovery Wizard `/discover` | ✅ | ✅ | ✅ |
-| Global Repository `/repository` | ✅ | ✅ | ✅ |
-| Repository detail deep-dive | 🚩 up-sell | ✅ | ✅ |
-| Quick Wins Matrix `/quick-wins` | ✅ | ✅ | ✅ |
-| ROI Calculator `/roi-calculator` | ✅ | ✅ | ✅ |
-| Opportunity Submission `/submit` | ✅ | ✅ | ✅ |
-| Public collection share `/c/$token` | ✅ | ✅ | ✅ |
-| Pricing `/pricing`, Auth `/auth` | ✅ | ✅ | ✅ |
-| Pattern Library `/patterns` | 🚩 Q4 2026 | 🚩 Q4 2026 | 🚩 |
+| Capability                          | Lite       | Pro FA     | Enterprise DP |
+| ----------------------------------- | ---------- | ---------- | ------------- |
+| Landing `/`                         | ✅         | ✅         | ✅            |
+| Discovery Wizard `/discover`        | ✅         | ✅         | ✅            |
+| Global Repository `/repository`     | ✅         | ✅         | ✅            |
+| Repository detail deep-dive         | 🚩 up-sell | ✅         | ✅            |
+| Quick Wins Matrix `/quick-wins`     | ✅         | ✅         | ✅            |
+| ROI Calculator `/roi-calculator`    | ✅         | ✅         | ✅            |
+| Opportunity Submission `/submit`    | ✅         | ✅         | ✅            |
+| Public collection share `/c/$token` | ✅         | ✅         | ✅            |
+| Pricing `/pricing`, Auth `/auth`    | ✅         | ✅         | ✅            |
+| Pattern Library `/patterns`         | 🚩 Q4 2026 | 🚩 Q4 2026 | 🚩            |
 
 ## Pro Founding Access surface
 
-| Capability | Lite | Pro FA | Enterprise DP |
-|---|---|---|---|
-| Dashboard `/dashboard` (live KPIs) | — | ✅ | ✅ |
-| My Use Cases `/my-use-cases` (live rows) | — | ✅ | ✅ |
-| Boards `/boards*` | — | ✅ | ✅ |
-| Compare tray `/compare` | — | ✅ | ✅ |
-| Insights `/insights` | — | ✅ | ✅ |
-| Studio hub `/ai-use-case-studio`, `/studio` (server drafts) | — | ✅ | ✅ |
-| Studio › Overview / Score | — | ✅ | ✅ |
-| Studio › Feasibility (per use case) | — | ✅ wired | ✅ |
-| Studio › Data Readiness (per use case) | — | ✅ wired | ✅ |
-| Studio › Blueprint (per use case) | — | ✅ read-only | 🔒 editor |
-| Studio › Deliverables + one export path | — | ✅ | ✅ |
-| Portfolio Roadmap `/studio/portfolio` | — | ✅ live | ✅ |
-| Reports `/reports` (live data only) | — | ✅ | ✅ |
-| Fair-use meter (advisory) | — | ✅ | 🔒 enforced |
+| Capability                                                  | Lite | Pro FA       | Enterprise DP |
+| ----------------------------------------------------------- | ---- | ------------ | ------------- |
+| Dashboard `/dashboard` (live KPIs)                          | —    | ✅           | ✅            |
+| My Use Cases `/my-use-cases` (live rows)                    | —    | ✅           | ✅            |
+| Boards `/boards*`                                           | —    | ✅           | ✅            |
+| Compare tray `/compare`                                     | —    | ✅           | ✅            |
+| Insights `/insights`                                        | —    | ✅           | ✅            |
+| Studio hub `/ai-use-case-studio`, `/studio` (server drafts) | —    | ✅           | ✅            |
+| Studio › Overview / Score                                   | —    | ✅           | ✅            |
+| Studio › Feasibility (per use case)                         | —    | ✅ wired     | ✅            |
+| Studio › Data Readiness (per use case)                      | —    | ✅ wired     | ✅            |
+| Studio › Blueprint (per use case)                           | —    | ✅ read-only | 🔒 editor     |
+| Studio › Deliverables + one export path                     | —    | ✅           | ✅            |
+| Portfolio Roadmap `/studio/portfolio`                       | —    | ✅ live      | ✅            |
+| Reports `/reports` (live data only)                         | —    | ✅           | ✅            |
+| Fair-use meter (advisory)                                   | —    | ✅           | 🔒 enforced   |
 
 ## Coming Soon / Enterprise DP surface
 
-| Capability | Lite | Pro FA | Enterprise DP |
-|---|---|---|---|
-| Studio › SARPI sub-tabs | — | 🚩 landing lock | 🔒 |
-| Studio › AdvisorX | — | 🚩 | 🔒 |
-| Studio › C3G Governance | — | 🚩 | 🔒 |
-| RoadmapX `/roadmap` | — | 🚩 | 🔒 |
-| Governance `/governance`, PortfolioX `/portfoliox` | — | redirect | redirect |
-| Feasibility / Data Readiness / Blueprint top-level | — | delisted | delisted |
-| `/decision`, `/impact-assessment`, `/api-integration` | — | hidden | 🔒 |
-| Advanced Enterprise roles, SSO, custom domains, audit export | — | — | 🔒 |
+| Capability                                                   | Lite | Pro FA          | Enterprise DP |
+| ------------------------------------------------------------ | ---- | --------------- | ------------- |
+| Studio › SARPI sub-tabs                                      | —    | 🚩 landing lock | 🔒            |
+| Studio › AdvisorX                                            | —    | 🚩              | 🔒            |
+| Studio › C3G Governance                                      | —    | 🚩              | 🔒            |
+| RoadmapX `/roadmap`                                          | —    | 🚩              | 🔒            |
+| Governance `/governance`, PortfolioX `/portfoliox`           | —    | redirect        | redirect      |
+| Feasibility / Data Readiness / Blueprint top-level           | —    | delisted        | delisted      |
+| `/decision`, `/impact-assessment`, `/api-integration`        | —    | hidden          | 🔒            |
+| Advanced Enterprise roles, SSO, custom domains, audit export | —    | —               | 🔒            |
 
 ## Roles at launch
 

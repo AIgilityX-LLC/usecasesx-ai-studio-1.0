@@ -32,8 +32,6 @@ export const DEFAULT_CAPABILITY_FLAGS: CapabilityFlags = Object.freeze({
   fullAudit: false,
 });
 
-export function mergeCapabilityFlags(
-  overrides?: Partial<CapabilityFlags> | null,
-): CapabilityFlags {
+export function mergeCapabilityFlags(overrides?: Partial<CapabilityFlags> | null): CapabilityFlags {
   return { ...DEFAULT_CAPABILITY_FLAGS, ...(overrides ?? {}) };
 }

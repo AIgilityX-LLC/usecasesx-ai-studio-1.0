@@ -35,16 +35,23 @@ function UseCaseDetailPage() {
     (async () => {
       const { data } = await supabase
         .from("ai_use_cases")
-        .select("id,title,status,ai_type,risk_level,problem_statement,current_state,future_state,created_at,updated_at")
+        .select(
+          "id,title,status,ai_type,risk_level,problem_statement,current_state,future_state,created_at,updated_at",
+        )
         .eq("id", id)
         .maybeSingle();
-      if (active) { setUc(data as UC | null); setLoading(false); }
+      if (active) {
+        setUc(data as UC | null);
+        setLoading(false);
+      }
     })();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [id]);
 
-  const linkClass = "inline-flex items-center justify-center rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium hover:bg-secondary";
-
+  const linkClass =
+    "inline-flex items-center justify-center rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium hover:bg-secondary";
 
   return (
     <section className="border-b border-border bg-background">
@@ -54,7 +61,7 @@ function UseCaseDetailPage() {
             AI Use Case Studio
           </div>
           <h1 className="text-3xl font-semibold tracking-tight">
-            {loading ? "Loading…" : uc?.title ?? "Use case not found"}
+            {loading ? "Loading…" : (uc?.title ?? "Use case not found")}
           </h1>
           {uc && (
             <div className="flex flex-wrap gap-2 text-xs">
@@ -68,19 +75,34 @@ function UseCaseDetailPage() {
         {uc && (
           <>
             <div className="flex flex-wrap gap-2">
-              <Link className={linkClass} to="/studio/use-case/$id/feasibility" params={{ id }}>Feasibility</Link>
-              <Link className={linkClass} to="/studio/use-case/$id/data-readiness" params={{ id }}>Data Readiness</Link>
-              <Link className={linkClass} to="/studio/use-case/$id/blueprint" params={{ id }}>Blueprint</Link>
-              <Link className={linkClass} to="/studio/use-case/$id/deliverables" params={{ id }}>Deliverables</Link>
-              <Link className={linkClass} to="/studio/use-case/$id/sarpi" params={{ id }}>SARPI</Link>
-              <Link className={linkClass} to="/studio/use-case/$id/advisorx" params={{ id }}>AdvisorX</Link>
-              <Link className={linkClass} to="/studio/use-case/$id/c3g-governance" params={{ id }}>C3G Governance</Link>
+              <Link className={linkClass} to="/studio/use-case/$id/feasibility" params={{ id }}>
+                Feasibility
+              </Link>
+              <Link className={linkClass} to="/studio/use-case/$id/data-readiness" params={{ id }}>
+                Data Readiness
+              </Link>
+              <Link className={linkClass} to="/studio/use-case/$id/blueprint" params={{ id }}>
+                Blueprint
+              </Link>
+              <Link className={linkClass} to="/studio/use-case/$id/deliverables" params={{ id }}>
+                Deliverables
+              </Link>
+              <Link className={linkClass} to="/studio/use-case/$id/sarpi" params={{ id }}>
+                SARPI
+              </Link>
+              <Link className={linkClass} to="/studio/use-case/$id/advisorx" params={{ id }}>
+                AdvisorX
+              </Link>
+              <Link className={linkClass} to="/studio/use-case/$id/c3g-governance" params={{ id }}>
+                C3G Governance
+              </Link>
             </div>
-
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <Card className="lg:col-span-2">
-                <CardHeader><CardTitle className="text-base">Canvas Summary</CardTitle></CardHeader>
+                <CardHeader>
+                  <CardTitle className="text-base">Canvas Summary</CardTitle>
+                </CardHeader>
                 <CardContent className="space-y-3 text-sm">
                   <Field label="Problem statement" value={uc.problem_statement} />
                   <Field label="Current state" value={uc.current_state} />

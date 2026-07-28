@@ -10,7 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Gauge, TrendingUp, Activity, Target, Plus, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/sarpi")({
-  component: () => (<RequirePlan min="pro" feature="SARPI™ assessment"><SarpiPage /></RequirePlan>),
+  component: () => (
+    <RequirePlan min="pro" feature="SARPI™ assessment">
+      <SarpiPage />
+    </RequirePlan>
+  ),
 });
 
 const CARDS = [
@@ -39,8 +43,7 @@ const CARDS = [
     key: "value",
     icon: Target,
     title: "Value Realization Dashboard",
-    description:
-      "Monitor actual benefits against planned business or public value outcomes.",
+    description: "Monitor actual benefits against planned business or public value outcomes.",
   },
 ] as const;
 
@@ -100,7 +103,8 @@ function SarpiPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">SARPI™ Integration</h1>
           <p className="max-w-2xl text-muted-foreground">
-            Connect this AI use case to SARPI™ for deeper AI readiness, ROI, performance, and value assessment.
+            Connect this AI use case to SARPI™ for deeper AI readiness, ROI, performance, and value
+            assessment.
           </p>
         </div>
         <div className="flex gap-2">
@@ -167,8 +171,9 @@ function SarpiPage() {
 
       <Card className="border-dashed">
         <CardContent className="pt-6 text-sm text-muted-foreground">
-          Full SARPI API connection (live readiness scoring, ROI calculation, and value telemetry) can be
-          enabled in <span className="font-medium text-foreground">Enterprise configuration</span>.
+          Full SARPI API connection (live readiness scoring, ROI calculation, and value telemetry)
+          can be enabled in{" "}
+          <span className="font-medium text-foreground">Enterprise configuration</span>.
         </CardContent>
       </Card>
 

@@ -177,7 +177,10 @@ export async function addSavedUseCaseToBoard(input: {
       throw new DuplicateBoardItemError(`"${uc.title}" is already on this board.`);
     throw new Error(error?.message ?? "Could not add saved use case to board.");
   }
-  trackCTAEvent("use_case_saved", { use_case_id: data.id, source_page: `/boards/${input.boardId}` });
+  trackCTAEvent("use_case_saved", {
+    use_case_id: data.id,
+    source_page: `/boards/${input.boardId}`,
+  });
   return { id: data.id };
 }
 
@@ -235,7 +238,8 @@ export async function createBoard(input: {
     })
     .select("id, title, description, board_type, status, workspace_id, created_at, updated_at")
     .single();
-  if (error || !data) throw new Error(error?.message ?? "Board insert failed (check workspace access).");
+  if (error || !data)
+    throw new Error(error?.message ?? "Board insert failed (check workspace access).");
   return data as BoardRow;
 }
 
@@ -253,10 +257,7 @@ export async function renameBoard(input: {
     title: input.title.trim() || "Untitled Board",
   };
   if (input.description !== undefined) patch.description = input.description?.trim() || null;
-  const { error } = await supabase
-    .from("use_case_boards")
-    .update(patch)
-    .eq("id", input.boardId);
+  const { error } = await supabase.from("use_case_boards").update(patch).eq("id", input.boardId);
   if (error) throw new Error(error.message);
 }
 
@@ -319,6 +320,9 @@ export async function createBoardUseCase(input: {
     .select("id")
     .single();
   if (error || !data) throw new Error(error?.message ?? "Could not create use case.");
-  trackCTAEvent("use_case_created", { use_case_id: data.id, source_page: `/boards/${input.boardId}` });
+  trackCTAEvent("use_case_created", {
+    use_case_id: data.id,
+    source_page: `/boards/${input.boardId}`,
+  });
   return { id: data.id };
 }

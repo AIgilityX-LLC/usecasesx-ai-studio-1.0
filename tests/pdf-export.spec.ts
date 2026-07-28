@@ -39,10 +39,10 @@ async function signInViaStorage(page: Page, email: string, password: string) {
   const ref = new URL(SUPABASE_URL).hostname.split(".")[0];
   const key = `sb-${ref}-auth-token`;
   await page.goto(`${BASE}/`);
-  await page.evaluate(
-    ({ key, value }) => window.localStorage.setItem(key, value),
-    { key, value: JSON.stringify(session) },
-  );
+  await page.evaluate(({ key, value }) => window.localStorage.setItem(key, value), {
+    key,
+    value: JSON.stringify(session),
+  });
 }
 
 async function seedOnePortfolioItem(session: { access_token: string; user: { id: string } }) {
@@ -96,16 +96,18 @@ test("portfolio PDF export downloads a valid PDF", async ({ page }) => {
   await seedOnePortfolioItem(session);
   const ref = new URL(SUPABASE_URL).hostname.split(".")[0];
   await page.goto(`${BASE}/`);
-  await page.evaluate(
-    ({ key, value }) => window.localStorage.setItem(key, value),
-    { key: `sb-${ref}-auth-token`, value: JSON.stringify(session) },
-  );
+  await page.evaluate(({ key, value }) => window.localStorage.setItem(key, value), {
+    key: `sb-${ref}-auth-token`,
+    value: JSON.stringify(session),
+  });
   await page.goto(`${BASE}/studio/portfolio`);
   const btn = page.getByRole("button", { name: /export portfolio pdf/i });
   await expect(btn).toBeVisible({ timeout: 20_000 });
 
   // Wait for the portfolio data to load (Total counter > 0)
-  await expect(page.locator('text=/Ranked by priority|1\\s*Total|Total\\s*1/').first()).toBeVisible({ timeout: 20_000 }).catch(() => {});
+  await expect(page.locator("text=/Ranked by priority|1\\s*Total|Total\\s*1/").first())
+    .toBeVisible({ timeout: 20_000 })
+    .catch(() => {});
   await page.waitForTimeout(2_000);
 
   const [download] = await Promise.all([

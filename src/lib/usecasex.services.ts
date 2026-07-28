@@ -17,7 +17,10 @@ import type { Database } from "@/integrations/supabase/types";
 // ---------------------------------------------------------------------------
 
 export class ServiceError extends Error {
-  constructor(message: string, public readonly cause?: unknown) {
+  constructor(
+    message: string,
+    public readonly cause?: unknown,
+  ) {
     super(message);
     this.name = "ServiceError";
   }
@@ -144,19 +147,14 @@ export async function getPublishedUseCases(filters: UseCaseFilters = {}) {
     objectives = [],
   } = filters;
 
-  let query = supabase
-    .from("use_cases")
-    .select(USE_CASE_LIST_SELECT)
-    .eq("status", "published");
+  let query = supabase.from("use_cases").select(USE_CASE_LIST_SELECT).eq("status", "published");
 
   if (featuredOnly) query = query.eq("is_featured", true);
   if (landingOnly) query = query.eq("show_on_landing", true);
 
   if (q.trim()) {
     const term = `%${q.trim()}%`;
-    query = query.or(
-      `title.ilike.${term},summary.ilike.${term},organization.ilike.${term}`,
-    );
+    query = query.or(`title.ilike.${term},summary.ilike.${term},organization.ilike.${term}`);
   }
 
   if (maturity.length)
@@ -169,8 +167,10 @@ export async function getPublishedUseCases(filters: UseCaseFilters = {}) {
   if (riskLevel.length) query = query.in("risk_level", riskLevel);
   if (timeToValue.length) query = query.in("time_to_value", timeToValue);
 
-  if (sort === "impact") query = query.order("impact_score", { ascending: false, nullsFirst: false });
-  else if (sort === "maturity") query = query.order("maturity_score", { ascending: false, nullsFirst: false });
+  if (sort === "impact")
+    query = query.order("impact_score", { ascending: false, nullsFirst: false });
+  else if (sort === "maturity")
+    query = query.order("maturity_score", { ascending: false, nullsFirst: false });
   else if (sort === "featured") query = query.order("display_order", { ascending: true });
   else query = query.order("published_at", { ascending: false, nullsFirst: false });
 
@@ -185,10 +185,18 @@ export async function getPublishedUseCases(filters: UseCaseFilters = {}) {
   const objSet = slugSet(objectives);
 
   return rows.filter((row: any) => {
-    const inds: string[] = (row.use_case_industries ?? []).map((x: any) => x.industries?.slug).filter(Boolean);
-    const caps: string[] = (row.use_case_capabilities ?? []).map((x: any) => x.ai_capabilities?.slug).filter(Boolean);
-    const bfns: string[] = (row.use_case_business_functions ?? []).map((x: any) => x.business_functions?.slug).filter(Boolean);
-    const objs: string[] = (row.use_case_business_objectives ?? []).map((x: any) => x.business_objectives?.slug).filter(Boolean);
+    const inds: string[] = (row.use_case_industries ?? [])
+      .map((x: any) => x.industries?.slug)
+      .filter(Boolean);
+    const caps: string[] = (row.use_case_capabilities ?? [])
+      .map((x: any) => x.ai_capabilities?.slug)
+      .filter(Boolean);
+    const bfns: string[] = (row.use_case_business_functions ?? [])
+      .map((x: any) => x.business_functions?.slug)
+      .filter(Boolean);
+    const objs: string[] = (row.use_case_business_objectives ?? [])
+      .map((x: any) => x.business_objectives?.slug)
+      .filter(Boolean);
     if (indSet.size && !inds.some((s) => indSet.has(s))) return false;
     if (capSet.size && !caps.some((s) => capSet.has(s))) return false;
     if (bfnSet.size && !bfns.some((s) => bfnSet.has(s))) return false;
@@ -203,7 +211,8 @@ export const searchUseCases = getPublishedUseCases;
 export async function getUseCaseBySlug(slug: string) {
   const { data, error } = await supabase
     .from("use_cases")
-    .select(`
+    .select(
+      `
       *,
       use_case_industries ( industries ( slug, name ) ),
       use_case_capabilities ( ai_capabilities ( slug, name ) ),
@@ -212,7 +221,8 @@ export async function getUseCaseBySlug(slug: string) {
       use_case_metrics ( id, label, value, unit, sort_order ),
       use_case_links ( id, label, url, kind ),
       external_module_links ( id, module, label, url, sort_order )
-    `)
+    `,
+    )
     .eq("slug", slug)
     .eq("status", "published")
     .maybeSingle();
@@ -356,7 +366,9 @@ export async function signUp(email: string, password: string) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined },
+    options: {
+      emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
+    },
   });
   if (error) throw new ServiceError(error.message, error);
   return data;
@@ -396,10 +408,7 @@ export async function createOrUpdateUserProfile(patch: Partial<Tables["profiles"
   if (!user) throw new ServiceError("Not signed in");
   const { data, error } = await supabase
     .from("profiles")
-    .upsert(
-      { user_id: user.id, email: user.email ?? null, ...patch },
-      { onConflict: "user_id" },
-    )
+    .upsert({ user_id: user.id, email: user.email ?? null, ...patch }, { onConflict: "user_id" })
     .select()
     .maybeSingle();
   if (error) throw new ServiceError(error.message, error);
@@ -410,7 +419,10 @@ export async function createOrUpdateUserProfile(patch: Partial<Tables["profiles"
 // Pro: saved use cases, scoring, portfolios, reports
 // ---------------------------------------------------------------------------
 
-export async function saveUseCase(useCaseId: string, opts: { priority?: "Low" | "Medium" | "High"; note?: string } = {}) {
+export async function saveUseCase(
+  useCaseId: string,
+  opts: { priority?: "Low" | "Medium" | "High"; note?: string } = {},
+) {
   const user = await getCurrentUser();
   if (!user) throw new ServiceError("Sign in to save use cases");
   const { error } = await supabase.from("saved_use_cases").upsert(
@@ -441,10 +453,12 @@ export async function getSavedUseCases() {
   if (!user) return [];
   const { data, error } = await supabase
     .from("saved_use_cases")
-    .select(`
+    .select(
+      `
       use_case_id, priority, note, saved_at,
       use_cases ( ${USE_CASE_LIST_SELECT} )
-    `)
+    `,
+    )
     .eq("user_id", user.id)
     .order("saved_at", { ascending: false });
   return unwrap(data, error, []);
@@ -471,7 +485,9 @@ export async function createUseCaseScore(payload: ScorePayload) {
     readiness: payload.readiness ?? 0,
     ttv: payload.ttv ?? 0,
   };
-  const total = Math.round((dims.strategic + dims.value + dims.feasibility + dims.risk + dims.readiness + dims.ttv) / 6);
+  const total = Math.round(
+    (dims.strategic + dims.value + dims.feasibility + dims.risk + dims.readiness + dims.ttv) / 6,
+  );
   const { data, error } = await supabase
     .from("use_case_scores")
     .upsert(
@@ -487,10 +503,7 @@ export async function createUseCaseScore(payload: ScorePayload) {
 export async function getUseCaseScores() {
   const user = await getCurrentUser();
   if (!user) return [];
-  const { data, error } = await supabase
-    .from("use_case_scores")
-    .select("*")
-    .eq("user_id", user.id);
+  const { data, error } = await supabase.from("use_case_scores").select("*").eq("user_id", user.id);
   return unwrap(data, error, []);
 }
 
@@ -511,10 +524,12 @@ export async function getPortfolios() {
   if (!user) return [];
   const { data, error } = await supabase
     .from("portfolios")
-    .select(`
+    .select(
+      `
       id, name, objective, created_at, updated_at,
       portfolio_items ( use_case_id, added_at )
-    `)
+    `,
+    )
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
   return unwrap(data, error, []);
@@ -523,7 +538,10 @@ export async function getPortfolios() {
 export async function addUseCaseToPortfolio(portfolioId: string, useCaseId: string) {
   const { error } = await supabase
     .from("portfolio_items")
-    .upsert({ portfolio_id: portfolioId, use_case_id: useCaseId }, { onConflict: "portfolio_id,use_case_id" });
+    .upsert(
+      { portfolio_id: portfolioId, use_case_id: useCaseId },
+      { onConflict: "portfolio_id,use_case_id" },
+    );
   if (error) throw new ServiceError(error.message, error);
 }
 
@@ -614,7 +632,9 @@ export interface AdminListFilters {
 export async function adminGetAllUseCases(filters: AdminListFilters = {}) {
   let query = supabase
     .from("use_cases")
-    .select("id, slug, title, summary, status, is_featured, show_on_landing, display_order, published_at, updated_at")
+    .select(
+      "id, slug, title, summary, status, is_featured, show_on_landing, display_order, published_at, updated_at",
+    )
     .order("updated_at", { ascending: false });
   if (filters.status?.length) query = query.in("status", filters.status);
   if (filters.q?.trim()) {
@@ -669,7 +689,15 @@ export async function adminDuplicateUseCase(id: string) {
   if (srcErr) throw new ServiceError(srcErr.message, srcErr);
   if (!source) throw new ServiceError("Source use case not found");
   const user = await getCurrentUser();
-  const { id: _id, slug, title, created_at: _ca, updated_at: _ua, published_at: _pa, ...rest } = source as any;
+  const {
+    id: _id,
+    slug,
+    title,
+    created_at: _ca,
+    updated_at: _ua,
+    published_at: _pa,
+    ...rest
+  } = source as any;
   const copy = {
     ...rest,
     slug: `${slug}-copy-${Date.now()}`,
@@ -694,10 +722,7 @@ export async function adminGetLeads(limit = 200) {
 }
 
 export async function adminGetCTAAnalytics(opts: { since?: string; limit?: number } = {}) {
-  let query = supabase
-    .from("cta_events")
-    .select("*")
-    .order("created_at", { ascending: false });
+  let query = supabase.from("cta_events").select("*").order("created_at", { ascending: false });
   if (opts.since) query = query.gte("created_at", opts.since);
   const { data, error } = await query.limit(opts.limit ?? 500);
   return unwrap(data, error, []);

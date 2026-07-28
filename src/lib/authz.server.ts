@@ -4,11 +4,7 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import {
-  resolveEdition,
-  resolveFoundingAccess,
-  type FoundingAccessConfig,
-} from "./authz/editions";
+import { resolveEdition, resolveFoundingAccess, type FoundingAccessConfig } from "./authz/editions";
 import { mergeCapabilityFlags, type CapabilityFlags } from "./authz/flags";
 import { isPlatformAdminRole, resolveWorkspaceRole } from "./authz/roles";
 import type { AuthzSubject } from "./authz/permission-service";
@@ -120,9 +116,7 @@ export async function resolveSubject(
     founding,
   );
 
-  const roles = ((rolesResult.data ?? []) as Array<{ role: string }>).map(
-    (r) => r.role,
-  );
+  const roles = ((rolesResult.data ?? []) as Array<{ role: string }>).map((r) => r.role);
 
   return {
     userId,

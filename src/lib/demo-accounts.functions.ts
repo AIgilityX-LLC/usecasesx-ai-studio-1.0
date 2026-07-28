@@ -9,11 +9,41 @@ export type DemoAccount = {
 };
 
 export const DEMO_ACCOUNTS: DemoAccount[] = [
-  { email: "admin@demo.usecasex.app",     password: "Demo@123", label: "Admin",      role: "admin",     plan_type: "enterprise" },
-  { email: "moderator@demo.usecasex.app", password: "Demo@123", label: "Moderator",  role: "moderator", plan_type: "pro" },
-  { email: "enterprise@demo.usecasex.app",password: "Demo@123", label: "Enterprise", role: null,        plan_type: "enterprise" },
-  { email: "pro@demo.usecasex.app",       password: "Demo@123", label: "Pro",        role: null,        plan_type: "pro" },
-  { email: "lite@demo.usecasex.app",      password: "Demo@123", label: "Lite",       role: null,        plan_type: "lite" },
+  {
+    email: "admin@demo.usecasex.app",
+    password: "Demo@123",
+    label: "Admin",
+    role: "admin",
+    plan_type: "enterprise",
+  },
+  {
+    email: "moderator@demo.usecasex.app",
+    password: "Demo@123",
+    label: "Moderator",
+    role: "moderator",
+    plan_type: "pro",
+  },
+  {
+    email: "enterprise@demo.usecasex.app",
+    password: "Demo@123",
+    label: "Enterprise",
+    role: null,
+    plan_type: "enterprise",
+  },
+  {
+    email: "pro@demo.usecasex.app",
+    password: "Demo@123",
+    label: "Pro",
+    role: null,
+    plan_type: "pro",
+  },
+  {
+    email: "lite@demo.usecasex.app",
+    password: "Demo@123",
+    label: "Lite",
+    role: null,
+    plan_type: "lite",
+  },
 ];
 
 export const seedDemoAccounts = createServerFn({ method: "POST" }).handler(async () => {
@@ -53,17 +83,23 @@ export const seedDemoAccounts = createServerFn({ method: "POST" }).handler(async
     if (!userId) continue;
 
     // Upsert profile with plan
-    await supabaseAdmin.from("profiles").upsert(
-      { user_id: userId, email: acct.email, plan_type: acct.plan_type, full_name: `${acct.label} Demo` },
-      { onConflict: "user_id" },
-    );
+    await supabaseAdmin
+      .from("profiles")
+      .upsert(
+        {
+          user_id: userId,
+          email: acct.email,
+          plan_type: acct.plan_type,
+          full_name: `${acct.label} Demo`,
+        },
+        { onConflict: "user_id" },
+      );
 
     // Assign role (if any)
     if (acct.role) {
-      await supabaseAdmin.from("user_roles").upsert(
-        { user_id: userId, role: acct.role },
-        { onConflict: "user_id,role" },
-      );
+      await supabaseAdmin
+        .from("user_roles")
+        .upsert({ user_id: userId, role: acct.role }, { onConflict: "user_id,role" });
     }
 
     results.push({ email: acct.email, created });

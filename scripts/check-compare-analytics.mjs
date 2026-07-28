@@ -33,9 +33,7 @@ const EXPECTED_INTERACTIONS = [
   "row_expand",
 ];
 
-const missing = EXPECTED_INTERACTIONS.filter(
-  (i) => !src.includes(`interaction: "${i}"`),
-);
+const missing = EXPECTED_INTERACTIONS.filter((i) => !src.includes(`interaction: "${i}"`));
 
 if (missing.length > 0) {
   console.error("\u001b[31m✗ /compare is missing analytics events:\u001b[0m");
@@ -56,7 +54,9 @@ if (compareCalls < EXPECTED_INTERACTIONS.length) {
 console.log("• type-checking (tsgo)…");
 const tc = spawnSync("bunx", ["tsgo", "--noEmit"], { cwd: root, stdio: "inherit" });
 if (tc.status !== 0) {
-  console.error("\u001b[31m✗ type-check failed — /compare (or the project) does not compile\u001b[0m");
+  console.error(
+    "\u001b[31m✗ type-check failed — /compare (or the project) does not compile\u001b[0m",
+  );
   process.exit(tc.status ?? 1);
 }
 

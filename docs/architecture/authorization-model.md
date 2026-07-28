@@ -6,17 +6,17 @@ capability flags.
 
 ## Modules
 
-| File | Responsibility |
-|---|---|
-| `src/lib/authz/editions.ts` | Edition enum/rank, plan-code mapping, **Founding Access configuration**, `resolveEdition()` |
-| `src/lib/authz/roles.ts` | Launch roles (Owner, Admin, Contributor, Facilitator, Viewer), alias normalization, platform-admin roles |
-| `src/lib/authz/flags.ts` | Capability flags for unshipped Enterprise features (default OFF) |
-| `src/lib/authz/catalogue.ts` | **Entitlement catalogue** — every gated capability with its min edition, allowed roles and flag |
-| `src/lib/authz/permission-service.ts` | `evaluate` / `can` / `evaluateAll` / `assertEntitled` — pure, isomorphic decision engine |
-| `src/lib/authz.server.ts` | Server-only subject resolution from profiles, `user_roles`, memberships and org entitlements |
-| `src/lib/authz.functions.ts` | `getAuthzContextFn`, `checkEntitlementFn` (authenticated server functions) |
-| `src/hooks/useAuthz.ts` | Client entry point — mirrors the server decision |
-| `src/components/RequireEntitlement.tsx` | Declarative UI gate with honest locked states |
+| File                                    | Responsibility                                                                                           |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `src/lib/authz/editions.ts`             | Edition enum/rank, plan-code mapping, **Founding Access configuration**, `resolveEdition()`              |
+| `src/lib/authz/roles.ts`                | Launch roles (Owner, Admin, Contributor, Facilitator, Viewer), alias normalization, platform-admin roles |
+| `src/lib/authz/flags.ts`                | Capability flags for unshipped Enterprise features (default OFF)                                         |
+| `src/lib/authz/catalogue.ts`            | **Entitlement catalogue** — every gated capability with its min edition, allowed roles and flag          |
+| `src/lib/authz/permission-service.ts`   | `evaluate` / `can` / `evaluateAll` / `assertEntitled` — pure, isomorphic decision engine                 |
+| `src/lib/authz.server.ts`               | Server-only subject resolution from profiles, `user_roles`, memberships and org entitlements             |
+| `src/lib/authz.functions.ts`            | `getAuthzContextFn`, `checkEntitlementFn` (authenticated server functions)                               |
+| `src/hooks/useAuthz.ts`                 | Client entry point — mirrors the server decision                                                         |
+| `src/components/RequireEntitlement.tsx` | Declarative UI gate with honest locked states                                                            |
 
 ## Decision order
 
@@ -46,15 +46,15 @@ After expiry, founding members degrade silently to Lite — no separate code pat
 
 ## Capability flags
 
-| Flag | Env (server / browser) | Default |
-|---|---|---|
-| `opportunityMap` | `CAPABILITY_OPPORTUNITY_MAP` / `VITE_CAPABILITY_OPPORTUNITY_MAP` | on |
-| `workshopMode` | `CAPABILITY_WORKSHOP_MODE` / `VITE_…` | off |
-| `stageGates` | `CAPABILITY_STAGE_GATES` / `VITE_…` | off |
-| `multiEntity` | `CAPABILITY_MULTI_ENTITY` / `VITE_…` | off |
-| `integrations` | `CAPABILITY_INTEGRATIONS` / `VITE_…` | off |
-| `sso` | `CAPABILITY_SSO` / `VITE_…` | off |
-| `fullAudit` | `CAPABILITY_FULL_AUDIT` / `VITE_…` | off |
+| Flag             | Env (server / browser)                                           | Default |
+| ---------------- | ---------------------------------------------------------------- | ------- |
+| `opportunityMap` | `CAPABILITY_OPPORTUNITY_MAP` / `VITE_CAPABILITY_OPPORTUNITY_MAP` | on      |
+| `workshopMode`   | `CAPABILITY_WORKSHOP_MODE` / `VITE_…`                            | off     |
+| `stageGates`     | `CAPABILITY_STAGE_GATES` / `VITE_…`                              | off     |
+| `multiEntity`    | `CAPABILITY_MULTI_ENTITY` / `VITE_…`                             | off     |
+| `integrations`   | `CAPABILITY_INTEGRATIONS` / `VITE_…`                             | off     |
+| `sso`            | `CAPABILITY_SSO` / `VITE_…`                                      | off     |
+| `fullAudit`      | `CAPABILITY_FULL_AUDIT` / `VITE_…`                               | off     |
 
 ## Enforcement rule
 

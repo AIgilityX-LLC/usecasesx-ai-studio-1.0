@@ -60,7 +60,6 @@ Order matters: each migration is atomic; every `CREATE TABLE public.<t>` in the 
   Verification: `docs/architecture/tenancy-verification-queries.md`.
 - Reindex hot paths identified by `bun run test:e2e` p95 metrics.
 
-
 ---
 
 ## Deferred / prohibited during launch window
@@ -80,10 +79,10 @@ For every migration:
 
 ## Owner sign-off
 
-| Migration | Owner | Reviewer | Status |
-|---|---|---|---|
-| A1 | @db-owner | @security | pending |
-| A2 | @db-owner | @security | pending |
-| A3 | @studio-owner | @db-owner | pending |
-| A4 | @analytics-owner | @security | pending |
-| A5 | @entitlements-owner | @security | pending |
+| Migration | Owner               | Reviewer  | Status  |
+| --------- | ------------------- | --------- | ------- |
+| A1        | @db-owner           | @security | pending |
+| A2        | @db-owner           | @security | pending |
+| A3        | @studio-owner       | @db-owner | pending |
+| A4        | @analytics-owner    | @security | pending |
+| A5        | @entitlements-owner | @security | pending |

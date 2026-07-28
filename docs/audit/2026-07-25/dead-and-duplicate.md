@@ -2,16 +2,16 @@
 
 ## Sidebar items whose target is only a redirect or stub
 
-| Sidebar label | Target | Actual | Recommendation |
-|---|---|---|---|
-| Feasibility Scoring | `/feasibility` | `redirect → /studio` | Delist; use per-use-case route. |
-| Data Readiness | `/data-readiness` | `redirect → /studio` | Delist. |
-| Blueprint Builder | `/blueprint` | `redirect → /studio` | Delist. |
-| Portfolio Roadmap | `/roadmap` | `ComingSoonGate` | Keep with clear "Coming" label OR link to `/studio/portfolio`. |
-| Pattern Library | `/patterns` | `ModuleStub` | Label "Q4 2026". |
-| AdvisorX Guidance | `/advisorx` | Coming Soon | Keep, ensure entitlement lock messaging. |
-| C3G Governance | `/cyberx/c3g/intake` | Coming Soon | Keep, ensure entitlement lock messaging. |
-| Reports | `/reports` | Live UI on **mock** data | **P0** — switch to live data before launch. |
+| Sidebar label       | Target               | Actual                   | Recommendation                                                 |
+| ------------------- | -------------------- | ------------------------ | -------------------------------------------------------------- |
+| Feasibility Scoring | `/feasibility`       | `redirect → /studio`     | Delist; use per-use-case route.                                |
+| Data Readiness      | `/data-readiness`    | `redirect → /studio`     | Delist.                                                        |
+| Blueprint Builder   | `/blueprint`         | `redirect → /studio`     | Delist.                                                        |
+| Portfolio Roadmap   | `/roadmap`           | `ComingSoonGate`         | Keep with clear "Coming" label OR link to `/studio/portfolio`. |
+| Pattern Library     | `/patterns`          | `ModuleStub`             | Label "Q4 2026".                                               |
+| AdvisorX Guidance   | `/advisorx`          | Coming Soon              | Keep, ensure entitlement lock messaging.                       |
+| C3G Governance      | `/cyberx/c3g/intake` | Coming Soon              | Keep, ensure entitlement lock messaging.                       |
+| Reports             | `/reports`           | Live UI on **mock** data | **P0** — switch to live data before launch.                    |
 
 ## Mock / hard-coded data still reaching Pro surfaces
 
@@ -27,15 +27,15 @@
 
 ## Orphan routes (exist, not in sidebar or top nav)
 
-| Path | Notes |
-|---|---|
-| `/decision` | Stub only. Defer. |
-| `/impact-assessment` | Stub only. Defer. |
-| `/api-integration` | Marketing preview for suite integration; not linked. |
-| `/module-analytics` | Admin-relevant; add to Admin sidebar. |
-| `/entitlement` | Debug page; restrict to admins + `noindex`. |
-| `/sectors/$sector` | Reachable from Discover only via slug guess. Verify. |
-| `/segments/$segment` | Same as above. |
+| Path                 | Notes                                                |
+| -------------------- | ---------------------------------------------------- |
+| `/decision`          | Stub only. Defer.                                    |
+| `/impact-assessment` | Stub only. Defer.                                    |
+| `/api-integration`   | Marketing preview for suite integration; not linked. |
+| `/module-analytics`  | Admin-relevant; add to Admin sidebar.                |
+| `/entitlement`       | Debug page; restrict to admins + `noindex`.          |
+| `/sectors/$sector`   | Reachable from Discover only via slug guess. Verify. |
+| `/segments/$segment` | Same as above.                                       |
 
 ## Terminology inconsistencies
 

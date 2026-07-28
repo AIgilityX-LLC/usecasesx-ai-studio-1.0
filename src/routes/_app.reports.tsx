@@ -16,7 +16,13 @@ import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Printer, FileDown, Send, FileText } from "lucide-react";
@@ -39,7 +45,15 @@ const REPORT_TYPES: ReportType[] = [
 ];
 
 const ECOSYSTEM = [
-  "UseCasesX", "AI Readiness", "AI ROI", "SARPI", "CyberX", "AdvisorX", "FlowX", "PrivacyX", "AssureX",
+  "UseCasesX",
+  "AI Readiness",
+  "AI ROI",
+  "SARPI",
+  "CyberX",
+  "AdvisorX",
+  "FlowX",
+  "PrivacyX",
+  "AssureX",
 ];
 
 type Profile = {
@@ -53,7 +67,11 @@ export const Route = createFileRoute("/_app/reports")({
   head: () => ({
     meta: [
       { title: "AI Opportunity Reports — UseCasesX™ Pro" },
-      { name: "description", content: "Generate executive AI opportunity reports, quick-win briefs and board packs ready for print or PDF." },
+      {
+        name: "description",
+        content:
+          "Generate executive AI opportunity reports, quick-win briefs and board packs ready for print or PDF.",
+      },
     ],
   }),
   component: ReportsPage,
@@ -74,7 +92,10 @@ function ReportsPage() {
 
   useEffect(() => {
     if (session === undefined) return;
-    if (session === null) { navigate({ to: "/pro", replace: true }); return; }
+    if (session === null) {
+      navigate({ to: "/pro", replace: true });
+      return;
+    }
     let active = true;
     (async () => {
       const { data: p } = await supabase
@@ -83,11 +104,16 @@ function ReportsPage() {
         .eq("user_id", session.user.id)
         .maybeSingle();
       if (!active) return;
-      if (!p?.profile_completed) { navigate({ to: "/profile", replace: true }); return; }
+      if (!p?.profile_completed) {
+        navigate({ to: "/profile", replace: true });
+        return;
+      }
       setProfile(p);
       setLoading(false);
     })();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [session, navigate]);
 
   // Pre-select saved use cases based on report type
@@ -116,9 +142,16 @@ function ReportsPage() {
       .map((slug) => {
         const uc = MOCK_USE_CASES.find((u) => u.slug === slug);
         const entry = store.saved.find((s) => s.useCaseSlug === slug);
-        return uc ? { uc, score: entry?.score, note: entry?.note, priority: entry?.priority } : null;
+        return uc
+          ? { uc, score: entry?.score, note: entry?.note, priority: entry?.priority }
+          : null;
       })
-      .filter(Boolean) as Array<{ uc: MockUseCase; score?: ScoreDimensions; note?: string; priority?: string }>;
+      .filter(Boolean) as Array<{
+      uc: MockUseCase;
+      score?: ScoreDimensions;
+      note?: string;
+      priority?: string;
+    }>;
   }, [selectedSlugs, store.saved]);
 
   const handlePrint = () => {
@@ -132,7 +165,9 @@ function ReportsPage() {
   };
 
   if (loading) {
-    return <div className="mx-auto max-w-4xl px-6 py-16 text-sm text-muted-foreground">Loading…</div>;
+    return (
+      <div className="mx-auto max-w-4xl px-6 py-16 text-sm text-muted-foreground">Loading…</div>
+    );
   }
 
   return (
@@ -155,8 +190,12 @@ function ReportsPage() {
           description="Generate executive-ready reports from your saved use cases, scores and portfolios."
           actions={
             <>
-              <Button asChild variant="outline"><Link to="/my-use-cases">Saved</Link></Button>
-              <Button asChild variant="outline"><Link to="/portfoliox">Portfolios</Link></Button>
+              <Button asChild variant="outline">
+                <Link to="/my-use-cases">Saved</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/portfoliox">Portfolios</Link>
+              </Button>
             </>
           }
         />
@@ -164,33 +203,57 @@ function ReportsPage() {
       <section className="border-b border-border bg-secondary/40 no-print">
         <div className="mx-auto max-w-[1280px] px-6 py-10 space-y-6">
           <Card>
-            <CardHeader><CardTitle className="text-base">Configure report</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="text-base">Configure report</CardTitle>
+            </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs uppercase tracking-wide text-muted-foreground">Report type</label>
+                <label className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Report type
+                </label>
                 <Select value={reportType} onValueChange={(v) => setReportType(v as ReportType)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    {REPORT_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                    {REPORT_TYPES.map((t) => (
+                      <SelectItem key={t} value={t}>
+                        {t}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               {reportType === "AI Opportunity Portfolio Report" && (
                 <div className="space-y-1.5">
-                  <label className="text-xs uppercase tracking-wide text-muted-foreground">Portfolio</label>
+                  <label className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Portfolio
+                  </label>
                   <Select value={portfolioId} onValueChange={setPortfolioId}>
-                    <SelectTrigger><SelectValue placeholder="Select a portfolio" /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a portfolio" />
+                    </SelectTrigger>
                     <SelectContent>
-                      {store.portfolios.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+                      {store.portfolios.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
               )}
               <div className="space-y-1.5 md:col-span-3">
-                <label className="text-xs uppercase tracking-wide text-muted-foreground">Use cases to include</label>
+                <label className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Use cases to include
+                </label>
                 {store.saved.length === 0 ? (
                   <p className="text-sm text-muted-foreground">
-                    No saved use cases. <Link to="/repository" className="underline">Browse the catalogue</Link>.
+                    No saved use cases.{" "}
+                    <Link to="/repository" className="underline">
+                      Browse the catalogue
+                    </Link>
+                    .
                   </p>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-56 overflow-auto rounded-md border p-2">
@@ -199,13 +262,17 @@ function ReportsPage() {
                       if (!uc) return null;
                       const checked = selectedSlugs.has(s.useCaseSlug);
                       return (
-                        <label key={s.useCaseSlug} className="flex items-start gap-2 text-sm cursor-pointer rounded p-1.5 hover:bg-muted">
+                        <label
+                          key={s.useCaseSlug}
+                          className="flex items-start gap-2 text-sm cursor-pointer rounded p-1.5 hover:bg-muted"
+                        >
                           <Checkbox
                             checked={checked}
                             onCheckedChange={(c) => {
                               setSelectedSlugs((prev) => {
                                 const next = new Set(prev);
-                                if (c) next.add(s.useCaseSlug); else next.delete(s.useCaseSlug);
+                                if (c) next.add(s.useCaseSlug);
+                                else next.delete(s.useCaseSlug);
                                 return next;
                               });
                             }}
@@ -248,13 +315,21 @@ function ReportsPage() {
               <FileDown className="w-4 h-4 mr-1" /> Download PDF
             </Button>
             <Separator orientation="vertical" className="h-9 mx-1" />
-            <Button variant="secondary" onClick={() => handleSendTo("AdvisorX")} disabled={!generated}>
+            <Button
+              variant="secondary"
+              onClick={() => handleSendTo("AdvisorX")}
+              disabled={!generated}
+            >
               <Send className="w-4 h-4 mr-1" /> Send to AdvisorX
             </Button>
             <Button variant="secondary" onClick={() => handleSendTo("SARPI")} disabled={!generated}>
               <Send className="w-4 h-4 mr-1" /> Send to SARPI
             </Button>
-            <Button variant="secondary" onClick={() => handleSendTo("CyberX")} disabled={!generated}>
+            <Button
+              variant="secondary"
+              onClick={() => handleSendTo("CyberX")}
+              disabled={!generated}
+            >
               <Send className="w-4 h-4 mr-1" /> Send to CyberX
             </Button>
           </div>
@@ -263,12 +338,20 @@ function ReportsPage() {
 
       {generated && (
         <section className="bg-muted/30 py-10 px-6">
-          <div ref={printRef} id="usecasex-report" className="mx-auto max-w-[900px] bg-white text-slate-900 rounded-lg shadow-sm border border-border print:shadow-none print:border-0 p-10 space-y-8">
+          <div
+            ref={printRef}
+            id="usecasex-report"
+            className="mx-auto max-w-[900px] bg-white text-slate-900 rounded-lg shadow-sm border border-border print:shadow-none print:border-0 p-10 space-y-8"
+          >
             <ReportBody
               reportType={reportType}
               profile={profile}
               items={selectedItems}
-              portfolio={reportType === "AI Opportunity Portfolio Report" ? store.portfolios.find((p) => p.id === portfolioId) : undefined}
+              portfolio={
+                reportType === "AI Opportunity Portfolio Report"
+                  ? store.portfolios.find((p) => p.id === portfolioId)
+                  : undefined
+              }
             />
           </div>
         </section>
@@ -278,7 +361,10 @@ function ReportsPage() {
 }
 
 function ReportBody({
-  reportType, profile, items, portfolio,
+  reportType,
+  profile,
+  items,
+  portfolio,
 }: {
   reportType: ReportType;
   profile: Profile | null;
@@ -291,8 +377,14 @@ function ReportBody({
     : 0;
 
   const highValue = items.filter((i) => computeTotalScore(i.score) >= 80);
-  const planning = items.filter((i) => { const t = computeTotalScore(i.score); return t >= 60 && t < 80; });
-  const readiness = items.filter((i) => { const t = computeTotalScore(i.score); return t >= 40 && t < 60; });
+  const planning = items.filter((i) => {
+    const t = computeTotalScore(i.score);
+    return t >= 60 && t < 80;
+  });
+  const readiness = items.filter((i) => {
+    const t = computeTotalScore(i.score);
+    return t >= 40 && t < 60;
+  });
   const lowPriority = items.filter((i) => computeTotalScore(i.score) < 40 && i.score);
 
   const highRisk = items.filter((i) => i.uc.riskLevel === "High" || i.uc.riskLevel === "Critical");
@@ -303,12 +395,22 @@ function ReportBody({
       {/* Branded header */}
       <header className="flex items-start justify-between border-b border-slate-200 pb-6">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-indigo-600">AIgilityX™ · UseCasesX™</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-indigo-600">
+            AIgilityX™ · UseCasesX™
+          </p>
           <h1 className="text-3xl font-semibold mt-2 leading-tight">{reportType}</h1>
-          <p className="text-sm text-slate-500 mt-2">{new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}</p>
+          <p className="text-sm text-slate-500 mt-2">
+            {new Date().toLocaleDateString(undefined, {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
         </div>
         <div className="text-right text-xs text-slate-500">
-          <p className="font-semibold text-slate-900">{profile?.organization ?? "Your organization"}</p>
+          <p className="font-semibold text-slate-900">
+            {profile?.organization ?? "Your organization"}
+          </p>
           <p>{profile?.full_name ?? "—"}</p>
           {profile?.role && <p>{profile.role}</p>}
           {profile?.industry && <p>{profile.industry}</p>}
@@ -322,7 +424,9 @@ function ReportBody({
             <Meta label="Type" value={portfolio.type} />
             <Meta label="Status" value={portfolio.status} />
             {portfolio.objective && <Meta label="Objective" value={portfolio.objective} wide />}
-            {portfolio.targetDepartment && <Meta label="Department" value={portfolio.targetDepartment} />}
+            {portfolio.targetDepartment && (
+              <Meta label="Department" value={portfolio.targetDepartment} />
+            )}
             {portfolio.targetQuarter && <Meta label="Target" value={portfolio.targetQuarter} />}
           </div>
         </Section>
@@ -337,8 +441,11 @@ function ReportBody({
           <Stat label="High-risk" value={highRisk.length} />
         </div>
         <p className="text-sm text-slate-600 mt-4 leading-relaxed">
-          This report summarises {items.length} AI use case{items.length === 1 ? "" : "s"} shortlisted by {profile?.organization ?? "your organization"}.
-          The portfolio shows an average AIgilityX composite score of {avgScore || "—"}/100, with {highValue.length} flagged as high-priority quick wins or strategic plays and {highRisk.length} requiring elevated governance attention.
+          This report summarises {items.length} AI use case{items.length === 1 ? "" : "s"}{" "}
+          shortlisted by {profile?.organization ?? "your organization"}. The portfolio shows an
+          average AIgilityX composite score of {avgScore || "—"}/100, with {highValue.length}{" "}
+          flagged as high-priority quick wins or strategic plays and {highRisk.length} requiring
+          elevated governance attention.
         </p>
       </Section>
 
@@ -353,11 +460,17 @@ function ReportBody({
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h3 className="font-semibold text-slate-900">{uc.title}</h3>
-                    <p className="text-xs text-slate-500 mt-1">{uc.industry.name} · {uc.businessFunction} · {uc.aiType}</p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {uc.industry.name} · {uc.businessFunction} · {uc.aiType}
+                    </p>
                   </div>
                   <div className="text-right shrink-0">
                     <div className="text-2xl font-semibold tabular-nums">{score ? total : "—"}</div>
-                    {priority && <div className="text-[10px] uppercase tracking-wide text-slate-500">{priority}</div>}
+                    {priority && (
+                      <div className="text-[10px] uppercase tracking-wide text-slate-500">
+                        {priority}
+                      </div>
+                    )}
                   </div>
                 </div>
                 <p className="text-sm text-slate-600 mt-2 leading-snug">{uc.summary}</p>
@@ -369,7 +482,11 @@ function ReportBody({
                   <Tag>Maturity: {uc.maturity}</Tag>
                 </div>
                 {interp && <p className="text-[11px] text-slate-500 mt-2 italic">{interp.label}</p>}
-                {note && <p className="text-xs text-slate-700 mt-2 border-l-2 border-indigo-300 pl-2">Note: {note}</p>}
+                {note && (
+                  <p className="text-xs text-slate-700 mt-2 border-l-2 border-indigo-300 pl-2">
+                    Note: {note}
+                  </p>
+                )}
               </div>
             );
           })}
@@ -384,7 +501,12 @@ function ReportBody({
               <tr className="border-b border-slate-200 text-left text-slate-500">
                 <th className="py-2 pr-2 font-medium">Use case</th>
                 {Object.values(SCORE_LABELS).map((l) => (
-                  <th key={l} className="py-2 px-1 font-medium text-center">{l.split(" ").map((w) => w[0]).join("")}</th>
+                  <th key={l} className="py-2 px-1 font-medium text-center">
+                    {l
+                      .split(" ")
+                      .map((w) => w[0])
+                      .join("")}
+                  </th>
                 ))}
                 <th className="py-2 pl-2 font-medium text-right">Total</th>
               </tr>
@@ -394,15 +516,20 @@ function ReportBody({
                 <tr key={uc.slug} className="border-b border-slate-100">
                   <td className="py-2 pr-2 truncate max-w-[280px]">{uc.title}</td>
                   {(Object.keys(SCORE_LABELS) as Array<keyof ScoreDimensions>).map((k) => (
-                    <td key={k} className="py-2 px-1 text-center tabular-nums text-slate-700">{score![k]}</td>
+                    <td key={k} className="py-2 px-1 text-center tabular-nums text-slate-700">
+                      {score![k]}
+                    </td>
                   ))}
-                  <td className="py-2 pl-2 text-right font-semibold tabular-nums">{computeTotalScore(score)}</td>
+                  <td className="py-2 pl-2 text-right font-semibold tabular-nums">
+                    {computeTotalScore(score)}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
           <p className="text-[10px] text-slate-400 mt-2">
-            Dimensions: SA Strategic Alignment · VP Value Potential · F Feasibility · TtV Time to Value · RM Risk Manageability · GR Governance Readiness
+            Dimensions: SA Strategic Alignment · VP Value Potential · F Feasibility · TtV Time to
+            Value · RM Risk Manageability · GR Governance Readiness
           </p>
         </Section>
       )}
@@ -410,10 +537,26 @@ function ReportBody({
       {/* Priority matrix */}
       <Section title="Priority Matrix">
         <div className="grid grid-cols-2 gap-3">
-          <MatrixBlock title="80–100 · Quick wins / strategic" tone="bg-emerald-50 border-emerald-200" items={highValue.map((i) => i.uc.title)} />
-          <MatrixBlock title="60–79 · Strong candidate · planning" tone="bg-blue-50 border-blue-200" items={planning.map((i) => i.uc.title)} />
-          <MatrixBlock title="40–59 · Readiness improvement" tone="bg-amber-50 border-amber-200" items={readiness.map((i) => i.uc.title)} />
-          <MatrixBlock title="0–39 · Low priority / not ready" tone="bg-slate-50 border-slate-200" items={lowPriority.map((i) => i.uc.title)} />
+          <MatrixBlock
+            title="80–100 · Quick wins / strategic"
+            tone="bg-emerald-50 border-emerald-200"
+            items={highValue.map((i) => i.uc.title)}
+          />
+          <MatrixBlock
+            title="60–79 · Strong candidate · planning"
+            tone="bg-blue-50 border-blue-200"
+            items={planning.map((i) => i.uc.title)}
+          />
+          <MatrixBlock
+            title="40–59 · Readiness improvement"
+            tone="bg-amber-50 border-amber-200"
+            items={readiness.map((i) => i.uc.title)}
+          />
+          <MatrixBlock
+            title="0–39 · Low priority / not ready"
+            tone="bg-slate-50 border-slate-200"
+            items={lowPriority.map((i) => i.uc.title)}
+          />
         </div>
       </Section>
 
@@ -422,20 +565,39 @@ function ReportBody({
         <ul className="text-sm text-slate-700 space-y-1.5 list-disc pl-5">
           <li>Confirm data availability, quality and lineage for each shortlisted use case.</li>
           <li>Validate sponsorship, change capacity and skills in target functions.</li>
-          <li>Assess platform fit (model, vector store, agent framework) against existing stack.</li>
-          <li>Send borderline (40–59) candidates to <strong>SARPI™ AI Readiness</strong> for diagnostic review.</li>
+          <li>
+            Assess platform fit (model, vector store, agent framework) against existing stack.
+          </li>
+          <li>
+            Send borderline (40–59) candidates to <strong>SARPI™ AI Readiness</strong> for
+            diagnostic review.
+          </li>
         </ul>
       </Section>
 
       {/* ROI areas */}
       <Section title="ROI Areas">
         <div className="grid grid-cols-2 gap-3 text-sm">
-          <RoiBox title="Productivity gains" desc="Time reduction, automation of repetitive tasks, copilot acceleration." />
-          <RoiBox title="Revenue uplift" desc="Personalisation, conversion, new digital products." />
-          <RoiBox title="Cost avoidance" desc="Reduced incidents, lower fraud / risk losses, less manual review." />
-          <RoiBox title="Decision quality" desc="Faster, better-informed decisions across operations and strategy." />
+          <RoiBox
+            title="Productivity gains"
+            desc="Time reduction, automation of repetitive tasks, copilot acceleration."
+          />
+          <RoiBox
+            title="Revenue uplift"
+            desc="Personalisation, conversion, new digital products."
+          />
+          <RoiBox
+            title="Cost avoidance"
+            desc="Reduced incidents, lower fraud / risk losses, less manual review."
+          />
+          <RoiBox
+            title="Decision quality"
+            desc="Faster, better-informed decisions across operations and strategy."
+          />
         </div>
-        <p className="text-xs text-slate-500 mt-3">Run <strong>AI ROI Calculator</strong> on top-scoring items to quantify value.</p>
+        <p className="text-xs text-slate-500 mt-3">
+          Run <strong>AI ROI Calculator</strong> on top-scoring items to quantify value.
+        </p>
       </Section>
 
       {/* Risk & governance */}
@@ -446,21 +608,57 @@ function ReportBody({
           <Stat label="Total in scope" value={items.length} />
         </div>
         <ul className="text-sm text-slate-700 space-y-1.5 list-disc pl-5 mt-3">
-          {highRisk.length > 0 && <li><strong>{highRisk.length}</strong> use case(s) flagged High or Critical risk — send to <strong>CyberX C3G™</strong> for governance review.</li>}
-          {agentic.length > 0 && <li><strong>{agentic.length}</strong> agentic AI opportunity(ies) — design controls and workflow handoffs in <strong>FlowX™</strong>.</li>}
-          <li>Privacy review via <strong>PrivacyX™</strong> for any use case touching personal or sensitive data.</li>
-          <li>Independent validation via <strong>AssureX™</strong> before production rollout.</li>
+          {highRisk.length > 0 && (
+            <li>
+              <strong>{highRisk.length}</strong> use case(s) flagged High or Critical risk — send to{" "}
+              <strong>CyberX C3G™</strong> for governance review.
+            </li>
+          )}
+          {agentic.length > 0 && (
+            <li>
+              <strong>{agentic.length}</strong> agentic AI opportunity(ies) — design controls and
+              workflow handoffs in <strong>FlowX™</strong>.
+            </li>
+          )}
+          <li>
+            Privacy review via <strong>PrivacyX™</strong> for any use case touching personal or
+            sensitive data.
+          </li>
+          <li>
+            Independent validation via <strong>AssureX™</strong> before production rollout.
+          </li>
         </ul>
       </Section>
 
       {/* Next steps */}
       <Section title="Recommended AIgilityX Next Steps">
         <ol className="text-sm text-slate-700 space-y-2 list-decimal pl-5">
-          {highValue.length > 0 && <li>Move {highValue.length} high-priority use case(s) into a <strong>Quick Wins portfolio</strong> and trigger AI ROI calculation.</li>}
-          {readiness.length > 0 && <li>Send {readiness.length} medium-score use case(s) to <strong>SARPI AI Readiness</strong> diagnostic.</li>}
-          {highRisk.length > 0 && <li>Route {highRisk.length} high-risk use case(s) to <strong>CyberX Governance Review</strong>.</li>}
-          <li>Use <strong>AdvisorX</strong> to align portfolio with executive strategy and board priorities.</li>
-          <li>Pilot top-scoring use cases via <strong>FlowX</strong> and validate with <strong>AssureX</strong> before scale-up.</li>
+          {highValue.length > 0 && (
+            <li>
+              Move {highValue.length} high-priority use case(s) into a{" "}
+              <strong>Quick Wins portfolio</strong> and trigger AI ROI calculation.
+            </li>
+          )}
+          {readiness.length > 0 && (
+            <li>
+              Send {readiness.length} medium-score use case(s) to{" "}
+              <strong>SARPI AI Readiness</strong> diagnostic.
+            </li>
+          )}
+          {highRisk.length > 0 && (
+            <li>
+              Route {highRisk.length} high-risk use case(s) to{" "}
+              <strong>CyberX Governance Review</strong>.
+            </li>
+          )}
+          <li>
+            Use <strong>AdvisorX</strong> to align portfolio with executive strategy and board
+            priorities.
+          </li>
+          <li>
+            Pilot top-scoring use cases via <strong>FlowX</strong> and validate with{" "}
+            <strong>AssureX</strong> before scale-up.
+          </li>
         </ol>
       </Section>
 
@@ -489,7 +687,9 @@ function ReportBody({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="space-y-3">
-      <h2 className="text-sm font-semibold uppercase tracking-wider text-indigo-700 border-l-4 border-indigo-500 pl-2">{title}</h2>
+      <h2 className="text-sm font-semibold uppercase tracking-wider text-indigo-700 border-l-4 border-indigo-500 pl-2">
+        {title}
+      </h2>
       {children}
     </section>
   );
@@ -514,7 +714,11 @@ function Meta({ label, value, wide }: { label: string; value: string; wide?: boo
 }
 
 function Tag({ children }: { children: React.ReactNode }) {
-  return <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">{children}</span>;
+  return (
+    <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+      {children}
+    </span>
+  );
 }
 
 function MatrixBlock({ title, tone, items }: { title: string; tone: string; items: string[] }) {
@@ -525,7 +729,9 @@ function MatrixBlock({ title, tone, items }: { title: string; tone: string; item
         <p className="text-[11px] text-slate-500 italic">None</p>
       ) : (
         <ul className="text-xs text-slate-700 space-y-1 list-disc pl-4">
-          {items.map((t) => <li key={t}>{t}</li>)}
+          {items.map((t) => (
+            <li key={t}>{t}</li>
+          ))}
         </ul>
       )}
     </div>

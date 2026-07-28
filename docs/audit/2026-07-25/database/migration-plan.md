@@ -5,6 +5,7 @@ scope, backfill, verification query and rollback / forward-fix. Grouped by
 phase to match the 20-day release board.
 
 Rules (AGENTS.md §5):
+
 - Additive only until further notice.
 - Every `CREATE TABLE public.<t>` → `GRANT` → `ENABLE RLS` → `CREATE POLICY`
   in the same migration.
@@ -18,7 +19,7 @@ Rules (AGENTS.md §5):
 - **Concern**: anon caller could send `user_id = <someone-else>`.
 - **Action**: inspect each policy's `WITH CHECK`. If missing
   `(user_id IS NULL OR user_id = auth.uid())`, propose an additive `ALTER
-  POLICY` (drop + create with tightened `WITH CHECK`) in a follow-up.
+POLICY` (drop + create with tightened `WITH CHECK`) in a follow-up.
 - **Verification**:
 
   ```sql
@@ -114,16 +115,19 @@ Rules (AGENTS.md §5):
 ## Phase B — Post-launch (naming, memberships, entitlements)
 
 ### B1. Standardise ownership column naming
+
 - Add generated columns (e.g. `owner_id GENERATED ALWAYS AS (COALESCE(user_id, created_by)) STORED`)
   as a compatibility shim, then update queries incrementally. **No renames.**
 
 ### B2. `memberships` table (multi-user workspaces)
+
 - New table `workspace_members(workspace_id, user_id, role, invited_by, joined_at)`.
 - GRANT + RLS + policies added in the same migration.
 - Replace `user_in_workspace` predicate body to consult the table.
 - Backfill: one row per `(profiles.organization_id → workspaces.id, profiles.user_id, 'owner')`.
 
 ### B3. `entitlements` table (Founding Access ledger)
+
 - New table `user_entitlements(user_id, tier, source, granted_at, expires_at, revoked_at, notes)`.
 - `has_pro_entitlement` rewritten to read from the ledger with a fallback
   to `profiles.entitlement_tier` for backward compatibility.
@@ -132,6 +136,7 @@ Rules (AGENTS.md §5):
 ## Phase C — Enterprise runway
 
 ### C1. Denormalise `workspace_id` onto tenant child tables
+
 - Add nullable `workspace_id` to `ai_use_cases`, `blueprints`,
   `feasibility_scores`, `data_readiness_assessments`, `integration_links`,
   `use_case_deliverables`.
@@ -141,6 +146,7 @@ Rules (AGENTS.md §5):
 - Simplifies RLS and enables per-tenant partitioning.
 
 ### C2. Partition `audit_events` by month
+
 - `PARTITION BY RANGE (created_at)`, one partition per month, retention
   policy job. Requires a staged move, out of scope for launch.
 

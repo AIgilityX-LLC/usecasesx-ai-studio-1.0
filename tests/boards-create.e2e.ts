@@ -110,7 +110,9 @@ async function main() {
   // Cleanup.
   await admin.from("use_case_boards").delete().eq("id", created.id);
 
-  console.log(failures === 0 ? "\nAll create-board assertions passed." : `\n${failures} assertion(s) failed.`);
+  console.log(
+    failures === 0 ? "\nAll create-board assertions passed." : `\n${failures} assertion(s) failed.`,
+  );
   process.exit(failures === 0 ? 0 : 1);
 }
 

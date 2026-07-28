@@ -8,10 +8,10 @@ Enterprise — one codebase, one event vocabulary.
 Two different questions need answering after launch, and they must not be
 mixed:
 
-| Question | Surface | Table |
-|---|---|---|
-| "Who changed what, when, in which workspace?" | governance / enterprise evidence | `audit_events` |
-| "Are people actually getting through the journey?" | launch learning | `product_events` |
+| Question                                           | Surface                          | Table            |
+| -------------------------------------------------- | -------------------------------- | ---------------- |
+| "Who changed what, when, in which workspace?"      | governance / enterprise evidence | `audit_events`   |
+| "Are people actually getting through the journey?" | launch learning                  | `product_events` |
 
 Both are **append-only**, **tenant-scoped** and **attributable**. Neither ever
 stores secrets, prompt text or personal data.
@@ -24,6 +24,7 @@ Existing columns kept. Added: `organization_id`, `workspace_id`, `request_id`,
 `severity` (`info` | `notice` | `warning` | `critical`), `source`.
 
 Access:
+
 - **insert** — authenticated caller, only with `actor_id = auth.uid()`.
 - **select** — own records; workspace owners/admins see their workspace;
   platform admins (`is_admin_tier`) see all.
@@ -60,11 +61,11 @@ are not allowed anywhere in the codebase.
 
 ## Recorders
 
-| Module | Runtime | Use from |
-|---|---|---|
-| `src/lib/telemetry/recorder.ts` | browser | domain repositories, UI handlers |
-| `src/lib/telemetry/recorder.server.ts` | server only | server functions, `AIService` |
-| `src/lib/telemetry.functions.ts` | server fn wrappers | activation + entity audit reads |
+| Module                                 | Runtime            | Use from                         |
+| -------------------------------------- | ------------------ | -------------------------------- |
+| `src/lib/telemetry/recorder.ts`        | browser            | domain repositories, UI handlers |
+| `src/lib/telemetry/recorder.server.ts` | server only        | server functions, `AIService`    |
+| `src/lib/telemetry.functions.ts`       | server fn wrappers | activation + entity audit reads  |
 
 Both recorders write through an RLS-scoped client, so a caller can only write
 records attributed to themselves. Every write is **fire-and-forget**:
@@ -100,10 +101,10 @@ Error logging uses `safeErrorShape()`, which keeps only `name` and `message`.
 - `src/lib/domain/portfolios.repository.ts` — create / update / archive /
   delete + `portfolio.created` activation event.
 - `src/lib/domain/saved-use-cases.repository.ts` — save, unsave, edit, score
-  + `use_case.scored` activation event.
+  - `use_case.scored` activation event.
 - `src/lib/ai/service.server.ts` — `ai.assist.used` on validated success and
   `ai.assist.denied` when the entitlement check refuses the call. Model,
-  prompt *version* and duration are recorded; prompt text is not.
+  prompt _version_ and duration are recorded; prompt text is not.
 
 ## Reading the data
 
@@ -118,7 +119,7 @@ surface degrades to an empty state instead of an error screen.
 - `bun run test:unit` — `tests/unit/telemetry.test.ts`: catalogue integrity,
   correlation-id uniqueness, redaction depth/truncation, error shaping.
 - `bun run test:audit` — `tests/audit-immutability.e2e.ts`: append allowed,
-  update denied, delete denied, cross-actor forgery denied (audit *and*
+  update denied, delete denied, cross-actor forgery denied (audit _and_
   product events), activation countable by day + workspace.
 
 ## Rules for new code

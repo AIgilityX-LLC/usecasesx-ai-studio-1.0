@@ -52,10 +52,7 @@ export function RequireRoles({ anyOf, action, children, fallback }: Props) {
         <h1 className="text-2xl font-semibold">Access denied</h1>
         <p className="text-sm text-muted-foreground">
           You need one of these roles to {action ?? "continue"}:{" "}
-          <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
-            {anyOf.join(", ")}
-          </code>
-          .
+          <code className="rounded bg-muted px-1.5 py-0.5 text-xs">{anyOf.join(", ")}</code>.
         </p>
         <p className="text-xs text-muted-foreground">
           Current roles: {roles.length ? roles.join(", ") : "none"}

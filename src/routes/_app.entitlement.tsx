@@ -6,15 +6,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useEntitlement } from "@/hooks/useEntitlement";
 import { FoundingAccessBanner } from "@/components/FoundingAccessBanner";
-import {
-  USECASEX_MODULES, tierUnlocks, tierLabel, FOUNDING_UNTIL_LABEL,
-} from "@/lib/entitlements";
+import { USECASEX_MODULES, tierUnlocks, tierLabel, FOUNDING_UNTIL_LABEL } from "@/lib/entitlements";
 
 export const Route = createFileRoute("/_app/entitlement")({
   head: () => ({
     meta: [
       { title: "Your Plan & Entitlement — UseCasesX™" },
-      { name: "description", content: "Review your current tier, gratis expiration date, and which UseCasesX modules are included or locked." },
+      {
+        name: "description",
+        content:
+          "Review your current tier, gratis expiration date, and which UseCasesX modules are included or locked.",
+      },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -38,8 +40,12 @@ function EntitlementPage() {
         <section className="border-b border-border bg-background">
           <div className="mx-auto max-w-2xl px-6 py-16 space-y-4 text-center">
             <h2 className="text-xl font-semibold">Sign in to view your entitlement</h2>
-            <p className="text-sm text-muted-foreground">Your tier and module access are tied to your account.</p>
-            <Button asChild><Link to="/auth">Sign in</Link></Button>
+            <p className="text-sm text-muted-foreground">
+              Your tier and module access are tied to your account.
+            </p>
+            <Button asChild>
+              <Link to="/auth">Sign in</Link>
+            </Button>
           </div>
         </section>
       )}
@@ -52,17 +58,28 @@ function EntitlementPage() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm text-muted-foreground">Current tier</CardTitle>
-                  {ent.isFounding ? <Crown className="h-4 w-4 text-primary" /> : <ShieldCheck className="h-4 w-4 text-muted-foreground" />}
+                  {ent.isFounding ? (
+                    <Crown className="h-4 w-4 text-primary" />
+                  ) : (
+                    <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                  )}
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-2">
                     <span className="text-2xl font-bold">UseCasesX {label}</span>
                   </div>
                   {ent.isFounding && ent.tier !== "lite" && (
-                    <Badge variant="secondary" className="mt-2 bg-primary/15 text-primary">Founding Member</Badge>
+                    <Badge variant="secondary" className="mt-2 bg-primary/15 text-primary">
+                      Founding Member
+                    </Badge>
                   )}
                   {ent.expired && (
-                    <Badge variant="secondary" className="mt-2 bg-amber-500/15 text-amber-700 dark:text-amber-300">Reverted to Lite</Badge>
+                    <Badge
+                      variant="secondary"
+                      className="mt-2 bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                    >
+                      Reverted to Lite
+                    </Badge>
                   )}
                 </CardContent>
               </Card>
@@ -98,7 +115,10 @@ function EntitlementPage() {
                 <CardContent>
                   <div className="text-2xl font-bold">
                     {USECASEX_MODULES.filter((m) => tierUnlocks(ent.tier, m.required)).length}
-                    <span className="text-base font-medium text-muted-foreground"> / {USECASEX_MODULES.length}</span>
+                    <span className="text-base font-medium text-muted-foreground">
+                      {" "}
+                      / {USECASEX_MODULES.length}
+                    </span>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">UseCasesX™ modules</p>
                 </CardContent>
@@ -117,7 +137,9 @@ function EntitlementPage() {
           <section className="bg-background">
             <div className="mx-auto max-w-[1100px] px-6 py-12">
               <h2 className="text-xl font-bold tracking-tight">Module access</h2>
-              <p className="mt-2 text-sm text-muted-foreground">Included and locked UseCasesX modules for your current tier.</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Included and locked UseCasesX modules for your current tier.
+              </p>
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
                 {USECASEX_MODULES.map((m) => {
                   const unlocked = tierUnlocks(ent.tier, m.required);
@@ -127,9 +149,11 @@ function EntitlementPage() {
                       className={`flex items-center justify-between gap-3 rounded-lg border border-border p-4 ${unlocked ? "bg-emerald-500/5" : "bg-muted/30 opacity-80"}`}
                     >
                       <div className="flex items-center gap-3">
-                        {unlocked
-                          ? <Check className="h-5 w-5 shrink-0 text-emerald-500" />
-                          : <Lock className="h-5 w-5 shrink-0 text-muted-foreground" />}
+                        {unlocked ? (
+                          <Check className="h-5 w-5 shrink-0 text-emerald-500" />
+                        ) : (
+                          <Lock className="h-5 w-5 shrink-0 text-muted-foreground" />
+                        )}
                         <div>
                           <p className="text-sm font-medium">{m.title}</p>
                           <p className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -138,9 +162,17 @@ function EntitlementPage() {
                         </div>
                       </div>
                       {unlocked ? (
-                        <Badge variant="secondary" className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">Included</Badge>
+                        <Badge
+                          variant="secondary"
+                          className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                        >
+                          Included
+                        </Badge>
                       ) : (
-                        <Link to="/pricing" className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
+                        <Link
+                          to="/pricing"
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                        >
                           Unlock <ArrowRight className="h-3 w-3" />
                         </Link>
                       )}

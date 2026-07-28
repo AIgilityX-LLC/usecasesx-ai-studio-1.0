@@ -205,12 +205,12 @@ WHERE n.nspname = 'public'
 
 ## 9. Test suites gating each step
 
-| Step | Required green |
-|---|---|
-| T1 | §5 queries, `bun run build` |
-| T2 | §8 queries, `bun run test:rls` |
-| T3 | §5 queries, `bun run build` |
-| T4 | §1–§4 queries |
-| T5 | §3 queries after a fresh insert through the app |
-| T6 | `bun run test:rls` (extended negative cases), §6, §7 |
-| T7 | §2 zero-null gate for the promoted table, `bun run test:rls` |
+| Step | Required green                                               |
+| ---- | ------------------------------------------------------------ |
+| T1   | §5 queries, `bun run build`                                  |
+| T2   | §8 queries, `bun run test:rls`                               |
+| T3   | §5 queries, `bun run build`                                  |
+| T4   | §1–§4 queries                                                |
+| T5   | §3 queries after a fresh insert through the app              |
+| T6   | `bun run test:rls` (extended negative cases), §6, §7         |
+| T7   | §2 zero-null gate for the promoted table, `bun run test:rls` |

@@ -7,6 +7,7 @@ Per-release detail lives in `docs/releases/<date>-<slug>.md` using `docs/process
 ## [Unreleased]
 
 ### Added
+
 - `docs/process/source-control-workflow.md` — branch model, PR/commit conventions, required checks.
 - `docs/process/release-branch-plan.md` — 2026-08-14 launch branch choreography and activation gates.
 - `docs/process/pr-and-migration-checklist.md` — reviewer checklist.
@@ -15,9 +16,11 @@ Per-release detail lives in `docs/releases/<date>-<slug>.md` using `docs/process
 - `CHANGELOG.md` (this file).
 
 ### Changed
+
 - None (documentation-only).
 
 ### Migrations
+
 - None.
 
 ---

@@ -53,16 +53,19 @@ for (const t of targets) {
   if (redirects[t]) continue; // intentional redirect, covered separately
   // A target resolves if its first segment maps to a declared route path.
   const base = "/" + (t.split("/").filter(Boolean)[0] ?? "");
-  const ok = declared.has(t) || declared.has(base) ||
-    [...declared].some((d) => d.startsWith(base + "/")) || base === "/";
+  const ok =
+    declared.has(t) ||
+    declared.has(base) ||
+    [...declared].some((d) => d.startsWith(base + "/")) ||
+    base === "/";
   if (!ok) failures.push(t);
 }
 
 // Every redirect source must point to a resolvable destination.
 for (const [from, to] of Object.entries(redirects)) {
   const base = "/" + (to.split("/").filter(Boolean)[0] ?? "");
-  const ok = declared.has(to) || declared.has(base) ||
-    [...declared].some((d) => d.startsWith(base + "/"));
+  const ok =
+    declared.has(to) || declared.has(base) || [...declared].some((d) => d.startsWith(base + "/"));
   if (!ok) failures.push(`${from} -> ${to} (redirect destination missing)`);
 }
 

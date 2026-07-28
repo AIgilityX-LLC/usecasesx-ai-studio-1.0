@@ -8,7 +8,8 @@ export const Route = createFileRoute("/_app/account/security")({
   component: SecurityPage,
 });
 
-const inputCls = "w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm focus:border-primary focus:outline-none";
+const inputCls =
+  "w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm focus:border-primary focus:outline-none";
 
 function SecurityPage() {
   const navigate = useNavigate();
@@ -25,20 +26,31 @@ function SecurityPage() {
 
   useEffect(() => {
     if (session === undefined) return;
-    if (session === null) { navigate({ to: "/pro", replace: true }); return; }
+    if (session === null) {
+      navigate({ to: "/pro", replace: true });
+      return;
+    }
     setUser(session.user);
   }, [session, navigate]);
 
   const changePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    setPwdErr(null); setPwdInfo(null);
-    if (pwd.length < 8) { setPwdErr("Password must be at least 8 characters."); return; }
-    if (pwd !== pwd2) { setPwdErr("Passwords do not match."); return; }
+    setPwdErr(null);
+    setPwdInfo(null);
+    if (pwd.length < 8) {
+      setPwdErr("Password must be at least 8 characters.");
+      return;
+    }
+    if (pwd !== pwd2) {
+      setPwdErr("Passwords do not match.");
+      return;
+    }
     setPwdSaving(true);
     try {
       const { error } = await supabase.auth.updateUser({ password: pwd });
       if (error) throw error;
-      setPwd(""); setPwd2("");
+      setPwd("");
+      setPwd2("");
       setPwdInfo("Password changed successfully.");
     } catch (e) {
       setPwdErr(e instanceof Error ? e.message : "Could not change password");
@@ -69,7 +81,9 @@ function SecurityPage() {
   };
 
   if (!user) {
-    return <div className="mx-auto max-w-2xl px-6 py-16 text-sm text-muted-foreground">Loading…</div>;
+    return (
+      <div className="mx-auto max-w-2xl px-6 py-16 text-sm text-muted-foreground">Loading…</div>
+    );
   }
 
   const emailVerified = !!user.email_confirmed_at;
@@ -83,17 +97,21 @@ function SecurityPage() {
         <div className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-lg font-bold text-foreground">Email verification</h2>
-            <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${
-              emailVerified ? "bg-primary/15 text-primary" : "bg-destructive/15 text-destructive"
-            }`}>
+            <span
+              className={`rounded-full px-2.5 py-1 text-xs font-bold ${
+                emailVerified ? "bg-primary/15 text-primary" : "bg-destructive/15 text-destructive"
+              }`}
+            >
               {emailVerified ? "Verified" : "Unverified"}
             </span>
           </div>
           <p className="mt-2 text-sm text-muted-foreground">{user.email}</p>
           {!emailVerified && (
             <div className="mt-4">
-              <button onClick={resendVerification}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:brightness-110">
+              <button
+                onClick={resendVerification}
+                className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:brightness-110"
+              >
                 Resend verification email
               </button>
             </div>
@@ -102,20 +120,42 @@ function SecurityPage() {
         </div>
 
         {/* Password */}
-        <form onSubmit={changePassword} className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
+        <form
+          onSubmit={changePassword}
+          className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]"
+        >
           <h2 className="text-lg font-bold text-foreground">Change password</h2>
           <label className="block">
             <span className="mb-1 block text-xs font-semibold text-foreground">New password</span>
-            <input type="password" minLength={8} value={pwd} onChange={(e) => setPwd(e.target.value)} placeholder="8+ characters" className={inputCls} />
+            <input
+              type="password"
+              minLength={8}
+              value={pwd}
+              onChange={(e) => setPwd(e.target.value)}
+              placeholder="8+ characters"
+              className={inputCls}
+            />
           </label>
           <label className="block">
-            <span className="mb-1 block text-xs font-semibold text-foreground">Confirm new password</span>
-            <input type="password" minLength={8} value={pwd2} onChange={(e) => setPwd2(e.target.value)} placeholder="Repeat password" className={inputCls} />
+            <span className="mb-1 block text-xs font-semibold text-foreground">
+              Confirm new password
+            </span>
+            <input
+              type="password"
+              minLength={8}
+              value={pwd2}
+              onChange={(e) => setPwd2(e.target.value)}
+              placeholder="Repeat password"
+              className={inputCls}
+            />
           </label>
           {pwdErr ? <p className="text-sm text-destructive">{pwdErr}</p> : null}
           {pwdInfo ? <p className="text-sm text-primary">{pwdInfo}</p> : null}
-          <button type="submit" disabled={pwdSaving}
-            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110 disabled:opacity-50">
+          <button
+            type="submit"
+            disabled={pwdSaving}
+            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110 disabled:opacity-50"
+          >
             {pwdSaving ? "Updating…" : "Update password"}
           </button>
         </form>
@@ -126,24 +166,32 @@ function SecurityPage() {
           <div className="rounded-lg border border-border bg-background/60 p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="text-sm font-semibold text-foreground">This device · current session</div>
+                <div className="text-sm font-semibold text-foreground">
+                  This device · current session
+                </div>
                 <div className="mt-1 text-xs text-muted-foreground">
                   Signed in via {provider} · last sign-in {lastSignIn}
                 </div>
               </div>
-              <span className="rounded-full bg-primary/15 px-2.5 py-1 text-xs font-bold text-primary">Active</span>
+              <span className="rounded-full bg-primary/15 px-2.5 py-1 text-xs font-bold text-primary">
+                Active
+              </span>
             </div>
           </div>
           <p className="text-xs text-muted-foreground">
             Revoking all sessions signs you out on every device where you're logged in.
           </p>
           <div className="flex flex-wrap gap-2">
-            <button onClick={signOutThisDevice}
-              className="rounded-lg border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary">
+            <button
+              onClick={signOutThisDevice}
+              className="rounded-lg border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary"
+            >
               Sign out this device
             </button>
-            <button onClick={signOutEverywhere}
-              className="rounded-lg border border-destructive px-4 py-2 text-sm font-semibold text-destructive hover:bg-destructive/10">
+            <button
+              onClick={signOutEverywhere}
+              className="rounded-lg border border-destructive px-4 py-2 text-sm font-semibold text-destructive hover:bg-destructive/10"
+            >
               Sign out of all devices
             </button>
           </div>

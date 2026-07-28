@@ -12,16 +12,22 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  FileDown, FileText, BarChart3, Loader2,
-} from "lucide-react";
+import { FileDown, FileText, BarChart3, Loader2 } from "lucide-react";
 import jsPDF from "jspdf";
 
 export const Route = createFileRoute("/_app/studio/portfolio")({
-  component: () => (<RequirePlan min="pro" feature="Portfolio Roadmap"><PortfolioRoadmapPage /></RequirePlan>),
+  component: () => (
+    <RequirePlan min="pro" feature="Portfolio Roadmap">
+      <PortfolioRoadmapPage />
+    </RequirePlan>
+  ),
 });
 
 type UseCase = {
@@ -86,7 +92,10 @@ function PortfolioRoadmapPage() {
   const [fIntegration, setFIntegration] = useState("all");
 
   useEffect(() => {
-    if (planLoading || !features.portfolioRoadmap) { setLoading(false); return; }
+    if (planLoading || !features.portfolioRoadmap) {
+      setLoading(false);
+      return;
+    }
     (async () => {
       setLoading(true);
       const { data: ucs } = await supabase.from("ai_use_cases").select("*");
@@ -96,12 +105,17 @@ function PortfolioRoadmapPage() {
           ? supabase.from("feasibility_scores").select("*").in("use_case_id", ids)
           : Promise.resolve({ data: [] as any[] }),
         ids.length
-          ? supabase.from("integration_links").select("use_case_id, integration_type, status").in("use_case_id", ids)
+          ? supabase
+              .from("integration_links")
+              .select("use_case_id, integration_type, status")
+              .in("use_case_id", ids)
           : Promise.resolve({ data: [] as any[] }),
       ]);
       setUseCases((ucs ?? []) as UseCase[]);
       const scMap: Record<string, Score> = {};
-      (sc ?? []).forEach((s: any) => { scMap[s.use_case_id] = s; });
+      (sc ?? []).forEach((s: any) => {
+        scMap[s.use_case_id] = s;
+      });
       setScores(scMap);
       setLinks((lk ?? []) as IntegrationLinkRow[]);
       const srcIds = Array.from(
@@ -110,10 +124,14 @@ function PortfolioRoadmapPage() {
       if (srcIds.length) {
         const { data: srcRows } = await supabase
           .from("use_cases")
-          .select("id, value_potential, cost_range, time_to_value, security_classification, risk_level")
+          .select(
+            "id, value_potential, cost_range, time_to_value, security_classification, risk_level",
+          )
           .in("id", srcIds);
         const em: Record<string, ExecMeta> = {};
-        (srcRows ?? []).forEach((r: any) => { em[r.id] = r as ExecMeta; });
+        (srcRows ?? []).forEach((r: any) => {
+          em[r.id] = r as ExecMeta;
+        });
         setExecMeta(em);
       }
       setLoading(false);
@@ -169,10 +187,13 @@ function PortfolioRoadmapPage() {
       total: filtered.length,
       ideas: filtered.filter((u) => u.status === "idea").length,
       scored: filtered.filter((u) => scores[u.id]?.total_score != null).length,
-      approved: filtered.filter((u) => u.status === "approved" || scores[u.id]?.recommendation === "Pursue").length,
+      approved: filtered.filter(
+        (u) => u.status === "approved" || scores[u.id]?.recommendation === "Pursue",
+      ).length,
       highPriority: filtered.filter((u) => (u.priority_score ?? 0) >= 70).length,
       highRisk: filtered.filter((u) => u.risk_level === "high").length,
-      readyForPilot: filtered.filter((u) => u.status === "ready_for_pilot" || u.status === "pilot").length,
+      readyForPilot: filtered.filter((u) => u.status === "ready_for_pilot" || u.status === "pilot")
+        .length,
       sarpi: filtered.filter((u) => has(u, "SARPI")).length,
       c3g: filtered.filter((u) => has(u, "C3G")).length,
     };
@@ -181,14 +202,17 @@ function PortfolioRoadmapPage() {
   const matrixData = useMemo(() => {
     return filtered.map((u) => {
       const s = scores[u.id];
-      const x = (s?.feasibility_score ?? 50);
+      const x = s?.feasibility_score ?? 50;
       const y = ((s?.viability_score ?? 0) + (s?.desirability_score ?? 0)) / 2 || 50;
       return { uc: u, x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) };
     });
   }, [filtered, scores]);
 
   const exportCSV = (filename: string, rows: any[]) => {
-    if (!rows.length) { toast.info("Nothing to export."); return; }
+    if (!rows.length) {
+      toast.info("Nothing to export.");
+      return;
+    }
     const headers = Object.keys(rows[0]);
     const csv = [
       headers.join(","),
@@ -197,21 +221,27 @@ function PortfolioRoadmapPage() {
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = filename; a.click();
+    a.href = url;
+    a.download = filename;
+    a.click();
     URL.revokeObjectURL(url);
   };
 
-  const exportPortfolio = () => exportCSV(
-    "portfolio.csv",
-    filtered.map((u) => ({
-      title: u.title, status: u.status, ai_type: u.ai_type, risk: u.risk_level,
-      priority: u.priority_score,
-      feasibility: scores[u.id]?.feasibility_score ?? "",
-      viability: scores[u.id]?.viability_score ?? "",
-      total: scores[u.id]?.total_score ?? "",
-      recommendation: scores[u.id]?.recommendation ?? "",
-    })),
-  );
+  const exportPortfolio = () =>
+    exportCSV(
+      "portfolio.csv",
+      filtered.map((u) => ({
+        title: u.title,
+        status: u.status,
+        ai_type: u.ai_type,
+        risk: u.risk_level,
+        priority: u.priority_score,
+        feasibility: scores[u.id]?.feasibility_score ?? "",
+        viability: scores[u.id]?.viability_score ?? "",
+        total: scores[u.id]?.total_score ?? "",
+        recommendation: scores[u.id]?.recommendation ?? "",
+      })),
+    );
 
   const exportExecutiveSummary = () => {
     // Plain-text executive summary retained for quick copy/paste.
@@ -231,17 +261,25 @@ function PortfolioRoadmapPage() {
         .slice()
         .sort((a, b) => (b.priority_score ?? 0) - (a.priority_score ?? 0))
         .slice(0, 10)
-        .map((u, i) => `${i + 1}. ${u.title} — priority ${u.priority_score ?? "—"}, status ${u.status}`),
+        .map(
+          (u, i) =>
+            `${i + 1}. ${u.title} — priority ${u.priority_score ?? "—"}, status ${u.status}`,
+        ),
     ].join("\n");
     const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = "executive-summary.txt"; a.click();
+    a.href = url;
+    a.download = "executive-summary.txt";
+    a.click();
     URL.revokeObjectURL(url);
   };
 
   const exportPortfolioPDF = () => {
-    if (!filtered.length) { toast.info("Nothing to export."); return; }
+    if (!filtered.length) {
+      toast.info("Nothing to export.");
+      return;
+    }
     const pdf = new jsPDF({ unit: "pt", format: "a4" });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
@@ -264,12 +302,17 @@ function PortfolioRoadmapPage() {
       `Total use cases: ${stats.total}    Approved / Pursue: ${stats.approved}    High priority: ${stats.highPriority}`,
       `High risk: ${stats.highRisk}    Ready for pilot: ${stats.readyForPilot}    Sent to SARPI: ${stats.sarpi}    Sent to C3G: ${stats.c3g}`,
     ];
-    metaLines.forEach((line) => { pdf.text(line, margin, y); y += 16; });
+    metaLines.forEach((line) => {
+      pdf.text(line, margin, y);
+      y += 16;
+    });
     y += 8;
 
     const missionMode = filtered.some((u) => {
       const em = u.source_use_case_id ? execMeta[u.source_use_case_id] : undefined;
-      return (em?.security_classification ?? "").toLowerCase().match(/secret|confidential|official/);
+      return (em?.security_classification ?? "")
+        .toLowerCase()
+        .match(/secret|confidential|official/);
     });
     pdf.text(
       `Ranked by priority score · ${filtered.length} selected use case${filtered.length === 1 ? "" : "s"}`,
@@ -294,7 +337,10 @@ function PortfolioRoadmapPage() {
       pdf.setTextColor(230, 200, 120);
       pdf.setFontSize(9);
       let x = margin + 4;
-      cols.forEach((c) => { pdf.text(c.label, x, y + 2); x += c.w; });
+      cols.forEach((c) => {
+        pdf.text(c.label, x, y + 2);
+        x += c.w;
+      });
       y += 16;
       pdf.setTextColor(40, 40, 50);
     };
@@ -306,10 +352,16 @@ function PortfolioRoadmapPage() {
       const ps = u.priority_score ?? 0;
       return ps >= 70 ? "High" : ps >= 40 ? "Medium" : "Low";
     };
-    const ranked = filtered.slice().sort((a, b) => (b.priority_score ?? 0) - (a.priority_score ?? 0));
+    const ranked = filtered
+      .slice()
+      .sort((a, b) => (b.priority_score ?? 0) - (a.priority_score ?? 0));
     pdf.setFontSize(9);
     ranked.forEach((u, i) => {
-      if (y > pageH - margin) { pdf.addPage(); y = margin; drawHeader(); }
+      if (y > pageH - margin) {
+        pdf.addPage();
+        y = margin;
+        drawHeader();
+      }
       if (i % 2 === 0) {
         pdf.setFillColor(245, 246, 250);
         pdf.rect(margin, y - 10, pageW - margin * 2, 18, "F");
@@ -325,7 +377,10 @@ function PortfolioRoadmapPage() {
         (em?.security_classification ?? "—").slice(0, 16),
       ];
       let x = margin + 4;
-      row.forEach((cell, ci) => { pdf.text(String(cell), x, y + 2); x += cols[ci].w; });
+      row.forEach((cell, ci) => {
+        pdf.text(String(cell), x, y + 2);
+        x += cols[ci].w;
+      });
       y += 18;
     });
 
@@ -373,120 +428,182 @@ function PortfolioRoadmapPage() {
         }
       />
       <div className="mx-auto max-w-7xl space-y-6 p-6">
-      {tier === "lite" && (
-        <UpgradePrompt
-          feature="Advanced exports & multi-org views"
-          tier="Enterprise"
-          description="Enterprise unlocks regulator/auditor views, decision provenance, and customer-managed governance frameworks."
-        />
-      )}
+        {tier === "lite" && (
+          <UpgradePrompt
+            feature="Advanced exports & multi-org views"
+            tier="Enterprise"
+            description="Enterprise unlocks regulator/auditor views, decision provenance, and customer-managed governance frameworks."
+          />
+        )}
 
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
-      ) : (
-        <>
-          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-9">
-            {[
-              ["Total", stats.total],
-              ["Ideas", stats.ideas],
-              ["Scored", stats.scored],
-              ["Approved", stats.approved],
-              ["High Priority", stats.highPriority],
-              ["High Risk", stats.highRisk],
-              ["Ready for Pilot", stats.readyForPilot],
-              ["Sent to SARPI", stats.sarpi],
-              ["Sent to C3G", stats.c3g],
-            ].map(([label, value]) => (
-              <Card key={String(label)}>
-                <CardContent className="p-4">
-                  <div className="text-2xl font-bold">{value as number}</div>
-                  <div className="text-xs text-muted-foreground">{label as string}</div>
-                </CardContent>
-              </Card>
-            ))}
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
+        ) : (
+          <>
+            <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-9">
+              {[
+                ["Total", stats.total],
+                ["Ideas", stats.ideas],
+                ["Scored", stats.scored],
+                ["Approved", stats.approved],
+                ["High Priority", stats.highPriority],
+                ["High Risk", stats.highRisk],
+                ["Ready for Pilot", stats.readyForPilot],
+                ["Sent to SARPI", stats.sarpi],
+                ["Sent to C3G", stats.c3g],
+              ].map(([label, value]) => (
+                <Card key={String(label)}>
+                  <CardContent className="p-4">
+                    <div className="text-2xl font-bold">{value as number}</div>
+                    <div className="text-xs text-muted-foreground">{label as string}</div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Filters</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-4">
-                <FilterSelect label="Department / Board" value={fDept} onChange={setFDept}
-                  options={[["all", "All"], ...Array.from(new Set(useCases.map((u) => u.board_id))).map((b) => [b, b.slice(0, 8)])]} />
-                <FilterSelect label="AI Type" value={fAi} onChange={setFAi}
-                  options={[["all", "All"], ...aiTypes.map((t) => [t, t])]} />
-                <FilterSelect label="Status" value={fStatus} onChange={setFStatus}
-                  options={[["all", "All"], ...statuses.map((s) => [s, s])]} />
-                <FilterSelect label="Risk Level" value={fRisk} onChange={setFRisk}
-                  options={[["all", "All"], ["low", "Low"], ["medium", "Medium"], ["high", "High"]]} />
-                <FilterSelect label="Priority Score" value={fPriority} onChange={setFPriority}
-                  options={[["all", "All"], ["high", "High (≥70)"], ["medium", "Medium (40–69)"], ["low", "Low (<40)"]]} />
-                <FilterSelect label="Owner" value={fOwner} onChange={setFOwner}
-                  options={[["all", "All"], ...owners.map((o) => [o, o.slice(0, 8)])]} />
-                <FilterSelect label="Integration" value={fIntegration} onChange={setFIntegration}
-                  options={[["all", "All"], ["SARPI", "SARPI"], ["AdvisorX", "AdvisorX"], ["C3G", "C3G"]]} />
-              </div>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Filters</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-4">
+                  <FilterSelect
+                    label="Department / Board"
+                    value={fDept}
+                    onChange={setFDept}
+                    options={[
+                      ["all", "All"],
+                      ...Array.from(new Set(useCases.map((u) => u.board_id))).map((b) => [
+                        b,
+                        b.slice(0, 8),
+                      ]),
+                    ]}
+                  />
+                  <FilterSelect
+                    label="AI Type"
+                    value={fAi}
+                    onChange={setFAi}
+                    options={[["all", "All"], ...aiTypes.map((t) => [t, t])]}
+                  />
+                  <FilterSelect
+                    label="Status"
+                    value={fStatus}
+                    onChange={setFStatus}
+                    options={[["all", "All"], ...statuses.map((s) => [s, s])]}
+                  />
+                  <FilterSelect
+                    label="Risk Level"
+                    value={fRisk}
+                    onChange={setFRisk}
+                    options={[
+                      ["all", "All"],
+                      ["low", "Low"],
+                      ["medium", "Medium"],
+                      ["high", "High"],
+                    ]}
+                  />
+                  <FilterSelect
+                    label="Priority Score"
+                    value={fPriority}
+                    onChange={setFPriority}
+                    options={[
+                      ["all", "All"],
+                      ["high", "High (≥70)"],
+                      ["medium", "Medium (40–69)"],
+                      ["low", "Low (<40)"],
+                    ]}
+                  />
+                  <FilterSelect
+                    label="Owner"
+                    value={fOwner}
+                    onChange={setFOwner}
+                    options={[["all", "All"], ...owners.map((o) => [o, o.slice(0, 8)])]}
+                  />
+                  <FilterSelect
+                    label="Integration"
+                    value={fIntegration}
+                    onChange={setFIntegration}
+                    options={[
+                      ["all", "All"],
+                      ["SARPI", "SARPI"],
+                      ["AdvisorX", "AdvisorX"],
+                      ["C3G", "C3G"],
+                    ]}
+                  />
+                </div>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <BarChart3 className="h-4 w-4" /> Prioritization Matrix
-              </CardTitle>
-              <span className="text-xs text-muted-foreground">
-                X: Feasibility · Y: Value / Viability
-              </span>
-            </CardHeader>
-            <CardContent>
-              <Matrix data={matrixData} />
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <BarChart3 className="h-4 w-4" /> Prioritization Matrix
+                </CardTitle>
+                <span className="text-xs text-muted-foreground">
+                  X: Feasibility · Y: Value / Viability
+                </span>
+              </CardHeader>
+              <CardContent>
+                <Matrix data={matrixData} />
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Roadmap Views</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="30">
-                <TabsList>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Roadmap Views</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="30">
+                  <TabsList>
+                    {HORIZONS.map((h) => (
+                      <TabsTrigger key={h.key} value={h.key}>
+                        {h.label}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
                   {HORIZONS.map((h) => (
-                    <TabsTrigger key={h.key} value={h.key}>{h.label}</TabsTrigger>
+                    <TabsContent key={h.key} value={h.key} className="mt-4">
+                      <RoadmapList items={filtered} days={h.days} />
+                    </TabsContent>
                   ))}
-                </TabsList>
-                {HORIZONS.map((h) => (
-                  <TabsContent key={h.key} value={h.key} className="mt-4">
-                    <RoadmapList items={filtered} days={h.days} />
-                  </TabsContent>
-                ))}
-              </Tabs>
-            </CardContent>
-          </Card>
-        </>
-      )}
+                </Tabs>
+              </CardContent>
+            </Card>
+          </>
+        )}
 
-      <SampleDataDisclaimer />
-    </div>
+        <SampleDataDisclaimer />
+      </div>
     </>
   );
 }
 
 function FilterSelect({
-  label, value, onChange, options,
+  label,
+  value,
+  onChange,
+  options,
 }: {
-  label: string; value: string; onChange: (v: string) => void;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
   options: (readonly [string, string])[] | string[][];
 }) {
   return (
     <div className="space-y-1">
       <label className="text-xs font-medium text-muted-foreground">{label}</label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger><SelectValue /></SelectTrigger>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
         <SelectContent>
-          {options.map(([v, l]) => <SelectItem key={v} value={v}>{l}</SelectItem>)}
+          {options.map(([v, l]) => (
+            <SelectItem key={v} value={v}>
+              {l}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>
@@ -527,8 +644,14 @@ function Matrix({ data }: { data: { uc: UseCase; x: number; y: number }[] }) {
 }
 
 function Quadrant({
-  label, tone, align,
-}: { label: string; tone: "emerald" | "amber" | "rose" | "sky"; align: "tl"|"tr"|"bl"|"br" }) {
+  label,
+  tone,
+  align,
+}: {
+  label: string;
+  tone: "emerald" | "amber" | "rose" | "sky";
+  align: "tl" | "tr" | "bl" | "br";
+}) {
   const tones = {
     emerald: "bg-emerald-500/5 text-emerald-700 dark:text-emerald-300",
     amber: "bg-amber-500/5 text-amber-700 dark:text-amber-300",
@@ -536,8 +659,10 @@ function Quadrant({
     sky: "bg-sky-500/5 text-sky-700 dark:text-sky-300",
   };
   const pos = {
-    tl: "items-start justify-start", tr: "items-start justify-end",
-    bl: "items-end justify-start", br: "items-end justify-end",
+    tl: "items-start justify-start",
+    tr: "items-start justify-end",
+    bl: "items-end justify-start",
+    br: "items-end justify-end",
   };
   return (
     <div className={`flex p-3 ${tones[tone]} ${pos[align]}`}>
@@ -547,9 +672,7 @@ function Quadrant({
 }
 
 function RoadmapList({ items, days }: { items: UseCase[]; days: number }) {
-  const sorted = items
-    .slice()
-    .sort((a, b) => (b.priority_score ?? 0) - (a.priority_score ?? 0));
+  const sorted = items.slice().sort((a, b) => (b.priority_score ?? 0) - (a.priority_score ?? 0));
   // bucket by score for a simple sequencing model
   const cutoff = days <= 30 ? 80 : days <= 90 ? 60 : days <= 365 ? 40 : 0;
   const inHorizon = sorted.filter((u) => (u.priority_score ?? 50) >= cutoff);
@@ -567,7 +690,9 @@ function RoadmapList({ items, days }: { items: UseCase[]; days: number }) {
         >
           <div>
             <div className="font-medium">{u.title}</div>
-            <div className="text-xs text-muted-foreground">{u.status} · {u.ai_type ?? "—"}</div>
+            <div className="text-xs text-muted-foreground">
+              {u.status} · {u.ai_type ?? "—"}
+            </div>
           </div>
           <div className="flex gap-2">
             {u.risk_level && <Badge variant="outline">{u.risk_level} risk</Badge>}

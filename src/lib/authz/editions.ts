@@ -59,9 +59,7 @@ export const DEFAULT_FOUNDING_ACCESS: FoundingAccessConfig = Object.freeze({
   label: "31 Dec 2026",
 });
 
-export function resolveFoundingAccess(
-  overrideIso?: string | null,
-): FoundingAccessConfig {
+export function resolveFoundingAccess(overrideIso?: string | null): FoundingAccessConfig {
   if (!overrideIso) return DEFAULT_FOUNDING_ACCESS;
   const parsed = new Date(overrideIso);
   if (Number.isNaN(parsed.getTime())) return DEFAULT_FOUNDING_ACCESS;
@@ -126,16 +124,12 @@ export function resolveEdition(
     candidates.push(founding.grantedEdition);
   }
 
-  return candidates.reduce((best, next) =>
-    EDITION_RANK[next] > EDITION_RANK[best] ? next : best,
-  );
+  return candidates.reduce((best, next) => (EDITION_RANK[next] > EDITION_RANK[best] ? next : best));
 }
 
 export function daysUntilFoundingExpiry(
   founding: FoundingAccessConfig = DEFAULT_FOUNDING_ACCESS,
   now: Date = new Date(),
 ): number {
-  return Math.ceil(
-    (new Date(founding.expiresAt).getTime() - now.getTime()) / 86_400_000,
-  );
+  return Math.ceil((new Date(founding.expiresAt).getTime() - now.getTime()) / 86_400_000);
 }

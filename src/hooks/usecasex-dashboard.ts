@@ -50,7 +50,14 @@ const SAVED_SLUGS = [
 ];
 
 const PRIORITY_BY_INDEX: Array<SavedUseCase["priority"]> = [
-  "High", "High", "Medium", "High", "Medium", "Low", "High", "Medium",
+  "High",
+  "High",
+  "Medium",
+  "High",
+  "Medium",
+  "Low",
+  "High",
+  "Medium",
 ];
 
 function hash(str: string): number {
@@ -64,16 +71,13 @@ function hash(str: string): number {
 
 function scoreFor(uc: MockUseCase): UseCaseScore {
   const lvl = (l: Level) => (l === "High" ? 85 : l === "Medium" ? 60 : 35);
-  const risk = (r: Risk) =>
-    r === "Critical" ? 20 : r === "High" ? 40 : r === "Medium" ? 65 : 85;
+  const risk = (r: Risk) => (r === "Critical" ? 20 : r === "High" ? 40 : r === "Medium" ? 65 : 85);
   const ttv = uc.timeToValue === "Short" ? 85 : uc.timeToValue === "Medium" ? 60 : 35;
   const readiness = uc.maturity === "Advanced" ? 80 : uc.maturity === "Intermediate" ? 60 : 40;
   const feas = 100 - lvl(uc.complexity) + 25;
   const strategic = lvl(uc.valuePotential) + ((hash(uc.id) % 15) - 7);
   const value = lvl(uc.valuePotential);
-  const total = Math.round(
-    (strategic + value + feas + risk(uc.riskLevel) + readiness + ttv) / 6,
-  );
+  const total = Math.round((strategic + value + feas + risk(uc.riskLevel) + readiness + ttv) / 6);
   return {
     useCaseId: uc.id,
     strategic: Math.max(0, Math.min(100, strategic)),
@@ -108,21 +112,49 @@ export function useUseCaseScores(): UseCaseScore[] {
 
 export function usePortfolios(): Portfolio[] {
   const saved = useSavedUseCases();
-  return useMemo(() => [
-    { id: "p1", name: "Cost & Productivity", objective: "Operational efficiency",
-      useCaseIds: saved.slice(0, 3).map((s) => s.id) },
-    { id: "p2", name: "Customer Experience", objective: "CX uplift",
-      useCaseIds: saved.slice(3, 6).map((s) => s.id) },
-    { id: "p3", name: "Risk & Compliance", objective: "Govern AI risk",
-      useCaseIds: saved.slice(6).map((s) => s.id) },
-  ], [saved]);
+  return useMemo(
+    () => [
+      {
+        id: "p1",
+        name: "Cost & Productivity",
+        objective: "Operational efficiency",
+        useCaseIds: saved.slice(0, 3).map((s) => s.id),
+      },
+      {
+        id: "p2",
+        name: "Customer Experience",
+        objective: "CX uplift",
+        useCaseIds: saved.slice(3, 6).map((s) => s.id),
+      },
+      {
+        id: "p3",
+        name: "Risk & Compliance",
+        objective: "Govern AI risk",
+        useCaseIds: saved.slice(6).map((s) => s.id),
+      },
+    ],
+    [saved],
+  );
 }
 
 export function useGeneratedReports(): GeneratedReport[] {
-  return useMemo(() => [
-    { id: "r1", title: "Q2 AI Opportunity Board Pack", kind: "Executive PDF",
-      createdAt: "2026-05-12T09:00:00Z", useCaseCount: 8 },
-    { id: "r2", title: "Cost & Productivity Portfolio", kind: "Portfolio PDF",
-      createdAt: "2026-05-19T15:30:00Z", useCaseCount: 3 },
-  ], []);
+  return useMemo(
+    () => [
+      {
+        id: "r1",
+        title: "Q2 AI Opportunity Board Pack",
+        kind: "Executive PDF",
+        createdAt: "2026-05-12T09:00:00Z",
+        useCaseCount: 8,
+      },
+      {
+        id: "r2",
+        title: "Cost & Productivity Portfolio",
+        kind: "Portfolio PDF",
+        createdAt: "2026-05-19T15:30:00Z",
+        useCaseCount: 3,
+      },
+    ],
+    [],
+  );
 }

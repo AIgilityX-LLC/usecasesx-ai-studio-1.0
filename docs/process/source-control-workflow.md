@@ -20,20 +20,20 @@ Implications for this workflow:
 1. **Do not rename, move, transfer, or recreate the connected repository.**
 2. **Do not change the branch Lovable tracks** from a shell, GitHub UI, or CI. Only change it via Lovable's own GitHub settings, and only with a rollback plan.
 3. **Do not delete `main`.** It is both the production baseline and the Lovable-tracked branch.
-4. Additional branches below are **opt-in and require verified Lovable support before use**. Until verified, all human/agent work continues to flow through `main` exactly as it does today. This document defines the *target* convention; §4 defines the safe activation path.
+4. Additional branches below are **opt-in and require verified Lovable support before use**. Until verified, all human/agent work continues to flow through `main` exactly as it does today. This document defines the _target_ convention; §4 defines the safe activation path.
 
 ---
 
 ## 2. Branch model (target state)
 
-| Branch | Purpose | Lifetime | Who writes | Notes |
-|---|---|---|---|---|
-| `main` | Production baseline. Lovable-tracked. Deployable at any commit. | Permanent | Lovable sync, merges from `develop` (once activated), hotfix merges | Protected. No force-push. |
-| `develop` | Integration branch for multi-PR work not yet ready for `main`. | Permanent (once activated) | Merges from `feature/*` and `fix/*` | Optional; only activate if Lovable branch-switching is confirmed working (see §4). |
-| `feature/<slug>` | One bounded feature or prompt. | Short-lived (< ~5 days) | Human/agent contributors via PR | Branch from `develop` if active, else `main`. |
-| `fix/<slug>` | Defect fix. | Short-lived | Same as feature | Same base rule as feature. |
-| `release/2026-08-14` | Release-candidate stabilization for the 14 Aug 2026 launch. | Cut on freeze gate 4 (12 Aug), retired after launch | Release manager only | Only P0 fixes merged from `fix/*`. Cherry-picks documented in §5 of release notes. |
-| `hotfix/<slug>` | Post-launch P0 patch cut from `main`. | Hours to days | Named launch commander | Merges back to `main` and, if active, to `develop` and `release/*`. |
+| Branch               | Purpose                                                         | Lifetime                                            | Who writes                                                          | Notes                                                                              |
+| -------------------- | --------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `main`               | Production baseline. Lovable-tracked. Deployable at any commit. | Permanent                                           | Lovable sync, merges from `develop` (once activated), hotfix merges | Protected. No force-push.                                                          |
+| `develop`            | Integration branch for multi-PR work not yet ready for `main`.  | Permanent (once activated)                          | Merges from `feature/*` and `fix/*`                                 | Optional; only activate if Lovable branch-switching is confirmed working (see §4). |
+| `feature/<slug>`     | One bounded feature or prompt.                                  | Short-lived (< ~5 days)                             | Human/agent contributors via PR                                     | Branch from `develop` if active, else `main`.                                      |
+| `fix/<slug>`         | Defect fix.                                                     | Short-lived                                         | Same as feature                                                     | Same base rule as feature.                                                         |
+| `release/2026-08-14` | Release-candidate stabilization for the 14 Aug 2026 launch.     | Cut on freeze gate 4 (12 Aug), retired after launch | Release manager only                                                | Only P0 fixes merged from `fix/*`. Cherry-picks documented in §5 of release notes. |
+| `hotfix/<slug>`      | Post-launch P0 patch cut from `main`.                           | Hours to days                                       | Named launch commander                                              | Merges back to `main` and, if active, to `develop` and `release/*`.                |
 
 Naming: lowercase, hyphen-separated, prefix mandatory. Examples: `feature/discover-empty-state`, `fix/mobile-home-overflow-390`, `release/2026-08-14`, `hotfix/auth-google-callback`.
 
@@ -55,16 +55,19 @@ Naming: lowercase, hyphen-separated, prefix mandatory. Examples: `feature/discov
 Do not create these branches until each precondition is satisfied.
 
 **Preconditions**
+
 - Confirmed in writing (Decision Log entry) that Lovable's branch-switching (Account → Labs) is enabled for this workspace and works in a smoke test.
 - Rollback rehearsed: switch Lovable back to `main`, verify preview and publish still resolve to the correct commit.
 
 **Activation steps for `develop`**
+
 1. From `main` at a known-green commit, create `develop`: `git checkout -b develop main && git push -u origin develop`.
 2. Set branch protection: require PR, require passing checks (§6), disallow force-push, disallow deletion.
 3. Do **not** point Lovable at `develop`. Lovable stays on `main`. `develop` is human/agent-only until we choose to switch.
 4. Log activation in `docs/product/20-day-release-board.md` §7.2.
 
 **Activation steps for `release/2026-08-14`**
+
 1. Cut from `main` (or `develop`, if active) at Freeze Gate 4 (12 Aug 2026).
 2. Only PROMPT-owned P0 fixes may merge.
 3. On launch, tag and merge to `main`; do not delete the branch until 30 days post-launch.
@@ -91,6 +94,7 @@ Scopes align with domains in `AGENTS.md` §2 (e.g. `repository`, `studio`, `scor
 Lovable-authored commits keep their default subject; contributors squashing Lovable work into a PR rewrite the squash commit to Conventional Commit form.
 
 **PR rules**
+
 - One bounded change per PR. If it needs a table of contents, split it.
 - Title mirrors the squash commit subject; body follows `.github/PULL_REQUEST_TEMPLATE.md`.
 - Link the PROMPT-NN and, if applicable, the risk ID from the release board §7.1.
@@ -98,6 +102,7 @@ Lovable-authored commits keep their default subject; contributors squashing Lova
 - Additive-only migrations (see `AGENTS.md` §5). Destructive changes require an approved staged plan referenced in the PR body.
 
 **Reviewers**
+
 - One human reviewer minimum. Two required for anything touching auth, RLS, entitlements, or the audit pipeline.
 - Reviewer's job: verify Definition of Done (`AGENTS.md` §6) and the PR checklist.
 
@@ -107,16 +112,16 @@ Lovable-authored commits keep their default subject; contributors squashing Lova
 
 CI is expected to run on every PR against `main` (and `develop` once active). Names must match the workflow job names.
 
-| Check | Command | Blocking? |
-|---|---|---|
-| Lint | `bun run lint` | Yes |
-| Typecheck | `tsgo` | Yes |
-| Build | `bun run build` | Yes |
-| Route tree verify | `bun run verify:routes` (already wired in `.github/workflows/route-tree-check.yml`) | Yes |
-| Nav integrity | `bun run check:nav-integrity` | Yes |
-| Compare analytics | `bun run check:compare` (already wired in `.github/workflows/compare-analytics-check.yml`) | Yes |
-| E2E (narrow) | `bun run test:e2e` — spec relevant to change | Yes for UI/data changes |
-| RLS isolation | `bun run test:rls` | Yes for any new/changed table or policy |
+| Check             | Command                                                                                    | Blocking?                               |
+| ----------------- | ------------------------------------------------------------------------------------------ | --------------------------------------- |
+| Lint              | `bun run lint`                                                                             | Yes                                     |
+| Typecheck         | `tsgo`                                                                                     | Yes                                     |
+| Build             | `bun run build`                                                                            | Yes                                     |
+| Route tree verify | `bun run verify:routes` (already wired in `.github/workflows/route-tree-check.yml`)        | Yes                                     |
+| Nav integrity     | `bun run check:nav-integrity`                                                              | Yes                                     |
+| Compare analytics | `bun run check:compare` (already wired in `.github/workflows/compare-analytics-check.yml`) | Yes                                     |
+| E2E (narrow)      | `bun run test:e2e` — spec relevant to change                                               | Yes for UI/data changes                 |
+| RLS isolation     | `bun run test:rls`                                                                         | Yes for any new/changed table or policy |
 
 Adding new blocking checks or workflows requires a Decision Log entry.
 
@@ -141,6 +146,7 @@ Adding new blocking checks or workflows requires a Decision Log entry.
 ## 8. Escalation
 
 Stop and escalate — do not push, do not merge — if:
+
 - Lovable's tracked branch does not match `git remote show origin`.
 - A PR would require a force-push to `main`.
 - CI cannot run (workflow file broken or GH Actions outage).

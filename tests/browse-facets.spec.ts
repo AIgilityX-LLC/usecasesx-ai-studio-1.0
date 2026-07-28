@@ -13,8 +13,13 @@ test.describe("repository browse facets", () => {
   test("renders every facet filter", async ({ page }) => {
     await page.goto(`${BASE}/repository`, { waitUntil: "networkidle" });
     for (const label of [
-      "Market Segment", "Sector", "AI Pattern", "Priority",
-      "ROI Range", "Deployment", "Security",
+      "Market Segment",
+      "Sector",
+      "AI Pattern",
+      "Priority",
+      "ROI Range",
+      "Deployment",
+      "Security",
     ]) {
       await expect(page.getByRole("button", { name: label, exact: true })).toBeVisible();
     }

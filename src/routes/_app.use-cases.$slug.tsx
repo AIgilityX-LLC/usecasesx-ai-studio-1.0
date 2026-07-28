@@ -16,7 +16,15 @@ import { getUseCase, listUseCases } from "@/lib/use-cases.functions";
 import { CtaTriad } from "@/components/usecasex/CtaTriad";
 import { segmentsForIndustries } from "@/lib/usecasex.derive";
 import {
-  DollarSign, Clock, TrendingUp, GaugeCircle, Layers, ShieldAlert, Scale, Lock, Server,
+  DollarSign,
+  Clock,
+  TrendingUp,
+  GaugeCircle,
+  Layers,
+  ShieldAlert,
+  Scale,
+  Lock,
+  Server,
 } from "lucide-react";
 
 // ---------- Helpers ----------
@@ -191,29 +199,37 @@ function UseCaseDetailPage() {
   }
 
   const industryEntries = (c.use_case_industries ?? [])
-    .map((x: any) => ({ slug: x.industries?.slug as string | undefined, name: x.industries?.name as string | undefined }))
+    .map((x: any) => ({
+      slug: x.industries?.slug as string | undefined,
+      name: x.industries?.name as string | undefined,
+    }))
     .filter((x: any) => x.slug && x.name) as { slug: string; name: string }[];
   const industries = industryEntries.map((i) => i.name);
-  const activeDept =
-    industryEntries.find((i) => i.slug === dept) ?? industryEntries[0] ?? null;
+  const activeDept = industryEntries.find((i) => i.slug === dept) ?? industryEntries[0] ?? null;
   const functionEntries = (c.use_case_business_functions ?? [])
-    .map((x: any) => ({ slug: x.business_functions?.slug as string | undefined, name: x.business_functions?.name as string | undefined }))
+    .map((x: any) => ({
+      slug: x.business_functions?.slug as string | undefined,
+      name: x.business_functions?.name as string | undefined,
+    }))
     .filter((x: any) => x.slug && x.name) as { slug: string; name: string }[];
   const businessFunctions = functionEntries.map((f) => f.name);
-  const activeFunc =
-    functionEntries.find((f) => f.slug === func) ?? functionEntries[0] ?? null;
+  const activeFunc = functionEntries.find((f) => f.slug === func) ?? functionEntries[0] ?? null;
   const capabilityEntries = (c.use_case_capabilities ?? [])
-    .map((x: any) => ({ slug: x.ai_capabilities?.slug as string | undefined, name: x.ai_capabilities?.name as string | undefined }))
+    .map((x: any) => ({
+      slug: x.ai_capabilities?.slug as string | undefined,
+      name: x.ai_capabilities?.name as string | undefined,
+    }))
     .filter((x: any) => x.slug && x.name) as { slug: string; name: string }[];
   const capabilities = capabilityEntries.map((c2) => c2.name);
   const objectiveEntries = (c.use_case_business_objectives ?? [])
-    .map((x: any) => ({ slug: x.business_objectives?.slug as string | undefined, name: x.business_objectives?.name as string | undefined }))
+    .map((x: any) => ({
+      slug: x.business_objectives?.slug as string | undefined,
+      name: x.business_objectives?.name as string | undefined,
+    }))
     .filter((x: any) => x.slug && x.name) as { slug: string; name: string }[];
   const objectives = objectiveEntries.map((o) => o.name);
 
-  const platforms: string[] = Array.isArray(c.recommended_platforms)
-    ? c.recommended_platforms
-    : [];
+  const platforms: string[] = Array.isArray(c.recommended_platforms) ? c.recommended_platforms : [];
 
   const tags: string[] = [...capabilities, ...objectives].slice(0, 8);
 
@@ -308,7 +324,6 @@ function UseCaseDetailPage() {
     navigate({ to: `/cyberx/c3g/intake${qs}` as any });
   };
 
-
   const handleSarpi = () => {
     const payload = {
       use_case_id: c.id,
@@ -351,21 +366,37 @@ function UseCaseDetailPage() {
     navigate({ to: `/sarpi${qs}` as any });
   };
 
-  const relatedItems = (related.data?.cases ?? []).filter((r: any) => r.slug !== c.slug).slice(0, 3);
+  const relatedItems = (related.data?.cases ?? [])
+    .filter((r: any) => r.slug !== c.slug)
+    .slice(0, 3);
 
   // Mission-oriented segments (defense / government) reframe ROI as mission value.
   const caseSegments = segmentsForIndustries(industryEntries.map((i) => i.slug));
   const isMission = caseSegments.includes("defense") || caseSegments.includes("government");
-  const execCards: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }[] = [
-    { icon: TrendingUp, label: isMission ? "Mission value" : "ROI / value", value: c.value_potential ?? "—" },
+  const execCards: {
+    icon: React.ComponentType<{ className?: string }>;
+    label: string;
+    value: string;
+  }[] = [
+    {
+      icon: TrendingUp,
+      label: isMission ? "Mission value" : "ROI / value",
+      value: c.value_potential ?? "—",
+    },
     { icon: DollarSign, label: "Cost range", value: c.cost_range ?? "On request" },
     { icon: Clock, label: "Timeline", value: c.time_to_value ?? "—" },
     { icon: GaugeCircle, label: "Maturity required", value: c.maturity_level ?? c.maturity ?? "—" },
     { icon: Layers, label: "Complexity", value: c.complexity ?? "—" },
     { icon: ShieldAlert, label: "Risk", value: c.risk_level ?? "—" },
-    { icon: Scale, label: "Governance need", value: c.governance_required ? "Required" : "Standard" },
+    {
+      icon: Scale,
+      label: "Governance need",
+      value: c.governance_required ? "Required" : "Standard",
+    },
     { icon: Lock, label: "Security", value: c.security_classification ?? "Unclassified" },
-    ...(c.deployment_model ? [{ icon: Server, label: "Deployment", value: c.deployment_model as string }] : []),
+    ...(c.deployment_model
+      ? [{ icon: Server, label: "Deployment", value: c.deployment_model as string }]
+      : []),
   ];
 
   return (
@@ -374,7 +405,10 @@ function UseCaseDetailPage() {
         {/* Header */}
         <header className="border-b border-border bg-card/40">
           <div className="mx-auto max-w-[1320px] px-6 pb-10 pt-8">
-            <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest">
+            <nav
+              aria-label="Breadcrumb"
+              className="flex flex-wrap items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest"
+            >
               <Link to="/repository" className="text-muted-foreground hover:text-primary">
                 Repository
               </Link>
@@ -396,10 +430,12 @@ function UseCaseDetailPage() {
                   <span className="text-muted-foreground/60">/</span>
                   <Link
                     to="/repository"
-                    search={{
-                      ...(activeDept ? { industries: [activeDept.slug] } : {}),
-                      businessFunctions: [activeFunc.slug],
-                    } as any}
+                    search={
+                      {
+                        ...(activeDept ? { industries: [activeDept.slug] } : {}),
+                        businessFunctions: [activeFunc.slug],
+                      } as any
+                    }
                     className="text-muted-foreground hover:text-primary"
                     title="Department"
                   >
@@ -420,7 +456,9 @@ function UseCaseDetailPage() {
               <SampleDataDisclaimer className="mt-5 max-w-3xl" />
               <div className="mt-6 flex flex-wrap gap-2">
                 {industries.map((n) => (
-                  <Badge key={n} tone="primary">{n}</Badge>
+                  <Badge key={n} tone="primary">
+                    {n}
+                  </Badge>
                 ))}
                 {businessFunctions.map((n) => (
                   <Badge key={n}>{n}</Badge>
@@ -439,12 +477,18 @@ function UseCaseDetailPage() {
                   </Badge>
                 )}
                 {c.risk_level && (
-                  <Badge tone={c.risk_level === "Critical" || c.risk_level === "High" ? "danger" : "muted"}>
+                  <Badge
+                    tone={
+                      c.risk_level === "Critical" || c.risk_level === "High" ? "danger" : "muted"
+                    }
+                  >
                     Risk · {c.risk_level}
                   </Badge>
                 )}
                 {c.time_to_value && <Badge>TTV · {c.time_to_value}</Badge>}
-                {(c.maturity_level || c.maturity) && <Badge>Maturity · {c.maturity_level ?? c.maturity}</Badge>}
+                {(c.maturity_level || c.maturity) && (
+                  <Badge>Maturity · {c.maturity_level ?? c.maturity}</Badge>
+                )}
               </div>
               {tags.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-1.5">
@@ -547,7 +591,9 @@ function UseCaseDetailPage() {
                         {r.title}
                       </div>
                       {r.summary && (
-                        <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{r.summary}</p>
+                        <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                          {r.summary}
+                        </p>
                       )}
                     </Link>
                   ))}
@@ -560,7 +606,9 @@ function UseCaseDetailPage() {
               <div className="text-[11px] font-bold uppercase tracking-widest text-primary">
                 12 · Take action
               </div>
-              <h2 className="mt-2 text-2xl font-bold text-foreground">Move this use case forward</h2>
+              <h2 className="mt-2 text-2xl font-bold text-foreground">
+                Move this use case forward
+              </h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 Route this use case into the AIgilityX execution path.
               </p>
@@ -568,7 +616,10 @@ function UseCaseDetailPage() {
                 <CtaBtn primary onClick={() => handleNav("check_ai_readiness", `//readiness${qs}`)}>
                   Check AI Readiness
                 </CtaBtn>
-                <CtaBtn primary onClick={() => handleNav("calculate_ai_roi", `//roi-calculator${qs}`)}>
+                <CtaBtn
+                  primary
+                  onClick={() => handleNav("calculate_ai_roi", `//roi-calculator${qs}`)}
+                >
                   Calculate AI ROI
                 </CtaBtn>
                 <CtaBtn primary onClick={handleSaveToPortfolio}>
@@ -586,7 +637,11 @@ function UseCaseDetailPage() {
                 <CtaBtn
                   onClick={() => {
                     trackCTAEvent("request_ai_strategy_session", { use_case_id: c.id });
-                    void logCtaEvent({ cta: "request_ai_strategy_session", useCaseId: c.id, sourcePage });
+                    void logCtaEvent({
+                      cta: "request_ai_strategy_session",
+                      useCaseId: c.id,
+                      sourcePage,
+                    });
                     openLead("ai-strategy-session");
                   }}
                 >
@@ -597,13 +652,23 @@ function UseCaseDetailPage() {
                 <CtaBtn onClick={() => handleNav("ask_advisorx", `/advisorx${qs}`, "advisorx")}>
                   Ask AdvisorX
                 </CtaBtn>
-                <CtaBtn onClick={() => handleNav("design_flowx_workflow", `/flowx/workflow-builder${qs}`, "flowx")}>
+                <CtaBtn
+                  onClick={() =>
+                    handleNav("design_flowx_workflow", `/flowx/workflow-builder${qs}`, "flowx")
+                  }
+                >
                   Design FlowX Workflow
                 </CtaBtn>
-                <CtaBtn onClick={() => handleNav("privacyx_review", `/privacyx/review${qs}`, "privacyx")}>
+                <CtaBtn
+                  onClick={() => handleNav("privacyx_review", `/privacyx/review${qs}`, "privacyx")}
+                >
                   PrivacyX Review
                 </CtaBtn>
-                <CtaBtn onClick={() => handleNav("assurex_validation", `/assurex/validation${qs}`, "assurex")}>
+                <CtaBtn
+                  onClick={() =>
+                    handleNav("assurex_validation", `/assurex/validation${qs}`, "assurex")
+                  }
+                >
                   AssureX Validation
                 </CtaBtn>
               </div>
@@ -628,7 +693,11 @@ function UseCaseDetailPage() {
                     <Link
                       to={s.to as any}
                       onClick={() => {
-                        trackCTAEvent("execution_path_step", { step: s.step, name: s.name, use_case_id: c.id });
+                        trackCTAEvent("execution_path_step", {
+                          step: s.step,
+                          name: s.name,
+                          use_case_id: c.id,
+                        });
                         void logCtaEvent({
                           cta: "execution_path_step",
                           useCaseId: c.id,

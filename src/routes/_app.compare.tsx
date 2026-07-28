@@ -2,7 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import React, { useEffect, useState } from "react";
 import { useQueries } from "@tanstack/react-query";
-import { Download, Share2, ArrowUpDown, ChevronDown, ChevronRight, ChevronLeft } from "lucide-react";
+import {
+  Download,
+  Share2,
+  ArrowUpDown,
+  ChevronDown,
+  ChevronRight,
+  ChevronLeft,
+} from "lucide-react";
 import { compareStore } from "@/lib/usecasex.compare.store";
 import { getUseCase } from "@/lib/use-cases.functions";
 import { trackModuleEvent } from "@/lib/module-analytics";
@@ -17,7 +24,11 @@ export const Route = createFileRoute("/_app/compare")({
   head: () => ({
     meta: [
       { title: "Compare AI Use Cases — UseCasesX™" },
-      { name: "description", content: "Side-by-side comparison of selected AI use cases across outcomes, risk class, and evidence." },
+      {
+        name: "description",
+        content:
+          "Side-by-side comparison of selected AI use cases across outcomes, risk class, and evidence.",
+      },
     ],
   }),
   validateSearch: searchSchema,
@@ -57,7 +68,11 @@ function ComparePage() {
     const next = slugs.filter((s) => s !== slug);
     compareStore.set(next);
     navigate({ search: { ids: next.join(",") || undefined } as never, replace: true });
-    void trackModuleEvent("compare", "click", { interaction: "remove_from_compare", slug, remaining: next.length });
+    void trackModuleEvent("compare", "click", {
+      interaction: "remove_from_compare",
+      slug,
+      remaining: next.length,
+    });
   };
 
   const results = useQueries({
@@ -69,9 +84,7 @@ function ComparePage() {
     })),
   });
 
-  const items = results
-    .map((r) => r.data as Row | undefined)
-    .filter((x): x is Row => Boolean(x));
+  const items = results.map((r) => r.data as Row | undefined).filter((x): x is Row => Boolean(x));
   const loading = results.some((r) => r.isLoading);
   const allSettled = results.every((r) => !r.isLoading);
 
@@ -93,7 +106,11 @@ function ComparePage() {
   }
 
   if (loading && items.length === 0) {
-    return <div className="mx-auto max-w-3xl px-6 py-20 text-center text-muted-foreground">Loading comparison…</div>;
+    return (
+      <div className="mx-auto max-w-3xl px-6 py-20 text-center text-muted-foreground">
+        Loading comparison…
+      </div>
+    );
   }
 
   // All queries have resolved but none returned a use case — the slugs in the
@@ -104,14 +121,17 @@ function ComparePage() {
       <div className="mx-auto max-w-3xl px-6 py-20 text-center">
         <h1 className="text-3xl font-bold text-foreground">These use cases aren't available</h1>
         <p className="mt-3 text-muted-foreground">
-          The comparison link points to use cases that no longer exist or aren't published.
-          Pick some from the Explore page to build a fresh comparison.
+          The comparison link points to use cases that no longer exist or aren't published. Pick
+          some from the Explore page to build a fresh comparison.
         </p>
         <button
           onClick={() => {
             compareStore.clear();
             navigate({ search: { ids: undefined } as never, replace: true });
-            void trackModuleEvent("compare", "click", { interaction: "clear_comparison", source: "unavailable_fallback" });
+            void trackModuleEvent("compare", "click", {
+              interaction: "clear_comparison",
+              source: "unavailable_fallback",
+            });
           }}
           className="mt-6 mr-2 inline-block rounded-md border border-border px-5 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
         >
@@ -154,7 +174,12 @@ function ComparePage() {
       diff: true,
       render: (c) =>
         c.risk_level ? (
-          <span className={"rounded-full px-2 py-0.5 text-[11px] font-bold " + (riskTone[c.risk_level] ?? "bg-secondary text-foreground")}>
+          <span
+            className={
+              "rounded-full px-2 py-0.5 text-[11px] font-bold " +
+              (riskTone[c.risk_level] ?? "bg-secondary text-foreground")
+            }
+          >
             {c.risk_level}
           </span>
         ) : (
@@ -166,7 +191,12 @@ function ComparePage() {
   const diffSet = new Set(
     rows
       .filter((r) => r.diff)
-      .filter((r) => new Set(items.map((c) => String(typeof r.render(c) === "object" ? c.risk_level : r.render(c)))).size > 1)
+      .filter(
+        (r) =>
+          new Set(
+            items.map((c) => String(typeof r.render(c) === "object" ? c.risk_level : r.render(c))),
+          ).size > 1,
+      )
       .map((r) => r.label),
   );
 
@@ -179,7 +209,10 @@ function ComparePage() {
   }
   const totalPages = Math.max(1, Math.ceil(orderedRows.length / ROWS_PER_PAGE));
   const safePage = Math.min(page, totalPages - 1);
-  const pageRows = orderedRows.slice(safePage * ROWS_PER_PAGE, safePage * ROWS_PER_PAGE + ROWS_PER_PAGE);
+  const pageRows = orderedRows.slice(
+    safePage * ROWS_PER_PAGE,
+    safePage * ROWS_PER_PAGE + ROWS_PER_PAGE,
+  );
 
   const changeSort = (mode: "default" | "diff-first" | "alpha") => {
     setSortMode(mode);
@@ -189,7 +222,11 @@ function ComparePage() {
   const goToPage = (p: number) => {
     const next = Math.max(0, Math.min(p, totalPages - 1));
     setPage(next);
-    void trackModuleEvent("compare", "click", { interaction: "paginate_table", page: next + 1, total_pages: totalPages });
+    void trackModuleEvent("compare", "click", {
+      interaction: "paginate_table",
+      page: next + 1,
+      total_pages: totalPages,
+    });
   };
   const toggleRow = (label: string) => {
     setExpandedRows((prev) => {
@@ -197,12 +234,18 @@ function ComparePage() {
       const willExpand = !nextSet.has(label);
       if (willExpand) nextSet.add(label);
       else nextSet.delete(label);
-      void trackModuleEvent("compare", "click", { interaction: "row_expand", row: label, expanded: willExpand });
+      void trackModuleEvent("compare", "click", {
+        interaction: "row_expand",
+        row: label,
+        expanded: willExpand,
+      });
       return nextSet;
     });
   };
 
-  const evidenceFor = (c: Row): { problem?: string; approach?: string; value?: string; metrics: Row[]; links: Row[] } => ({
+  const evidenceFor = (
+    c: Row,
+  ): { problem?: string; approach?: string; value?: string; metrics: Row[]; links: Row[] } => ({
     problem: c.business_problem ?? c.summary ?? undefined,
     approach: c.ai_solution_concept ?? undefined,
     value: c.business_value ?? undefined,
@@ -212,9 +255,16 @@ function ComparePage() {
 
   const exportPdf = () => {
     if (typeof window === "undefined") return;
-    void trackModuleEvent("compare", "click", { interaction: "export_pdf", count: items.length, slugs: items.map((c) => c.slug) });
+    void trackModuleEvent("compare", "click", {
+      interaction: "export_pdf",
+      count: items.length,
+      slugs: items.map((c) => c.slug),
+    });
     const esc = (v: unknown) =>
-      String(v ?? "—").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      String(v ?? "—")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
     const origin = window.location.origin;
     const col = (c: Row) => {
       const e = evidenceFor(c);
@@ -222,7 +272,10 @@ function ComparePage() {
         .map((l: Row) => `<li><a href="${esc(l.url)}">${esc(l.label ?? l.url)}</a></li>`)
         .join("");
       const metrics = e.metrics
-        .map((m: Row) => `<li><strong>${esc(m.value)}${esc(m.unit ?? "")}</strong> ${esc(m.label)}</li>`)
+        .map(
+          (m: Row) =>
+            `<li><strong>${esc(m.value)}${esc(m.unit ?? "")}</strong> ${esc(m.label)}</li>`,
+        )
         .join("");
       return `<section>
         <h2><a href="${origin}/use-cases/${esc(c.slug)}">${esc(c.title)}</a></h2>
@@ -268,7 +321,11 @@ function ComparePage() {
   const shareComparison = async () => {
     if (typeof window === "undefined") return;
     const url = window.location.href;
-    void trackModuleEvent("compare", "click", { interaction: "share_comparison", count: items.length, slugs: items.map((c) => c.slug) });
+    void trackModuleEvent("compare", "click", {
+      interaction: "share_comparison",
+      count: items.length,
+      slugs: items.map((c) => c.slug),
+    });
     try {
       if (navigator.share) {
         await navigator.share({ title: "AI Use Case Comparison — UseCasesX™", url });
@@ -289,7 +346,10 @@ function ComparePage() {
         description={`Side-by-side view of ${items.length} use case${items.length === 1 ? "" : "s"} across outcomes, risk class, and evidence. Differences are highlighted. This view is saved in the URL — bookmark or share it.`}
         actions={
           <>
-            <Link to="/repository" className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary">
+            <Link
+              to="/repository"
+              className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary"
+            >
               ← Back to Explore
             </Link>
             <button
@@ -313,11 +373,13 @@ function ComparePage() {
           <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
             <ArrowUpDown className="h-3.5 w-3.5" /> Sort rows
           </span>
-          {([
-            { key: "default", label: "Default" },
-            { key: "diff-first", label: "Differences first" },
-            { key: "alpha", label: "A–Z" },
-          ] as const).map((opt) => (
+          {(
+            [
+              { key: "default", label: "Default" },
+              { key: "diff-first", label: "Differences first" },
+              { key: "alpha", label: "A–Z" },
+            ] as const
+          ).map((opt) => (
             <button
               key={opt.key}
               onClick={() => changeSort(opt.key)}
@@ -341,10 +403,16 @@ function ComparePage() {
                 </th>
                 {items.map((c) => (
                   <th key={c.slug} className="px-4 py-4 text-left align-top">
-                    <Link to="/use-cases/$slug" params={{ slug: c.slug }} className="block text-base font-bold text-foreground hover:text-primary">
+                    <Link
+                      to="/use-cases/$slug"
+                      params={{ slug: c.slug }}
+                      className="block text-base font-bold text-foreground hover:text-primary"
+                    >
                       {c.title}
                     </Link>
-                    <div className="mt-1 text-[10px] font-bold uppercase tracking-widest text-primary">{ind(c)}</div>
+                    <div className="mt-1 text-[10px] font-bold uppercase tracking-widest text-primary">
+                      {ind(c)}
+                    </div>
                     <button
                       onClick={() => removeSlug(c.slug)}
                       className="mt-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-destructive"
@@ -360,7 +428,12 @@ function ComparePage() {
                 const expanded = expandedRows.has(r.label);
                 return (
                   <React.Fragment key={r.label}>
-                    <tr className={"border-b border-border " + (diffSet.has(r.label) ? "bg-primary/[0.03]" : "")}>
+                    <tr
+                      className={
+                        "border-b border-border " +
+                        (diffSet.has(r.label) ? "bg-primary/[0.03]" : "")
+                      }
+                    >
                       <td className="px-4 py-3 align-top text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                         <button
                           onClick={() => toggleRow(r.label)}
@@ -375,7 +448,9 @@ function ComparePage() {
                           <span>
                             {r.label}
                             {diffSet.has(r.label) && (
-                              <span className="ml-2 rounded bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-primary">DIFFERS</span>
+                              <span className="ml-2 rounded bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-primary">
+                                DIFFERS
+                              </span>
                             )}
                           </span>
                         </button>
@@ -391,8 +466,13 @@ function ComparePage() {
                         <td colSpan={items.length + 1} className="px-4 py-3">
                           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                             {items.map((c) => (
-                              <div key={c.slug} className="rounded-md border border-border bg-card px-3 py-2">
-                                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{c.title}</div>
+                              <div
+                                key={c.slug}
+                                className="rounded-md border border-border bg-card px-3 py-2"
+                              >
+                                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                  {c.title}
+                                </div>
                                 <div className="mt-1 text-sm text-foreground">{r.render(c)}</div>
                               </div>
                             ))}
@@ -414,29 +494,41 @@ function ComparePage() {
                       <div className="space-y-3 text-[13px]">
                         {e.problem && (
                           <div>
-                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Problem</div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                              Problem
+                            </div>
                             <p className="mt-0.5 text-foreground/80">{e.problem}</p>
                           </div>
                         )}
                         {e.approach && (
                           <div>
-                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Approach</div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                              Approach
+                            </div>
                             <p className="mt-0.5 text-foreground/80">{e.approach}</p>
                           </div>
                         )}
                         {e.value && (
                           <div>
-                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Outcome / value</div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                              Outcome / value
+                            </div>
                             <p className="mt-0.5 text-foreground/80">{e.value}</p>
                           </div>
                         )}
                         {e.metrics.length > 0 && (
                           <div>
-                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Metrics</div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                              Metrics
+                            </div>
                             <ul className="mt-1 space-y-0.5">
                               {e.metrics.map((m) => (
                                 <li key={m.id} className="text-foreground/80">
-                                  <span className="font-bold text-primary">{m.value}{m.unit ?? ""}</span> {m.label}
+                                  <span className="font-bold text-primary">
+                                    {m.value}
+                                    {m.unit ?? ""}
+                                  </span>{" "}
+                                  {m.label}
                                 </li>
                               ))}
                             </ul>
@@ -444,11 +536,18 @@ function ComparePage() {
                         )}
                         {e.links.length > 0 && (
                           <div>
-                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Sources</div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                              Sources
+                            </div>
                             <ul className="mt-1 space-y-0.5">
                               {e.links.map((l) => (
                                 <li key={l.id}>
-                                  <a href={l.url} target="_blank" rel="noreferrer noopener" className="text-primary hover:underline">
+                                  <a
+                                    href={l.url}
+                                    target="_blank"
+                                    rel="noreferrer noopener"
+                                    className="text-primary hover:underline"
+                                  >
                                     {l.label ?? l.url}
                                   </a>
                                 </li>
@@ -456,9 +555,15 @@ function ComparePage() {
                             </ul>
                           </div>
                         )}
-                        {!e.problem && !e.approach && !e.value && e.metrics.length === 0 && e.links.length === 0 && (
-                          <span className="text-muted-foreground">No structured evidence recorded.</span>
-                        )}
+                        {!e.problem &&
+                          !e.approach &&
+                          !e.value &&
+                          e.metrics.length === 0 &&
+                          e.links.length === 0 && (
+                            <span className="text-muted-foreground">
+                              No structured evidence recorded.
+                            </span>
+                          )}
                       </div>
                     </td>
                   );
@@ -470,7 +575,8 @@ function ComparePage() {
         {totalPages > 1 && (
           <div className="mt-4 flex items-center justify-between">
             <span className="text-xs text-muted-foreground">
-              Showing rows {safePage * ROWS_PER_PAGE + 1}–{Math.min((safePage + 1) * ROWS_PER_PAGE, orderedRows.length)} of {orderedRows.length}
+              Showing rows {safePage * ROWS_PER_PAGE + 1}–
+              {Math.min((safePage + 1) * ROWS_PER_PAGE, orderedRows.length)} of {orderedRows.length}
             </span>
             <div className="flex items-center gap-2">
               <button

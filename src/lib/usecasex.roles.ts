@@ -33,8 +33,8 @@ export interface RoleState {
   isAdmin: boolean;
   isModerator: boolean;
   canEditTaxonomy: boolean; // admin | moderator
-  canPublish: boolean;      // admin | moderator
-  canDelete: boolean;       // admin only
+  canPublish: boolean; // admin | moderator
+  canDelete: boolean; // admin only
 }
 
 /**
@@ -63,10 +63,7 @@ export function useRoles(): RoleState {
         return;
       }
       setUserId(u.user.id);
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", u.user.id);
+      const { data } = await supabase.from("user_roles").select("role").eq("user_id", u.user.id);
       if (!active) return;
       setRoles((data ?? []).map((r) => r.role as AppRole));
       setLoading(false);
@@ -81,7 +78,8 @@ export function useRoles(): RoleState {
 
   const has = (role: AppRole) => roles.includes(role);
   const hasAny = (rs: AppRole[]) => rs.some((r) => roles.includes(r));
-  const isAdmin = has("admin") || has("super_admin") || has("ai_hub_admin") || has("usecasex_admin");
+  const isAdmin =
+    has("admin") || has("super_admin") || has("ai_hub_admin") || has("usecasex_admin");
   const isModerator = has("moderator") || has("content_manager") || has("reviewer");
 
   return {

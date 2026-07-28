@@ -32,14 +32,14 @@ src/lib/usecasex.studio.functions.ts  Studio compatibility layer, delegates here
 
 ### AIService methods
 
-| Method | Task key | Default tier |
-|---|---|---|
-| `enrichOpportunity` | `enrichOpportunity` | balanced |
-| `draftUseCase` | `draftUseCase` | balanced |
-| `recommendCapabilities` | `recommendCapabilities` | fast |
-| `explainScore` | `explainScore` | fast |
-| `findSimilarUseCases` | `findSimilarUseCases` | fast |
-| `generateExecutiveSummary` | `generateExecutiveSummary` | deep |
+| Method                     | Task key                   | Default tier |
+| -------------------------- | -------------------------- | ------------ |
+| `enrichOpportunity`        | `enrichOpportunity`        | balanced     |
+| `draftUseCase`             | `draftUseCase`             | balanced     |
+| `recommendCapabilities`    | `recommendCapabilities`    | fast         |
+| `explainScore`             | `explainScore`             | fast         |
+| `findSimilarUseCases`      | `findSimilarUseCases`      | fast         |
+| `generateExecutiveSummary` | `generateExecutiveSummary` | deep         |
 
 ## Guarantees
 
@@ -47,7 +47,7 @@ src/lib/usecasex.studio.functions.ts  Studio compatibility layer, delegates here
    `gateway.server.ts`, at call time. Server-only filenames keep the transport
    and service out of every client bundle; the build output is scanned for the
    gateway host and key name.
-2. **No provider leakage.** Callers pick a *tier* or a stable *alias*
+2. **No provider leakage.** Callers pick a _tier_ or a stable _alias_
    (`openai` / `gemini` / `conversx`). Vendor model ids exist in `models.ts`
    only. Changing provider is a one-line edit with no UI change.
 3. **Server is the security boundary.** Every call re-resolves the caller's
@@ -68,19 +68,19 @@ src/lib/usecasex.studio.functions.ts  Studio compatibility layer, delegates here
    Logging failures are swallowed — telemetry never breaks a user action.
 7. **Provenance, not silent overwrite.** Success returns an `AiProvenance`
    stamp (`aiGenerated: true`, task, model, prompt version, timestamp).
-   AI output is returned as a *suggestion*; the caller decides whether to
+   AI output is returned as a _suggestion_; the caller decides whether to
    apply it. Saved Studio drafts persist the stamp.
 
 ## Fair use
 
-Pro Founding Access is complimentary through 31 December 2026 *subject to fair
-use*. `fair-use.ts` is the single definition:
+Pro Founding Access is complimentary through 31 December 2026 _subject to fair
+use_. `fair-use.ts` is the single definition:
 
-| Edition | per user / 24h | per workspace / 24h |
-|---|---|---|
-| Lite | 5 | 20 |
-| Pro | 60 | 300 |
-| Enterprise | 500 | 5 000 |
+| Edition    | per user / 24h | per workspace / 24h |
+| ---------- | -------------- | ------------------- |
+| Lite       | 5              | 20                  |
+| Pro        | 60             | 300                 |
+| Enterprise | 500            | 5 000               |
 
 Overridable without a deploy via `AI_FAIR_USE_PER_USER_PER_DAY` and
 `AI_FAIR_USE_PER_WORKSPACE_PER_DAY`. Only successful calls consume budget —

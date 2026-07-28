@@ -1,6 +1,6 @@
 # CLAUDE.md — Repository Operating Guide
 
-Operational companion to `AGENTS.md`. `AGENTS.md` sets *what* the standard is; this file documents *where things live and how to run them* in this repo. If they conflict, the stricter rule wins.
+Operational companion to `AGENTS.md`. `AGENTS.md` sets _what_ the standard is; this file documents _where things live and how to run them_ in this repo. If they conflict, the stricter rule wins.
 
 ---
 
@@ -18,22 +18,22 @@ Operational companion to `AGENTS.md`. `AGENTS.md` sets *what* the standard is; t
 
 ## Package scripts (from `package.json`)
 
-| Command | Purpose |
-|---|---|
-| `bun run dev` | Cleans dev artifacts then `vite dev` (dev server is auto-supervised in Lovable sandbox — do not run manually there). |
-| `bun run build` | Verifies route tree then `vite build`. |
-| `bun run build:dev` | Same, `--mode development`. |
-| `bun run preview` | Preview a production build. |
-| `bun run lint` | ESLint over the repo. |
-| `bun run format` | Prettier write. |
-| `bun run verify:routes` | `scripts/verify-route-tree.mjs` — guards `routeTree.gen.ts`. |
-| `bun run check:nav-integrity` | `scripts/check-nav-integrity.mjs` — no dead nav. |
-| `bun run check:compare` | `scripts/check-compare-analytics.mjs`. |
-| `bun run test:e2e` | Playwright end-to-end via `scripts/run-e2e.mjs`. |
-| `bun run test:smoke` | Production smoke: `tests/production-smoke.e2e.ts`. |
-| `bun run test:navbar` | `tests/navbar.spec.ts`. |
-| `bun run test:mobile` | `tests/mobile-responsive.spec.ts`. |
-| `bun run test:rls` | `tests/rls-isolation.e2e.ts`. |
+| Command                       | Purpose                                                                                                              |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `bun run dev`                 | Cleans dev artifacts then `vite dev` (dev server is auto-supervised in Lovable sandbox — do not run manually there). |
+| `bun run build`               | Verifies route tree then `vite build`.                                                                               |
+| `bun run build:dev`           | Same, `--mode development`.                                                                                          |
+| `bun run preview`             | Preview a production build.                                                                                          |
+| `bun run lint`                | ESLint over the repo.                                                                                                |
+| `bun run format`              | Prettier write.                                                                                                      |
+| `bun run verify:routes`       | `scripts/verify-route-tree.mjs` — guards `routeTree.gen.ts`.                                                         |
+| `bun run check:nav-integrity` | `scripts/check-nav-integrity.mjs` — no dead nav.                                                                     |
+| `bun run check:compare`       | `scripts/check-compare-analytics.mjs`.                                                                               |
+| `bun run test:e2e`            | Playwright end-to-end via `scripts/run-e2e.mjs`.                                                                     |
+| `bun run test:smoke`          | Production smoke: `tests/production-smoke.e2e.ts`.                                                                   |
+| `bun run test:navbar`         | `tests/navbar.spec.ts`.                                                                                              |
+| `bun run test:mobile`         | `tests/mobile-responsive.spec.ts`.                                                                                   |
+| `bun run test:rls`            | `tests/rls-isolation.e2e.ts`.                                                                                        |
 
 Typecheck: prefer `tsgo` over `tsc --noEmit`.
 

@@ -31,7 +31,9 @@ export function PresetBar({ currentSearch }: { currentSearch: Record<string, unk
     }
   };
 
-  const filterCount = Object.values(currentSearch).filter((v) => (Array.isArray(v) ? v.length > 0 : Boolean(v))).length;
+  const filterCount = Object.values(currentSearch).filter((v) =>
+    Array.isArray(v) ? v.length > 0 : Boolean(v),
+  ).length;
 
   // Newest first, then the rest.
   const orderedPresets = [...BUILTIN_PRESETS].sort((a, b) =>
@@ -56,11 +58,18 @@ export function PresetBar({ currentSearch }: { currentSearch: Record<string, unk
                   to="/repository"
                   search={p.search as never}
                   title={p.description}
-                  onClick={() => void trackModuleEvent("repository", "click", { interaction: "preset_select", preset: p.label })}
+                  onClick={() =>
+                    void trackModuleEvent("repository", "click", {
+                      interaction: "preset_select",
+                      preset: p.label,
+                    })
+                  }
                   className="block rounded-md px-2 py-1.5 text-[13px] font-semibold text-foreground/80 transition hover:bg-primary/5 hover:text-primary"
                 >
                   {p.label}
-                  <span className="block text-[11px] font-normal text-muted-foreground">{p.description}</span>
+                  <span className="block text-[11px] font-normal text-muted-foreground">
+                    {p.description}
+                  </span>
                 </Link>
               ))}
             </div>

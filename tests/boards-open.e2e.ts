@@ -39,7 +39,11 @@ const DEMO = [
   "moderator@demo.usecasex.app",
 ];
 const ADMIN_TIER = new Set(["admin@demo.usecasex.app", "moderator@demo.usecasex.app"]);
-const RESTRICTED_DEMO = ["enterprise@demo.usecasex.app", "pro@demo.usecasex.app", "lite@demo.usecasex.app"];
+const RESTRICTED_DEMO = [
+  "enterprise@demo.usecasex.app",
+  "pro@demo.usecasex.app",
+  "lite@demo.usecasex.app",
+];
 const PASSWORD = "Demo@123";
 
 let failures = 0;
@@ -65,13 +69,29 @@ async function main() {
   console.log("\n— Ownership invariants —");
   for (const email of DEMO) {
     await check(`${email}: profile has organization_id`, async () => {
-      const { data } = await admin.from("profiles").select("organization_id").eq("email", email).maybeSingle();
+      const { data } = await admin
+        .from("profiles")
+        .select("organization_id")
+        .eq("email", email)
+        .maybeSingle();
       if (!data?.organization_id) throw new Error("profile.organization_id is NULL");
     });
     await check(`${email}: has >=1 board in own workspace`, async () => {
-      const { data: prof } = await admin.from("profiles").select("user_id, organization_id").eq("email", email).single();
-      const { data: ws } = await admin.from("workspaces").select("id").eq("organization_id", prof!.organization_id).limit(1).single();
-      const { data: boards } = await admin.from("use_case_boards").select("id, created_by").eq("workspace_id", ws!.id);
+      const { data: prof } = await admin
+        .from("profiles")
+        .select("user_id, organization_id")
+        .eq("email", email)
+        .single();
+      const { data: ws } = await admin
+        .from("workspaces")
+        .select("id")
+        .eq("organization_id", prof!.organization_id)
+        .limit(1)
+        .single();
+      const { data: boards } = await admin
+        .from("use_case_boards")
+        .select("id, created_by")
+        .eq("workspace_id", ws!.id);
       if (!boards?.length) throw new Error("no boards in workspace");
       const wrong = boards.filter((b: any) => b.created_by !== prof!.user_id);
       if (wrong.length) throw new Error(`${wrong.length} board(s) not owned by ${email}`);
@@ -82,10 +102,15 @@ async function main() {
   for (const email of DEMO) {
     console.log(`\n— ${email} open-board flow —`);
     const c = await asUser(email);
-    const { data: { user } } = await c.auth.getUser();
+    const {
+      data: { user },
+    } = await c.auth.getUser();
 
     const boards = await (async () => {
-      const { data, error } = await c.from("use_case_boards").select("id, title").order("created_at", { ascending: false });
+      const { data, error } = await c
+        .from("use_case_boards")
+        .select("id, title")
+        .order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
     })();
@@ -96,14 +121,19 @@ async function main() {
 
     const boardId = boards[0].id;
     await check(`open board ${boardId} — title loads`, async () => {
-      const { data, error } = await c.from("use_case_boards")
-        .select("id, title, workspace_id").eq("id", boardId).maybeSingle();
+      const { data, error } = await c
+        .from("use_case_boards")
+        .select("id, title, workspace_id")
+        .eq("id", boardId)
+        .maybeSingle();
       if (error) throw error;
       if (!data?.title) throw new Error("title missing");
     });
     await check(`open board ${boardId} — items load`, async () => {
-      const { data, error } = await c.from("ai_use_cases")
-        .select("id, title").eq("board_id", boardId);
+      const { data, error } = await c
+        .from("ai_use_cases")
+        .select("id, title")
+        .eq("board_id", boardId);
       if (error) throw error;
       if (!Array.isArray(data)) throw new Error("items query returned non-array");
     });
@@ -112,11 +142,19 @@ async function main() {
     // Admin-tier demo accounts intentionally have cross-workspace read access.
     const otherEmail = RESTRICTED_DEMO.find((e) => e !== email) ?? RESTRICTED_DEMO[0];
     const other = await asUser(otherEmail);
-    await check(`${ADMIN_TIER.has(email) ? "admin board remains visible to authorized admins" : `other user (${otherEmail}) is denied this board`}`, async () => {
-      const { data, error } = await other.from("use_case_boards").select("id").eq("id", boardId).maybeSingle();
-      if (error) throw error;
-      if (!ADMIN_TIER.has(email) && data) throw new Error("RLS leak: other user can see this board");
-    });
+    await check(
+      `${ADMIN_TIER.has(email) ? "admin board remains visible to authorized admins" : `other user (${otherEmail}) is denied this board`}`,
+      async () => {
+        const { data, error } = await other
+          .from("use_case_boards")
+          .select("id")
+          .eq("id", boardId)
+          .maybeSingle();
+        if (error) throw error;
+        if (!ADMIN_TIER.has(email) && data)
+          throw new Error("RLS leak: other user can see this board");
+      },
+    );
     await other.auth.signOut().catch(() => {});
     await c.auth.signOut().catch(() => {});
     void user;

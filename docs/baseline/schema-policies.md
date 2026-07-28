@@ -33,10 +33,12 @@ directly (service_role bypasses RLS by design and is used only from server
 handlers via `client.server.ts`).
 
 ## How to re-generate
+
 ```sql
 SELECT schemaname, tablename, policyname, cmd, roles::text
 FROM pg_policies WHERE schemaname='public'
 ORDER BY tablename, policyname;
 ```
+
 Run via `supabase--read_query`. Full raw JSON was captured in the
 2026-07-25 baseline turn.

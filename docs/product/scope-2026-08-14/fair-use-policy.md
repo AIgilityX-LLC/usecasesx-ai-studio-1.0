@@ -5,14 +5,14 @@
 
 ## Per Pro user / workspace / calendar month
 
-| Metric | Soft warn (80%) | Hard cap (100%) |
-|---|---|---|
-| Use cases created | 40 | 50 |
-| Scores computed | 160 | 200 |
-| Deliverable exports | 40 | 50 |
-| AI Gateway calls | 400 | 500 |
-| Board shares | 16 | 20 |
-| Opportunity submissions | 80 | 100 |
+| Metric                  | Soft warn (80%) | Hard cap (100%) |
+| ----------------------- | --------------- | --------------- |
+| Use cases created       | 40              | 50              |
+| Scores computed         | 160             | 200             |
+| Deliverable exports     | 40              | 50              |
+| AI Gateway calls        | 400             | 500             |
+| Board shares            | 16              | 20              |
+| Opportunity submissions | 80              | 100             |
 
 ## Behaviour
 

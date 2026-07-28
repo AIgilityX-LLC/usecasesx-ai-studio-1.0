@@ -12,12 +12,7 @@ import { useRoles, type AppRole } from "@/lib/usecasex.roles";
  */
 export type PermissionTier = "admin" | "editor" | "user";
 
-const ADMIN_ROLES: AppRole[] = [
-  "admin",
-  "super_admin",
-  "ai_hub_admin",
-  "usecasex_admin",
-];
+const ADMIN_ROLES: AppRole[] = ["admin", "super_admin", "ai_hub_admin", "usecasex_admin"];
 const EDITOR_ROLES: AppRole[] = [
   "editor",
   "moderator",
@@ -36,10 +31,10 @@ export function tierFromRoles(roles: AppRole[]): PermissionTier {
 export type PermissionAction =
   // Repository (global published catalogue)
   | "repo.view"
-  | "repo.save"          // shortlist / add to "My Use Cases"
-  | "repo.create"        // submit a new pattern to the global repo
-  | "repo.edit"          // edit published patterns
-  | "repo.delete"        // hard-delete a pattern
+  | "repo.save" // shortlist / add to "My Use Cases"
+  | "repo.create" // submit a new pattern to the global repo
+  | "repo.edit" // edit published patterns
+  | "repo.delete" // hard-delete a pattern
   // Dashboard (Pro)
   | "dashboard.view"
   | "dashboard.export"
@@ -60,29 +55,29 @@ export type PermissionAction =
   | "admin.users";
 
 const MATRIX: Record<PermissionAction, PermissionTier[]> = {
-  "repo.view":        ["admin", "editor", "user"],
-  "repo.save":        ["admin", "editor", "user"],
-  "repo.create":      ["admin", "editor"],
-  "repo.edit":        ["admin", "editor"],
-  "repo.delete":      ["admin"],
+  "repo.view": ["admin", "editor", "user"],
+  "repo.save": ["admin", "editor", "user"],
+  "repo.create": ["admin", "editor"],
+  "repo.edit": ["admin", "editor"],
+  "repo.delete": ["admin"],
 
-  "dashboard.view":   ["admin", "editor", "user"],
+  "dashboard.view": ["admin", "editor", "user"],
   "dashboard.export": ["admin", "editor", "user"],
 
-  "saved.view":       ["admin", "editor", "user"],
-  "saved.create":     ["admin", "editor", "user"],
-  "saved.edit":       ["admin", "editor", "user"], // own rows (RLS-enforced)
-  "saved.delete":     ["admin", "editor", "user"], // own rows (RLS-enforced)
+  "saved.view": ["admin", "editor", "user"],
+  "saved.create": ["admin", "editor", "user"],
+  "saved.edit": ["admin", "editor", "user"], // own rows (RLS-enforced)
+  "saved.delete": ["admin", "editor", "user"], // own rows (RLS-enforced)
 
-  "boards.view":       ["admin", "editor", "user"],
-  "boards.create":     ["admin", "editor", "user"],
-  "boards.edit":       ["admin", "editor"],
-  "boards.delete":     ["admin", "editor"],
-  "boards.addItem":    ["admin", "editor", "user"],
+  "boards.view": ["admin", "editor", "user"],
+  "boards.create": ["admin", "editor", "user"],
+  "boards.edit": ["admin", "editor"],
+  "boards.delete": ["admin", "editor"],
+  "boards.addItem": ["admin", "editor", "user"],
   "boards.removeItem": ["admin", "editor"],
 
   "admin.taxonomy": ["admin"],
-  "admin.users":    ["admin"],
+  "admin.users": ["admin"],
 };
 
 export function can(tier: PermissionTier, action: PermissionAction): boolean {

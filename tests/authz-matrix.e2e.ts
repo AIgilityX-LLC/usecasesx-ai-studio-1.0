@@ -26,7 +26,9 @@ function check(label: string, actual: unknown, expected: unknown) {
   const ok = JSON.stringify(actual) === JSON.stringify(expected);
   if (!ok) {
     failures += 1;
-    console.error(`✗ ${label} — expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+    console.error(
+      `✗ ${label} — expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`,
+    );
   } else {
     console.log(`✓ ${label}`);
   }
@@ -87,10 +89,22 @@ check(
   "edition",
 );
 check("pro contributor can use AI assist", can(subject("contributor", "pro"), "ai.assist"), true);
-check("lite contributor can capture a use case", can(subject("contributor", "lite"), "usecase.create"), true);
+check(
+  "lite contributor can capture a use case",
+  can(subject("contributor", "lite"), "usecase.create"),
+  true,
+);
 check("pro owner cannot bulk AI assist", can(subject("owner", "pro"), "ai.bulkAssist"), false);
-check("enterprise owner can bulk AI assist", can(subject("owner", "enterprise"), "ai.bulkAssist"), true);
-check("pro owner cannot run advanced reports", can(subject("owner", "pro"), "reports.advanced"), false);
+check(
+  "enterprise owner can bulk AI assist",
+  can(subject("owner", "enterprise"), "ai.bulkAssist"),
+  true,
+);
+check(
+  "pro owner cannot run advanced reports",
+  can(subject("owner", "pro"), "reports.advanced"),
+  false,
+);
 
 // ── 4. Feature-flagged Enterprise capabilities are honest ─────────────────
 const flaggedOff: EntitlementKey[] = [
@@ -121,10 +135,8 @@ check(
 );
 check(
   "flag ON but Pro edition still blocked on edition",
-  evaluate(
-    subject("owner", "pro", { flags: mergeCapabilityFlags({ sso: true }) }),
-    "sso.configure",
-  ).reason,
+  evaluate(subject("owner", "pro", { flags: mergeCapabilityFlags({ sso: true }) }), "sso.configure")
+    .reason,
   "edition",
 );
 check(
@@ -145,7 +157,11 @@ check(
 );
 
 // ── 5. Platform staff surfaces ────────────────────────────────────────────
-check("member cannot manage taxonomy", can(subject("owner", "enterprise"), "admin.taxonomy"), false);
+check(
+  "member cannot manage taxonomy",
+  can(subject("owner", "enterprise"), "admin.taxonomy"),
+  false,
+);
 check(
   "platform admin can manage taxonomy",
   can(subject(null, "lite", { isPlatformAdmin: true }), "admin.taxonomy"),
@@ -190,7 +206,11 @@ check(
 );
 check(
   "expired profile entitlement degrades to Lite",
-  resolveEdition({ storedTier: "pro", expiresAt: "2026-01-01T00:00:00.000Z" }, DEFAULT_FOUNDING_ACCESS, beforeExpiry),
+  resolveEdition(
+    { storedTier: "pro", expiresAt: "2026-01-01T00:00:00.000Z" },
+    DEFAULT_FOUNDING_ACCESS,
+    beforeExpiry,
+  ),
   "lite",
 );
 check(
@@ -205,7 +225,11 @@ check("org role is the fallback", resolveWorkspaceRole(null, "admin"), "admin");
 check("unknown role strings resolve to null", resolveWorkspaceRole("wizard", null), null);
 
 // ── 9. Catalogue integrity ────────────────────────────────────────────────
-check("catalogue keys are self-consistent", ENTITLEMENT_KEYS.every((k) => ENTITLEMENT_CATALOGUE[k].key === k), true);
+check(
+  "catalogue keys are self-consistent",
+  ENTITLEMENT_KEYS.every((k) => ENTITLEMENT_CATALOGUE[k].key === k),
+  true,
+);
 check(
   "every entitlement is decidable for a viewer",
   Object.keys(evaluateAll(subject("viewer", "lite"))).length,

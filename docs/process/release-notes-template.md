@@ -25,18 +25,23 @@ One paragraph, plain language. What changed for the user? Which persona benefits
 Grouped by Conventional Commit type. Auto-generated from `git log <prev-tag>..<this-tag> --oneline` is acceptable, but must be curated.
 
 ### Added
+
 - feat(<scope>): … (PROMPT-NN)
 
 ### Changed
+
 - refactor(<scope>): …
 
 ### Fixed
+
 - fix(<scope>): …
 
 ### Security
+
 - fix(security): … (link risk ID from release board §7.1)
 
 ### Docs / Chore
+
 - docs(<scope>): …
 
 ## Migrations

@@ -50,19 +50,30 @@ export function usePlan(): PlanInfo {
 
   useEffect(() => {
     if (session === undefined) return;
-    if (session === null) { setPlan(null); setIsAdmin(false); setLoading(false); return; }
+    if (session === null) {
+      setPlan(null);
+      setIsAdmin(false);
+      setLoading(false);
+      return;
+    }
     let active = true;
     (async () => {
       const [{ data: p }, { data: roles }] = await Promise.all([
         supabase.from("profiles").select("plan_type").eq("user_id", session.user.id).maybeSingle(),
-        supabase.from("user_roles").select("role").eq("user_id", session.user.id).in("role", [...ADMIN_TIER_ROLES]),
+        supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", session.user.id)
+          .in("role", [...ADMIN_TIER_ROLES]),
       ]);
       if (!active) return;
       setPlan(p?.plan_type ?? "lite");
       setIsAdmin(!!roles && roles.length > 0);
       setLoading(false);
     })();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [session]);
 
   const isPro = PRO_PLANS.has(plan ?? "");

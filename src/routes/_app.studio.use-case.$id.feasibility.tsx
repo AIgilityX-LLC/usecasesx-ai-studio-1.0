@@ -3,7 +3,12 @@ import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
-  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer,
+  Radar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  ResponsiveContainer,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -82,21 +87,46 @@ function pillarScore(values: number[]): number {
 }
 
 function recommendation(total: number): { label: string; tone: string; next: string } {
-  if (total >= 80) return { label: "Pursue", tone: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30", next: "Generate Blueprint" };
-  if (total >= 60) return { label: "Refine", tone: "bg-amber-500/15 text-amber-600 border-amber-500/30", next: "Refine Use Case" };
-  if (total >= 40) return { label: "Hold", tone: "bg-orange-500/15 text-orange-600 border-orange-500/30", next: "Park for Review" };
-  return { label: "Reject", tone: "bg-rose-500/15 text-rose-600 border-rose-500/30", next: "Archive Use Case" };
+  if (total >= 80)
+    return {
+      label: "Pursue",
+      tone: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30",
+      next: "Generate Blueprint",
+    };
+  if (total >= 60)
+    return {
+      label: "Refine",
+      tone: "bg-amber-500/15 text-amber-600 border-amber-500/30",
+      next: "Refine Use Case",
+    };
+  if (total >= 40)
+    return {
+      label: "Hold",
+      tone: "bg-orange-500/15 text-orange-600 border-orange-500/30",
+      next: "Park for Review",
+    };
+  return {
+    label: "Reject",
+    tone: "bg-rose-500/15 text-rose-600 border-rose-500/30",
+    next: "Archive Use Case",
+  };
 }
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/feasibility")({
   head: () => ({
     meta: [
       { title: "Feasibility Scoring — AI Use Case Studio" },
-      { name: "description", content: "Score AI use cases across desirability, viability, feasibility, governability, and sustainability." },
+      {
+        name: "description",
+        content:
+          "Score AI use cases across desirability, viability, feasibility, governability, and sustainability.",
+      },
     ],
   }),
   component: FeasibilityPage,
-  errorComponent: ({ error }) => <div className="p-12 text-center text-destructive">{error.message}</div>,
+  errorComponent: ({ error }) => (
+    <div className="p-12 text-center text-destructive">{error.message}</div>
+  ),
   notFoundComponent: () => <div className="p-12 text-center">Use case not found.</div>,
 });
 
@@ -105,7 +135,9 @@ function FeasibilityPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [useCase, setUseCase] = useState<{ id: string; title: string; board_id: string } | null>(null);
+  const [useCase, setUseCase] = useState<{ id: string; title: string; board_id: string } | null>(
+    null,
+  );
   const [answers, setAnswers] = useState<Answers>(emptyAnswers());
   const [notes, setNotes] = useState("");
   const [existingId, setExistingId] = useState<string | null>(null);
@@ -114,8 +146,13 @@ function FeasibilityPage() {
     let active = true;
     (async () => {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { navigate({ to: "/auth" }); return; }
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        navigate({ to: "/auth" });
+        return;
+      }
 
       const { data: uc, error } = await supabase
         .from("ai_use_cases")
@@ -123,12 +160,18 @@ function FeasibilityPage() {
         .eq("id", id)
         .maybeSingle();
       if (!active) return;
-      if (error || !uc) { toast.error("Use case not found."); setLoading(false); return; }
+      if (error || !uc) {
+        toast.error("Use case not found.");
+        setLoading(false);
+        return;
+      }
       setUseCase(uc);
 
       const { data: existing } = await supabase
         .from("feasibility_scores")
-        .select("id, desirability_score, viability_score, feasibility_score, governability_score, sustainability_score, notes")
+        .select(
+          "id, desirability_score, viability_score, feasibility_score, governability_score, sustainability_score, notes",
+        )
         .eq("use_case_id", id)
         .order("updated_at", { ascending: false })
         .limit(1)
@@ -150,14 +193,19 @@ function FeasibilityPage() {
       }
       setLoading(false);
     })();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [id, navigate]);
 
   const pillarScores = useMemo(() => {
-    return PILLARS.reduce((acc, p) => {
-      acc[p.key] = pillarScore(answers[p.key]);
-      return acc;
-    }, {} as Record<PillarKey, number>);
+    return PILLARS.reduce(
+      (acc, p) => {
+        acc[p.key] = pillarScore(answers[p.key]);
+        return acc;
+      },
+      {} as Record<PillarKey, number>,
+    );
   }, [answers]);
 
   const totalScore = useMemo(() => {
@@ -180,8 +228,14 @@ function FeasibilityPage() {
   async function handleSave(next?: "blueprint" | "stay") {
     if (!useCase) return;
     setSaving(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setSaving(false); navigate({ to: "/auth" }); return; }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setSaving(false);
+      navigate({ to: "/auth" });
+      return;
+    }
 
     const payload = {
       use_case_id: useCase.id,
@@ -197,18 +251,31 @@ function FeasibilityPage() {
     };
 
     const res = existingId
-      ? await supabase.from("feasibility_scores").update(payload).eq("id", existingId).select("id").single()
+      ? await supabase
+          .from("feasibility_scores")
+          .update(payload)
+          .eq("id", existingId)
+          .select("id")
+          .single()
       : await supabase.from("feasibility_scores").insert(payload).select("id").single();
 
     setSaving(false);
-    if (res.error) { toast.error(res.error.message); return; }
+    if (res.error) {
+      toast.error(res.error.message);
+      return;
+    }
     if (!existingId && res.data) setExistingId(res.data.id);
     toast.success("Feasibility scores saved.");
-    if (next === "blueprint") navigate({ to: "/blueprint", search: { useCase: useCase.id } as never });
+    if (next === "blueprint")
+      navigate({ to: "/blueprint", search: { useCase: useCase.id } as never });
   }
 
   if (loading) {
-    return <div className="flex items-center justify-center py-24 text-muted-foreground"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading…</div>;
+    return (
+      <div className="flex items-center justify-center py-24 text-muted-foreground">
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading…
+      </div>
+    );
   }
   if (!useCase) {
     return <div className="p-12 text-center text-muted-foreground">Use case not found.</div>;
@@ -218,11 +285,21 @@ function FeasibilityPage() {
     <div className="mx-auto max-w-[1400px] px-6 py-10">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <Link to="/ai-use-case-studio" className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline">← AI Use Case Studio</Link>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground">Feasibility Scoring</h1>
+          <Link
+            to="/ai-use-case-studio"
+            className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline"
+          >
+            ← AI Use Case Studio
+          </Link>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground">
+            Feasibility Scoring
+          </h1>
           <p className="mt-1 text-muted-foreground">{useCase.title}</p>
         </div>
-        <Badge className={"border px-3 py-1 text-xs font-bold uppercase tracking-widest " + rec.tone} variant="outline">
+        <Badge
+          className={"border px-3 py-1 text-xs font-bold uppercase tracking-widest " + rec.tone}
+          variant="outline"
+        >
           {rec.label} · {totalScore}/100
         </Badge>
       </div>
@@ -238,7 +315,9 @@ function FeasibilityPage() {
                   <p className="mt-1 text-sm text-muted-foreground">{p.description}</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Pillar score</div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Pillar score
+                  </div>
                   <div className="text-2xl font-bold text-primary">{pillarScores[p.key]}</div>
                 </div>
               </CardHeader>
@@ -247,7 +326,9 @@ function FeasibilityPage() {
                   <div key={idx} className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-sm text-foreground">{q}</span>
-                      <span className="rounded bg-secondary px-2 py-0.5 text-xs font-bold text-foreground">{answers[p.key][idx]}/5</span>
+                      <span className="rounded bg-secondary px-2 py-0.5 text-xs font-bold text-foreground">
+                        {answers[p.key][idx]}/5
+                      </span>
                     </div>
                     <div className="flex items-center gap-1">
                       {[1, 2, 3, 4, 5].map((v) => (
@@ -279,7 +360,9 @@ function FeasibilityPage() {
           ))}
 
           <Card>
-            <CardHeader className="pb-3"><CardTitle className="text-base">Notes &amp; assumptions</CardTitle></CardHeader>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Notes &amp; assumptions</CardTitle>
+            </CardHeader>
             <CardContent>
               <textarea
                 value={notes}
@@ -303,9 +386,21 @@ function FeasibilityPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <RadarChart data={radarData} outerRadius="75%">
                     <PolarGrid stroke="hsl(var(--border))" />
-                    <PolarAngleAxis dataKey="pillar" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
-                    <PolarRadiusAxis domain={[0, 100]} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} stroke="hsl(var(--border))" />
-                    <Radar dataKey="score" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.35} />
+                    <PolarAngleAxis
+                      dataKey="pillar"
+                      tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
+                    />
+                    <PolarRadiusAxis
+                      domain={[0, 100]}
+                      tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                      stroke="hsl(var(--border))"
+                    />
+                    <Radar
+                      dataKey="score"
+                      stroke="hsl(var(--primary))"
+                      fill="hsl(var(--primary))"
+                      fillOpacity={0.35}
+                    />
                   </RadarChart>
                 </ResponsiveContainer>
               </div>
@@ -317,7 +412,10 @@ function FeasibilityPage() {
                       <span className="text-foreground">{pillarScores[p.key]}/100</span>
                     </div>
                     <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-secondary">
-                      <div className="h-full bg-primary" style={{ width: `${pillarScores[p.key]}%` }} />
+                      <div
+                        className="h-full bg-primary"
+                        style={{ width: `${pillarScores[p.key]}%` }}
+                      />
                     </div>
                   </div>
                 ))}
@@ -327,20 +425,43 @@ function FeasibilityPage() {
 
           <Card>
             <CardContent className="space-y-4 pt-6 text-center">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Total feasibility</div>
-              <div className="text-5xl font-bold text-foreground">{totalScore}<span className="text-2xl text-muted-foreground">/100</span></div>
-              <Badge className={"border px-3 py-1 text-xs font-bold uppercase tracking-widest " + rec.tone} variant="outline">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                Total feasibility
+              </div>
+              <div className="text-5xl font-bold text-foreground">
+                {totalScore}
+                <span className="text-2xl text-muted-foreground">/100</span>
+              </div>
+              <Badge
+                className={
+                  "border px-3 py-1 text-xs font-bold uppercase tracking-widest " + rec.tone
+                }
+                variant="outline"
+              >
                 Recommendation: {rec.label}
               </Badge>
               <p className="text-xs text-muted-foreground">
                 80–100 Pursue · 60–79 Refine · 40–59 Hold · &lt;40 Reject
               </p>
               <div className="flex flex-col gap-2 pt-2">
-                <Button onClick={() => handleSave("stay")} disabled={saving} variant="outline" className="w-full">
-                  {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                <Button
+                  onClick={() => handleSave("stay")}
+                  disabled={saving}
+                  variant="outline"
+                  className="w-full"
+                >
+                  {saving ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="mr-2 h-4 w-4" />
+                  )}
                   Save scores
                 </Button>
-                <Button onClick={() => handleSave("blueprint")} disabled={saving} className="w-full">
+                <Button
+                  onClick={() => handleSave("blueprint")}
+                  disabled={saving}
+                  className="w-full"
+                >
                   {rec.next} <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>

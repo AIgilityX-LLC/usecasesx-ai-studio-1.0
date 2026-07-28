@@ -25,9 +25,15 @@ export const Route = createFileRoute("/_app/pricing")({
   head: () => ({
     meta: [
       { title: "Pricing — UseCasesX™" },
-      { name: "description", content: "Choose the right plan: Lite, Pro, or Enterprise Sovereign AI System." },
+      {
+        name: "description",
+        content: "Choose the right plan: Lite, Pro, or Enterprise Sovereign AI System.",
+      },
       { property: "og:title", content: "UseCasesX™ Pricing" },
-      { property: "og:description", content: "Lite, Pro, and Enterprise plans for AI use case discovery and governance." },
+      {
+        property: "og:description",
+        content: "Lite, Pro, and Enterprise plans for AI use case discovery and governance.",
+      },
     ],
   }),
   component: PricingPage,
@@ -105,7 +111,6 @@ const PLANS: Plan[] = [
   },
 ];
 
-
 type Cmp = boolean | string;
 type CmpRow = { label: string; lite: Cmp; pro: Cmp; enterprise: Cmp };
 type CmpGroup = { group: string; rows: CmpRow[] };
@@ -114,9 +119,19 @@ const COMPARISON: CmpGroup[] = [
   {
     group: "Discovery & Repository",
     rows: [
-      { label: "Global AI Use Cases Repository", lite: "Free patterns", pro: true, enterprise: true },
+      {
+        label: "Global AI Use Cases Repository",
+        lite: "Free patterns",
+        pro: true,
+        enterprise: true,
+      },
       { label: "Advanced filters & saved views", lite: false, pro: true, enterprise: true },
-      { label: "Use case comparison view", lite: "Up to 2", pro: "Unlimited", enterprise: "Unlimited" },
+      {
+        label: "Use case comparison view",
+        lite: "Up to 2",
+        pro: "Unlimited",
+        enterprise: "Unlimited",
+      },
       { label: "Evidence & citations drawer", lite: true, pro: true, enterprise: true },
       { label: "Export (PDF / JSON)", lite: "Basic", pro: true, enterprise: true },
     ],
@@ -139,7 +154,12 @@ const COMPARISON: CmpGroup[] = [
       { label: "AdvisorX™ review", lite: false, pro: true, enterprise: true },
       { label: "C3G™ governance", lite: false, pro: "Draft link", enterprise: "Full workflow" },
       { label: "Portfolio Roadmap & optimizer", lite: false, pro: true, enterprise: true },
-      { label: "Decision Provenance Report™", lite: false, pro: "Activity history", enterprise: true },
+      {
+        label: "Decision Provenance Report™",
+        lite: false,
+        pro: "Activity history",
+        enterprise: true,
+      },
     ],
   },
   {
@@ -197,7 +217,6 @@ function PricingPage() {
         }
       />
 
-
       {/* Founding member offer */}
       <section id="founding" className="scroll-mt-20 border-b border-border bg-background">
         <div className="mx-auto max-w-6xl px-6 py-14">
@@ -209,14 +228,17 @@ function PricingPage() {
           <Card className="border-primary/40 bg-gradient-to-br from-primary/10 via-card to-card ring-1 ring-primary/20">
             <CardContent className="flex flex-col items-start gap-6 p-8 md:flex-row md:items-center md:justify-between">
               <div className="max-w-2xl">
-                <Badge className="bg-primary text-primary-foreground">Founding Member Program</Badge>
+                <Badge className="bg-primary text-primary-foreground">
+                  Founding Member Program
+                </Badge>
                 <h2 className="mt-3 text-2xl font-bold tracking-tight">
                   Free Pro access — gratis until {FREE_UNTIL}
                 </h2>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Eligible founding members unlock the full UseCasesX™ Pro experience — repository, Studio, boards,
-                  SARPI™, AdvisorX™, C3G™ governance, and portfolio roadmap — completely free through {FREE_UNTIL}.
-                  Join the early-access waitlist and we'll confirm your spot.
+                  Eligible founding members unlock the full UseCasesX™ Pro experience — repository,
+                  Studio, boards, SARPI™, AdvisorX™, C3G™ governance, and portfolio roadmap —
+                  completely free through {FREE_UNTIL}. Join the early-access waitlist and we'll
+                  confirm your spot.
                 </p>
                 <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
                   {[
@@ -243,99 +265,107 @@ function PricingPage() {
       </section>
 
       <section className="bg-secondary/40">
-      <div className="mx-auto max-w-6xl px-6 py-16">
-      <div className="grid gap-6 md:grid-cols-3">
-        {PLANS.map((p) => (
-          <Card
-            key={p.key}
-            className={`relative flex flex-col ${
-              p.highlight ? "border-primary shadow-lg ring-2 ring-primary/30" : ""
-            }`}
-          >
-            {p.badge && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <Badge className="bg-primary text-primary-foreground">
-                  {p.badge}
-                </Badge>
-              </div>
-            )}
-            {myPlan === p.key && (
-              <div className="absolute -top-3 right-3">
-                <Badge className="bg-emerald-600 text-white">Your plan</Badge>
-              </div>
-            )}
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                {p.key === "enterprise" && <Shield className="h-5 w-5 text-primary" />}
-                {p.name}
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">{p.tagline}</p>
-              <div className="pt-3 text-3xl font-bold">{p.price}</div>
-            </CardHeader>
-            <CardContent className="flex flex-1 flex-col gap-4">
-              <ul className="space-y-2 text-sm">
-                {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
-                    <span>
-                      {f}
-                      {isComingSoon(f) && (
-                        <span className="ml-1.5 rounded bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                          Coming {NEXT_RELEASE_LABEL}
-                        </span>
-                      )}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              {p.limits && (
-                <ul className="space-y-1 border-t pt-3 text-xs text-muted-foreground">
-                  {p.limits.map((l) => (
-                    <li key={l}>— {l}</li>
-                  ))}
-                </ul>
-              )}
-              <div className="mt-auto pt-4">
-                {p.key === "pro" ? (
-                  <Button className="w-full" onClick={() => setWaitlistOpen(true)}>
-                    <Sparkles className="mr-2 h-4 w-4" /> {p.cta}
-                  </Button>
-                ) : (
-                  <Button
-                    className="w-full"
-                    variant={p.highlight ? "default" : "outline"}
-                    asChild
-                  >
-                    <Link to={p.key === "lite" ? "/repository" : "/"}>{p.cta}</Link>
-                  </Button>
+        <div className="mx-auto max-w-6xl px-6 py-16">
+          <div className="grid gap-6 md:grid-cols-3">
+            {PLANS.map((p) => (
+              <Card
+                key={p.key}
+                className={`relative flex flex-col ${
+                  p.highlight ? "border-primary shadow-lg ring-2 ring-primary/30" : ""
+                }`}
+              >
+                {p.badge && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <Badge className="bg-primary text-primary-foreground">{p.badge}</Badge>
+                  </div>
                 )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                {myPlan === p.key && (
+                  <div className="absolute -top-3 right-3">
+                    <Badge className="bg-emerald-600 text-white">Your plan</Badge>
+                  </div>
+                )}
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    {p.key === "enterprise" && <Shield className="h-5 w-5 text-primary" />}
+                    {p.name}
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">{p.tagline}</p>
+                  <div className="pt-3 text-3xl font-bold">{p.price}</div>
+                </CardHeader>
+                <CardContent className="flex flex-1 flex-col gap-4">
+                  <ul className="space-y-2 text-sm">
+                    {p.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
+                        <span>
+                          {f}
+                          {isComingSoon(f) && (
+                            <span className="ml-1.5 rounded bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                              Coming {NEXT_RELEASE_LABEL}
+                            </span>
+                          )}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  {p.limits && (
+                    <ul className="space-y-1 border-t pt-3 text-xs text-muted-foreground">
+                      {p.limits.map((l) => (
+                        <li key={l}>— {l}</li>
+                      ))}
+                    </ul>
+                  )}
+                  <div className="mt-auto pt-4">
+                    {p.key === "pro" ? (
+                      <Button className="w-full" onClick={() => setWaitlistOpen(true)}>
+                        <Sparkles className="mr-2 h-4 w-4" /> {p.cta}
+                      </Button>
+                    ) : (
+                      <Button
+                        className="w-full"
+                        variant={p.highlight ? "default" : "outline"}
+                        asChild
+                      >
+                        <Link to={p.key === "lite" ? "/repository" : "/"}>{p.cta}</Link>
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
-      <p className="mt-10 text-center text-xs text-muted-foreground">
-        Need something custom? <Link to="/" className="underline">Contact us</Link>{" "}
-        about regulator, auditor, or multi-tenant Sovereign AI System deployments.
-      </p>
-    </div>
+          <p className="mt-10 text-center text-xs text-muted-foreground">
+            Need something custom?{" "}
+            <Link to="/" className="underline">
+              Contact us
+            </Link>{" "}
+            about regulator, auditor, or multi-tenant Sovereign AI System deployments.
+          </p>
+        </div>
       </section>
 
       {/* Feature comparison table */}
       <section className="bg-background">
         <div className="mx-auto max-w-6xl px-6 py-16">
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">Compare plans</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">
+            Compare plans
+          </p>
           <h2 className="mt-2 text-2xl font-bold tracking-tight md:text-3xl">
             Lite vs Pro vs Enterprise — feature by feature
           </h2>
           <p className="mt-3 max-w-2xl text-muted-foreground">
             Every capability across UseCasesX™ discovery, design, governance, and roadmap. Pro is
-            <span className="font-semibold text-foreground"> free until {FREE_UNTIL}</span> for founding members.
+            <span className="font-semibold text-foreground"> free until {FREE_UNTIL}</span> for
+            founding members.
           </p>
           {myPlan && (
             <div className="mt-5 inline-flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-2.5">
-              <Switch id="highlight-plan" checked={highlightMine} onCheckedChange={setHighlightMine} />
+              <Switch
+                id="highlight-plan"
+                checked={highlightMine}
+                onCheckedChange={setHighlightMine}
+              />
               <label htmlFor="highlight-plan" className="cursor-pointer text-sm font-medium">
                 Highlight my plan
                 <span className="ml-1.5 rounded bg-emerald-600/15 px-1.5 py-0.5 text-[10px] font-bold uppercase text-emerald-700 dark:text-emerald-400">
@@ -349,18 +379,38 @@ function PricingPage() {
               <TableHeader>
                 <TableRow className="bg-secondary/60">
                   <TableHead className="min-w-[220px] text-foreground">Feature</TableHead>
-                  <TableHead className={`text-center text-foreground ${mineOn && myPlan === "lite" ? "bg-emerald-500/10" : ""}`}>
-                    Lite {mineOn && myPlan === "lite" && <span className="ml-1 text-[9px] font-bold uppercase text-emerald-600 dark:text-emerald-400">You</span>}
+                  <TableHead
+                    className={`text-center text-foreground ${mineOn && myPlan === "lite" ? "bg-emerald-500/10" : ""}`}
+                  >
+                    Lite{" "}
+                    {mineOn && myPlan === "lite" && (
+                      <span className="ml-1 text-[9px] font-bold uppercase text-emerald-600 dark:text-emerald-400">
+                        You
+                      </span>
+                    )}
                   </TableHead>
-                  <TableHead className={`text-center text-foreground ${mineOn && myPlan === "pro" ? "bg-emerald-500/10" : ""}`}>
+                  <TableHead
+                    className={`text-center text-foreground ${mineOn && myPlan === "pro" ? "bg-emerald-500/10" : ""}`}
+                  >
                     Pro
                     <span className="ml-1 rounded bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase text-primary">
                       Free
                     </span>
-                    {mineOn && myPlan === "pro" && <span className="ml-1 text-[9px] font-bold uppercase text-emerald-600 dark:text-emerald-400">You</span>}
+                    {mineOn && myPlan === "pro" && (
+                      <span className="ml-1 text-[9px] font-bold uppercase text-emerald-600 dark:text-emerald-400">
+                        You
+                      </span>
+                    )}
                   </TableHead>
-                  <TableHead className={`text-center text-foreground ${mineOn && myPlan === "enterprise" ? "bg-emerald-500/10" : ""}`}>
-                    Enterprise {mineOn && myPlan === "enterprise" && <span className="ml-1 text-[9px] font-bold uppercase text-emerald-600 dark:text-emerald-400">You</span>}
+                  <TableHead
+                    className={`text-center text-foreground ${mineOn && myPlan === "enterprise" ? "bg-emerald-500/10" : ""}`}
+                  >
+                    Enterprise{" "}
+                    {mineOn && myPlan === "enterprise" && (
+                      <span className="ml-1 text-[9px] font-bold uppercase text-emerald-600 dark:text-emerald-400">
+                        You
+                      </span>
+                    )}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -368,7 +418,10 @@ function PricingPage() {
                 {COMPARISON.map((group) => (
                   <Fragment key={group.group}>
                     <TableRow className="bg-muted/40">
-                      <TableCell colSpan={4} className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      <TableCell
+                        colSpan={4}
+                        className="text-xs font-bold uppercase tracking-wider text-muted-foreground"
+                      >
                         {group.group}
                       </TableCell>
                     </TableRow>
@@ -376,8 +429,15 @@ function PricingPage() {
                       <TableRow key={row.label}>
                         <TableCell className="font-medium">{row.label}</TableCell>
                         <Cell value={row.lite} highlight={mineOn && myPlan === "lite"} />
-                        <Cell value={row.pro} highlight={mineOn && myPlan === "pro"} soon={isComingSoon(row.label)} />
-                        <Cell value={row.enterprise} highlight={mineOn && myPlan === "enterprise"} />
+                        <Cell
+                          value={row.pro}
+                          highlight={mineOn && myPlan === "pro"}
+                          soon={isComingSoon(row.label)}
+                        />
+                        <Cell
+                          value={row.enterprise}
+                          highlight={mineOn && myPlan === "enterprise"}
+                        />
                       </TableRow>
                     ))}
                   </Fragment>
@@ -403,7 +463,15 @@ function PricingPage() {
   );
 }
 
-function Cell({ value, highlight = false, soon = false }: { value: boolean | string; highlight?: boolean; soon?: boolean }) {
+function Cell({
+  value,
+  highlight = false,
+  soon = false,
+}: {
+  value: boolean | string;
+  highlight?: boolean;
+  soon?: boolean;
+}) {
   const hl = highlight ? "bg-emerald-500/10" : "";
   const soonBadge = soon ? (
     <span className="ml-1.5 rounded bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
@@ -427,5 +495,10 @@ function Cell({ value, highlight = false, soon = false }: { value: boolean | str
       </TableCell>
     );
   }
-  return <TableCell className={`text-center text-sm text-muted-foreground ${hl}`}>{value}{soonBadge}</TableCell>;
+  return (
+    <TableCell className={`text-center text-sm text-muted-foreground ${hl}`}>
+      {value}
+      {soonBadge}
+    </TableCell>
+  );
 }

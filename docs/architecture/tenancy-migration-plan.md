@@ -5,6 +5,7 @@ authoritative specification for the tenancy foundation; execution happens in lat
 prompts, step by step, each with its own migration and rollback.
 
 Companion documents:
+
 - `docs/architecture/tenancy-rls-design.md` — policy-by-policy design
 - `docs/architecture/tenancy-verification-queries.md` — read-only verification SQL
 - `docs/architecture/data-migration-plan.md` — launch-window migration rules (A1–A5)
@@ -24,14 +25,14 @@ Companion documents:
 
 ### Ownership columns present today
 
-| Column | Tables |
-|---|---|
-| `user_id` | collections, cta_events, generated_reports, integration_events, module_events, portfolios, profiles, saved_use_cases, shortlists, use_case_downloads, use_case_feedback, use_case_ratings, use_case_scores, use_case_submissions, use_case_views, user_roles |
-| `created_by` | ai_use_cases, feasibility_scores, use_case_boards, use_case_deliverables, workspaces |
-| `organization_id` | profiles, workspaces, taxonomy_sectors |
-| `workspace_id` | use_case_boards **only** |
-| `actor_id` | audit_events, use_case_audit_log |
-| `submitted_by` | use_cases, taxonomy_sectors |
+| Column            | Tables                                                                                                                                                                                                                                                       |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `user_id`         | collections, cta_events, generated_reports, integration_events, module_events, portfolios, profiles, saved_use_cases, shortlists, use_case_downloads, use_case_feedback, use_case_ratings, use_case_scores, use_case_submissions, use_case_views, user_roles |
+| `created_by`      | ai_use_cases, feasibility_scores, use_case_boards, use_case_deliverables, workspaces                                                                                                                                                                         |
+| `organization_id` | profiles, workspaces, taxonomy_sectors                                                                                                                                                                                                                       |
+| `workspace_id`    | use_case_boards **only**                                                                                                                                                                                                                                     |
+| `actor_id`        | audit_events, use_case_audit_log                                                                                                                                                                                                                             |
+| `submitted_by`    | use_cases, taxonomy_sectors                                                                                                                                                                                                                                  |
 
 ### Tenancy reached only by join
 
@@ -51,13 +52,13 @@ effectively zero at T=0** — this is the cheapest possible moment to lay the fo
 `organizations` remains the tenant. We do **not** introduce a parallel `tenants` table —
 that would be a destructive conceptual rename of an in-use entity.
 
-| New table | Purpose | Key columns |
-|---|---|---|
+| New table              | Purpose                                                                  | Key columns                                                                                                   |
+| ---------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 | `organization_members` | explicit tenant membership, replaces implicit `profiles.organization_id` | `organization_id`, `user_id`, `role`, `status`, `invited_by`, `joined_at`; `UNIQUE(organization_id, user_id)` |
-| `workspace_members` | per-workspace access inside a tenant | `workspace_id`, `user_id`, `role`, `added_by`, `joined_at`; `UNIQUE(workspace_id, user_id)` |
-| `organization_units` | optional department/BU grouping | `organization_id`, `parent_id`, `name`, `slug` |
-| `plans` | catalogue: `lite`, `pro_founding`, `enterprise` | `code`, `name`, `limits jsonb` |
-| `entitlements` | ledger per organization | `organization_id`, `plan_code`, `source`, `granted_at`, `expires_at`, `revoked_at`, `notes` |
+| `workspace_members`    | per-workspace access inside a tenant                                     | `workspace_id`, `user_id`, `role`, `added_by`, `joined_at`; `UNIQUE(workspace_id, user_id)`                   |
+| `organization_units`   | optional department/BU grouping                                          | `organization_id`, `parent_id`, `name`, `slug`                                                                |
+| `plans`                | catalogue: `lite`, `pro_founding`, `enterprise`                          | `code`, `name`, `limits jsonb`                                                                                |
+| `entitlements`         | ledger per organization                                                  | `organization_id`, `plan_code`, `source`, `granted_at`, `expires_at`, `revoked_at`, `notes`                   |
 
 **Roles.** Platform-wide roles stay in `user_roles` (`has_role()` unchanged). Tenancy
 roles live on the membership rows: `owner`, `admin`, `contributor`, `viewer`,
@@ -102,7 +103,7 @@ have no tenant.
 `use_cases`, `use_case_patterns`, `industries`, `countries`, `ai_capabilities`,
 `business_functions`, `business_objectives`, `gov_functions`, `platform_modules`,
 `taxonomy_*`, and the `use_case_*` join tables. `taxonomy_sectors.organization_id`
-remains a *contribution attribution* field, not a tenancy boundary.
+remains a _contribution attribution_ field, not a tenancy boundary.
 
 Every existing `user_id` / `created_by` / `submitted_by` column is retained. Nothing is
 renamed, nothing is dropped.
@@ -111,7 +112,7 @@ renamed, nothing is dropped.
 `workspace_id` / `organization_id` from its parent row when the client omits them.
 No route, server function, or query has to change on day one.
 
-**`SET NOT NULL`** is a *separate, later* migration, executed only after the
+**`SET NOT NULL`** is a _separate, later_ migration, executed only after the
 verification query in §8 proves zero remaining nulls for that table.
 
 ---
@@ -135,7 +136,7 @@ to re-run.
    (fallback `plan_type`), `expires_at = profiles.entitlement_expires_at`,
    `source = 'backfill_2026_08'`.
 6. **Child tables with a parent** — `UPDATE … SET workspace_id = parent.workspace_id,
-   organization_id = ws.organization_id` walking the existing FK chain
+organization_id = ws.organization_id` walking the existing FK chain
    (`ai_use_cases` from `use_case_boards`; `blueprints` / `feasibility_scores` /
    `data_readiness_assessments` / `integration_links` / `use_case_deliverables` from
    `ai_use_cases`).
@@ -160,7 +161,7 @@ default workspace. No record is left without a future owner.
   `src/lib/*.functions.ts` and direct client calls keep working untouched.
 - Policies use dual predicates during the window:
   `membership OR legacy owner (user_id = auth.uid())`.
-- A feature flag `tenancy_v2` in `src/lib/feature-flags.ts` gates any *new* UI
+- A feature flag `tenancy_v2` in `src/lib/feature-flags.ts` gates any _new_ UI
   (workspace switcher, member management). **Off at launch.**
 - Phase-out (post-launch, separate migration): drop the legacy `OR` clause,
   `SET NOT NULL`, remove the fallback branch in `user_in_workspace()`.
@@ -195,15 +196,15 @@ to organization owners/admins.
 
 ## 7. Migration sequencing and reversibility
 
-| Step | Content | Reversible by |
-|---|---|---|
-| T1 | New tables (`organization_members`, `workspace_members`, `organization_units`, `plans`, `entitlements`) + grants + RLS + policies | `DROP TABLE` — no dependents yet |
-| T2 | Helper functions; rewrite `user_in_workspace()` body with fallback | `CREATE OR REPLACE` restoring the prior body from git |
-| T3 | Additive columns + indexes on `(workspace_id)` and `(organization_id)` | `DROP COLUMN` — additive and unused by the app |
-| T4 | Backfill `UPDATE`s | idempotent; reversal is a no-op (data is additive) |
-| T5 | Sync triggers | `DROP TRIGGER` |
-| T6 | Dual-predicate policy replacements | recreate the prior policy from git |
-| T7 *(post-launch)* | `SET NOT NULL`, drop legacy predicates, drop fallback branch | `DROP NOT NULL`, recreate policies |
+| Step               | Content                                                                                                                           | Reversible by                                         |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| T1                 | New tables (`organization_members`, `workspace_members`, `organization_units`, `plans`, `entitlements`) + grants + RLS + policies | `DROP TABLE` — no dependents yet                      |
+| T2                 | Helper functions; rewrite `user_in_workspace()` body with fallback                                                                | `CREATE OR REPLACE` restoring the prior body from git |
+| T3                 | Additive columns + indexes on `(workspace_id)` and `(organization_id)`                                                            | `DROP COLUMN` — additive and unused by the app        |
+| T4                 | Backfill `UPDATE`s                                                                                                                | idempotent; reversal is a no-op (data is additive)    |
+| T5                 | Sync triggers                                                                                                                     | `DROP TRIGGER`                                        |
+| T6                 | Dual-predicate policy replacements                                                                                                | recreate the prior policy from git                    |
+| T7 _(post-launch)_ | `SET NOT NULL`, drop legacy predicates, drop fallback branch                                                                      | `DROP NOT NULL`, recreate policies                    |
 
 **No `DROP TABLE`, no `DROP COLUMN`, no rename, no ownership reassignment in T1–T6.**
 
@@ -229,24 +230,24 @@ See `docs/architecture/tenancy-verification-queries.md`. Every step is gated on:
 
 ## 9. Open risks
 
-| ID | Risk | Mitigation |
-|---|---|---|
-| TEN-1 | Rewriting `user_in_workspace()` affects many policies at once | Fallback branch preserves current behaviour; `test:rls` run before and after |
-| TEN-2 | Membership tables invite recursive policies | Policies only call SECURITY DEFINER helpers, never the table directly |
-| TEN-3 | `SET NOT NULL` feels irreversible | Deferred past launch, gated on a zero-null verification query, reversible with `DROP NOT NULL` |
-| TEN-4 | Orphan rows (owner deleted) | Zero at T=0; reconciliation note appended if any appear |
-| TEN-5 | Scope creep into workspace-switcher UI before launch | `tenancy_v2` flag off; UI work is in the deferred register |
+| ID    | Risk                                                          | Mitigation                                                                                     |
+| ----- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| TEN-1 | Rewriting `user_in_workspace()` affects many policies at once | Fallback branch preserves current behaviour; `test:rls` run before and after                   |
+| TEN-2 | Membership tables invite recursive policies                   | Policies only call SECURITY DEFINER helpers, never the table directly                          |
+| TEN-3 | `SET NOT NULL` feels irreversible                             | Deferred past launch, gated on a zero-null verification query, reversible with `DROP NOT NULL` |
+| TEN-4 | Orphan rows (owner deleted)                                   | Zero at T=0; reconciliation note appended if any appear                                        |
+| TEN-5 | Scope creep into workspace-switcher UI before launch          | `tenancy_v2` flag off; UI work is in the deferred register                                     |
 
 ---
 
 ## 10. Sign-off
 
-| Step | Owner | Reviewer | Status |
-|---|---|---|---|
-| T1 | @db-owner | @security | plan approved, not executed |
-| T2 | @db-owner | @security | plan approved, not executed |
-| T3 | @db-owner | @architecture | plan approved, not executed |
-| T4 | @db-owner | @architecture | plan approved, not executed |
-| T5 | @db-owner | @architecture | plan approved, not executed |
-| T6 | @security | @db-owner | plan approved, not executed |
-| T7 | @db-owner | @security | deferred post-launch |
+| Step | Owner     | Reviewer      | Status                      |
+| ---- | --------- | ------------- | --------------------------- |
+| T1   | @db-owner | @security     | plan approved, not executed |
+| T2   | @db-owner | @security     | plan approved, not executed |
+| T3   | @db-owner | @architecture | plan approved, not executed |
+| T4   | @db-owner | @architecture | plan approved, not executed |
+| T5   | @db-owner | @architecture | plan approved, not executed |
+| T6   | @security | @db-owner     | plan approved, not executed |
+| T7   | @db-owner | @security     | deferred post-launch        |

@@ -18,7 +18,9 @@ export function CtaTriad({ className = "" }: { className?: string }) {
           <p className="mt-1 text-sm text-muted-foreground">
             Benchmark your AI strategy, risk and readiness before you invest.
           </p>
-          <span className="mt-3 inline-block text-sm font-bold text-primary group-hover:underline">Open SARPI™ →</span>
+          <span className="mt-3 inline-block text-sm font-bold text-primary group-hover:underline">
+            Open SARPI™ →
+          </span>
         </Link>
         <Link
           to="/advisorx"
@@ -29,7 +31,9 @@ export function CtaTriad({ className = "" }: { className?: string }) {
           <p className="mt-1 text-sm text-muted-foreground">
             Get board-ready recommendations from AIgilityX advisors.
           </p>
-          <span className="mt-3 inline-block text-sm font-bold text-primary group-hover:underline">Talk to AdvisorX™ →</span>
+          <span className="mt-3 inline-block text-sm font-bold text-primary group-hover:underline">
+            Talk to AdvisorX™ →
+          </span>
         </Link>
         <Link
           to="/pricing"
@@ -40,7 +44,9 @@ export function CtaTriad({ className = "" }: { className?: string }) {
           <p className="mt-1 text-sm text-muted-foreground">
             Unlock full details, ROI tools, comparisons and exports.
           </p>
-          <span className="mt-3 inline-block text-sm font-bold text-primary group-hover:underline">Get Pro access →</span>
+          <span className="mt-3 inline-block text-sm font-bold text-primary group-hover:underline">
+            Get Pro access →
+          </span>
         </Link>
       </div>
     </section>

@@ -13,11 +13,14 @@ export function UseCasesXFooter() {
               <div className="text-sm font-bold text-foreground">
                 UseCasesX<span className="text-primary">™</span>
               </div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">by AIgilityX™</div>
+              <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                by AIgilityX™
+              </div>
             </div>
           </Link>
           <p className="mt-4 max-w-xs text-sm text-muted-foreground">
-            Global AI Use Cases Repository & Development Studio. Discover. Design. Validate. Govern. Scale.
+            Global AI Use Cases Repository & Development Studio. Discover. Design. Validate. Govern.
+            Scale.
           </p>
         </div>
         <FooterCol
@@ -55,11 +58,16 @@ export function UseCasesXFooter() {
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3 px-6 py-4 text-[11px] text-muted-foreground">
           <span>
-            © {new Date().getFullYear()} AIgilityX. UseCasesX™ — Global AI Use Cases Repository & Development Studio.
+            © {new Date().getFullYear()} AIgilityX. UseCasesX™ — Global AI Use Cases Repository &
+            Development Studio.
           </span>
           <div className="flex flex-wrap items-center gap-4">
-            <Link to="/pricing" className="hover:text-foreground">Pricing</Link>
-            <Link to="/insights" className="hover:text-foreground">Insights</Link>
+            <Link to="/pricing" className="hover:text-foreground">
+              Pricing
+            </Link>
+            <Link to="/insights" className="hover:text-foreground">
+              Insights
+            </Link>
             <span className="hidden sm:inline">Discover · Design · Validate · Govern · Scale.</span>
           </div>
         </div>
@@ -71,7 +79,9 @@ export function UseCasesXFooter() {
 function FooterCol({ title, items }: { title: string; items: { l: string; to: string }[] }) {
   return (
     <div>
-      <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">{title}</div>
+      <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">
+        {title}
+      </div>
       <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
         {items.map((i) => (
           <li key={i.l}>

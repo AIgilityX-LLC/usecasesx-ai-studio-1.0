@@ -23,7 +23,8 @@ export function PlatformBanner() {
             <span className="text-muted-foreground">(UseCasesX)</span>
           </h1>
           <p className="text-base text-muted-foreground">
-            The AIgilityX™ platform for discovering, designing, validating, governing, and scaling AI use cases.
+            The AIgilityX™ platform for discovering, designing, validating, governing, and scaling
+            AI use cases.
           </p>
         </div>
 
@@ -43,9 +44,8 @@ export function PlatformBanner() {
                 Integrated with SARPI™, AdvisorX™, and CyberX Sovereign AI C3G™.
               </p>
               <p className="mt-3 text-sm text-muted-foreground">
-                Move from AI idea to boardroom-ready blueprint through guided discovery,
-                feasibility scoring, data readiness, governance mapping, and portfolio
-                prioritization.
+                Move from AI idea to boardroom-ready blueprint through guided discovery, feasibility
+                scoring, data readiness, governance mapping, and portfolio prioritization.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">

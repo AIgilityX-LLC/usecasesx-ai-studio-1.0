@@ -59,7 +59,7 @@ Snapshot of the current UseCasesX™ codebase, before Phase A launch cleanup.
 - **`src/lib/boards{,.functions}.ts`** — board CRUD, workspace-aware
 - **`src/lib/insights.functions.ts`** — analytics reads
 - **`src/lib/deliverables{,.data,.export}.ts`** — export path
-- **`src/lib/usecasex.studio.functions.ts`** — the *only* AI provider surface; `LOVABLE_API_KEY` read inside `.handler()` ✅
+- **`src/lib/usecasex.studio.functions.ts`** — the _only_ AI provider surface; `LOVABLE_API_KEY` read inside `.handler()` ✅
 - **`src/routes/api/public/usecasex/*`** — public read API
 
 ## Leaky boundaries
@@ -73,14 +73,14 @@ Snapshot of the current UseCasesX™ codebase, before Phase A launch cleanup.
 
 ## Cross-cutting
 
-| Concern | Where it lives | Health |
-|---|---|---|
-| Auth | `useSupabaseSession`, `requireSupabaseAuth`, `attachSupabaseAuth` in `start.ts` | ✅ generated + wired |
-| Roles | `user_roles` + `has_role()` + `RequireRoles` + `usecasex.roles.ts` | ✅ |
-| Plans | `useEntitlement`, `usePlan`, `RequirePlan`, `Can` | ⚠️ mix of wrapper vs inline usage |
-| Feature flags | `src/lib/feature-flags.ts` | ✅ used for `ComingSoonGate` decisions |
-| Nav integrity | `scripts/check-nav-integrity.mjs` + `src/lib/nav-integrity.ts` + `tests/navbar.spec.ts` | ✅ enforced |
-| Error capture | `src/lib/{error-capture,error-page,lovable-error-reporting}.ts` | ⚠️ per-route `errorComponent` inconsistent |
-| Tracking | `usecasex.tracking.ts`, `module-analytics.ts` | ✅ centralized |
-| AI | `usecasex.studio.functions.ts` | ✅ single façade |
-| Audit | `audit_events` table exists | ⚠️ producers not wired |
+| Concern       | Where it lives                                                                          | Health                                     |
+| ------------- | --------------------------------------------------------------------------------------- | ------------------------------------------ |
+| Auth          | `useSupabaseSession`, `requireSupabaseAuth`, `attachSupabaseAuth` in `start.ts`         | ✅ generated + wired                       |
+| Roles         | `user_roles` + `has_role()` + `RequireRoles` + `usecasex.roles.ts`                      | ✅                                         |
+| Plans         | `useEntitlement`, `usePlan`, `RequirePlan`, `Can`                                       | ⚠️ mix of wrapper vs inline usage          |
+| Feature flags | `src/lib/feature-flags.ts`                                                              | ✅ used for `ComingSoonGate` decisions     |
+| Nav integrity | `scripts/check-nav-integrity.mjs` + `src/lib/nav-integrity.ts` + `tests/navbar.spec.ts` | ✅ enforced                                |
+| Error capture | `src/lib/{error-capture,error-page,lovable-error-reporting}.ts`                         | ⚠️ per-route `errorComponent` inconsistent |
+| Tracking      | `usecasex.tracking.ts`, `module-analytics.ts`                                           | ✅ centralized                             |
+| AI            | `usecasex.studio.functions.ts`                                                          | ✅ single façade                           |
+| Audit         | `audit_events` table exists                                                             | ⚠️ producers not wired                     |

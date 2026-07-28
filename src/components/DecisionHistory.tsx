@@ -4,8 +4,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { usePlan } from "@/hooks/usePlan";
 import {
-  CheckCircle2, FileText, ShieldCheck, Database, Sparkles,
-  Send, Bot, ClipboardList, RefreshCcw, PlusCircle, Flag,
+  CheckCircle2,
+  FileText,
+  ShieldCheck,
+  Database,
+  Sparkles,
+  Send,
+  Bot,
+  ClipboardList,
+  RefreshCcw,
+  PlusCircle,
+  Flag,
 } from "lucide-react";
 
 type Event = {
@@ -35,12 +44,37 @@ export function DecisionHistory({ useCaseId }: { useCaseId: string }) {
       const items: Event[] = [];
 
       const [uc, feas, dr, bp, links, audit] = await Promise.all([
-        supabase.from("ai_use_cases").select("id,title,status,pattern_id,created_at,updated_at").eq("id", useCaseId).maybeSingle(),
-        supabase.from("feasibility_scores").select("id,total_score,created_at,updated_at").eq("use_case_id", useCaseId).order("created_at"),
-        supabase.from("data_readiness_assessments").select("id,overall_data_readiness_score,created_at,updated_at").eq("use_case_id", useCaseId).order("created_at"),
-        supabase.from("blueprints").select("id,created_at,updated_at").eq("use_case_id", useCaseId).order("created_at"),
-        supabase.from("integration_links").select("id,integration_type,status,created_at,metadata").eq("use_case_id", useCaseId).order("created_at"),
-        supabase.from("audit_events").select("id,event_type,new_value,previous_value,created_at").eq("entity_type", "ai_use_case").eq("entity_id", useCaseId).order("created_at"),
+        supabase
+          .from("ai_use_cases")
+          .select("id,title,status,pattern_id,created_at,updated_at")
+          .eq("id", useCaseId)
+          .maybeSingle(),
+        supabase
+          .from("feasibility_scores")
+          .select("id,total_score,created_at,updated_at")
+          .eq("use_case_id", useCaseId)
+          .order("created_at"),
+        supabase
+          .from("data_readiness_assessments")
+          .select("id,overall_data_readiness_score,created_at,updated_at")
+          .eq("use_case_id", useCaseId)
+          .order("created_at"),
+        supabase
+          .from("blueprints")
+          .select("id,created_at,updated_at")
+          .eq("use_case_id", useCaseId)
+          .order("created_at"),
+        supabase
+          .from("integration_links")
+          .select("id,integration_type,status,created_at,metadata")
+          .eq("use_case_id", useCaseId)
+          .order("created_at"),
+        supabase
+          .from("audit_events")
+          .select("id,event_type,new_value,previous_value,created_at")
+          .eq("entity_type", "ai_use_case")
+          .eq("entity_id", useCaseId)
+          .order("created_at"),
       ]);
 
       if (uc.data) {
@@ -77,44 +111,64 @@ export function DecisionHistory({ useCaseId }: { useCaseId: string }) {
             at: uc.data.updated_at ?? uc.data.created_at,
             kind: "status",
             title: `Status: ${uc.data.status}`,
-            icon: uc.data.status === "approved" ? <CheckCircle2 className="h-4 w-4" /> : <Flag className="h-4 w-4" />,
+            icon:
+              uc.data.status === "approved" ? (
+                <CheckCircle2 className="h-4 w-4" />
+              ) : (
+                <Flag className="h-4 w-4" />
+              ),
           });
         }
       }
 
-      (feas.data ?? []).forEach((f) => items.push({
-        id: `feas-${f.id}`,
-        at: f.created_at,
-        kind: "feasibility",
-        title: "Feasibility score completed",
-        detail: f.total_score != null ? `Total: ${f.total_score}/100` : undefined,
-        icon: <ClipboardList className="h-4 w-4" />,
-      }));
+      (feas.data ?? []).forEach((f) =>
+        items.push({
+          id: `feas-${f.id}`,
+          at: f.created_at,
+          kind: "feasibility",
+          title: "Feasibility score completed",
+          detail: f.total_score != null ? `Total: ${f.total_score}/100` : undefined,
+          icon: <ClipboardList className="h-4 w-4" />,
+        }),
+      );
 
-      (dr.data ?? []).forEach((d) => items.push({
-        id: `dr-${d.id}`,
-        at: d.created_at,
-        kind: "data_readiness",
-        title: "Data readiness completed",
-        detail: d.overall_data_readiness_score != null ? `Score: ${d.overall_data_readiness_score}/5` : undefined,
-        icon: <Database className="h-4 w-4" />,
-      }));
+      (dr.data ?? []).forEach((d) =>
+        items.push({
+          id: `dr-${d.id}`,
+          at: d.created_at,
+          kind: "data_readiness",
+          title: "Data readiness completed",
+          detail:
+            d.overall_data_readiness_score != null
+              ? `Score: ${d.overall_data_readiness_score}/5`
+              : undefined,
+          icon: <Database className="h-4 w-4" />,
+        }),
+      );
 
-      (bp.data ?? []).forEach((b) => items.push({
-        id: `bp-${b.id}`,
-        at: b.created_at,
-        kind: "blueprint",
-        title: "Blueprint generated",
-        icon: <FileText className="h-4 w-4" />,
-      }));
+      (bp.data ?? []).forEach((b) =>
+        items.push({
+          id: `bp-${b.id}`,
+          at: b.created_at,
+          kind: "blueprint",
+          title: "Blueprint generated",
+          icon: <FileText className="h-4 w-4" />,
+        }),
+      );
 
       (links.data ?? []).forEach((l) => {
         const map: Record<string, { title: string; icon: React.ReactNode }> = {
           SARPI: { title: "Sent to SARPI™", icon: <Send className="h-4 w-4" /> },
           AdvisorX: { title: "AdvisorX™ reviewed", icon: <Bot className="h-4 w-4" /> },
-          C3G: { title: "C3G governance record created", icon: <ShieldCheck className="h-4 w-4" /> },
+          C3G: {
+            title: "C3G governance record created",
+            icon: <ShieldCheck className="h-4 w-4" />,
+          },
         };
-        const cfg = map[l.integration_type] ?? { title: `${l.integration_type} linked`, icon: <ShieldCheck className="h-4 w-4" /> };
+        const cfg = map[l.integration_type] ?? {
+          title: `${l.integration_type} linked`,
+          icon: <ShieldCheck className="h-4 w-4" />,
+        };
         items.push({
           id: `il-${l.id}`,
           at: l.created_at,
@@ -125,19 +179,26 @@ export function DecisionHistory({ useCaseId }: { useCaseId: string }) {
         });
       });
 
-      (audit.data ?? []).forEach((a) => items.push({
-        id: `au-${a.id}`,
-        at: a.created_at,
-        kind: a.event_type,
-        title: a.event_type.replace(/_/g, " "),
-        icon: <Flag className="h-4 w-4" />,
-      }));
+      (audit.data ?? []).forEach((a) =>
+        items.push({
+          id: `au-${a.id}`,
+          at: a.created_at,
+          kind: a.event_type,
+          title: a.event_type.replace(/_/g, " "),
+          icon: <Flag className="h-4 w-4" />,
+        }),
+      );
 
       items.sort((a, b) => new Date(a.at).getTime() - new Date(b.at).getTime());
 
-      if (active) { setEvents(items); setLoading(false); }
+      if (active) {
+        setEvents(items);
+        setLoading(false);
+      }
     })();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [useCaseId]);
 
   return (

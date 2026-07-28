@@ -16,7 +16,10 @@ export const Route = createFileRoute("/_app/dashboard")({
   head: () => ({
     meta: [
       { title: "Your AI Opportunity Portfolio — UseCasesX™ Pro" },
-      { name: "description", content: "Your saved AI use cases, scores, portfolios and executive reports." },
+      {
+        name: "description",
+        content: "Your saved AI use cases, scores, portfolios and executive reports.",
+      },
     ],
   }),
   component: DashboardPage,
@@ -30,7 +33,10 @@ function DashboardPage() {
 
   useEffect(() => {
     if (session === undefined) return;
-    if (session === null) { navigate({ to: "/pro", replace: true }); return; }
+    if (session === null) {
+      navigate({ to: "/pro", replace: true });
+      return;
+    }
     let active = true;
     (async () => {
       const { data: p } = await supabase
@@ -46,11 +52,17 @@ function DashboardPage() {
       setProfile(p);
       setLoading(false);
     })();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [session, navigate]);
 
   if (loading) {
-    return <div className="mx-auto max-w-4xl px-6 py-16 text-sm text-muted-foreground">Loading your portfolio…</div>;
+    return (
+      <div className="mx-auto max-w-4xl px-6 py-16 text-sm text-muted-foreground">
+        Loading your portfolio…
+      </div>
+    );
   }
 
   return (

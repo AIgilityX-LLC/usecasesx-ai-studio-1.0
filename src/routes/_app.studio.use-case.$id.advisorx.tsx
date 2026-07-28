@@ -20,7 +20,11 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/advisorx")({
-  component: () => (<RequirePlan min="pro" feature="AdvisorX™"><AdvisorXPage /></RequirePlan>),
+  component: () => (
+    <RequirePlan min="pro" feature="AdvisorX™">
+      <AdvisorXPage />
+    </RequirePlan>
+  ),
 });
 
 type AdvisorKey = "strategy" | "data" | "governance" | "roi" | "boardroom";
@@ -76,14 +80,20 @@ function buildReview(advisor: AdvisorKey, uc: any, feas: any, dr: any): Review {
     case "strategy":
       return {
         observations: [
-          uc?.problem_statement ? `Problem framed as: "${String(uc.problem_statement).slice(0, 140)}…"` : "Problem statement is missing or too thin.",
+          uc?.problem_statement
+            ? `Problem framed as: "${String(uc.problem_statement).slice(0, 140)}…"`
+            : "Problem statement is missing or too thin.",
           uc?.future_state ? "Future state is articulated." : "Future state is not yet defined.",
-          feas?.viability_score ? `Viability pillar: ${feas.viability_score}/5.` : "Viability not yet scored.",
+          feas?.viability_score
+            ? `Viability pillar: ${feas.viability_score}/5.`
+            : "Viability not yet scored.",
         ],
         recommendations: [
           "Tie this use case to one named strategic objective with an executive sponsor.",
           "Quantify the cost of inaction over 12–24 months.",
-          has(uc?.beneficiaries) ? "Map beneficiaries to a specific value-chain stage." : "Identify primary and secondary beneficiaries explicitly.",
+          has(uc?.beneficiaries)
+            ? "Map beneficiaries to a specific value-chain stage."
+            : "Identify primary and secondary beneficiaries explicitly.",
           "Define what success looks like in 90, 180, and 365 days.",
         ],
       };
@@ -110,9 +120,15 @@ function buildReview(advisor: AdvisorKey, uc: any, feas: any, dr: any): Review {
     case "governance":
       return {
         observations: [
-          arr(uc?.risks).length ? `${arr(uc.risks).length} risk(s) captured.` : "No risks captured yet.",
-          arr(uc?.controls).length ? `${arr(uc.controls).length} control(s) captured.` : "Controls register is empty.",
-          feas?.governability_score ? `Governability pillar: ${feas.governability_score}/5.` : "Governability not scored.",
+          arr(uc?.risks).length
+            ? `${arr(uc.risks).length} risk(s) captured.`
+            : "No risks captured yet.",
+          arr(uc?.controls).length
+            ? `${arr(uc.controls).length} control(s) captured.`
+            : "Controls register is empty.",
+          feas?.governability_score
+            ? `Governability pillar: ${feas.governability_score}/5.`
+            : "Governability not scored.",
         ],
         recommendations: [
           "Classify the use case against your AI risk framework (e.g. EU AI Act / NIST AI RMF).",
@@ -128,7 +144,9 @@ function buildReview(advisor: AdvisorKey, uc: any, feas: any, dr: any): Review {
             ? `${arr(uc.expected_benefits).length} expected benefit(s).`
             : "No expected benefits articulated.",
           arr(uc?.kpis).length ? `${arr(uc.kpis).length} KPI(s) defined.` : "KPIs are missing.",
-          feas?.total_score != null ? `Overall feasibility score: ${feas.total_score}/100.` : "Feasibility not scored.",
+          feas?.total_score != null
+            ? `Overall feasibility score: ${feas.total_score}/100.`
+            : "Feasibility not scored.",
         ],
         recommendations: [
           "Convert each benefit into a measurable KPI with a baseline and target.",
@@ -141,7 +159,9 @@ function buildReview(advisor: AdvisorKey, uc: any, feas: any, dr: any): Review {
       return {
         observations: [
           uc?.title ? `Working title: "${uc.title}".` : "Use case has no title.",
-          feas?.recommendation ? `Feasibility recommendation: ${feas.recommendation}.` : "No feasibility recommendation yet.",
+          feas?.recommendation
+            ? `Feasibility recommendation: ${feas.recommendation}.`
+            : "No feasibility recommendation yet.",
         ],
         recommendations: [
           "Lead with the business outcome in one sentence — not the technology.",
@@ -166,7 +186,11 @@ function AdvisorXPage() {
   const { id: useCaseId } = Route.useParams();
   const [busy, setBusy] = useState<string | null>(null);
   const [reviews, setReviews] = useState<Partial<Record<AdvisorKey, Review>>>({});
-  const [context, setContext] = useState<{ uc: any; feas: any; dr: any }>({ uc: null, feas: null, dr: null });
+  const [context, setContext] = useState<{ uc: any; feas: any; dr: any }>({
+    uc: null,
+    feas: null,
+    dr: null,
+  });
 
   useEffect(() => {
     (async () => {
@@ -217,7 +241,9 @@ function AdvisorXPage() {
       toast.error(error.message);
       return;
     }
-    toast.success(action === "review" ? "AdvisorX review generated." : "Recommendations generated.");
+    toast.success(
+      action === "review" ? "AdvisorX review generated." : "Recommendations generated.",
+    );
   };
 
   const addToBlueprint = async (advisor: AdvisorKey) => {
@@ -235,7 +261,10 @@ function AdvisorXPage() {
       .maybeSingle();
     const merged = (existing?.executive_summary ?? "") + block;
     const { error } = existing
-      ? await supabase.from("blueprints").update({ executive_summary: merged } as any).eq("id", existing.id)
+      ? await supabase
+          .from("blueprints")
+          .update({ executive_summary: merged } as any)
+          .eq("id", existing.id)
       : await supabase
           .from("blueprints")
           .insert({ use_case_id: useCaseId, executive_summary: merged } as any);
@@ -253,7 +282,8 @@ function AdvisorXPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">AdvisorX™ Guidance</h1>
           <p className="max-w-2xl text-muted-foreground">
-            Use AdvisorX™ as an executive AI advisor to review, challenge, and improve this use case.
+            Use AdvisorX™ as an executive AI advisor to review, challenge, and improve this use
+            case.
           </p>
         </div>
         <Button variant="outline" asChild>
@@ -355,8 +385,8 @@ function AdvisorXPage() {
 
       <Card className="border-dashed">
         <CardContent className="pt-6 text-sm text-muted-foreground">
-          AdvisorX recommendations shown here are structured drafts based on your canvas, feasibility, and
-          data readiness. Live AdvisorX™ AI review can be enabled in{" "}
+          AdvisorX recommendations shown here are structured drafts based on your canvas,
+          feasibility, and data readiness. Live AdvisorX™ AI review can be enabled in{" "}
           <span className="font-medium text-foreground">Enterprise configuration</span>.
         </CardContent>
       </Card>

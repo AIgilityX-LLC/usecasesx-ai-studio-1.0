@@ -10,16 +10,8 @@ import {
   type EntitlementDefinition,
   type EntitlementKey,
 } from "./catalogue";
-import {
-  EDITION_LABEL,
-  editionUnlocks,
-  type Edition,
-} from "./editions";
-import {
-  DEFAULT_CAPABILITY_FLAGS,
-  mergeCapabilityFlags,
-  type CapabilityFlags,
-} from "./flags";
+import { EDITION_LABEL, editionUnlocks, type Edition } from "./editions";
+import { DEFAULT_CAPABILITY_FLAGS, mergeCapabilityFlags, type CapabilityFlags } from "./flags";
 import type { WorkspaceRole } from "./roles";
 
 export type AuthzSubject = {
@@ -30,12 +22,7 @@ export type AuthzSubject = {
   flags?: Partial<CapabilityFlags> | null;
 };
 
-export type DenyReason =
-  | "unauthenticated"
-  | "no_membership"
-  | "role"
-  | "edition"
-  | "not_available";
+export type DenyReason = "unauthenticated" | "no_membership" | "role" | "edition" | "not_available";
 
 export type AuthzDecision = {
   allowed: boolean;
@@ -54,15 +41,10 @@ export const ANONYMOUS_SUBJECT: AuthzSubject = Object.freeze({
 });
 
 function flagsFor(subject: AuthzSubject): CapabilityFlags {
-  return subject.flags
-    ? mergeCapabilityFlags(subject.flags)
-    : DEFAULT_CAPABILITY_FLAGS;
+  return subject.flags ? mergeCapabilityFlags(subject.flags) : DEFAULT_CAPABILITY_FLAGS;
 }
 
-export function evaluate(
-  subject: AuthzSubject,
-  key: EntitlementKey,
-): AuthzDecision {
+export function evaluate(subject: AuthzSubject, key: EntitlementKey): AuthzDecision {
   const definition = ENTITLEMENT_CATALOGUE[key];
   const base = { requiredEdition: definition.minEdition, definition };
 
@@ -135,9 +117,7 @@ export function can(subject: AuthzSubject, key: EntitlementKey): boolean {
 }
 
 /** Full decision map — used by the server to hand a precomputed set to the UI. */
-export function evaluateAll(
-  subject: AuthzSubject,
-): Record<EntitlementKey, boolean> {
+export function evaluateAll(subject: AuthzSubject): Record<EntitlementKey, boolean> {
   const out = {} as Record<EntitlementKey, boolean>;
   for (const key of ENTITLEMENT_KEYS) out[key] = can(subject, key);
   return out;
@@ -155,10 +135,7 @@ export class EntitlementError extends Error {
 }
 
 /** Throwing variant for server handlers. */
-export function assertEntitled(
-  subject: AuthzSubject,
-  key: EntitlementKey,
-): void {
+export function assertEntitled(subject: AuthzSubject, key: EntitlementKey): void {
   const decision = evaluate(subject, key);
   if (!decision.allowed) throw new EntitlementError(key, decision);
 }

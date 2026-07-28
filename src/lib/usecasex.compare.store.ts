@@ -13,7 +13,9 @@ function read(): string[] {
     const raw = window.localStorage.getItem(KEY);
     if (!raw) return [];
     const v = JSON.parse(raw);
-    return Array.isArray(v) ? (v.filter((x) => typeof x === "string") as string[]).slice(0, MAX) : [];
+    return Array.isArray(v)
+      ? (v.filter((x) => typeof x === "string") as string[]).slice(0, MAX)
+      : [];
   } catch {
     return [];
   }

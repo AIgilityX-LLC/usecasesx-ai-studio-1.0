@@ -7,7 +7,10 @@ export const Route = createFileRoute("/forgot-password")({
   head: () => ({
     meta: [
       { title: "Reset your password — UseCasesX™" },
-      { name: "description", content: "Request a password reset link for your UseCasesX™ account." },
+      {
+        name: "description",
+        content: "Request a password reset link for your UseCasesX™ account.",
+      },
     ],
   }),
   component: ForgotPasswordPage,
@@ -21,7 +24,8 @@ function ForgotPasswordPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErr(null); setLoading(true);
+    setErr(null);
+    setLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
@@ -45,9 +49,15 @@ function ForgotPasswordPage() {
         {sent ? (
           <div className="mt-8 rounded-2xl border border-border bg-card p-6">
             <p className="text-sm text-foreground">
-              If an account exists for <span className="font-semibold">{email}</span>, a reset link is on its way. Check your inbox.
+              If an account exists for <span className="font-semibold">{email}</span>, a reset link
+              is on its way. Check your inbox.
             </p>
-            <Link to="/auth" className="mt-4 inline-block text-sm font-semibold text-primary hover:underline">← Back to sign in</Link>
+            <Link
+              to="/auth"
+              className="mt-4 inline-block text-sm font-semibold text-primary hover:underline"
+            >
+              ← Back to sign in
+            </Link>
           </div>
         ) : (
           <form onSubmit={submit} className="mt-8 space-y-4">
@@ -60,12 +70,17 @@ function ForgotPasswordPage() {
               className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm focus:border-primary focus:outline-none"
             />
             {err ? <p className="text-sm text-destructive">{err}</p> : null}
-            <button type="submit" disabled={loading}
-              className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground hover:brightness-110 disabled:opacity-50">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground hover:brightness-110 disabled:opacity-50"
+            >
               {loading ? "Sending…" : "Send reset link"}
             </button>
             <p className="text-center text-sm text-muted-foreground">
-              <Link to="/auth" className="font-semibold text-primary hover:underline">← Back to sign in</Link>
+              <Link to="/auth" className="font-semibold text-primary hover:underline">
+                ← Back to sign in
+              </Link>
             </p>
           </form>
         )}

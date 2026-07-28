@@ -15,17 +15,42 @@ export const Route = createFileRoute("/api/public/usecasex/taxonomy")({
       GET: async () => {
         const counts = {
           total: MOCK_USE_CASES.length,
-          bySector: MOCK_USE_CASES.reduce<Record<string, number>>((a, c) => { a[c.sector] = (a[c.sector] ?? 0) + 1; return a; }, {}),
-          byMaturity: MOCK_USE_CASES.reduce<Record<string, number>>((a, c) => { a[c.maturity] = (a[c.maturity] ?? 0) + 1; return a; }, {}),
-          byImpact: MOCK_USE_CASES.reduce<Record<string, number>>((a, c) => { a[c.valuePotential] = (a[c.valuePotential] ?? 0) + 1; return a; }, {}),
+          bySector: MOCK_USE_CASES.reduce<Record<string, number>>((a, c) => {
+            a[c.sector] = (a[c.sector] ?? 0) + 1;
+            return a;
+          }, {}),
+          byMaturity: MOCK_USE_CASES.reduce<Record<string, number>>((a, c) => {
+            a[c.maturity] = (a[c.maturity] ?? 0) + 1;
+            return a;
+          }, {}),
+          byImpact: MOCK_USE_CASES.reduce<Record<string, number>>((a, c) => {
+            a[c.valuePotential] = (a[c.valuePotential] ?? 0) + 1;
+            return a;
+          }, {}),
         };
 
         // Merge published DB taxonomy on top of mock-derived facets
         const [dbSectors, dbTags, dbMaturity, meta] = await Promise.all([
-          supabaseAdmin.from("taxonomy_sectors").select("slug, name, description, sort_order").eq("is_published", true).order("sort_order"),
-          supabaseAdmin.from("taxonomy_tags").select("slug, name, description, sort_order").eq("is_published", true).order("sort_order"),
-          supabaseAdmin.from("taxonomy_maturity_levels").select("slug, name, description, sort_order").eq("is_published", true).order("sort_order"),
-          supabaseAdmin.from("taxonomy_meta").select("version, published_at").eq("id", 1).maybeSingle(),
+          supabaseAdmin
+            .from("taxonomy_sectors")
+            .select("slug, name, description, sort_order")
+            .eq("is_published", true)
+            .order("sort_order"),
+          supabaseAdmin
+            .from("taxonomy_tags")
+            .select("slug, name, description, sort_order")
+            .eq("is_published", true)
+            .order("sort_order"),
+          supabaseAdmin
+            .from("taxonomy_maturity_levels")
+            .select("slug, name, description, sort_order")
+            .eq("is_published", true)
+            .order("sort_order"),
+          supabaseAdmin
+            .from("taxonomy_meta")
+            .select("version, published_at")
+            .eq("id", 1)
+            .maybeSingle(),
         ]);
 
         const mergeBySlug = <T extends { slug: string }>(base: T[], extra: T[]) => {
@@ -50,7 +75,11 @@ export const Route = createFileRoute("/api/public/usecasex/taxonomy")({
             objectives: MOCK_TAX.objectives,
             tags: mergeBySlug(MOCK_TAX.tags as any, (dbTags.data ?? []) as any),
             maturity: mergeBySlug(mockMaturity as any, (dbMaturity.data ?? []) as any),
-            impact: [{ slug: "Low", name: "Low" }, { slug: "Medium", name: "Medium" }, { slug: "High", name: "High" }],
+            impact: [
+              { slug: "Low", name: "Low" },
+              { slug: "Medium", name: "Medium" },
+              { slug: "High", name: "High" },
+            ],
             counts,
             version: meta.data?.version ?? 1,
             published_at: meta.data?.published_at ?? null,

@@ -12,7 +12,9 @@ type Props = {
 
 export function UpgradePrompt({ feature, tier = "Pro", description, className }: Props) {
   return (
-    <Card className={`border-dashed bg-gradient-to-br from-primary/5 to-transparent ${className ?? ""}`}>
+    <Card
+      className={`border-dashed bg-gradient-to-br from-primary/5 to-transparent ${className ?? ""}`}
+    >
       <CardContent className="flex flex-col items-start gap-3 py-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
           <div className="rounded-md bg-primary/15 p-2 text-primary">

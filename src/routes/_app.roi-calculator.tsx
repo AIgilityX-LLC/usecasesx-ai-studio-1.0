@@ -8,21 +8,44 @@ export const Route = createFileRoute("/_app/roi-calculator")({
   head: () => ({
     meta: [
       { title: "ROI & Mission Value Calculator — UseCasesX™" },
-      { name: "description", content: "Estimate financial ROI and non-financial mission value for an AI use case before you invest." },
+      {
+        name: "description",
+        content:
+          "Estimate financial ROI and non-financial mission value for an AI use case before you invest.",
+      },
       { property: "og:title", content: "ROI & Mission Value Calculator — UseCasesX™" },
-      { property: "og:description", content: "Estimate financial ROI and mission value for AI use cases." },
+      {
+        property: "og:description",
+        content: "Estimate financial ROI and mission value for AI use cases.",
+      },
     ],
   }),
   component: RoiCalculatorPage,
 });
 
 const fmt = (n: number) =>
-  new Intl.NumberFormat(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+  new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(n);
 
-function Field({ label, value, onChange, suffix }: { label: string; value: number; onChange: (n: number) => void; suffix?: string }) {
+function Field({
+  label,
+  value,
+  onChange,
+  suffix,
+}: {
+  label: string;
+  value: number;
+  onChange: (n: number) => void;
+  suffix?: string;
+}) {
   return (
     <label className="block">
-      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</span>
+      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </span>
       <div className="mt-1 flex items-center rounded-md border border-input bg-background">
         <input
           type="number"
@@ -36,14 +59,31 @@ function Field({ label, value, onChange, suffix }: { label: string; value: numbe
   );
 }
 
-function Slider({ label, value, onChange }: { label: string; value: number; onChange: (n: number) => void }) {
+function Slider({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  onChange: (n: number) => void;
+}) {
   return (
     <label className="block">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+          {label}
+        </span>
         <span className="text-sm font-bold text-primary">{value}</span>
       </div>
-      <input type="range" min={0} max={10} value={value} onChange={(e) => onChange(parseInt(e.target.value))} className="mt-2 w-full accent-[var(--gold)]" />
+      <input
+        type="range"
+        min={0}
+        max={10}
+        value={value}
+        onChange={(e) => onChange(parseInt(e.target.value))}
+        className="mt-2 w-full accent-[var(--gold)]"
+      />
     </label>
   );
 }
@@ -73,15 +113,33 @@ function RoiCalculatorPage() {
   const [resilience, setResilience] = useState(7);
   const [compliance, setCompliance] = useState(5);
 
-  const weights = { missionValue: 0.25, riskReduction: 0.2, readiness: 0.15, responseTime: 0.15, resilience: 0.15, compliance: 0.1 };
+  const weights = {
+    missionValue: 0.25,
+    riskReduction: 0.2,
+    readiness: 0.15,
+    responseTime: 0.15,
+    resilience: 0.15,
+    compliance: 0.1,
+  };
   const missionScore = useMemo(() => {
     const s =
-      missionValue * weights.missionValue + riskReduction * weights.riskReduction + readiness * weights.readiness +
-      responseTime * weights.responseTime + resilience * weights.resilience + compliance * weights.compliance;
+      missionValue * weights.missionValue +
+      riskReduction * weights.riskReduction +
+      readiness * weights.readiness +
+      responseTime * weights.responseTime +
+      resilience * weights.resilience +
+      compliance * weights.compliance;
     return Math.round(s * 10);
   }, [missionValue, riskReduction, readiness, responseTime, resilience, compliance]);
 
-  const missionBand = missionScore >= 75 ? "Mission-Critical" : missionScore >= 50 ? "High Value" : missionScore >= 30 ? "Moderate" : "Low";
+  const missionBand =
+    missionScore >= 75
+      ? "Mission-Critical"
+      : missionScore >= 50
+        ? "High Value"
+        : missionScore >= 30
+          ? "Moderate"
+          : "Low";
 
   const exportSummary = () => {
     if (typeof window === "undefined") return;
@@ -115,7 +173,10 @@ function RoiCalculatorPage() {
       <div class="meta">Generated ${new Date().toLocaleString()} · UseCasesX™ by AIgilityX™</div>${body}
       <script>window.onload=function(){window.print();}</script></body></html>`;
     const w = window.open("", "_blank");
-    if (w) { w.document.write(html); w.document.close(); }
+    if (w) {
+      w.document.write(html);
+      w.document.close();
+    }
   };
 
   const switchMode = (m: "financial" | "mission") => {
@@ -134,28 +195,80 @@ function RoiCalculatorPage() {
 
       <div className="mx-auto max-w-[1100px] px-6 py-10">
         <div className="inline-flex rounded-lg border border-border bg-card p-1">
-          <button onClick={() => switchMode("financial")} className={"rounded-md px-4 py-2 text-sm font-bold " + (mode === "financial" ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>Financial ROI</button>
-          <button onClick={() => switchMode("mission")} className={"rounded-md px-4 py-2 text-sm font-bold " + (mode === "mission" ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>Mission Value</button>
+          <button
+            onClick={() => switchMode("financial")}
+            className={
+              "rounded-md px-4 py-2 text-sm font-bold " +
+              (mode === "financial"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground")
+            }
+          >
+            Financial ROI
+          </button>
+          <button
+            onClick={() => switchMode("mission")}
+            className={
+              "rounded-md px-4 py-2 text-sm font-bold " +
+              (mode === "mission" ? "bg-primary text-primary-foreground" : "text-muted-foreground")
+            }
+          >
+            Mission Value
+          </button>
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <div className="rounded-2xl border border-border bg-card p-6">
-            <h2 className="text-lg font-bold text-foreground">{mode === "financial" ? "Inputs" : "Score each dimension (0–10)"}</h2>
+            <h2 className="text-lg font-bold text-foreground">
+              {mode === "financial" ? "Inputs" : "Score each dimension (0–10)"}
+            </h2>
             {mode === "financial" ? (
               <div className="mt-4 space-y-4">
-                <Field label="Initial investment" value={investment} onChange={setInvestment} suffix="USD" />
-                <Field label="Expected annual benefit" value={annualBenefit} onChange={setAnnualBenefit} suffix="USD" />
-                <Field label="Annual running cost" value={annualCost} onChange={setAnnualCost} suffix="USD" />
-                <Field label="Time horizon" value={years} onChange={(n) => setYears(Math.max(1, Math.round(n)))} suffix="years" />
+                <Field
+                  label="Initial investment"
+                  value={investment}
+                  onChange={setInvestment}
+                  suffix="USD"
+                />
+                <Field
+                  label="Expected annual benefit"
+                  value={annualBenefit}
+                  onChange={setAnnualBenefit}
+                  suffix="USD"
+                />
+                <Field
+                  label="Annual running cost"
+                  value={annualCost}
+                  onChange={setAnnualCost}
+                  suffix="USD"
+                />
+                <Field
+                  label="Time horizon"
+                  value={years}
+                  onChange={(n) => setYears(Math.max(1, Math.round(n)))}
+                  suffix="years"
+                />
               </div>
             ) : (
               <div className="mt-4 space-y-4">
                 <Slider label="Mission value" value={missionValue} onChange={setMissionValue} />
                 <Slider label="Risk reduction" value={riskReduction} onChange={setRiskReduction} />
                 <Slider label="Readiness improvement" value={readiness} onChange={setReadiness} />
-                <Slider label="Response time improvement" value={responseTime} onChange={setResponseTime} />
-                <Slider label="Operational resilience" value={resilience} onChange={setResilience} />
-                <Slider label="Compliance improvement" value={compliance} onChange={setCompliance} />
+                <Slider
+                  label="Response time improvement"
+                  value={responseTime}
+                  onChange={setResponseTime}
+                />
+                <Slider
+                  label="Operational resilience"
+                  value={resilience}
+                  onChange={setResilience}
+                />
+                <Slider
+                  label="Compliance improvement"
+                  value={compliance}
+                  onChange={setCompliance}
+                />
               </div>
             )}
           </div>
@@ -166,25 +279,51 @@ function RoiCalculatorPage() {
               <div className="mt-4 space-y-5">
                 <div>
                   <div className="text-5xl font-black text-primary">{fin.roi.toFixed(0)}%</div>
-                  <div className="text-xs uppercase tracking-widest text-white/70">Return on investment ({years}-yr)</div>
+                  <div className="text-xs uppercase tracking-widest text-white/70">
+                    Return on investment ({years}-yr)
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div><div className="text-2xl font-bold">{Number.isFinite(fin.payback) ? fin.payback.toFixed(1) : "—"}</div><div className="text-xs text-white/70">Payback (years)</div></div>
-                  <div><div className="text-2xl font-bold">{fmt(fin.netAnnual)}</div><div className="text-xs text-white/70">Net annual value</div></div>
-                  <div className="col-span-2"><div className="text-2xl font-bold">{fmt(fin.totalNet)}</div><div className="text-xs text-white/70">{years}-yr total net value</div></div>
+                  <div>
+                    <div className="text-2xl font-bold">
+                      {Number.isFinite(fin.payback) ? fin.payback.toFixed(1) : "—"}
+                    </div>
+                    <div className="text-xs text-white/70">Payback (years)</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{fmt(fin.netAnnual)}</div>
+                    <div className="text-xs text-white/70">Net annual value</div>
+                  </div>
+                  <div className="col-span-2">
+                    <div className="text-2xl font-bold">{fmt(fin.totalNet)}</div>
+                    <div className="text-xs text-white/70">{years}-yr total net value</div>
+                  </div>
                 </div>
               </div>
             ) : (
               <div className="mt-4 space-y-5">
                 <div>
-                  <div className="text-5xl font-black text-primary">{missionScore}<span className="text-2xl text-white/60">/100</span></div>
-                  <div className="text-xs uppercase tracking-widest text-white/70">Composite mission score</div>
+                  <div className="text-5xl font-black text-primary">
+                    {missionScore}
+                    <span className="text-2xl text-white/60">/100</span>
+                  </div>
+                  <div className="text-xs uppercase tracking-widest text-white/70">
+                    Composite mission score
+                  </div>
                 </div>
-                <div className="inline-block rounded-full bg-primary/20 px-3 py-1 text-sm font-bold text-primary">{missionBand}</div>
-                <p className="text-sm text-white/70">Weighted across mission value, risk reduction, readiness, response time, resilience and compliance.</p>
+                <div className="inline-block rounded-full bg-primary/20 px-3 py-1 text-sm font-bold text-primary">
+                  {missionBand}
+                </div>
+                <p className="text-sm text-white/70">
+                  Weighted across mission value, risk reduction, readiness, response time,
+                  resilience and compliance.
+                </p>
               </div>
             )}
-            <button onClick={exportSummary} className="mt-6 inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-110">
+            <button
+              onClick={exportSummary}
+              className="mt-6 inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-110"
+            >
               Export summary (PDF)
             </button>
           </div>

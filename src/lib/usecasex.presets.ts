@@ -71,12 +71,40 @@ export function useSavedPresets() {
 }
 
 // Built-in shareable presets shown in the bar above results.
-export const BUILTIN_PRESETS: { label: string; description: string; search: Record<string, unknown> }[] = [
-  { label: "Public Sector AI", description: "Government, defense, education, healthcare", search: { sectors: ["public"] } },
-  { label: "High Impact, Low Risk", description: "High value · low risk · short TTV", search: { valuePotential: ["High"], riskLevel: ["Low"], timeToValue: ["Short"] } },
-  { label: "Agentic AI", description: "Agent + LLM-powered use cases", search: { tags: ["agentic-ai"] } },
-  { label: "Defense Quick Wins", description: "Defense + short/medium TTV", search: { industries: ["defense"], timeToValue: ["Short", "Medium"] } },
-  { label: "Healthcare Clinical", description: "Clinical + radiology", search: { industries: ["healthcare"], tags: ["clinical"] } },
-  { label: "Compliance & Privacy", description: "Regulatory, privacy, compliance", search: { tags: ["compliance"] } },
+export const BUILTIN_PRESETS: {
+  label: string;
+  description: string;
+  search: Record<string, unknown>;
+}[] = [
+  {
+    label: "Public Sector AI",
+    description: "Government, defense, education, healthcare",
+    search: { sectors: ["public"] },
+  },
+  {
+    label: "High Impact, Low Risk",
+    description: "High value · low risk · short TTV",
+    search: { valuePotential: ["High"], riskLevel: ["Low"], timeToValue: ["Short"] },
+  },
+  {
+    label: "Agentic AI",
+    description: "Agent + LLM-powered use cases",
+    search: { tags: ["agentic-ai"] },
+  },
+  {
+    label: "Defense Quick Wins",
+    description: "Defense + short/medium TTV",
+    search: { industries: ["defense"], timeToValue: ["Short", "Medium"] },
+  },
+  {
+    label: "Healthcare Clinical",
+    description: "Clinical + radiology",
+    search: { industries: ["healthcare"], tags: ["clinical"] },
+  },
+  {
+    label: "Compliance & Privacy",
+    description: "Regulatory, privacy, compliance",
+    search: { tags: ["compliance"] },
+  },
   { label: "Newest", description: "Sorted by publish date", search: { sort: "newest" } },
 ];

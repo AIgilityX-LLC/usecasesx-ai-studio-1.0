@@ -2,7 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ComingSoonGate } from "@/components/ComingSoonGate";
 
 export const Route = createFileRoute("/_app/roadmap")({
-  head: () => ({ meta: [{ title: "RoadmapX™ — UseCasesX™" }, { name: "description", content: "Sequence prioritized use cases into a delivery roadmap." }] }),
+  head: () => ({
+    meta: [
+      { title: "RoadmapX™ — UseCasesX™" },
+      { name: "description", content: "Sequence prioritized use cases into a delivery roadmap." },
+    ],
+  }),
   component: () => (
     <ComingSoonGate
       feature="RoadmapX™ — AI Delivery Roadmaps"

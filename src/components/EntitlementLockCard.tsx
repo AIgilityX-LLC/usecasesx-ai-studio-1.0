@@ -37,7 +37,9 @@ export function EntitlementLockCard({
     supabase.auth.getUser().then(({ data }) => {
       if (active) setEmail(data.user?.email ?? null);
     });
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, []);
 
   const tierName = requiredTier === "enterprise" ? "Enterprise" : "Pro";
@@ -45,7 +47,9 @@ export function EntitlementLockCard({
 
   return (
     <>
-      <Card className={`border-dashed bg-gradient-to-br from-primary/5 to-transparent ${className ?? ""}`}>
+      <Card
+        className={`border-dashed bg-gradient-to-br from-primary/5 to-transparent ${className ?? ""}`}
+      >
         <CardContent className="flex flex-col gap-4 py-6">
           <div className="flex items-start gap-3">
             <div className="rounded-md bg-primary/15 p-2 text-primary">
@@ -70,8 +74,19 @@ export function EntitlementLockCard({
               <CalendarClock className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
               <p className="text-muted-foreground">
                 Your founding-member access
-                {ent.expiresAt ? <> expired on <span className="font-semibold text-foreground">{ent.expiresAt.toLocaleDateString()}</span></> : " has expired"}
-                {" "}and your plan reverted to <span className="font-semibold text-foreground">Lite</span>.
+                {ent.expiresAt ? (
+                  <>
+                    {" "}
+                    expired on{" "}
+                    <span className="font-semibold text-foreground">
+                      {ent.expiresAt.toLocaleDateString()}
+                    </span>
+                  </>
+                ) : (
+                  " has expired"
+                )}{" "}
+                and your plan reverted to{" "}
+                <span className="font-semibold text-foreground">Lite</span>.
               </p>
             </div>
           )}
@@ -79,7 +94,9 @@ export function EntitlementLockCard({
             <div className="flex items-start gap-2 rounded-md border border-border bg-secondary/40 p-3 text-sm">
               <CalendarClock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
               <p className="text-muted-foreground">
-                Gratis access is active until <span className="font-semibold text-foreground">{FOUNDING_UNTIL_LABEL}</span> — {ent.daysRemaining} day{ent.daysRemaining === 1 ? "" : "s"} remaining.
+                Gratis access is active until{" "}
+                <span className="font-semibold text-foreground">{FOUNDING_UNTIL_LABEL}</span> —{" "}
+                {ent.daysRemaining} day{ent.daysRemaining === 1 ? "" : "s"} remaining.
               </p>
             </div>
           )}

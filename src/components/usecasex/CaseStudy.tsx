@@ -5,7 +5,10 @@ import { EvidenceDrawer, type EvidenceSource } from "./EvidenceDrawer";
 
 type UseCase = Record<string, any>;
 
-interface Entry { slug: string; name: string; }
+interface Entry {
+  slug: string;
+  name: string;
+}
 
 interface CaseStudyProps {
   c: UseCase;
@@ -50,10 +53,14 @@ export function CaseStudy({
   }, [outcomeMetrics, sortDir]);
 
   const metrics: { label: string; value: string }[] = [];
-  if (typeof c.impact_score === "number") metrics.push({ label: "Impact", value: `${c.impact_score}/10` });
-  if (typeof c.effort_score === "number") metrics.push({ label: "Effort", value: `${c.effort_score}/10` });
-  if (typeof c.risk_score === "number") metrics.push({ label: "Risk", value: `${c.risk_score}/10` });
-  if (typeof c.maturity_score === "number") metrics.push({ label: "Maturity", value: `${c.maturity_score}/10` });
+  if (typeof c.impact_score === "number")
+    metrics.push({ label: "Impact", value: `${c.impact_score}/10` });
+  if (typeof c.effort_score === "number")
+    metrics.push({ label: "Effort", value: `${c.effort_score}/10` });
+  if (typeof c.risk_score === "number")
+    metrics.push({ label: "Risk", value: `${c.risk_score}/10` });
+  if (typeof c.maturity_score === "number")
+    metrics.push({ label: "Maturity", value: `${c.maturity_score}/10` });
   if (c.value_potential) metrics.push({ label: "Value Potential", value: c.value_potential });
   if (c.time_to_value) metrics.push({ label: "Time to Value", value: c.time_to_value });
 
@@ -63,16 +70,39 @@ export function CaseStudy({
     : [];
   const sources: EvidenceSource[] = [];
   if (c.organization)
-    sources.push({ label: "Reference deployment profile", detail: c.organization, kind: "Profile" });
+    sources.push({
+      label: "Reference deployment profile",
+      detail: c.organization,
+      kind: "Profile",
+    });
   if (c.region) sources.push({ label: "Regional context", detail: c.region, kind: "Context" });
   for (const ind of industryEntries)
-    sources.push({ label: "Industry benchmark", detail: ind.name, kind: "Benchmark", link: { facet: "industries", slug: ind.slug } });
+    sources.push({
+      label: "Industry benchmark",
+      detail: ind.name,
+      kind: "Benchmark",
+      link: { facet: "industries", slug: ind.slug },
+    });
   for (const cap of capabilityEntries.slice(0, 3))
-    sources.push({ label: "AI capability pattern", detail: cap.name, kind: "Pattern", link: { facet: "capabilities", slug: cap.slug } });
+    sources.push({
+      label: "AI capability pattern",
+      detail: cap.name,
+      kind: "Pattern",
+      link: { facet: "capabilities", slug: cap.slug },
+    });
   if (platforms.length)
-    sources.push({ label: "AIgilityX module mapping", detail: platforms.map((p) => p.toUpperCase()).join(", "), kind: "Mapping" });
+    sources.push({
+      label: "AIgilityX module mapping",
+      detail: platforms.map((p) => p.toUpperCase()).join(", "),
+      kind: "Mapping",
+    });
   for (const l of links)
-    sources.push({ label: l.label || l.url, url: l.url, detail: l.url, kind: l.kind || "Reference" });
+    sources.push({
+      label: l.label || l.url,
+      url: l.url,
+      detail: l.url,
+      kind: l.kind || "Reference",
+    });
 
   const year = new Date().getFullYear();
   const citations: string[] = [
@@ -98,12 +128,19 @@ export function CaseStudy({
           <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             How {c.organization || "leading organisations"} put this to work
           </h2>
-          <EvidenceDrawer title={c.title ?? "this use case"} sources={sources} citations={citations} />
+          <EvidenceDrawer
+            title={c.title ?? "this use case"}
+            sources={sources}
+            citations={citations}
+          />
         </div>
         {metrics.length > 0 && (
           <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {metrics.map((m) => (
-              <div key={m.label} className="rounded-lg border border-border bg-background/60 px-3 py-2.5">
+              <div
+                key={m.label}
+                className="rounded-lg border border-border bg-background/60 px-3 py-2.5"
+              >
                 <div className="text-lg font-bold text-foreground">{m.value}</div>
                 <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                   {m.label}
@@ -122,7 +159,9 @@ export function CaseStudy({
                 Value, complexity, risk and time-to-value scored on a comparable 0–100 scale.
               </p>
               <button
-                onClick={() => setSortDir((d) => (d === "desc" ? "asc" : d === "asc" ? "none" : "desc"))}
+                onClick={() =>
+                  setSortDir((d) => (d === "desc" ? "asc" : d === "asc" ? "none" : "desc"))
+                }
                 className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-foreground hover:bg-secondary"
               >
                 <ArrowUpDown className="h-3 w-3" />
@@ -159,14 +198,18 @@ export function CaseStudy({
             {approach && <p className="whitespace-pre-line text-muted-foreground">{approach}</p>}
             {dataRequired && (
               <div className="mt-4 rounded-lg border border-border bg-background/50 p-4">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-primary">Data foundation</div>
-                <p className="mt-1.5 whitespace-pre-line text-sm text-muted-foreground">{dataRequired}</p>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-primary">
+                  Data foundation
+                </div>
+                <p className="mt-1.5 whitespace-pre-line text-sm text-muted-foreground">
+                  {dataRequired}
+                </p>
               </div>
             )}
           </Block>
         )}
 
-        {(sources.length > 0) && (
+        {sources.length > 0 && (
           <Block num="03" title="Evidence & Sources">
             <p className="text-sm text-muted-foreground">
               This narrative is grounded in the following evidence and reference signals:
@@ -177,7 +220,12 @@ export function CaseStudy({
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                   <span className="flex-1">
                     {s.url ? (
-                      <a href={s.url} target="_blank" rel="noreferrer noopener" className="font-medium text-foreground hover:text-primary">
+                      <a
+                        href={s.url}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className="font-medium text-foreground hover:text-primary"
+                      >
                         {s.label}
                       </a>
                     ) : (
@@ -219,7 +267,9 @@ export function CaseStudy({
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 {kpis.length > 0 && (
                   <div className="rounded-lg border border-border bg-background/50 p-4">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-primary">Key KPIs</div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-primary">
+                      Key KPIs
+                    </div>
                     <ul className="mt-2 space-y-1.5">
                       {kpis.map((k, i) => (
                         <li key={i} className="flex gap-2 text-sm text-muted-foreground">
@@ -232,7 +282,9 @@ export function CaseStudy({
                 )}
                 {roiAreas.length > 0 && (
                   <div className="rounded-lg border border-border bg-background/50 p-4">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-primary">ROI areas</div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-primary">
+                      ROI areas
+                    </div>
                     <ul className="mt-2 space-y-1.5">
                       {roiAreas.map((r, i) => (
                         <li key={i} className="flex gap-2 text-sm text-muted-foreground">
@@ -284,24 +336,52 @@ export function CaseStudy({
 }
 
 // ---- Outcome metric scoring helpers ----
-interface OutcomeMetric { label: string; display: string; score: number; color: string; }
+interface OutcomeMetric {
+  label: string;
+  display: string;
+  score: number;
+  color: string;
+}
 
 function buildOutcomeMetrics(c: UseCase): OutcomeMetric[] {
   const out: OutcomeMetric[] = [];
-  const lev = (v: string | undefined, map: Record<string, number>) =>
-    v ? map[v] : undefined;
+  const lev = (v: string | undefined, map: Record<string, number>) => (v ? map[v] : undefined);
 
   const valueScore = lev(c.value_potential, { Low: 33, Medium: 66, High: 100 });
-  if (valueScore != null) out.push({ label: "Value Potential", display: c.value_potential, score: valueScore, color: "bg-emerald-500" });
+  if (valueScore != null)
+    out.push({
+      label: "Value Potential",
+      display: c.value_potential,
+      score: valueScore,
+      color: "bg-emerald-500",
+    });
 
   const cplxScore = lev(c.complexity, { Low: 33, Medium: 66, High: 100 });
-  if (cplxScore != null) out.push({ label: "Complexity", display: c.complexity, score: cplxScore, color: "bg-amber-500" });
+  if (cplxScore != null)
+    out.push({
+      label: "Complexity",
+      display: c.complexity,
+      score: cplxScore,
+      color: "bg-amber-500",
+    });
 
   const riskScore = lev(c.risk_level, { Low: 25, Medium: 50, High: 75, Critical: 100 });
-  if (riskScore != null) out.push({ label: "Risk Level", display: c.risk_level, score: riskScore, color: "bg-rose-500" });
+  if (riskScore != null)
+    out.push({
+      label: "Risk Level",
+      display: c.risk_level,
+      score: riskScore,
+      color: "bg-rose-500",
+    });
 
   const ttvScore = lev(c.time_to_value, { Short: 33, Medium: 66, Long: 100 });
-  if (ttvScore != null) out.push({ label: "Time to Value", display: c.time_to_value, score: ttvScore, color: "bg-sky-500" });
+  if (ttvScore != null)
+    out.push({
+      label: "Time to Value",
+      display: c.time_to_value,
+      score: ttvScore,
+      color: "bg-sky-500",
+    });
 
   return out;
 }

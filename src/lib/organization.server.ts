@@ -30,10 +30,7 @@ export type TenantTaxonomyTable = (typeof TENANT_TAXONOMY_TABLES)[number];
  * RLS also enforces this; the explicit check produces a clear error instead of
  * a silent zero-row write.
  */
-export async function requireOrgManager(
-  supabase: SupabaseClient<any, any, any>,
-  userId: string,
-) {
+export async function requireOrgManager(supabase: SupabaseClient<any, any, any>, userId: string) {
   const { data, error } = await supabase
     .from("organization_members" as any)
     .select("organization_id, role, status")

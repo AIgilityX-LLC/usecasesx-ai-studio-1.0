@@ -2,7 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ModuleStub } from "@/components/ModuleStub";
 
 export const Route = createFileRoute("/_app/impact-assessment")({
-  head: () => ({ meta: [{ title: "ImpactAssessmentX™ — UseCasesX™" }, { name: "description", content: "Quantify the expected impact of every AI use case." }] }),
+  head: () => ({
+    meta: [
+      { title: "ImpactAssessmentX™ — UseCasesX™" },
+      { name: "description", content: "Quantify the expected impact of every AI use case." },
+    ],
+  }),
   component: () => (
     <ModuleStub
       badge="ImpactAssessmentX™"

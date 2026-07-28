@@ -27,7 +27,11 @@ export function RatingWidget({ slug }: { slug: string }) {
     setUserId(uid);
 
     const [agg, fb, mine] = await Promise.all([
-      supabase.from("use_case_rating_aggregates").select("*").eq("use_case_slug", slug).maybeSingle(),
+      supabase
+        .from("use_case_rating_aggregates")
+        .select("*")
+        .eq("use_case_slug", slug)
+        .maybeSingle(),
       supabase
         .from("use_case_feedback")
         .select("id, comment, sentiment, created_at")
@@ -37,7 +41,12 @@ export function RatingWidget({ slug }: { slug: string }) {
         .order("created_at", { ascending: false })
         .limit(10),
       uid
-        ? supabase.from("use_case_ratings").select("rating").eq("use_case_slug", slug).eq("user_id", uid).maybeSingle()
+        ? supabase
+            .from("use_case_ratings")
+            .select("rating")
+            .eq("use_case_slug", slug)
+            .eq("user_id", uid)
+            .maybeSingle()
         : Promise.resolve({ data: null } as any),
     ]);
 
@@ -57,7 +66,10 @@ export function RatingWidget({ slug }: { slug: string }) {
     setMsg(null);
     const { error } = await supabase
       .from("use_case_ratings")
-      .upsert({ use_case_slug: slug, user_id: userId, rating }, { onConflict: "use_case_slug,user_id" });
+      .upsert(
+        { use_case_slug: slug, user_id: userId, rating },
+        { onConflict: "use_case_slug,user_id" },
+      );
     setSaving(false);
     if (error) {
       setMsg(error.message);
@@ -74,7 +86,13 @@ export function RatingWidget({ slug }: { slug: string }) {
     setMsg(null);
     const { error } = await supabase
       .from("use_case_feedback")
-      .insert({ use_case_slug: slug, user_id: userId, comment: comment.trim(), sentiment, is_public: true });
+      .insert({
+        use_case_slug: slug,
+        user_id: userId,
+        comment: comment.trim(),
+        sentiment,
+        is_public: true,
+      });
     setSaving(false);
     if (error) {
       setMsg(error.message);
@@ -87,7 +105,9 @@ export function RatingWidget({ slug }: { slug: string }) {
 
   return (
     <section className="rounded-2xl border border-border bg-card/60 p-6">
-      <div className="text-[11px] font-bold uppercase tracking-widest text-primary">15 · Community Rating</div>
+      <div className="text-[11px] font-bold uppercase tracking-widest text-primary">
+        15 · Community Rating
+      </div>
       <div className="mt-3 flex flex-wrap items-baseline gap-3">
         <div className="text-3xl font-bold text-foreground">{avg ? avg.toFixed(1) : "—"}</div>
         <div className="text-sm text-muted-foreground">
@@ -96,7 +116,9 @@ export function RatingWidget({ slug }: { slug: string }) {
       </div>
 
       <div className="mt-4">
-        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Your rating</div>
+        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Your rating
+        </div>
         {userId ? (
           <div className="mt-2 flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((n) => {
@@ -116,7 +138,9 @@ export function RatingWidget({ slug }: { slug: string }) {
                 </button>
               );
             })}
-            {myRating > 0 && <span className="ml-2 text-xs text-muted-foreground">You rated {myRating}/5</span>}
+            {myRating > 0 && (
+              <span className="ml-2 text-xs text-muted-foreground">You rated {myRating}/5</span>
+            )}
           </div>
         ) : (
           <p className="mt-2 text-sm text-muted-foreground">
@@ -130,7 +154,9 @@ export function RatingWidget({ slug }: { slug: string }) {
 
       {userId && (
         <div className="mt-6">
-          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Share feedback</div>
+          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Share feedback
+          </div>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value.slice(0, 2000))}
@@ -165,7 +191,9 @@ export function RatingWidget({ slug }: { slug: string }) {
 
       {feedback.length > 0 && (
         <div className="mt-6 space-y-3">
-          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Recent feedback</div>
+          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Recent feedback
+          </div>
           {feedback.map((f) => (
             <div key={f.id} className="rounded-lg border border-border bg-background/40 p-3">
               <div className="flex items-center justify-between">

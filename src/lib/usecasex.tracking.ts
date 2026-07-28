@@ -26,9 +26,14 @@ async function persistEvent(cta: string, payload: Record<string, unknown> = {}):
     cta: cta.slice(0, 100),
     user_id: data.user?.id ?? null,
     use_case_id: useCaseId,
-    source_page: typeof payload.source_page === "string" ? payload.source_page.slice(0, 500) : window.location.pathname,
-    target_route: typeof payload.target_route === "string" ? payload.target_route.slice(0, 500) : null,
-    target_platform: typeof payload.target_platform === "string" ? payload.target_platform.slice(0, 100) : null,
+    source_page:
+      typeof payload.source_page === "string"
+        ? payload.source_page.slice(0, 500)
+        : window.location.pathname,
+    target_route:
+      typeof payload.target_route === "string" ? payload.target_route.slice(0, 500) : null,
+    target_platform:
+      typeof payload.target_platform === "string" ? payload.target_platform.slice(0, 100) : null,
     session_id: window.sessionStorage.getItem("usecasex_session_id"),
   });
   if (error) console.warn("[usecasex:analytics] event rejected", cta, error.message);

@@ -58,7 +58,9 @@ export function SavedViewsMenu() {
         <Bookmark className="h-3.5 w-3.5 text-primary" />
         Saved views
         {saved.length > 0 && (
-          <span className="rounded-full bg-primary px-1.5 text-[10px] text-primary-foreground">{saved.length}</span>
+          <span className="rounded-full bg-primary px-1.5 text-[10px] text-primary-foreground">
+            {saved.length}
+          </span>
         )}
       </button>
 
@@ -84,10 +86,18 @@ export function SavedViewsMenu() {
                         }}
                         className="min-w-0 flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm text-foreground focus:border-primary focus:outline-none"
                       />
-                      <button onClick={() => commitRename(p.id)} aria-label="Save name" className="grid h-7 w-7 place-items-center rounded-md text-primary hover:bg-primary/10">
+                      <button
+                        onClick={() => commitRename(p.id)}
+                        aria-label="Save name"
+                        className="grid h-7 w-7 place-items-center rounded-md text-primary hover:bg-primary/10"
+                      >
                         <Check className="h-4 w-4" />
                       </button>
-                      <button onClick={() => setEditingId(null)} aria-label="Cancel" className="grid h-7 w-7 place-items-center rounded-md text-muted-foreground hover:bg-secondary">
+                      <button
+                        onClick={() => setEditingId(null)}
+                        aria-label="Cancel"
+                        className="grid h-7 w-7 place-items-center rounded-md text-muted-foreground hover:bg-secondary"
+                      >
                         <X className="h-4 w-4" />
                       </button>
                     </div>

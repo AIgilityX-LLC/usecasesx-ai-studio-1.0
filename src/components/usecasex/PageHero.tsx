@@ -25,9 +25,7 @@ export function PageHero({
   children,
 }: PageHeroProps) {
   const toneClass =
-    tone === "dark"
-      ? "dark bg-background text-foreground"
-      : "bg-secondary/40 text-foreground";
+    tone === "dark" ? "dark bg-background text-foreground" : "bg-secondary/40 text-foreground";
 
   return (
     <section className={`${toneClass} border-b border-border`}>
@@ -37,13 +35,9 @@ export function PageHero({
             {eyebrow}
           </p>
         ) : null}
-        <h1 className="mt-3 max-w-3xl text-3xl font-bold tracking-tight md:text-5xl">
-          {title}
-        </h1>
+        <h1 className="mt-3 max-w-3xl text-3xl font-bold tracking-tight md:text-5xl">{title}</h1>
         {description ? (
-          <p className="mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
-            {description}
-          </p>
+          <p className="mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">{description}</p>
         ) : null}
         {actions ? <div className="mt-7 flex flex-wrap gap-3">{actions}</div> : null}
         {children ? <div className="mt-8">{children}</div> : null}

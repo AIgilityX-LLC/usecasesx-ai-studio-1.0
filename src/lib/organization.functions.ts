@@ -28,7 +28,11 @@ export const getOrganizationSetupFn = createServerFn({ method: "GET" })
 
     const [org, units, processes, strategic, value, risk, lifecycle] = await Promise.all([
       organizationId
-        ? supabase.from("organizations").select("id, name, plan").eq("id", organizationId).maybeSingle()
+        ? supabase
+            .from("organizations")
+            .select("id, name, plan")
+            .eq("id", organizationId)
+            .maybeSingle()
         : Promise.resolve({ data: null }),
       organizationId
         ? supabase
@@ -38,11 +42,26 @@ export const getOrganizationSetupFn = createServerFn({ method: "GET" })
             .order("sort_order")
             .order("name")
         : Promise.resolve({ data: [] }),
-      supabase.from("taxonomy_processes").select("id, name, slug, organization_id, sort_order").order("sort_order"),
-      supabase.from("taxonomy_strategic_themes").select("id, name, slug, organization_id, sort_order").order("sort_order"),
-      supabase.from("taxonomy_value_themes").select("id, name, slug, organization_id, sort_order").order("sort_order"),
-      supabase.from("taxonomy_risk_levels").select("id, name, slug, sort_order").order("sort_order"),
-      supabase.from("taxonomy_lifecycle_stages").select("id, name, slug, sort_order").order("sort_order"),
+      supabase
+        .from("taxonomy_processes")
+        .select("id, name, slug, organization_id, sort_order")
+        .order("sort_order"),
+      supabase
+        .from("taxonomy_strategic_themes")
+        .select("id, name, slug, organization_id, sort_order")
+        .order("sort_order"),
+      supabase
+        .from("taxonomy_value_themes")
+        .select("id, name, slug, organization_id, sort_order")
+        .order("sort_order"),
+      supabase
+        .from("taxonomy_risk_levels")
+        .select("id, name, slug, sort_order")
+        .order("sort_order"),
+      supabase
+        .from("taxonomy_lifecycle_stages")
+        .select("id, name, slug, sort_order")
+        .order("sort_order"),
     ]);
 
     return {
@@ -87,7 +106,13 @@ export const saveOrganizationUnitFn = createServerFn({ method: "POST" })
     };
 
     const query = data.id
-      ? supabase.from("organization_units").update(payload).eq("id", data.id).eq("organization_id", organizationId).select("id").maybeSingle()
+      ? supabase
+          .from("organization_units")
+          .update(payload)
+          .eq("id", data.id)
+          .eq("organization_id", organizationId)
+          .select("id")
+          .maybeSingle()
       : supabase.from("organization_units").insert(payload).select("id").maybeSingle();
 
     const { data: row, error } = await query;

@@ -32,21 +32,47 @@ export const INDUSTRIES: Industry[] = [
 ];
 
 export const AI_TYPES = [
-  "Generative AI", "LLM Agents", "Computer Vision", "NLP", "Predictive Analytics",
-  "Recommender Systems", "Anomaly Detection", "Speech AI", "OCR / Document AI",
-  "Reinforcement Learning", "Time-Series Forecasting", "Knowledge Graphs",
-  "RAG", "Multimodal AI", "Synthetic Data", "AutoML", "Edge AI",
-  "Conversational AI", "Process Mining AI", "Decision Intelligence",
+  "Generative AI",
+  "LLM Agents",
+  "Computer Vision",
+  "NLP",
+  "Predictive Analytics",
+  "Recommender Systems",
+  "Anomaly Detection",
+  "Speech AI",
+  "OCR / Document AI",
+  "Reinforcement Learning",
+  "Time-Series Forecasting",
+  "Knowledge Graphs",
+  "RAG",
+  "Multimodal AI",
+  "Synthetic Data",
+  "AutoML",
+  "Edge AI",
+  "Conversational AI",
+  "Process Mining AI",
+  "Decision Intelligence",
 ];
 
 export const BUSINESS_OBJECTIVES = [
-  "Revenue Growth", "Cost Reduction", "Customer Experience", "Risk & Compliance",
-  "Operational Efficiency", "Workforce Productivity", "Innovation",
-  "Sustainability", "Data Monetization", "Cybersecurity", "Fraud Prevention",
-  "Quality Improvement", "Time-to-Market", "Personalization",
-  "Citizen Services", "Regulatory Reporting", "Decision Support",
+  "Revenue Growth",
+  "Cost Reduction",
+  "Customer Experience",
+  "Risk & Compliance",
+  "Operational Efficiency",
+  "Workforce Productivity",
+  "Innovation",
+  "Sustainability",
+  "Data Monetization",
+  "Cybersecurity",
+  "Fraud Prevention",
+  "Quality Improvement",
+  "Time-to-Market",
+  "Personalization",
+  "Citizen Services",
+  "Regulatory Reporting",
+  "Decision Support",
 ];
-
 
 export const PARTNER_PLATFORMS = [
   { slug: "sarpi", name: "SARPI™", category: "Risk & Performance", color: "navy" },
@@ -66,27 +92,67 @@ export const PARTNER_PLATFORMS = [
 
 // ---- Pro-only mocks (swap for Supabase later) ----
 
-export interface SavedItem { useCaseId: string; useCaseSlug: string; title: string; savedAt: string; }
+export interface SavedItem {
+  useCaseId: string;
+  useCaseSlug: string;
+  title: string;
+  savedAt: string;
+}
 export interface ScoreInputs {
-  strategic: number; value: number; feasibility: number;
-  risk: number; readiness: number; ttv: number;
+  strategic: number;
+  value: number;
+  feasibility: number;
+  risk: number;
+  readiness: number;
+  ttv: number;
 }
 export interface Portfolio {
-  id: string; name: string; objective: string;
-  itemCount: number; avgScore: number; updatedAt: string;
+  id: string;
+  name: string;
+  objective: string;
+  itemCount: number;
+  avgScore: number;
+  updatedAt: string;
 }
 
 export const MOCK_SAVED: SavedItem[] = [
-  { useCaseId: "1", useCaseSlug: "fraud-detection-real-time", title: "Real-time fraud detection for retail banking", savedAt: "2026-05-10" },
-  { useCaseId: "2", useCaseSlug: "ai-citizen-services", title: "AI assistant for citizen services", savedAt: "2026-05-12" },
-  { useCaseId: "3", useCaseSlug: "predictive-maintenance-energy", title: "Predictive maintenance for grid assets", savedAt: "2026-05-18" },
+  {
+    useCaseId: "1",
+    useCaseSlug: "fraud-detection-real-time",
+    title: "Real-time fraud detection for retail banking",
+    savedAt: "2026-05-10",
+  },
+  {
+    useCaseId: "2",
+    useCaseSlug: "ai-citizen-services",
+    title: "AI assistant for citizen services",
+    savedAt: "2026-05-12",
+  },
+  {
+    useCaseId: "3",
+    useCaseSlug: "predictive-maintenance-energy",
+    title: "Predictive maintenance for grid assets",
+    savedAt: "2026-05-18",
+  },
 ];
 
 export const MOCK_PORTFOLIOS: Portfolio[] = [
-  { id: "p1", name: "FY26 — Banking AI Roadmap", objective: "Risk & Compliance",
-    itemCount: 12, avgScore: 78, updatedAt: "2026-05-20" },
-  { id: "p2", name: "Public Sector — Citizen AI", objective: "Citizen Services",
-    itemCount: 8, avgScore: 71, updatedAt: "2026-05-22" },
+  {
+    id: "p1",
+    name: "FY26 — Banking AI Roadmap",
+    objective: "Risk & Compliance",
+    itemCount: 12,
+    avgScore: 78,
+    updatedAt: "2026-05-20",
+  },
+  {
+    id: "p2",
+    name: "Public Sector — Citizen AI",
+    objective: "Citizen Services",
+    itemCount: 8,
+    avgScore: 71,
+    updatedAt: "2026-05-22",
+  },
 ];
 
 export function aigilityXScore(s: ScoreInputs): number {
@@ -94,11 +160,11 @@ export function aigilityXScore(s: ScoreInputs): number {
   const ri = 5 - s.risk;
   const tt = 5 - s.ttv;
   const raw =
-    s.strategic * 0.20 +
+    s.strategic * 0.2 +
     s.value * 0.25 +
-    s.feasibility * 0.20 +
+    s.feasibility * 0.2 +
     ri * 0.15 +
-    s.readiness * 0.10 +
-    tt * 0.10;
+    s.readiness * 0.1 +
+    tt * 0.1;
   return Math.round((raw / 5) * 100);
 }

@@ -9,7 +9,7 @@ Copy the relevant section into your PR body. Do not delete unchecked items — r
 - [ ] Bounded to one prompt or one defect. If not, split.
 - [ ] Linked PROMPT-NN and (if applicable) risk ID from release board §7.1.
 - [ ] Lovable tracked branch confirmed = `main` (or the branch named in the latest Decision Log). See `source-control-workflow.md` §3.
-- [ ] Conventional Commit subject; body explains *what* and *why*.
+- [ ] Conventional Commit subject; body explains _what_ and _why_.
 - [ ] `bun run lint` green.
 - [ ] `tsgo` typecheck green.
 - [ ] `bun run build` green (route tree verify runs inside this).

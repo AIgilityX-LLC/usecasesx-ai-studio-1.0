@@ -29,17 +29,21 @@ See `CLAUDE.md` for the full command matrix and repository layout.
 ## Documentation
 
 **Engineering standard**
+
 - [`AGENTS.md`](./AGENTS.md) — engineering contract for Lovable, Claude, Codex and humans.
 - [`CLAUDE.md`](./CLAUDE.md) — repository layout, commands, high-risk files.
 
 **Product & release**
+
 - [`docs/product/release-2026-08-14.md`](./docs/product/release-2026-08-14.md) — launch scope, deferred scope, roles, success metrics.
 
 **Architecture & security**
+
 - [`docs/architecture/architecture-principles.md`](./docs/architecture/architecture-principles.md) — modular monolith principles.
 - [`docs/security/security-baseline.md`](./docs/security/security-baseline.md) — RLS, secrets, server boundaries, audit.
 
 **Pre-beta QA**
+
 - [`docs/PRE_BETA_RELEASE_CHECKLIST.md`](./docs/PRE_BETA_RELEASE_CHECKLIST.md)
 - [`docs/PRE_BETA_TEST_PLAN.md`](./docs/PRE_BETA_TEST_PLAN.md)
 - [`docs/UI-NAVIGATION-MAP.md`](./docs/UI-NAVIGATION-MAP.md)

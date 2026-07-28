@@ -16,43 +16,43 @@ The Home route (`/`) is the only page that mounts `SiteShell` itself
 
 ## Top navigation (signed-out surface)
 
-| Nav item | Target | Resolved URL | Layout wrapper | Redirect? |
-|---|---|---|---|---|
-| Home | `/` | `/` | SiteShell (top nav, via index.tsx) | no |
-| Explore | `/repository` | `/repository` | SiteShell (top nav) | no |
-| Insights | `/insights` | `/insights` | SiteShell (top nav) | no |
-| Patterns | `/patterns` | `/patterns` | SiteShell (top nav) | no |
-| Studio | `/ai-use-case-studio` | `/ai-use-case-studio` | SiteShell (top nav) | no |
-| Resources | `/resources` | `/resources` | SiteShell (top nav) | no |
-| Pricing | `/pricing` | `/pricing` | SiteShell (top nav) | no |
+| Nav item  | Target                | Resolved URL          | Layout wrapper                     | Redirect? |
+| --------- | --------------------- | --------------------- | ---------------------------------- | --------- |
+| Home      | `/`                   | `/`                   | SiteShell (top nav, via index.tsx) | no        |
+| Explore   | `/repository`         | `/repository`         | SiteShell (top nav)                | no        |
+| Insights  | `/insights`           | `/insights`           | SiteShell (top nav)                | no        |
+| Patterns  | `/patterns`           | `/patterns`           | SiteShell (top nav)                | no        |
+| Studio    | `/ai-use-case-studio` | `/ai-use-case-studio` | SiteShell (top nav)                | no        |
+| Resources | `/resources`          | `/resources`          | SiteShell (top nav)                | no        |
+| Pricing   | `/pricing`            | `/pricing`            | SiteShell (top nav)                | no        |
 
 ## Sidebar navigation (signed-in surface)
 
-| Nav item | Target | Resolved URL | Layout wrapper | Redirect? |
-|---|---|---|---|---|
-| Dashboard | `/dashboard` | `/profile` | _app (sidebar) | yes (expected) |
-| Global Repository | `/repository` | `/repository` | _app (sidebar) | no |
-| Deployment Intelligence | `/insights` | `/insights` | _app (sidebar) | no |
-| AI Use Case Studio | `/studio` | `/studio` | _app (sidebar) | no |
-| My Use Cases | `/my-use-cases` | `/my-use-cases` | _app (sidebar) | no |
-| Use Case Boards | `/boards` | `/boards` | _app (sidebar) | no |
-| Pattern Library | `/patterns` | `/patterns` | _app (sidebar) | no |
-| Feasibility Scoring | `/feasibility` | `/studio` | _app (sidebar) | yes (expected) |
-| Data Readiness | `/data-readiness` | `/studio` | _app (sidebar) | yes (expected) |
-| Blueprint Builder | `/blueprint` | `/studio` | _app (sidebar) | yes (expected) |
-| Portfolio Roadmap | `/roadmap` | `/roadmap` | _app (sidebar) | no |
-| SARPI Readiness | `/sarpi` | `/sarpi` | _app (sidebar) | no |
-| AdvisorX Guidance | `/advisorx` | `/advisorx` | _app (sidebar) | no |
-| C3G Governance | `/cyberx/c3g/intake` | `/cyberx/c3g/intake` | _app (sidebar) | no |
-| Reports | `/reports` | `/profile` | _app (sidebar) | yes (expected) |
-| Admin Panel | `/administration` | `/administration` | _app (sidebar) | no |
+| Nav item                | Target               | Resolved URL         | Layout wrapper  | Redirect?      |
+| ----------------------- | -------------------- | -------------------- | --------------- | -------------- |
+| Dashboard               | `/dashboard`         | `/profile`           | \_app (sidebar) | yes (expected) |
+| Global Repository       | `/repository`        | `/repository`        | \_app (sidebar) | no             |
+| Deployment Intelligence | `/insights`          | `/insights`          | \_app (sidebar) | no             |
+| AI Use Case Studio      | `/studio`            | `/studio`            | \_app (sidebar) | no             |
+| My Use Cases            | `/my-use-cases`      | `/my-use-cases`      | \_app (sidebar) | no             |
+| Use Case Boards         | `/boards`            | `/boards`            | \_app (sidebar) | no             |
+| Pattern Library         | `/patterns`          | `/patterns`          | \_app (sidebar) | no             |
+| Feasibility Scoring     | `/feasibility`       | `/studio`            | \_app (sidebar) | yes (expected) |
+| Data Readiness          | `/data-readiness`    | `/studio`            | \_app (sidebar) | yes (expected) |
+| Blueprint Builder       | `/blueprint`         | `/studio`            | \_app (sidebar) | yes (expected) |
+| Portfolio Roadmap       | `/roadmap`           | `/roadmap`           | \_app (sidebar) | no             |
+| SARPI Readiness         | `/sarpi`             | `/sarpi`             | \_app (sidebar) | no             |
+| AdvisorX Guidance       | `/advisorx`          | `/advisorx`          | \_app (sidebar) | no             |
+| C3G Governance          | `/cyberx/c3g/intake` | `/cyberx/c3g/intake` | \_app (sidebar) | no             |
+| Reports                 | `/reports`           | `/profile`           | \_app (sidebar) | yes (expected) |
+| Admin Panel             | `/administration`    | `/administration`    | \_app (sidebar) | no             |
 
 ## Cross-surface shared destinations (Home + Resources)
 
-| Page | Top nav layout | Sidebar layout | Single navbar? | Dark hero? |
-|---|---|---|---|---|
-| Home (`/`) | SiteShell top nav | SiteShell sidebar | yes | yes (image hero band) |
-| Resources (`/resources`) | SiteShell top nav | SiteShell sidebar | yes | yes (`PageHero tone="dark"`) |
+| Page                     | Top nav layout    | Sidebar layout    | Single navbar? | Dark hero?                   |
+| ------------------------ | ----------------- | ----------------- | -------------- | ---------------------------- |
+| Home (`/`)               | SiteShell top nav | SiteShell sidebar | yes            | yes (image hero band)        |
+| Resources (`/resources`) | SiteShell top nav | SiteShell sidebar | yes            | yes (`PageHero tone="dark"`) |
 
 ## Notes
 

@@ -3,10 +3,19 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,7 +26,9 @@ import type { UseCaseCardData } from "@/components/UseCaseCard";
 type Board = { id: string; title: string; workspace_id: string };
 
 export function AddToStudioBoardDialog({
-  open, onOpenChange, pattern,
+  open,
+  onOpenChange,
+  pattern,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
@@ -35,8 +46,13 @@ export function AddToStudioBoardDialog({
     if (!open) return;
     setLoading(true);
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoading(false); return; }
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
       setUserId(user.id);
       const { data: b } = await supabase
         .from("use_case_boards")
@@ -53,27 +69,44 @@ export function AddToStudioBoardDialog({
     if (!userId) return null;
     // get org from profile
     const { data: prof } = await supabase
-      .from("profiles").select("organization_id, organization, full_name, email")
-      .eq("user_id", userId).maybeSingle();
+      .from("profiles")
+      .select("organization_id, organization, full_name, email")
+      .eq("user_id", userId)
+      .maybeSingle();
     let orgId = prof?.organization_id ?? null;
     if (!orgId) {
       const { data: org, error } = await supabase
         .from("organizations")
-        .insert({ name: prof?.organization || prof?.full_name || prof?.email || "My Organization", plan: "lite" })
-        .select("id").single();
-      if (error || !org) { toast.error("Could not create organization."); return null; }
+        .insert({
+          name: prof?.organization || prof?.full_name || prof?.email || "My Organization",
+          plan: "lite",
+        })
+        .select("id")
+        .single();
+      if (error || !org) {
+        toast.error("Could not create organization.");
+        return null;
+      }
       orgId = org.id;
       await supabase.from("profiles").update({ organization_id: orgId }).eq("user_id", userId);
     }
     // find or create a workspace
     const { data: ws } = await supabase
-      .from("workspaces").select("id").eq("organization_id", orgId).limit(1).maybeSingle();
+      .from("workspaces")
+      .select("id")
+      .eq("organization_id", orgId)
+      .limit(1)
+      .maybeSingle();
     if (ws?.id) return ws.id;
     const { data: newWs, error: wsErr } = await supabase
       .from("workspaces")
       .insert({ organization_id: orgId, name: "Default Workspace", created_by: userId })
-      .select("id").single();
-    if (wsErr || !newWs) { toast.error("Could not create workspace."); return null; }
+      .select("id")
+      .single();
+    if (wsErr || !newWs) {
+      toast.error("Could not create workspace.");
+      return null;
+    }
     return newWs.id;
   }
 
@@ -86,12 +119,19 @@ export function AddToStudioBoardDialog({
 
       if (selected !== "__new") {
         const b = boards.find((x) => x.id === selected);
-        if (!b) { toast.error("Board not found."); setBusy(false); return; }
+        if (!b) {
+          toast.error("Board not found.");
+          setBusy(false);
+          return;
+        }
         boardId = b.id;
         workspaceId = b.workspace_id;
       } else {
         workspaceId = await ensureWorkspace();
-        if (!workspaceId) { setBusy(false); return; }
+        if (!workspaceId) {
+          setBusy(false);
+          return;
+        }
         const { data: nb, error } = await supabase
           .from("use_case_boards")
           .insert({
@@ -100,8 +140,13 @@ export function AddToStudioBoardDialog({
             board_type: "studio",
             created_by: userId,
           })
-          .select("id").single();
-        if (error || !nb) { toast.error(error?.message ?? "Could not create board."); setBusy(false); return; }
+          .select("id")
+          .single();
+        if (error || !nb) {
+          toast.error(error?.message ?? "Could not create board.");
+          setBusy(false);
+          return;
+        }
         boardId = nb.id;
       }
 
@@ -115,8 +160,13 @@ export function AddToStudioBoardDialog({
           status: "idea",
           created_by: userId,
         })
-        .select("id").single();
-      if (ucErr || !uc) { toast.error(ucErr?.message ?? "Could not create use case."); setBusy(false); return; }
+        .select("id")
+        .single();
+      if (ucErr || !uc) {
+        toast.error(ucErr?.message ?? "Could not create use case.");
+        setBusy(false);
+        return;
+      }
 
       toast.success("Pattern added to your board.");
       onOpenChange(false);
@@ -132,24 +182,39 @@ export function AddToStudioBoardDialog({
         <DialogHeader>
           <DialogTitle>Add to AI Use Case Studio Board</DialogTitle>
           <DialogDescription>
-            {pattern ? <>Adds <span className="font-semibold text-foreground">{pattern.title}</span> as a new AI use case on a board.</> : "Select or create a board."}
+            {pattern ? (
+              <>
+                Adds <span className="font-semibold text-foreground">{pattern.title}</span> as a new
+                AI use case on a board.
+              </>
+            ) : (
+              "Select or create a board."
+            )}
           </DialogDescription>
         </DialogHeader>
 
         {loading ? (
-          <div className="flex items-center justify-center py-8 text-muted-foreground"><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading boards…</div>
+          <div className="flex items-center justify-center py-8 text-muted-foreground">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading boards…
+          </div>
         ) : !userId ? (
-          <p className="py-4 text-sm text-muted-foreground">You must be signed in to add patterns to a board.</p>
+          <p className="py-4 text-sm text-muted-foreground">
+            You must be signed in to add patterns to a board.
+          </p>
         ) : (
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Destination board</Label>
               <Select value={selected} onValueChange={setSelected}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__new">+ Create new board</SelectItem>
                   {boards.map((b) => (
-                    <SelectItem key={b.id} value={b.id}>{b.title}</SelectItem>
+                    <SelectItem key={b.id} value={b.id}>
+                      {b.title}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -169,7 +234,9 @@ export function AddToStudioBoardDialog({
         )}
 
         <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={busy}>Cancel</Button>
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={busy}>
+            Cancel
+          </Button>
           <Button onClick={handleConfirm} disabled={busy || loading || !userId}>
             {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Add &amp; open canvas

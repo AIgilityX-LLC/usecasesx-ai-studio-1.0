@@ -7,21 +7,21 @@ import { useCallback, useEffect, useState } from "react";
 export type Priority = "Low" | "Medium" | "High" | "Strategic";
 
 export interface ScoreDimensions {
-  strategicAlignment: number;   // 0-100
-  valuePotential: number;       // 0-100
-  feasibility: number;          // 0-100
-  timeToValue: number;          // 0-100
-  riskManageability: number;    // 0-100
-  governanceReadiness: number;  // 0-100
+  strategicAlignment: number; // 0-100
+  valuePotential: number; // 0-100
+  feasibility: number; // 0-100
+  timeToValue: number; // 0-100
+  riskManageability: number; // 0-100
+  governanceReadiness: number; // 0-100
 }
 
 export const SCORE_WEIGHTS: Record<keyof ScoreDimensions, number> = {
-  strategicAlignment: 0.20,
+  strategicAlignment: 0.2,
   valuePotential: 0.25,
-  feasibility: 0.20,
+  feasibility: 0.2,
   timeToValue: 0.15,
-  riskManageability: 0.10,
-  governanceReadiness: 0.10,
+  riskManageability: 0.1,
+  governanceReadiness: 0.1,
 };
 
 export const SCORE_LABELS: Record<keyof ScoreDimensions, string> = {
@@ -99,10 +99,27 @@ const STORAGE_KEY = "usecasex.pro.store.v1";
 function defaultState(): StoreShape {
   return {
     saved: [
-      { useCaseSlug: "defense-threat-intel-fusion", savedAt: new Date(Date.now() - 8 * 86400000).toISOString(), priority: "Strategic", note: "Discuss with command staff." },
-      { useCaseSlug: "clinical-triage-copilot", savedAt: new Date(Date.now() - 6 * 86400000).toISOString(), priority: "High" },
-      { useCaseSlug: "banking-aml-agent", savedAt: new Date(Date.now() - 4 * 86400000).toISOString(), priority: "High" },
-      { useCaseSlug: "retail-personalized-merchandising", savedAt: new Date(Date.now() - 2 * 86400000).toISOString(), priority: "Medium" },
+      {
+        useCaseSlug: "defense-threat-intel-fusion",
+        savedAt: new Date(Date.now() - 8 * 86400000).toISOString(),
+        priority: "Strategic",
+        note: "Discuss with command staff.",
+      },
+      {
+        useCaseSlug: "clinical-triage-copilot",
+        savedAt: new Date(Date.now() - 6 * 86400000).toISOString(),
+        priority: "High",
+      },
+      {
+        useCaseSlug: "banking-aml-agent",
+        savedAt: new Date(Date.now() - 4 * 86400000).toISOString(),
+        priority: "High",
+      },
+      {
+        useCaseSlug: "retail-personalized-merchandising",
+        savedAt: new Date(Date.now() - 2 * 86400000).toISOString(),
+        priority: "Medium",
+      },
     ],
     portfolios: [
       {
@@ -150,10 +167,26 @@ export function computeTotalScore(s: ScoreDimensions | undefined): number {
 }
 
 export function interpretScore(total: number): { label: string; toneClass: string } {
-  if (total >= 80) return { label: "High-priority quick win or strategic use case", toneClass: "text-emerald-600 dark:text-emerald-400" };
-  if (total >= 60) return { label: "Strong candidate requiring planning", toneClass: "text-blue-600 dark:text-blue-400" };
-  if (total >= 40) return { label: "Medium priority; readiness improvement needed", toneClass: "text-amber-600 dark:text-amber-400" };
-  if (total >= 20) return { label: "Low priority or high complexity", toneClass: "text-orange-600 dark:text-orange-400" };
+  if (total >= 80)
+    return {
+      label: "High-priority quick win or strategic use case",
+      toneClass: "text-emerald-600 dark:text-emerald-400",
+    };
+  if (total >= 60)
+    return {
+      label: "Strong candidate requiring planning",
+      toneClass: "text-blue-600 dark:text-blue-400",
+    };
+  if (total >= 40)
+    return {
+      label: "Medium priority; readiness improvement needed",
+      toneClass: "text-amber-600 dark:text-amber-400",
+    };
+  if (total >= 20)
+    return {
+      label: "Low priority or high complexity",
+      toneClass: "text-orange-600 dark:text-orange-400",
+    };
   return { label: "Not recommended now", toneClass: "text-red-600 dark:text-red-400" };
 }
 
@@ -196,26 +229,50 @@ export function useUseCaseXStore() {
       update((s) =>
         s.saved.find((x) => x.useCaseSlug === slug)
           ? s
-          : { ...s, saved: [...s.saved, { useCaseSlug: slug, savedAt: new Date().toISOString(), priority: "Medium" }] },
+          : {
+              ...s,
+              saved: [
+                ...s.saved,
+                { useCaseSlug: slug, savedAt: new Date().toISOString(), priority: "Medium" },
+              ],
+            },
       ),
 
     removeSaved: (slug: string) =>
       update((s) => ({
         ...s,
         saved: s.saved.filter((x) => x.useCaseSlug !== slug),
-        portfolios: s.portfolios.map((p) => ({ ...p, useCaseSlugs: p.useCaseSlugs.filter((x) => x !== slug) })),
+        portfolios: s.portfolios.map((p) => ({
+          ...p,
+          useCaseSlugs: p.useCaseSlugs.filter((x) => x !== slug),
+        })),
       })),
 
     setNote: (slug: string, note: string) =>
-      update((s) => ({ ...s, saved: s.saved.map((x) => x.useCaseSlug === slug ? { ...x, note } : x) })),
+      update((s) => ({
+        ...s,
+        saved: s.saved.map((x) => (x.useCaseSlug === slug ? { ...x, note } : x)),
+      })),
 
     setPriority: (slug: string, priority: Priority) =>
-      update((s) => ({ ...s, saved: s.saved.map((x) => x.useCaseSlug === slug ? { ...x, priority } : x) })),
+      update((s) => ({
+        ...s,
+        saved: s.saved.map((x) => (x.useCaseSlug === slug ? { ...x, priority } : x)),
+      })),
 
     setScore: (slug: string, score: ScoreDimensions) =>
-      update((s) => ({ ...s, saved: s.saved.map((x) => x.useCaseSlug === slug ? { ...x, score } : x) })),
+      update((s) => ({
+        ...s,
+        saved: s.saved.map((x) => (x.useCaseSlug === slug ? { ...x, score } : x)),
+      })),
 
-    createPortfolio: (input: { name: string; type: PortfolioType; objective?: string; targetDepartment?: string; targetQuarter?: string }) =>
+    createPortfolio: (input: {
+      name: string;
+      type: PortfolioType;
+      objective?: string;
+      targetDepartment?: string;
+      targetQuarter?: string;
+    }) =>
       update((s) => ({
         ...s,
         portfolios: [
@@ -235,10 +292,16 @@ export function useUseCaseXStore() {
       })),
 
     renamePortfolio: (id: string, name: string) =>
-      update((s) => ({ ...s, portfolios: s.portfolios.map((p) => p.id === id ? { ...p, name } : p) })),
+      update((s) => ({
+        ...s,
+        portfolios: s.portfolios.map((p) => (p.id === id ? { ...p, name } : p)),
+      })),
 
     updatePortfolio: (id: string, patch: Partial<Portfolio>) =>
-      update((s) => ({ ...s, portfolios: s.portfolios.map((p) => p.id === id ? { ...p, ...patch } : p) })),
+      update((s) => ({
+        ...s,
+        portfolios: s.portfolios.map((p) => (p.id === id ? { ...p, ...patch } : p)),
+      })),
 
     deletePortfolio: (id: string) =>
       update((s) => ({ ...s, portfolios: s.portfolios.filter((p) => p.id !== id) })),
@@ -257,7 +320,9 @@ export function useUseCaseXStore() {
       update((s) => ({
         ...s,
         portfolios: s.portfolios.map((p) =>
-          p.id === portfolioId ? { ...p, useCaseSlugs: p.useCaseSlugs.filter((x) => x !== slug) } : p,
+          p.id === portfolioId
+            ? { ...p, useCaseSlugs: p.useCaseSlugs.filter((x) => x !== slug) }
+            : p,
         ),
       })),
   };

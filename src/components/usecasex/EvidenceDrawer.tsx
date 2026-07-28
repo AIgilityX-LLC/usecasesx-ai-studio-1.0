@@ -1,7 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { ExternalLink, FileText, Link2, BookMarked, Download, FileJson } from "lucide-react";
 import {
-  Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
 
 export interface EvidenceSource {
@@ -12,7 +17,10 @@ export interface EvidenceSource {
   /** Source kind shown as metadata pill. */
   kind?: string;
   /** Optional deep-link into the filtered catalog. */
-  link?: { facet: "industries" | "capabilities" | "businessFunctions" | "objectives"; slug: string };
+  link?: {
+    facet: "industries" | "capabilities" | "businessFunctions" | "objectives";
+    slug: string;
+  };
 }
 
 interface EvidenceDrawerProps {
@@ -36,15 +44,17 @@ export function EvidenceDrawer({ title, sources, citations, trigger }: EvidenceD
       detail: s.detail ?? null,
       url: s.url ?? null,
       kind: s.kind ?? null,
-      deepLink: s.link
-        ? `/repository?${s.link.facet}=${encodeURIComponent(s.link.slug)}`
-        : null,
+      deepLink: s.link ? `/repository?${s.link.facet}=${encodeURIComponent(s.link.slug)}` : null,
     })),
     citations,
   });
 
   const slugify = (s: string) =>
-    s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60) || "evidence";
+    s
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || "evidence";
 
   const downloadJson = () => {
     const blob = new Blob([JSON.stringify(buildPackage(), null, 2)], { type: "application/json" });
@@ -58,8 +68,7 @@ export function EvidenceDrawer({ title, sources, citations, trigger }: EvidenceD
 
   const downloadPdf = () => {
     const pkg = buildPackage();
-    const esc = (v: string) =>
-      v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const esc = (v: string) => v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     const origin = typeof window !== "undefined" ? window.location.origin : "";
     const sourcesHtml = pkg.sources
       .map(
@@ -133,13 +142,14 @@ export function EvidenceDrawer({ title, sources, citations, trigger }: EvidenceD
             </div>
             <ul className="mt-3 space-y-2.5">
               {sources.map((s, i) => (
-                <li
-                  key={i}
-                  className="rounded-lg border border-border bg-card/60 p-3"
-                >
+                <li key={i} className="rounded-lg border border-border bg-card/60 p-3">
                   <div className="flex items-start gap-2.5">
                     <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-md bg-primary/10 text-primary">
-                      {s.url ? <Link2 className="h-3.5 w-3.5" /> : <FileText className="h-3.5 w-3.5" />}
+                      {s.url ? (
+                        <Link2 className="h-3.5 w-3.5" />
+                      ) : (
+                        <FileText className="h-3.5 w-3.5" />
+                      )}
                     </span>
                     <div className="min-w-0 flex-1">
                       {s.url ? (
@@ -156,7 +166,9 @@ export function EvidenceDrawer({ title, sources, citations, trigger }: EvidenceD
                         <div className="text-sm font-semibold text-foreground">{s.label}</div>
                       )}
                       {s.detail && (
-                        <p className="mt-0.5 break-words text-xs text-muted-foreground">{s.detail}</p>
+                        <p className="mt-0.5 break-words text-xs text-muted-foreground">
+                          {s.detail}
+                        </p>
                       )}
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">
                         {s.kind && (

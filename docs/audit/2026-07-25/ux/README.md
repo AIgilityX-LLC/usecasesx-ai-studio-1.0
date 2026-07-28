@@ -18,6 +18,7 @@ No code, content, DB or config was changed.
 ## Headline findings
 
 **P0 (launch-blocking)**
+
 - `/repository` returns 0 use cases — anchor journey blocked.
 - Home hero clips on mobile (scrollWidth 413 > 390 px).
 - `/pricing` desktop navigation flap.

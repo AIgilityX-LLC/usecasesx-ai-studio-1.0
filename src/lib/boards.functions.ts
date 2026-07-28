@@ -54,7 +54,11 @@ export const loadBoardWithItems = createServerFn({ method: "GET" })
       .eq("id", boardId)
       .maybeSingle();
     if (boardErr) {
-      console.error("[loadBoardWithItems] user read failed", { userId, boardId, err: boardErr.message });
+      console.error("[loadBoardWithItems] user read failed", {
+        userId,
+        boardId,
+        err: boardErr.message,
+      });
       throw new Error(boardErr.message);
     }
 
@@ -67,7 +71,10 @@ export const loadBoardWithItems = createServerFn({ method: "GET" })
         .eq("id", boardId)
         .maybeSingle();
       if (adminErr) {
-        console.error("[loadBoardWithItems] admin probe failed", { boardId, err: adminErr.message });
+        console.error("[loadBoardWithItems] admin probe failed", {
+          boardId,
+          err: adminErr.message,
+        });
         throw new Error(adminErr.message);
       }
       if (!any_board) {
@@ -77,8 +84,14 @@ export const loadBoardWithItems = createServerFn({ method: "GET" })
         err.statusCode = 404;
         throw err;
       }
-      console.warn("[loadBoardWithItems] forbidden", { userId, boardId, workspace_id: any_board.workspace_id });
-      const err: any = new Error("You don't have access to this board. Ask its owner to add you to the workspace.");
+      console.warn("[loadBoardWithItems] forbidden", {
+        userId,
+        boardId,
+        workspace_id: any_board.workspace_id,
+      });
+      const err: any = new Error(
+        "You don't have access to this board. Ask its owner to add you to the workspace.",
+      );
       err.kind = "forbidden";
       err.statusCode = 403;
       throw err;
@@ -87,12 +100,18 @@ export const loadBoardWithItems = createServerFn({ method: "GET" })
     // 3. Fetch items (RLS-enforced; same access rules).
     const { data: items, error: itemsErr } = await context.supabase
       .from("ai_use_cases")
-      .select("id, title, problem_statement, ai_type, status, created_at, position, source_use_case_id, board_id")
+      .select(
+        "id, title, problem_statement, ai_type, status, created_at, position, source_use_case_id, board_id",
+      )
       .eq("board_id", boardId)
       .order("position", { ascending: true })
       .order("created_at", { ascending: true });
     if (itemsErr) {
-      console.error("[loadBoardWithItems] items read failed", { userId, boardId, err: itemsErr.message });
+      console.error("[loadBoardWithItems] items read failed", {
+        userId,
+        boardId,
+        err: itemsErr.message,
+      });
       throw new Error(itemsErr.message);
     }
 
@@ -103,7 +122,10 @@ export const loadBoardWithItems = createServerFn({ method: "GET" })
     const safeItems = (items ?? []).filter((it: any) => it.board_id === boardId);
     if (safeItems.length !== (items?.length ?? 0)) {
       console.error("[loadBoardWithItems] item board_id mismatch — dropping leaked rows", {
-        userId, boardId, returned: items?.length, kept: safeItems.length,
+        userId,
+        boardId,
+        returned: items?.length,
+        kept: safeItems.length,
       });
     }
 

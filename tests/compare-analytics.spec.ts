@@ -85,7 +85,10 @@ test.describe("/compare analytics events", () => {
     await page.goto(COMPARE_URL, { waitUntil: "networkidle" });
 
     // Each attribute label is a toggle button; expanding it reveals a detail row.
-    await page.getByRole("button", { name: /Industry/ }).first().click();
+    await page
+      .getByRole("button", { name: /Industry/ })
+      .first()
+      .click();
     await expectEvent(events, "row_expand");
   });
 });

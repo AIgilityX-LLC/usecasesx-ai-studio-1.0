@@ -3,12 +3,7 @@
  * Pure module — mapping only, no data access.
  */
 
-export type WorkspaceRole =
-  | "owner"
-  | "admin"
-  | "contributor"
-  | "facilitator"
-  | "viewer";
+export type WorkspaceRole = "owner" | "admin" | "contributor" | "facilitator" | "viewer";
 
 export const WORKSPACE_ROLES: WorkspaceRole[] = [
   "owner",
@@ -57,9 +52,7 @@ const ROLE_ALIASES: Record<string, WorkspaceRole> = {
   guest: "viewer",
 };
 
-export function normalizeWorkspaceRole(
-  value: string | null | undefined,
-): WorkspaceRole | null {
+export function normalizeWorkspaceRole(value: string | null | undefined): WorkspaceRole | null {
   if (!value) return null;
   return ROLE_ALIASES[value.trim().toLowerCase()] ?? null;
 }
@@ -72,15 +65,10 @@ export function resolveWorkspaceRole(
   workspaceRole: string | null | undefined,
   orgRole: string | null | undefined,
 ): WorkspaceRole | null {
-  return (
-    normalizeWorkspaceRole(workspaceRole) ?? normalizeWorkspaceRole(orgRole)
-  );
+  return normalizeWorkspaceRole(workspaceRole) ?? normalizeWorkspaceRole(orgRole);
 }
 
-export function roleAtLeast(
-  role: WorkspaceRole | null,
-  minimum: WorkspaceRole,
-): boolean {
+export function roleAtLeast(role: WorkspaceRole | null, minimum: WorkspaceRole): boolean {
   if (!role) return false;
   return WORKSPACE_ROLE_RANK[role] >= WORKSPACE_ROLE_RANK[minimum];
 }

@@ -42,7 +42,7 @@ Tick every box before announcing tester access.
       the link can reach the published URL.
 - [ ] Verify the stable URLs respond `200 OK`:
   - Production: `https://project--8c200374-44e0-46bb-98cf-28acedbdad9c.lovable.app`
-  - Preview:    `https://project--8c200374-44e0-46bb-98cf-28acedbdad9c-dev.lovable.app`
+  - Preview: `https://project--8c200374-44e0-46bb-98cf-28acedbdad9c-dev.lovable.app`
 - [ ] (Optional) Wire a custom domain if it has been provisioned.
 
 ## 4 · Post-publish smoke (T+15 min)
