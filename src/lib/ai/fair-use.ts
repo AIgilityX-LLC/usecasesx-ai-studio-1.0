@@ -71,8 +71,7 @@ export function evaluateFairUse(
   return {
     allowed: !userExceeded && !workspaceExceeded,
     used: workspaceExceeded && !userExceeded ? usedByWorkspace : usedByUser,
-    limit:
-      workspaceExceeded && !userExceeded ? limits.perWorkspacePerDay : limits.perUserPerDay,
+    limit: workspaceExceeded && !userExceeded ? limits.perWorkspacePerDay : limits.perUserPerDay,
     resetsAt,
   };
 }

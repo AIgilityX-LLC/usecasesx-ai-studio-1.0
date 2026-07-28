@@ -98,11 +98,7 @@ async function recordUsage(
 }
 
 /** Generic execution pipeline shared by every AIService method. */
-async function run<T>(
-  task: AiTask,
-  ctx: AiCallContext,
-  userPrompt: string,
-): Promise<AiResult<T>> {
+async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Promise<AiResult<T>> {
   const prompt = promptFor(task);
   const schema = OUTPUT_SCHEMAS[task] as unknown as z.ZodType<T>;
   const alias = ctx.providerAlias ?? null;
@@ -201,9 +197,7 @@ async function run<T>(
       durationMs,
       aiGenerated: true,
     },
-    fairUse: fairUse
-      ? { ...fairUse, used: fairUse.used + 1 }
-      : null,
+    fairUse: fairUse ? { ...fairUse, used: fairUse.used + 1 } : null,
     error: null,
   };
 }
@@ -219,35 +213,47 @@ export const AIService = {
     ctx: AiCallContext,
     input: { title: string; description: string; industry?: string; organization?: string },
   ): Promise<AiResult<EnrichOpportunityOutput>> {
-    return run("enrichOpportunity", ctx, lines([
-      input.organization && `Organisation: ${input.organization}`,
-      input.industry && `Industry: ${input.industry}`,
-      `Opportunity title: ${input.title}`,
-      `Description as captured by the author:\n${input.description}`,
-    ]));
+    return run(
+      "enrichOpportunity",
+      ctx,
+      lines([
+        input.organization && `Organisation: ${input.organization}`,
+        input.industry && `Industry: ${input.industry}`,
+        `Opportunity title: ${input.title}`,
+        `Description as captured by the author:\n${input.description}`,
+      ]),
+    );
   },
 
   draftUseCase(
     ctx: AiCallContext,
     input: { organization: string; industry?: string; objective: string; context?: string },
   ): Promise<AiResult<DraftUseCaseOutput>> {
-    return run("draftUseCase", ctx, lines([
-      `Organisation: ${input.organization}`,
-      input.industry && `Industry: ${input.industry}`,
-      `Objective / question: ${input.objective}`,
-      input.context && `Additional context:\n${input.context}`,
-    ]));
+    return run(
+      "draftUseCase",
+      ctx,
+      lines([
+        `Organisation: ${input.organization}`,
+        input.industry && `Industry: ${input.industry}`,
+        `Objective / question: ${input.objective}`,
+        input.context && `Additional context:\n${input.context}`,
+      ]),
+    );
   },
 
   recommendCapabilities(
     ctx: AiCallContext,
     input: { title: string; description: string; dataAvailable?: string[] },
   ): Promise<AiResult<RecommendCapabilitiesOutput>> {
-    return run("recommendCapabilities", ctx, lines([
-      `Use case: ${input.title}`,
-      `Description:\n${input.description}`,
-      input.dataAvailable?.length && `Data already available: ${input.dataAvailable.join(", ")}`,
-    ]));
+    return run(
+      "recommendCapabilities",
+      ctx,
+      lines([
+        `Use case: ${input.title}`,
+        `Description:\n${input.description}`,
+        input.dataAvailable?.length && `Data already available: ${input.dataAvailable.join(", ")}`,
+      ]),
+    );
   },
 
   explainScore(
@@ -261,11 +267,15 @@ export const AIService = {
     const dims = Object.entries(input.dimensions)
       .map(([k, v]) => `- ${k}: ${v}`)
       .join("\n");
-    return run("explainScore", ctx, lines([
-      `Use case: ${input.title}`,
-      `Weighted total score: ${input.totalScore}`,
-      `Dimension scores (0-5):\n${dims}`,
-    ]));
+    return run(
+      "explainScore",
+      ctx,
+      lines([
+        `Use case: ${input.title}`,
+        `Weighted total score: ${input.totalScore}`,
+        `Dimension scores (0-5):\n${dims}`,
+      ]),
+    );
   },
 
   findSimilarUseCases(
@@ -279,11 +289,15 @@ export const AIService = {
       .slice(0, 60)
       .map((c) => `- ${c.slug} :: ${c.title}${c.summary ? ` — ${c.summary}` : ""}`)
       .join("\n");
-    return run("findSimilarUseCases", ctx, lines([
-      `Reference use case: ${input.reference.title}`,
-      `Reference summary: ${input.reference.summary}`,
-      `Candidates (choose only from these slugs):\n${candidates}`,
-    ]));
+    return run(
+      "findSimilarUseCases",
+      ctx,
+      lines([
+        `Reference use case: ${input.reference.title}`,
+        `Reference summary: ${input.reference.summary}`,
+        `Candidates (choose only from these slugs):\n${candidates}`,
+      ]),
+    );
   },
 
   generateExecutiveSummary(
@@ -303,11 +317,15 @@ export const AIService = {
           }`,
       )
       .join("\n");
-    return run("generateExecutiveSummary", ctx, lines([
-      `Portfolio: ${input.portfolioName}`,
-      input.objective && `Stated objective: ${input.objective}`,
-      `Use cases in the portfolio (${input.useCases.length} total):\n${items}`,
-    ]));
+    return run(
+      "generateExecutiveSummary",
+      ctx,
+      lines([
+        `Portfolio: ${input.portfolioName}`,
+        input.objective && `Stated objective: ${input.objective}`,
+        `Use cases in the portfolio (${input.useCases.length} total):\n${items}`,
+      ]),
+    );
   },
 };
 

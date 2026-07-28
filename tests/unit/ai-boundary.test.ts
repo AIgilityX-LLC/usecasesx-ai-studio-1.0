@@ -9,11 +9,7 @@
 
 import { describe, expect, it, afterEach } from "bun:test";
 
-import {
-  PROVIDER_ALIASES,
-  resolveModel,
-  isProviderAlias,
-} from "../../src/lib/ai/models";
+import { PROVIDER_ALIASES, resolveModel, isProviderAlias } from "../../src/lib/ai/models";
 import { PROMPT_REGISTRY, AI_TASKS } from "../../src/lib/ai/prompts";
 import { OUTPUT_SCHEMAS, TOOL_SCHEMAS, draftUseCaseSchema } from "../../src/lib/ai/schemas";
 import { evaluateFairUse, limitsForEdition } from "../../src/lib/ai/fair-use";
@@ -144,22 +140,21 @@ describe("gateway transport (mocked)", () => {
 
   it("parses a valid tool call", async () => {
     process.env.LOVABLE_API_KEY = "test-key";
-    mockFetch(async () =>
-      new Response(
-        JSON.stringify({
-          choices: [
-            {
-              message: {
-                tool_calls: [
-                  { function: { arguments: JSON.stringify({ title: "ok" }) } },
-                ],
+    mockFetch(
+      async () =>
+        new Response(
+          JSON.stringify({
+            choices: [
+              {
+                message: {
+                  tool_calls: [{ function: { arguments: JSON.stringify({ title: "ok" }) } }],
+                },
               },
-            },
-          ],
-          usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
-        }),
-        { status: 200 },
-      ),
+            ],
+            usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+          }),
+          { status: 200 },
+        ),
     );
     const res = await callGateway(gatewayRequest());
     expect(res.ok).toBe(true);
@@ -194,13 +189,14 @@ describe("gateway transport (mocked)", () => {
 
   it("flags an unparsable structured response", async () => {
     process.env.LOVABLE_API_KEY = "test-key";
-    mockFetch(async () =>
-      new Response(
-        JSON.stringify({
-          choices: [{ message: { tool_calls: [{ function: { arguments: "{not json" } }] } }],
-        }),
-        { status: 200 },
-      ),
+    mockFetch(
+      async () =>
+        new Response(
+          JSON.stringify({
+            choices: [{ message: { tool_calls: [{ function: { arguments: "{not json" } }] } }],
+          }),
+          { status: 200 },
+        ),
     );
     const res = await callGateway(gatewayRequest());
     expect(res.ok === false && res.kind).toBe("invalid_output");
