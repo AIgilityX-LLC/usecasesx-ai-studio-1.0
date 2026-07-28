@@ -27,12 +27,17 @@ async function main() {
       });
       if (insertError) throw insertError;
     }
-    const { data: events, error: readError } = await admin.from("cta_events")
-      .select("cta, user_id, session_id").eq("session_id", runId).order("created_at");
+    const { data: events, error: readError } = await admin
+      .from("cta_events")
+      .select("cta, user_id, session_id")
+      .eq("session_id", runId)
+      .order("created_at");
     if (readError) throw readError;
     const names = new Set((events ?? []).map((event) => event.cta));
-    for (const name of expected) if (!names.has(name)) throw new Error(`Missing analytics event: ${name}`);
-    if (events?.some((event) => event.user_id !== data.user.id)) throw new Error("Analytics event attribution mismatch");
+    for (const name of expected)
+      if (!names.has(name)) throw new Error(`Missing analytics event: ${name}`);
+    if (events?.some((event) => event.user_id !== data.user.id))
+      throw new Error("Analytics event attribution mismatch");
     console.log(`✓ lifecycle events persisted: ${expected.join(", ")}`);
   } finally {
     await admin.from("cta_events").delete().eq("session_id", runId);
@@ -40,7 +45,9 @@ async function main() {
   }
 }
 
-main().then(() => console.log("\n✅ Use case analytics passed.")).catch((error) => {
-  console.error("\n❌ Use case analytics failed:", error.message);
-  process.exit(1);
-});
+main()
+  .then(() => console.log("\n✅ Use case analytics passed."))
+  .catch((error) => {
+    console.error("\n❌ Use case analytics failed:", error.message);
+    process.exit(1);
+  });

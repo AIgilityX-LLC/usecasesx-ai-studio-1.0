@@ -13,7 +13,10 @@ const arr = (sp: URLSearchParams, k: string): string[] => {
   if (all.length > 1) return all;
   const one = sp.get(k);
   if (!one) return [];
-  return one.split(",").map((s) => s.trim()).filter(Boolean);
+  return one
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 };
 
 export const Route = createFileRoute("/api/public/usecasex/use-cases")({
@@ -71,7 +74,12 @@ export const Route = createFileRoute("/api/public/usecasex/use-cases")({
         return Response.json(
           {
             data,
-            pagination: { page, limit, total: all.length, totalPages: Math.ceil(all.length / limit) },
+            pagination: {
+              page,
+              limit,
+              total: all.length,
+              totalPages: Math.ceil(all.length / limit),
+            },
             filters,
           },
           { headers: { ...CORS, "Cache-Control": "public, max-age=60" } },

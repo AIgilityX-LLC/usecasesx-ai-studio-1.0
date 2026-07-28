@@ -90,8 +90,7 @@ export const DELIVERABLE_META: Record<
 
 export const DELIVERABLE_ORDER = Object.keys(DELIVERABLE_META).sort(
   (a, b) =>
-    DELIVERABLE_META[a as DeliverableType].order -
-    DELIVERABLE_META[b as DeliverableType].order,
+    DELIVERABLE_META[a as DeliverableType].order - DELIVERABLE_META[b as DeliverableType].order,
 ) as DeliverableType[];
 
 export type DeliverableStatus = "not_started" | "draft" | "ready";
@@ -155,7 +154,13 @@ export interface RiskAssumptionRegisterContent {
 }
 
 export interface PortfolioRoadmapContent {
-  phases: { name: string; useCases: string[]; startDate: string; endDate: string; valueGate: string }[];
+  phases: {
+    name: string;
+    useCases: string[];
+    startDate: string;
+    endDate: string;
+    valueGate: string;
+  }[];
   notes: string;
 }
 

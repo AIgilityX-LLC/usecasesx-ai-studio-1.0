@@ -54,10 +54,9 @@ async function mkUser(label: string) {
     .insert({ name: `E2E Paging ${label}`, plan: "lite" })
     .select("id")
     .single();
-  await admin.from("profiles").upsert(
-    { user_id: userId, email, organization_id: org!.id },
-    { onConflict: "user_id" },
-  );
+  await admin
+    .from("profiles")
+    .upsert({ user_id: userId, email, organization_id: org!.id }, { onConflict: "user_id" });
   const { data: ws } = await admin
     .from("workspaces")
     .insert({ organization_id: org!.id, name: `E2E WS ${label}`, created_by: userId })
@@ -180,17 +179,16 @@ async function main() {
       .range(0, 9);
     assert((outPage.data ?? []).length === 0, "outsider sees 0 rows for owner's board (RLS)");
 
-    const outBoard = await outsider.client
-      .from("use_case_boards")
-      .select("id")
-      .eq("id", board.id);
+    const outBoard = await outsider.client.from("use_case_boards").select("id").eq("id", board.id);
     assert((outBoard.data ?? []).length === 0, "outsider cannot read the board itself");
   } finally {
     await cleanup(owner.userId, owner.orgId);
     await cleanup(outsider.userId, outsider.orgId);
   }
 
-  console.log(failures === 0 ? "\nAll pagination assertions passed." : `\n${failures} assertion(s) failed.`);
+  console.log(
+    failures === 0 ? "\nAll pagination assertions passed." : `\n${failures} assertion(s) failed.`,
+  );
   process.exit(failures === 0 ? 0 : 1);
 }
 

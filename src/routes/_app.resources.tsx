@@ -32,7 +32,11 @@ const RESOURCE_GROUPS: {
     title: "Discover & explore",
     blurb: "Browse the global repository and curate boards for your teams.",
     links: [
-      { l: "Global Repository", to: "/repository", d: "180+ governed AI use cases across 18 industries." },
+      {
+        l: "Global Repository",
+        to: "/repository",
+        d: "180+ governed AI use cases across 18 industries.",
+      },
       { l: "Pattern Library", to: "/patterns", d: "Reusable AI solution patterns and taxonomy." },
       { l: "Compare Use Cases", to: "/compare", d: "Side-by-side outcomes, risk, and evidence." },
       { l: "Use Case Boards", to: "/boards", d: "Build and share curated collections." },
@@ -43,7 +47,11 @@ const RESOURCE_GROUPS: {
     title: "Design & validate",
     blurb: "Take a use case from idea to a validated, fundable blueprint.",
     links: [
-      { l: "AI Use Case Studio™", to: "/ai-use-case-studio", d: "Powered by UseCaseX™ design workflow." },
+      {
+        l: "AI Use Case Studio™",
+        to: "/ai-use-case-studio",
+        d: "Powered by UseCaseX™ design workflow.",
+      },
       { l: "FeasibilityX™", to: "/feasibility", d: "Score feasibility and readiness." },
       { l: "DataReadinessX™", to: "/data-readiness", d: "Assess data inputs and quality." },
       { l: "Deployment Intelligence", to: "/insights", d: "Benchmarks and deployment signals." },

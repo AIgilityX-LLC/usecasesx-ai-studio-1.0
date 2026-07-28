@@ -25,11 +25,22 @@ export const STATUSES: Status[] = [
 ];
 
 export const PLATFORM_OPTIONS = [
-  "AI Readiness", "AI ROI Calculator", "SARPI", "CyberX C3G", "AdvisorX",
-  "FlowX", "PrivacyX", "AssureX", "AuditX", "RegulatorX", "ComplyX",
-  "ARES", "ConversX", "SimulaX",
+  "AI Readiness",
+  "AI ROI Calculator",
+  "SARPI",
+  "CyberX C3G",
+  "AdvisorX",
+  "FlowX",
+  "PrivacyX",
+  "AssureX",
+  "AuditX",
+  "RegulatorX",
+  "ComplyX",
+  "ARES",
+  "ConversX",
+  "SimulaX",
 ] as const;
-export type PlatformOption = typeof PLATFORM_OPTIONS[number];
+export type PlatformOption = (typeof PLATFORM_OPTIONS)[number];
 
 export interface AuditEntry {
   ts: string;
@@ -89,10 +100,16 @@ export interface AdminUseCase {
 /* ---------------- enum mappings ---------------- */
 
 const VIS_TO_DB: Record<Visibility, string> = {
-  "Free/Lite": "free_lite", "Pro": "pro", "Both": "both", "Hidden": "hidden",
+  "Free/Lite": "free_lite",
+  Pro: "pro",
+  Both: "both",
+  Hidden: "hidden",
 };
 const VIS_FROM_DB: Record<string, Visibility> = {
-  free_lite: "Free/Lite", pro: "Pro", both: "Both", hidden: "Hidden",
+  free_lite: "Free/Lite",
+  pro: "Pro",
+  both: "Both",
+  hidden: "Hidden",
 };
 
 const STATUS_TO_DB: Record<Status, string> = {
@@ -118,15 +135,42 @@ const STATUS_FROM_DB: Record<string, Status> = {
 export function emptyUseCase(): AdminUseCase {
   const id = `new-${Date.now().toString(36)}`;
   return {
-    id, slug: "", title: "", shortDescription: "", fullDescription: "", tags: [],
-    industry: "", businessFunction: "", aiType: "", businessObjective: "",
+    id,
+    slug: "",
+    title: "",
+    shortDescription: "",
+    fullDescription: "",
+    tags: [],
+    industry: "",
+    businessFunction: "",
+    aiType: "",
+    businessObjective: "",
     maturity: "Intermediate",
-    businessProblem: "", aiSolution: "", valuePotential: "Medium", roiAreas: [], kpis: [], timeToValue: "Medium",
-    complexity: "Medium", implementationSteps: "", dataRequired: "", integrations: "", skills: "",
-    riskLevel: "Medium", governanceNotes: "", cybersecurityNotes: "", privacyNotes: "",
-    governanceRequired: false, privacyReviewRequired: false, cyberReviewRequired: false, assuranceReviewRequired: false,
+    businessProblem: "",
+    aiSolution: "",
+    valuePotential: "Medium",
+    roiAreas: [],
+    kpis: [],
+    timeToValue: "Medium",
+    complexity: "Medium",
+    implementationSteps: "",
+    dataRequired: "",
+    integrations: "",
+    skills: "",
+    riskLevel: "Medium",
+    governanceNotes: "",
+    cybersecurityNotes: "",
+    privacyNotes: "",
+    governanceRequired: false,
+    privacyReviewRequired: false,
+    cyberReviewRequired: false,
+    assuranceReviewRequired: false,
     platforms: [],
-    visibility: "Both", status: "Draft", featured: false, displayOrder: 0, changeNotes: "",
+    visibility: "Both",
+    status: "Draft",
+    featured: false,
+    displayOrder: 0,
+    changeNotes: "",
     updatedAt: new Date().toISOString(),
     auditLog: [],
   };
@@ -134,13 +178,23 @@ export function emptyUseCase(): AdminUseCase {
 
 export function completionPercent(uc: AdminUseCase): number {
   const checks: boolean[] = [
-    !!uc.title.trim(), !!uc.slug.trim(), !!uc.shortDescription.trim(),
-    !!uc.fullDescription.trim(), uc.tags.length > 0, !!uc.industry,
-    !!uc.businessFunction, !!uc.aiType, !!uc.businessObjective,
-    !!uc.businessProblem.trim(), !!uc.aiSolution.trim(),
-    uc.roiAreas.length > 0, uc.kpis.length > 0,
-    !!uc.implementationSteps.trim(), !!uc.dataRequired.trim(),
-    !!uc.integrations.trim(), !!uc.skills.trim(),
+    !!uc.title.trim(),
+    !!uc.slug.trim(),
+    !!uc.shortDescription.trim(),
+    !!uc.fullDescription.trim(),
+    uc.tags.length > 0,
+    !!uc.industry,
+    !!uc.businessFunction,
+    !!uc.aiType,
+    !!uc.businessObjective,
+    !!uc.businessProblem.trim(),
+    !!uc.aiSolution.trim(),
+    uc.roiAreas.length > 0,
+    uc.kpis.length > 0,
+    !!uc.implementationSteps.trim(),
+    !!uc.dataRequired.trim(),
+    !!uc.integrations.trim(),
+    !!uc.skills.trim(),
     !!uc.governanceNotes.trim() || !!uc.cybersecurityNotes.trim() || !!uc.privacyNotes.trim(),
     uc.platforms.length > 0,
   ];
@@ -299,8 +353,12 @@ async function fetchTaxonomyMaps() {
     supabase.from("business_objectives").select("id, slug"),
   ]);
   const toMap = (rows: any[] | null) => {
-    const byId: Record<string, string> = {}, bySlug: Record<string, string> = {};
-    for (const r of rows ?? []) { byId[r.id] = r.slug; bySlug[r.slug] = r.id; }
+    const byId: Record<string, string> = {},
+      bySlug: Record<string, string> = {};
+    for (const r of rows ?? []) {
+      byId[r.id] = r.slug;
+      bySlug[r.slug] = r.id;
+    }
     return { byId, bySlug };
   };
   return {
@@ -316,9 +374,18 @@ async function attachPrimaryTaxonomy(rows: DbUseCase[]) {
   const ids = rows.map((r) => r.id);
   const [ind, fn, ai, obj, tax] = await Promise.all([
     supabase.from("use_case_industries").select("use_case_id, industry_id").in("use_case_id", ids),
-    supabase.from("use_case_business_functions").select("use_case_id, business_function_id").in("use_case_id", ids),
-    supabase.from("use_case_capabilities").select("use_case_id, capability_id").in("use_case_id", ids),
-    supabase.from("use_case_business_objectives").select("use_case_id, objective_id").in("use_case_id", ids),
+    supabase
+      .from("use_case_business_functions")
+      .select("use_case_id, business_function_id")
+      .in("use_case_id", ids),
+    supabase
+      .from("use_case_capabilities")
+      .select("use_case_id, capability_id")
+      .in("use_case_id", ids),
+    supabase
+      .from("use_case_business_objectives")
+      .select("use_case_id, objective_id")
+      .in("use_case_id", ids),
     fetchTaxonomyMaps(),
   ]);
   const pick = (data: any[] | null, key: string, map: Record<string, string>) => {
@@ -339,11 +406,24 @@ async function attachPrimaryTaxonomy(rows: DbUseCase[]) {
   }));
 }
 
-async function syncJoinRow(table: string, useCaseId: string, fkCol: string, lookupTable: string, slug: string) {
+async function syncJoinRow(
+  table: string,
+  useCaseId: string,
+  fkCol: string,
+  lookupTable: string,
+  slug: string,
+) {
   // Replace the single primary mapping with the provided slug.
-  await supabase.from(table as any).delete().eq("use_case_id", useCaseId);
+  await supabase
+    .from(table as any)
+    .delete()
+    .eq("use_case_id", useCaseId);
   if (!slug) return;
-  const { data } = await supabase.from(lookupTable as any).select("id").eq("slug", slug).maybeSingle();
+  const { data } = await supabase
+    .from(lookupTable as any)
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
   const id = (data as any)?.id;
   if (id) await supabase.from(table as any).insert({ use_case_id: useCaseId, [fkCol]: id });
 }
@@ -351,9 +431,21 @@ async function syncJoinRow(table: string, useCaseId: string, fkCol: string, look
 async function syncTaxonomyJoins(useCaseId: string, uc: AdminUseCase) {
   await Promise.all([
     syncJoinRow("use_case_industries", useCaseId, "industry_id", "industries", uc.industry),
-    syncJoinRow("use_case_business_functions", useCaseId, "business_function_id", "business_functions", uc.businessFunction),
+    syncJoinRow(
+      "use_case_business_functions",
+      useCaseId,
+      "business_function_id",
+      "business_functions",
+      uc.businessFunction,
+    ),
     syncJoinRow("use_case_capabilities", useCaseId, "capability_id", "ai_capabilities", uc.aiType),
-    syncJoinRow("use_case_business_objectives", useCaseId, "objective_id", "business_objectives", uc.businessObjective),
+    syncJoinRow(
+      "use_case_business_objectives",
+      useCaseId,
+      "objective_id",
+      "business_objectives",
+      uc.businessObjective,
+    ),
   ]);
 }
 
@@ -383,7 +475,9 @@ export function useAdminStore() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { void reload(); }, [reload]);
+  useEffect(() => {
+    void reload();
+  }, [reload]);
 
   const upsert = useCallback(
     async (uc: AdminUseCase, action: string): Promise<AdminUseCase | null> => {
@@ -403,11 +497,17 @@ export function useAdminStore() {
           .insert({ ...patch, submitted_by: u.user?.id })
           .select("id")
           .single();
-        if (error) { setError(error.message); return null; }
+        if (error) {
+          setError(error.message);
+          return null;
+        }
         savedId = (data as any).id;
       } else {
         const { error } = await (supabase as any).from("use_cases").update(patch).eq("id", uc.id);
-        if (error) { setError(error.message); return null; }
+        if (error) {
+          setError(error.message);
+          return null;
+        }
       }
       await syncTaxonomyJoins(savedId, uc);
       await writeAudit(savedId, action, uc.changeNotes || undefined);
@@ -430,14 +530,21 @@ export function useAdminStore() {
   const setStatus = useCallback(
     async (id: string, status: Status, action: string) => {
       const contentStatus = STATUS_TO_DB[status];
-      const lifecycle = contentStatus === "published" ? "published"
-        : contentStatus === "archived" ? "archived"
-        : contentStatus === "submitted_for_review" ? "review"
-        : "draft";
+      const lifecycle =
+        contentStatus === "published"
+          ? "published"
+          : contentStatus === "archived"
+            ? "archived"
+            : contentStatus === "submitted_for_review"
+              ? "review"
+              : "draft";
       const patch: Record<string, any> = { content_status: contentStatus, status: lifecycle };
       if (contentStatus === "published") patch.published_at = new Date().toISOString();
       const { error } = await (supabase as any).from("use_cases").update(patch).eq("id", id);
-      if (error) { setError(error.message); return; }
+      if (error) {
+        setError(error.message);
+        return;
+      }
       await writeAudit(id, action);
       await reload();
     },
@@ -447,7 +554,10 @@ export function useAdminStore() {
   const duplicate = useCallback(
     async (id: string) => {
       const { data, error } = await supabase.from("use_cases").select("*").eq("id", id).single();
-      if (error || !data) { setError(error?.message ?? "Use case not found"); return; }
+      if (error || !data) {
+        setError(error?.message ?? "Use case not found");
+        return;
+      }
       const { data: u } = await supabase.auth.getUser();
       const src = data as DbUseCase;
       const copy = {
@@ -466,8 +576,15 @@ export function useAdminStore() {
       delete (copy as any).id;
       delete (copy as any).created_at;
       delete (copy as any).updated_at;
-      const { data: ins, error: insErr } = await (supabase as any).from("use_cases").insert(copy).select("id").single();
-      if (insErr) { setError(insErr.message); return; }
+      const { data: ins, error: insErr } = await (supabase as any)
+        .from("use_cases")
+        .insert(copy)
+        .select("id")
+        .single();
+      if (insErr) {
+        setError(insErr.message);
+        return;
+      }
       await writeAudit((ins as any).id, "Duplicated", `From ${src.slug}`);
       await reload();
     },

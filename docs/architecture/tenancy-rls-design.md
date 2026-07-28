@@ -3,20 +3,20 @@
 Companion to `docs/architecture/tenancy-migration-plan.md`. **Design only — no policy has
 been created or altered.**
 
-Principle: *access is derived from membership, never from a value the client supplies.*
+Principle: _access is derived from membership, never from a value the client supplies._
 
 ---
 
 ## 1. Helper functions (SECURITY DEFINER, STABLE, `SET search_path = public`)
 
-| Function | Returns | Body summary |
-|---|---|---|
-| `is_org_member(_user_id, _org_id)` | boolean | EXISTS row in `organization_members` with `status='active'` |
-| `org_role(_user_id, _org_id)` | text | role from `organization_members`, NULL if not a member |
-| `is_workspace_member(_user_id, _ws_id)` | boolean | EXISTS row in `workspace_members` |
-| `workspace_role(_user_id, _ws_id)` | text | role from `workspace_members` |
-| `workspace_org(_ws_id)` | uuid | `workspaces.organization_id` |
-| `user_in_workspace(_user_id, _ws_id)` *(existing, body rewritten)* | boolean | `is_workspace_member(...)` **OR** legacy `workspaces.organization_id = user_org_id(_user_id)` |
+| Function                                                           | Returns | Body summary                                                                                  |
+| ------------------------------------------------------------------ | ------- | --------------------------------------------------------------------------------------------- |
+| `is_org_member(_user_id, _org_id)`                                 | boolean | EXISTS row in `organization_members` with `status='active'`                                   |
+| `org_role(_user_id, _org_id)`                                      | text    | role from `organization_members`, NULL if not a member                                        |
+| `is_workspace_member(_user_id, _ws_id)`                            | boolean | EXISTS row in `workspace_members`                                                             |
+| `workspace_role(_user_id, _ws_id)`                                 | text    | role from `workspace_members`                                                                 |
+| `workspace_org(_ws_id)`                                            | uuid    | `workspaces.organization_id`                                                                  |
+| `user_in_workspace(_user_id, _ws_id)` _(existing, body rewritten)_ | boolean | `is_workspace_member(...)` **OR** legacy `workspaces.organization_id = user_org_id(_user_id)` |
 
 Policies must call these helpers only. A policy must never `SELECT` from the table it
 protects, nor from `organization_members` / `workspace_members` directly — that is what
@@ -28,11 +28,11 @@ causes `infinite recursion detected in policy`.
 
 ### `organization_members`
 
-| Cmd | Role | Predicate |
-|---|---|---|
-| SELECT | authenticated | `public.is_org_member(auth.uid(), organization_id)` |
-| INSERT | authenticated | `WITH CHECK (public.org_role(auth.uid(), organization_id) IN ('owner','admin'))` |
-| UPDATE | authenticated | `USING`/`WITH CHECK` same as INSERT, and the last `owner` cannot be demoted (enforced by trigger) |
+| Cmd    | Role          | Predicate                                                                                                 |
+| ------ | ------------- | --------------------------------------------------------------------------------------------------------- |
+| SELECT | authenticated | `public.is_org_member(auth.uid(), organization_id)`                                                       |
+| INSERT | authenticated | `WITH CHECK (public.org_role(auth.uid(), organization_id) IN ('owner','admin'))`                          |
+| UPDATE | authenticated | `USING`/`WITH CHECK` same as INSERT, and the last `owner` cannot be demoted (enforced by trigger)         |
 | DELETE | authenticated | `public.org_role(auth.uid(), organization_id) IN ('owner','admin')` OR `user_id = auth.uid()` (leave org) |
 
 Grants: `SELECT, INSERT, UPDATE, DELETE` to `authenticated`; `ALL` to `service_role`.
@@ -44,39 +44,39 @@ client insert — otherwise no one could ever create the first membership.
 
 ### `workspace_members`
 
-| Cmd | Role | Predicate |
-|---|---|---|
-| SELECT | authenticated | `public.is_workspace_member(auth.uid(), workspace_id)` |
+| Cmd    | Role          | Predicate                                                                                           |
+| ------ | ------------- | --------------------------------------------------------------------------------------------------- |
+| SELECT | authenticated | `public.is_workspace_member(auth.uid(), workspace_id)`                                              |
 | INSERT | authenticated | `WITH CHECK (public.org_role(auth.uid(), public.workspace_org(workspace_id)) IN ('owner','admin'))` |
-| UPDATE | authenticated | same as INSERT |
-| DELETE | authenticated | same as INSERT OR `user_id = auth.uid()` |
+| UPDATE | authenticated | same as INSERT                                                                                      |
+| DELETE | authenticated | same as INSERT OR `user_id = auth.uid()`                                                            |
 
 Grants: `SELECT, INSERT, UPDATE, DELETE` to `authenticated`; `ALL` to `service_role`.
 
 ### `organization_units`
 
-| Cmd | Role | Predicate |
-|---|---|---|
-| SELECT | authenticated | `public.is_org_member(auth.uid(), organization_id)` |
+| Cmd                  | Role          | Predicate                                                           |
+| -------------------- | ------------- | ------------------------------------------------------------------- |
+| SELECT               | authenticated | `public.is_org_member(auth.uid(), organization_id)`                 |
 | INSERT/UPDATE/DELETE | authenticated | `public.org_role(auth.uid(), organization_id) IN ('owner','admin')` |
 
 ### `plans`
 
 Reference catalogue, no tenancy.
 
-| Cmd | Role | Predicate |
-|---|---|---|
-| SELECT | anon, authenticated | `true` (public pricing catalogue) |
-| INSERT/UPDATE/DELETE | authenticated | `public.is_admin_tier(auth.uid())` |
+| Cmd                  | Role                | Predicate                          |
+| -------------------- | ------------------- | ---------------------------------- |
+| SELECT               | anon, authenticated | `true` (public pricing catalogue)  |
+| INSERT/UPDATE/DELETE | authenticated       | `public.is_admin_tier(auth.uid())` |
 
 Grants: `SELECT` to `anon` and `authenticated`; `ALL` to `service_role`.
 
 ### `entitlements`
 
-| Cmd | Role | Predicate |
-|---|---|---|
-| SELECT | authenticated | `public.is_org_member(auth.uid(), organization_id)` |
-| INSERT/UPDATE/DELETE | — | **no policy for `authenticated`** — granted/revoked by `service_role` from server functions only |
+| Cmd                  | Role          | Predicate                                                                                        |
+| -------------------- | ------------- | ------------------------------------------------------------------------------------------------ |
+| SELECT               | authenticated | `public.is_org_member(auth.uid(), organization_id)`                                              |
+| INSERT/UPDATE/DELETE | —             | **no policy for `authenticated`** — granted/revoked by `service_role` from server functions only |
 
 Grants: `SELECT` to `authenticated`; `ALL` to `service_role`. Entitlements must never be
 self-granted from the browser.
@@ -105,7 +105,7 @@ For tables keyed on `created_by` instead of `user_id` (`ai_use_cases`,
 `feasibility_scores`, `use_case_boards`, `use_case_deliverables`), substitute
 `created_by` in the compatibility and write predicates.
 
-Deletion of *other members'* rows requires
+Deletion of _other members'_ rows requires
 `public.org_role(auth.uid(), organization_id) IN ('owner','admin')`.
 
 ### Trigger-enforced ownership
@@ -166,7 +166,7 @@ are platform-owned; adding tenancy predicates there would break public Lite disc
    workspace's own organization (`workspace_org()` resolves it server-side).
 4. Therefore a user cannot grant themselves membership of another tenant's workspace, and
    without membership no row of that workspace is selectable, updatable, or deletable.
-5. The compatibility `OR user_id = auth.uid()` clause only ever *widens* access to rows
+5. The compatibility `OR user_id = auth.uid()` clause only ever _widens_ access to rows
    the user already owns — it cannot expose another user's row.
 
 Negative tests that must pass (`tests/rls-isolation.e2e.ts`, extended):

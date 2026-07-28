@@ -34,8 +34,11 @@ export const Route = createFileRoute("/api/public/usecasex/use-cases/$slug")({
             .limit(10),
         ]);
 
-        const related = MOCK_USE_CASES
-          .filter((u) => u.slug !== uc.slug && (u.industry.slug === uc.industry.slug || u.tags.some((t) => uc.tags.includes(t))))
+        const related = MOCK_USE_CASES.filter(
+          (u) =>
+            u.slug !== uc.slug &&
+            (u.industry.slug === uc.industry.slug || u.tags.some((t) => uc.tags.includes(t))),
+        )
           .slice(0, 4)
           .map((u) => ({ id: u.id, slug: u.slug, title: u.title, industry: u.industry }));
 

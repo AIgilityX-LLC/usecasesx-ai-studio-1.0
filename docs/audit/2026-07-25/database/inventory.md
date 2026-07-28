@@ -9,15 +9,15 @@ Migration head: `20260725094800_9af904b9-06fe-46ea-bb91-1dafa866b819.sql`
 
 ## Headline counts
 
-| Object            | Count |
-| ----------------- | ----- |
-| Public tables     | 53    |
-| Views             | 1     |
-| Enums             | 5     |
-| Routines          | 16    |
-| Triggers          | 29    |
-| Foreign keys      | 38    |
-| Storage buckets   | 1     |
+| Object          | Count |
+| --------------- | ----- |
+| Public tables   | 53    |
+| Views           | 1     |
+| Enums           | 5     |
+| Routines        | 16    |
+| Triggers        | 29    |
+| Foreign keys    | 38    |
+| Storage buckets | 1     |
 
 **Row counts on tenant tables**: `workspaces`, `organizations`, `profiles`,
 `user_roles`, `use_case_boards`, `ai_use_cases`, `use_cases`,
@@ -32,14 +32,17 @@ All 53 tables have **RLS enabled** and **≥1 policy** attached (verified via
 Grouped by domain (see `entity-mapping.md`):
 
 **Identity / access**
+
 - `profiles` (19 cols) — 3 policies · ownership: `user_id NOT NULL`, FK → `auth.users`
 - `user_roles` (4 cols) — 2 policies · ownership: `user_id NOT NULL`, FK → `auth.users`
 
 **Organization / workspaces**
+
 - `organizations` (8 cols) — 2 policies · no direct ownership column
 - `workspaces` (8 cols) — 4 policies · `organization_id NOT NULL` (FK), `created_by NOT NULL`
 
 **Repository (curated global catalogue)**
+
 - `use_cases` (48 cols) — 12 policies · `submitted_by` FK → `auth.users`
 - `use_case_industries`, `use_case_business_functions`, `use_case_business_objectives`,
   `use_case_capabilities`, `use_case_countries`, `use_case_gov_functions`,
@@ -48,21 +51,25 @@ Grouped by domain (see `entity-mapping.md`):
 - `use_case_rating_aggregates` — **view** over `use_case_ratings`
 
 **Taxonomy (curated + org-scoped drafts)**
+
 - `industries`, `business_functions`, `business_objectives`, `ai_capabilities`,
   `gov_functions`, `countries` — public-read + admin-manage
 - `taxonomy_sectors` (16 cols) — 5 policies · `organization_id` nullable, org-scoped drafts
 - `taxonomy_tags`, `taxonomy_maturity_levels`, `taxonomy_meta`
 
 **Studio / opportunities (tenant)**
+
 - `use_case_boards` (9 cols) — 4 policies · `workspace_id NOT NULL`, `created_by NOT NULL`
 - `ai_use_cases` (25 cols) — 4 policies · `board_id` FK, `created_by NOT NULL`
 - `use_case_submissions` (16 cols) — 5 policies · `user_id NOT NULL`, FK → `auth.users`
 
 **Design / scoring (tenant, keyed off `ai_use_cases`)**
+
 - `blueprints`, `feasibility_scores`, `data_readiness_assessments`,
   `use_case_deliverables`, `integration_links`
 
 **User-owned collections / portfolios**
+
 - `collections` (8 cols) — 3 policies · `user_id NOT NULL`, FK → `auth.users`
 - `collection_items` — 5 policies
 - `portfolios` — 1 policy · `user_id NOT NULL`
@@ -71,19 +78,23 @@ Grouped by domain (see `entity-mapping.md`):
 - `saved_use_cases` — 1 policy · `user_id NOT NULL`, unique `(user_id, use_case_id)`
 
 **Ratings / feedback**
+
 - `use_case_ratings` (6 cols) — 2 policies · `user_id NOT NULL`
 - `use_case_feedback` (9 cols) — 2 policies · `user_id NOT NULL`
 - `use_case_scores` (12 cols) — 1 policy · `user_id NOT NULL`
 
 **Integrations**
+
 - `integration_events`, `integration_links`, `external_module_links`, `platform_modules`
 
 **Reporting / analytics**
+
 - `generated_reports` — 1 policy · `user_id NOT NULL`
 - `use_case_downloads`, `use_case_views`, `module_events`, `cta_events`,
   `lead_captures` — anonymous ingest surfaces (see risk matrix)
 
 **Audit**
+
 - `audit_events` (8 cols) — 2 policies · `actor_id` (nullable)
 - `use_case_audit_log` — 2 policies
 
@@ -93,13 +104,13 @@ Grouped by domain (see `entity-mapping.md`):
 
 ## Enums (5)
 
-| Enum                  | Values |
-| --------------------- | ------ |
+| Enum                  | Values                                                                                                                    |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `app_role`            | admin, moderator, contributor, viewer, super_admin, ai_hub_admin, usecasex_admin, content_manager, reviewer, editor, user |
-| `maturity_stage`      | concept, prototype, pilot, production, scaled |
-| `submission_status`   | draft, submitted, in_review, approved, rejected |
-| `use_case_status`     | draft, review, published, archived, submitted_for_review, approved, unpublished |
-| `use_case_visibility` | free_lite, pro, both, hidden |
+| `maturity_stage`      | concept, prototype, pilot, production, scaled                                                                             |
+| `submission_status`   | draft, submitted, in_review, approved, rejected                                                                           |
+| `use_case_status`     | draft, review, published, archived, submitted_for_review, approved, unpublished                                           |
+| `use_case_visibility` | free_lite, pro, both, hidden                                                                                              |
 
 ## Routines (16) — all `SECURITY DEFINER` with `search_path = public`
 

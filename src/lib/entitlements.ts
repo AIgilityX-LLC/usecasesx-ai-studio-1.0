@@ -10,11 +10,32 @@ export const TIER_RANK: Record<EntTier, number> = { lite: 0, pro: 1, enterprise:
 
 /** Free / consumer email providers are NOT eligible for founding gratis Pro. */
 const FREE_EMAIL_DOMAINS = new Set([
-  "gmail.com", "googlemail.com", "yahoo.com", "yahoo.co.uk", "hotmail.com",
-  "outlook.com", "live.com", "msn.com", "icloud.com", "me.com", "mac.com",
-  "aol.com", "proton.me", "protonmail.com", "pm.me", "gmx.com", "gmx.net",
-  "mail.com", "yandex.com", "yandex.ru", "zoho.com", "hey.com", "fastmail.com",
-  "qq.com", "163.com", "126.com",
+  "gmail.com",
+  "googlemail.com",
+  "yahoo.com",
+  "yahoo.co.uk",
+  "hotmail.com",
+  "outlook.com",
+  "live.com",
+  "msn.com",
+  "icloud.com",
+  "me.com",
+  "mac.com",
+  "aol.com",
+  "proton.me",
+  "protonmail.com",
+  "pm.me",
+  "gmx.com",
+  "gmx.net",
+  "mail.com",
+  "yandex.com",
+  "yandex.ru",
+  "zoho.com",
+  "hey.com",
+  "fastmail.com",
+  "qq.com",
+  "163.com",
+  "126.com",
 ]);
 
 export function emailDomain(email: string): string {
@@ -44,7 +65,10 @@ export function effectiveTier(
   return now.getTime() > exp.getTime() ? "lite" : storedTier;
 }
 
-export function daysUntil(expiresAt: string | Date | null | undefined, now: Date = new Date()): number | null {
+export function daysUntil(
+  expiresAt: string | Date | null | undefined,
+  now: Date = new Date(),
+): number | null {
   if (!expiresAt) return null;
   const exp = typeof expiresAt === "string" ? new Date(expiresAt) : expiresAt;
   if (isNaN(exp.getTime())) return null;

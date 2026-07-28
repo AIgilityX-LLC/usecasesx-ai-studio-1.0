@@ -45,8 +45,11 @@ async function check(label: string, fn: () => Promise<void>) {
 async function main() {
   const email = `not-found-e2e-${Date.now()}@usecasex.test`;
   const password = "Passw0rd!2026";
-  const { data: created, error: createErr } =
-    await admin.auth.admin.createUser({ email, password, email_confirm: true });
+  const { data: created, error: createErr } = await admin.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+  });
   if (createErr || !created.user) throw createErr ?? new Error("user create failed");
   const userId = created.user.id;
   const ghostId = randomUUID(); // random UUID — guaranteed not to exist
@@ -59,31 +62,37 @@ async function main() {
     console.log(`\n— Non-existent board ${ghostId} —`);
 
     await check("user-scoped read returns no row", async () => {
-      const { data, error } = await c.from("use_case_boards")
-        .select("id").eq("id", ghostId).maybeSingle();
+      const { data, error } = await c
+        .from("use_case_boards")
+        .select("id")
+        .eq("id", ghostId)
+        .maybeSingle();
       if (error) throw error;
       if (data) throw new Error("expected null, got a row");
     });
 
     await check("admin probe also returns no row (=> not_found, not forbidden)", async () => {
-      const { data, error } = await admin.from("use_case_boards")
-        .select("id").eq("id", ghostId).maybeSingle();
+      const { data, error } = await admin
+        .from("use_case_boards")
+        .select("id")
+        .eq("id", ghostId)
+        .maybeSingle();
       if (error) throw error;
       if (data) throw new Error("ghost ID unexpectedly exists in DB");
     });
 
     console.log(`\n— UI route wiring (src/routes/_app.boards.$boardId.tsx) —`);
     const src = readFileSync("src/routes/_app.boards.$boardId.tsx", "utf8");
-    await check("route renders \"Board not found\" heading for not_found kind", async () => {
+    await check('route renders "Board not found" heading for not_found kind', async () => {
       if (!src.includes("Board not found")) throw new Error("missing heading");
-      if (!/kind\s*===\s*['\"]not_found['\"]/.test(src)) throw new Error("missing not_found branch");
+      if (!/kind\s*===\s*['"]not_found['"]/.test(src)) throw new Error("missing not_found branch");
     });
-    await check("route renders a \"Try again\" button wired to refetch", async () => {
+    await check('route renders a "Try again" button wired to refetch', async () => {
       if (!/Try again/.test(src)) throw new Error("missing Try again label");
       if (!/board\.refetch\(\)/.test(src)) throw new Error("Try again is not wired to refetch");
     });
-    await check("route renders an \"All boards\" link back to /boards", async () => {
-      if (!/to=\"\/boards\"/.test(src)) throw new Error("missing back link to /boards");
+    await check('route renders an "All boards" link back to /boards', async () => {
+      if (!/to="\/boards"/.test(src)) throw new Error("missing back link to /boards");
     });
 
     await c.auth.signOut().catch(() => {});
@@ -95,4 +104,7 @@ async function main() {
   process.exit(failures === 0 ? 0 : 1);
 }
 
-main().catch((e) => { console.error("Fatal:", e?.message ?? e); process.exit(1); });
+main().catch((e) => {
+  console.error("Fatal:", e?.message ?? e);
+  process.exit(1);
+});

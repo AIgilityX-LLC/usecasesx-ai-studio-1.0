@@ -10,7 +10,9 @@ function BoardsLayout() {
   const onCollections = pathname.startsWith("/boards/collections");
   const tabClass = (active: boolean) =>
     `inline-flex items-center gap-1.5 border-b-2 px-1 pb-2 text-sm font-semibold transition-colors ${
-      active ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+      active
+        ? "border-primary text-foreground"
+        : "border-transparent text-muted-foreground hover:text-foreground"
     }`;
   return (
     <>

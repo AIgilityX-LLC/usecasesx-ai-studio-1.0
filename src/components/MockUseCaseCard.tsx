@@ -4,31 +4,46 @@ import type { MockUseCase, Risk } from "@/lib/usecasex.mock";
 function tone(kind: "value" | "complexity" | "risk" | "maturity" | "ttv", v: string): string {
   // Returns a soft semantic background+text combo for compact pills.
   const palette: Record<string, string> = {
-    "value:High":         "bg-primary/10 text-primary",
-    "value:Medium":       "bg-secondary text-foreground/80",
-    "value:Low":          "bg-secondary text-muted-foreground",
-    "complexity:Low":     "bg-primary/10 text-primary",
-    "complexity:Medium":  "bg-secondary text-foreground/80",
-    "complexity:High":    "bg-destructive/10 text-destructive",
-    "risk:Low":           "bg-primary/10 text-primary",
-    "risk:Medium":        "bg-secondary text-foreground/80",
-    "risk:High":          "bg-destructive/10 text-destructive",
-    "risk:Critical":      "bg-destructive text-destructive-foreground",
-    "maturity:Beginner":     "bg-secondary text-muted-foreground",
+    "value:High": "bg-primary/10 text-primary",
+    "value:Medium": "bg-secondary text-foreground/80",
+    "value:Low": "bg-secondary text-muted-foreground",
+    "complexity:Low": "bg-primary/10 text-primary",
+    "complexity:Medium": "bg-secondary text-foreground/80",
+    "complexity:High": "bg-destructive/10 text-destructive",
+    "risk:Low": "bg-primary/10 text-primary",
+    "risk:Medium": "bg-secondary text-foreground/80",
+    "risk:High": "bg-destructive/10 text-destructive",
+    "risk:Critical": "bg-destructive text-destructive-foreground",
+    "maturity:Beginner": "bg-secondary text-muted-foreground",
     "maturity:Intermediate": "bg-secondary text-foreground/80",
-    "maturity:Advanced":     "bg-primary/10 text-primary",
-    "ttv:Short":  "bg-primary/10 text-primary",
+    "maturity:Advanced": "bg-primary/10 text-primary",
+    "ttv:Short": "bg-primary/10 text-primary",
     "ttv:Medium": "bg-secondary text-foreground/80",
-    "ttv:Long":   "bg-secondary text-muted-foreground",
+    "ttv:Long": "bg-secondary text-muted-foreground",
   };
   return palette[`${kind}:${v}`] ?? "bg-secondary text-foreground/80";
 }
 
-function Pill({ label, value, kind }: { label: string; value: string; kind: Parameters<typeof tone>[0] }) {
+function Pill({
+  label,
+  value,
+  kind,
+}: {
+  label: string;
+  value: string;
+  kind: Parameters<typeof tone>[0];
+}) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{label}</span>
-      <span className={"inline-flex w-fit items-center rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider " + tone(kind, value)}>
+      <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+        {label}
+      </span>
+      <span
+        className={
+          "inline-flex w-fit items-center rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider " +
+          tone(kind, value)
+        }
+      >
         {value}
       </span>
     </div>
@@ -64,7 +79,9 @@ export function MockUseCaseCard({
         <h3 className="text-base font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
           {c.title}
         </h3>
-        <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{c.summary}</p>
+        <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+          {c.summary}
+        </p>
       </Link>
 
       {/* Business function row */}
@@ -139,7 +156,6 @@ export function MockUseCaseCard({
         </Link>
         <span className="text-[10px] font-medium text-muted-foreground">{c.industry.name}</span>
       </div>
-
     </article>
   );
 }

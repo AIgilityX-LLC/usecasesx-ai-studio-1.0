@@ -18,12 +18,7 @@ type Props = {
  * Declarative entitlement gate. UI-only: every protected action must also be
  * re-checked server-side (`assertEntitled`) and by RLS.
  */
-export function RequireEntitlement({
-  entitlement,
-  children,
-  fallback,
-  inline = false,
-}: Props) {
+export function RequireEntitlement({ entitlement, children, fallback, inline = false }: Props) {
   const authz = useAuthz();
 
   if (authz.loading) {
@@ -60,9 +55,7 @@ export function RequireEntitlement({
                 ? "Not available yet"
                 : `${EDITION_LABEL[decision.requiredEdition]} capability`}
             </div>
-            <h1 className="mt-1 text-xl font-bold">
-              {decision.definition.label}
-            </h1>
+            <h1 className="mt-1 text-xl font-bold">{decision.definition.label}</h1>
             <p className="mt-2 text-sm text-muted-foreground">
               {decision.message} {decision.definition.description}
             </p>

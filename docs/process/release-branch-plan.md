@@ -34,27 +34,32 @@ This plan describes the target choreography **and** the safe activation gates. U
 ## 3. Activation gates
 
 ### Gate A — Activate `develop`
+
 **When**: Only if we need parallel feature streams that cannot land directly on `main` without destabilizing Lovable previews.
 **Preconditions**
+
 1. Lovable branch-switching (Labs) verified working end-to-end with a smoke commit.
 2. Rollback rehearsed: revert Lovable to `main` in < 5 minutes.
 3. Decision Log entry approved in release board §7.2.
-**Steps**: as documented in `source-control-workflow.md` §4.
-**Owner**: Launch commander.
+   **Steps**: as documented in `source-control-workflow.md` §4.
+   **Owner**: Launch commander.
 
 ### Gate B — Cut `release/2026-08-14`
+
 **When**: Freeze Gate 4 (Wed 12 Aug 2026), after `bun run test:e2e`, `test:smoke`, `test:navbar`, `test:mobile`, `test:rls` all green and Lighthouse ≥ 90 on `/discover`.
 **Preconditions**
+
 1. All PROMPT-10 through PROMPT-30 `done` or explicitly `deferred` in release board §7.
 2. Legal, DNS, and email-deliverability items (PROMPT-31, PROMPT-32) on track.
-**Steps**
-1. From `main` at the green commit: `git checkout -b release/2026-08-14 main && git push -u origin release/2026-08-14`.
-2. Protect the branch: require PR, require checks, disallow force-push.
-3. Announce freeze in Decision Log; only P0 fixes may merge via `fix/*` PRs.
-4. Do **not** point Lovable at the release branch. Lovable stays on `main`.
-**Owner**: Launch commander.
+   **Steps**
+3. From `main` at the green commit: `git checkout -b release/2026-08-14 main && git push -u origin release/2026-08-14`.
+4. Protect the branch: require PR, require checks, disallow force-push.
+5. Announce freeze in Decision Log; only P0 fixes may merge via `fix/*` PRs.
+6. Do **not** point Lovable at the release branch. Lovable stays on `main`.
+   **Owner**: Launch commander.
 
 ### Gate C — Launch (14 Aug 2026)
+
 1. Merge `release/2026-08-14` into `main` via PR (no squash — preserve fix history).
 2. Tag `v2026.08.14-launch` on the merge commit.
 3. Publish via Lovable UI (PROMPT-34).
@@ -62,6 +67,7 @@ This plan describes the target choreography **and** the safe activation gates. U
 5. Keep `release/2026-08-14` for 30 days for reference; do not delete before 13 Sep 2026.
 
 ### Gate D — Post-launch hotfix
+
 1. `git checkout -b hotfix/<slug> main`.
 2. Fix + narrow test + evidence.
 3. PR into `main`; on merge, cherry-pick to `develop` (if active).

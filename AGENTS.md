@@ -14,12 +14,13 @@ This file is the single engineering contract for all contributors — Lovable, C
 - **Pro Founding Access** — registered professional use. Complimentary through **31 December 2026**, subject to fair-use limits.
 - **Enterprise** — same codebase and data model, additional roles/features via entitlement flags. Initially sold through paid Enterprise Design Partner engagements.
 
-**Target release**: Lite + Pro Founding Access on **14 August 2026**. Launch a *complete customer journey*, not the full Enterprise catalogue.
+**Target release**: Lite + Pro Founding Access on **14 August 2026**. Launch a _complete customer journey_, not the full Enterprise catalogue.
 
 **Core journey** (must remain intact end-to-end):
 Discover → Capture Opportunity → Design → Score → Prioritize → Portfolio → Roadmap → Export → Advisory.
 
 **Suite handoff direction**:
+
 - SARPI → readiness/value
 - SARN & CyberX C3G → governance/risk
 - AdvisorX & ConversX → controlled advisory context

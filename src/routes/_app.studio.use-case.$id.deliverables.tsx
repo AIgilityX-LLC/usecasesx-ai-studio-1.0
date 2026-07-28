@@ -68,8 +68,8 @@ function DeliverablesHub() {
           <h1 className="mt-1 text-3xl font-bold tracking-tight">Enterprise Deliverables</h1>
           <p className="mt-1 max-w-2xl text-muted-foreground">
             The 12 advisory deliverables for{" "}
-            <span className="font-medium text-foreground">{title ?? "this use case"}</span>. Each
-            is generated from what you have captured and exported as a client-ready document.
+            <span className="font-medium text-foreground">{title ?? "this use case"}</span>. Each is
+            generated from what you have captured and exported as a client-ready document.
           </p>
           <div className="mt-2 flex gap-2 text-xs">
             <Badge variant="secondary">
@@ -84,7 +84,10 @@ function DeliverablesHub() {
             </Link>
           </Button>
           <Button asChild>
-            <Link to="/studio/use-case/$id/deliverable/$type" params={{ id, type: "handover_package" }}>
+            <Link
+              to="/studio/use-case/$id/deliverable/$type"
+              params={{ id, type: "handover_package" }}
+            >
               Build Handover Package
             </Link>
           </Button>
@@ -129,10 +132,7 @@ function DeliverablesHub() {
                     </Button>
                   ) : (
                     <Button size="sm" className="self-start" asChild>
-                      <Link
-                        to="/studio/use-case/$id/deliverable/$type"
-                        params={{ id, type }}
-                      >
+                      <Link to="/studio/use-case/$id/deliverable/$type" params={{ id, type }}>
                         {status === "not_started" ? "Build" : "Edit"}{" "}
                         <ArrowRight className="ml-1 h-3 w-3" />
                       </Link>

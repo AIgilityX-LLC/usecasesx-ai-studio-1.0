@@ -37,7 +37,7 @@ Non-negotiable security floor. Applies to Lite, Pro and Enterprise.
   ```ts
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   ```
-- Never used to *decide* whether a user is an admin — verify roles first through the user-scoped `context.supabase` and `has_role()`.
+- Never used to _decide_ whether a user is an admin — verify roles first through the user-scoped `context.supabase` and `has_role()`.
 
 ## 6. Data protection
 

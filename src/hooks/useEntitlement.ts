@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "./useSupabaseSession";
-import {
-  daysUntil,
-  effectiveTier,
-  type EntTier,
-} from "@/lib/entitlements";
+import { daysUntil, effectiveTier, type EntTier } from "@/lib/entitlements";
 
 export type EntitlementState = {
   loading: boolean;

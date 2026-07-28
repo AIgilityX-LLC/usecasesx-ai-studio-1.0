@@ -21,16 +21,41 @@ type Demo = {
 };
 
 const DEMOS: Demo[] = [
-  { email: "admin@demo.usecasex.app", password: "Demo@123", label: "admin",
-    primaryRoute: "/administration", mustSee: /admin|manage|users/i },
-  { email: "moderator@demo.usecasex.app", password: "Demo@123", label: "moderator",
-    primaryRoute: "/administration", mustSee: /admin|manage|users|moderation/i },
-  { email: "enterprise@demo.usecasex.app", password: "Demo@123", label: "enterprise",
-    primaryRoute: "/studio/portfolio", mustSee: /portfolio|roadmap/i },
-  { email: "pro@demo.usecasex.app", password: "Demo@123", label: "pro",
-    primaryRoute: "/studio/portfolio", mustSee: /portfolio|roadmap/i },
-  { email: "lite@demo.usecasex.app", password: "Demo@123", label: "lite",
-    primaryRoute: "/dashboard", mustSee: /dashboard|explore|repository/i },
+  {
+    email: "admin@demo.usecasex.app",
+    password: "Demo@123",
+    label: "admin",
+    primaryRoute: "/administration",
+    mustSee: /admin|manage|users/i,
+  },
+  {
+    email: "moderator@demo.usecasex.app",
+    password: "Demo@123",
+    label: "moderator",
+    primaryRoute: "/administration",
+    mustSee: /admin|manage|users|moderation/i,
+  },
+  {
+    email: "enterprise@demo.usecasex.app",
+    password: "Demo@123",
+    label: "enterprise",
+    primaryRoute: "/studio/portfolio",
+    mustSee: /portfolio|roadmap/i,
+  },
+  {
+    email: "pro@demo.usecasex.app",
+    password: "Demo@123",
+    label: "pro",
+    primaryRoute: "/studio/portfolio",
+    mustSee: /portfolio|roadmap/i,
+  },
+  {
+    email: "lite@demo.usecasex.app",
+    password: "Demo@123",
+    label: "lite",
+    primaryRoute: "/dashboard",
+    mustSee: /dashboard|explore|repository/i,
+  },
 ];
 
 async function mintSession(email: string, password: string) {
@@ -46,10 +71,10 @@ async function mintSession(email: string, password: string) {
 async function injectSession(page: Page, session: unknown) {
   const ref = new URL(SUPABASE_URL).hostname.split(".")[0];
   await page.goto(`${BASE}/`);
-  await page.evaluate(
-    ({ key, value }) => window.localStorage.setItem(key, value),
-    { key: `sb-${ref}-auth-token`, value: JSON.stringify(session) },
-  );
+  await page.evaluate(({ key, value }) => window.localStorage.setItem(key, value), {
+    key: `sb-${ref}-auth-token`,
+    value: JSON.stringify(session),
+  });
 }
 
 // Pre-seed a canary board owned by "pro" so other accounts can attempt to read it.
@@ -64,20 +89,33 @@ test.beforeAll(async () => {
     "Content-Type": "application/json",
     Prefer: "return=representation",
   };
-  const ws = await (await fetch(`${SUPABASE_URL}/rest/v1/rpc/ensure_user_workspace`, {
-    method: "POST", headers, body: "{}",
-  })).json();
-  const b = await (await fetch(`${SUPABASE_URL}/rest/v1/use_case_boards`, {
-    method: "POST", headers, body: JSON.stringify({
-      workspace_id: ws, title: `Canary ${Date.now()}`, board_type: "studio",
-      status: "active", created_by: session.user.id,
-    }),
-  })).json();
+  const ws = await (
+    await fetch(`${SUPABASE_URL}/rest/v1/rpc/ensure_user_workspace`, {
+      method: "POST",
+      headers,
+      body: "{}",
+    })
+  ).json();
+  const b = await (
+    await fetch(`${SUPABASE_URL}/rest/v1/use_case_boards`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        workspace_id: ws,
+        title: `Canary ${Date.now()}`,
+        board_type: "studio",
+        status: "active",
+        created_by: session.user.id,
+      }),
+    })
+  ).json();
   canaryBoardId = Array.isArray(b) ? b[0]?.id : b?.id;
 });
 
 for (const demo of DEMOS) {
-  test(`smoke: ${demo.label} — login + ${demo.primaryRoute} + cross-org isolation`, async ({ page }) => {
+  test(`smoke: ${demo.label} — login + ${demo.primaryRoute} + cross-org isolation`, async ({
+    page,
+  }) => {
     test.setTimeout(90_000);
     if (!SUPABASE_URL || !SUPABASE_KEY) test.skip(true, "Supabase env not set");
 
@@ -85,7 +123,10 @@ for (const demo of DEMOS) {
     expect(session.access_token, "session minted").toBeTruthy();
 
     await injectSession(page, session);
-    await page.goto(`${BASE}${demo.primaryRoute}`, { waitUntil: "domcontentloaded", timeout: 45_000 });
+    await page.goto(`${BASE}${demo.primaryRoute}`, {
+      waitUntil: "domcontentloaded",
+      timeout: 45_000,
+    });
     await page.waitForTimeout(2000);
     const body = (await page.locator("body").innerText()).toLowerCase();
     expect(body).toMatch(demo.mustSee);
@@ -99,7 +140,10 @@ for (const demo of DEMOS) {
         { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${session.access_token}` } },
       );
       const rows = await res.json();
-      expect(Array.isArray(rows) ? rows.length : 1, `RLS must hide pro user's board from ${demo.label}`).toBe(0);
+      expect(
+        Array.isArray(rows) ? rows.length : 1,
+        `RLS must hide pro user's board from ${demo.label}`,
+      ).toBe(0);
     }
   });
 }

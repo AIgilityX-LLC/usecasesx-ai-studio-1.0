@@ -76,9 +76,7 @@ export function exportDeliverablePDF(doc: ExportDoc, fileName: string) {
       y += 14;
       pdf.setFont("helvetica", "normal");
       section.rows.forEach((row) => {
-        const cellLines = row.map((cell, i) =>
-          pdf.splitTextToSize(cell || "—", colW - 4),
-        );
+        const cellLines = row.map((cell, i) => pdf.splitTextToSize(cell || "—", colW - 4));
         const rowH = Math.max(...cellLines.map((l) => l.length)) * 12 + 4;
         ensure(rowH);
         cellLines.forEach((lines, i) => {
@@ -98,7 +96,9 @@ export async function exportDeliverableWord(doc: ExportDoc, fileName: string) {
     new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun(doc.title)] }),
   ];
   if (doc.subtitle) {
-    children.push(new Paragraph({ children: [new TextRun({ text: doc.subtitle, italics: true })] }));
+    children.push(
+      new Paragraph({ children: [new TextRun({ text: doc.subtitle, italics: true })] }),
+    );
   }
 
   doc.sections.forEach((section) => {

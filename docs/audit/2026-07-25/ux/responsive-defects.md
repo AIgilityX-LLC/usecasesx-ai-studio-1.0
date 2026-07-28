@@ -5,20 +5,20 @@ Metrics captured per route: `<h1>` count, `<main>` count, heading order
 skips, missing `alt`, icon buttons w/o accessible name, unlabeled form
 controls, horizontal overflow.
 
-| Route                | Desktop 1280                                         | Mobile 390                                                      |
-| -------------------- | ---------------------------------------------------- | --------------------------------------------------------------- |
-| `/`                  | Clean                                                | **Overflow: scrollWidth 413 > 390.** Hero `<h1>` clipped mid-word ("Before You Spend a Dollar Buil…"). See `mobile_home.png`. |
-| `/discover`          | Clean                                                | Clean                                                           |
-| `/repository`        | Grid renders **0 cards**; 2 unlabeled form controls (search, sort). See `desktop_repository.png`. | 0 cards; 2 unlabeled controls; layout otherwise responsive.     |
-| `/ai-use-case-studio`| Clean                                                | Clean                                                           |
-| `/studio/portfolio`  | **No `<h1>`.** Layout OK.                            | Redirects signed-out users.                                     |
-| `/roadmap`           | Clean                                                | Clean                                                           |
-| `/advisorx`          | Clean (Coming Soon)                                  | Clean                                                           |
-| `/pricing`           | **Navigation flap** — page unmounts mid-render (evaluation context destroyed). Likely unresolved redirect / `<Navigate>` in effect. | Renders cleanly (no flap observed at 390 px). |
-| `/auth`              | 2 unlabeled inputs (placeholder-only email/password). | Same.                                                          |
-| `/my-use-cases`      | **No `<h1>`.** Signed-out redirect on mobile bypasses this. | Redirects to `/pro`.                                     |
-| `/dashboard`         | **No `<h1>`.** Same.                                 | Redirects to `/pro`.                                             |
-| `/pro`               | Clean                                                | Clean                                                           |
+| Route                 | Desktop 1280                                                                                                                        | Mobile 390                                                                                                                    |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `/`                   | Clean                                                                                                                               | **Overflow: scrollWidth 413 > 390.** Hero `<h1>` clipped mid-word ("Before You Spend a Dollar Buil…"). See `mobile_home.png`. |
+| `/discover`           | Clean                                                                                                                               | Clean                                                                                                                         |
+| `/repository`         | Grid renders **0 cards**; 2 unlabeled form controls (search, sort). See `desktop_repository.png`.                                   | 0 cards; 2 unlabeled controls; layout otherwise responsive.                                                                   |
+| `/ai-use-case-studio` | Clean                                                                                                                               | Clean                                                                                                                         |
+| `/studio/portfolio`   | **No `<h1>`.** Layout OK.                                                                                                           | Redirects signed-out users.                                                                                                   |
+| `/roadmap`            | Clean                                                                                                                               | Clean                                                                                                                         |
+| `/advisorx`           | Clean (Coming Soon)                                                                                                                 | Clean                                                                                                                         |
+| `/pricing`            | **Navigation flap** — page unmounts mid-render (evaluation context destroyed). Likely unresolved redirect / `<Navigate>` in effect. | Renders cleanly (no flap observed at 390 px).                                                                                 |
+| `/auth`               | 2 unlabeled inputs (placeholder-only email/password).                                                                               | Same.                                                                                                                         |
+| `/my-use-cases`       | **No `<h1>`.** Signed-out redirect on mobile bypasses this.                                                                         | Redirects to `/pro`.                                                                                                          |
+| `/dashboard`          | **No `<h1>`.** Same.                                                                                                                | Redirects to `/pro`.                                                                                                          |
+| `/pro`                | Clean                                                                                                                               | Clean                                                                                                                         |
 
 ## Defect list (severity → route → detail)
 

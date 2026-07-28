@@ -20,9 +20,7 @@ export const getAuthzContextFn = createServerFn({ method: "GET" })
 export const checkEntitlementFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) =>
-    z
-      .object({ key: z.string(), workspaceId: z.string().uuid().optional() })
-      .parse(data),
+    z.object({ key: z.string(), workspaceId: z.string().uuid().optional() }).parse(data),
   )
   .handler(async ({ data, context }) => {
     const { resolveSubject } = await import("@/lib/authz.server");

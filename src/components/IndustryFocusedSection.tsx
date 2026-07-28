@@ -21,7 +21,11 @@ const FALLBACK_INDUSTRIES: { name: string; slug: string }[] = [
   { name: "Banking, Finance & Insurance", slug: "banking" },
 ];
 
-export function IndustryFocusedSection({ industries }: { industries?: { slug: string; name: string }[] }) {
+export function IndustryFocusedSection({
+  industries,
+}: {
+  industries?: { slug: string; name: string }[];
+}) {
   const INDUSTRIES = industries && industries.length > 0 ? industries : FALLBACK_INDUSTRIES;
   return (
     <section className="border-b border-border">
@@ -40,9 +44,9 @@ export function IndustryFocusedSection({ industries }: { industries?: { slug: st
               commercial, industrial, public-sector, and service industries.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-white/65">
-              UseCasesX helps leaders discover practical AI opportunities across multiple
-              industries — from predictive insights and automation to governance, compliance,
-              workflow intelligence, and executive decision support.
+              UseCasesX helps leaders discover practical AI opportunities across multiple industries
+              — from predictive insights and automation to governance, compliance, workflow
+              intelligence, and executive decision support.
             </p>
 
             <div className="mt-8 hidden rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur lg:block">
@@ -54,7 +58,9 @@ export function IndustryFocusedSection({ industries }: { industries?: { slug: st
                 ].map((s) => (
                   <div key={s.l}>
                     <div className="font-mono text-2xl font-bold text-white">{s.v}</div>
-                    <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">{s.l}</div>
+                    <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">
+                      {s.l}
+                    </div>
                   </div>
                 ))}
               </div>

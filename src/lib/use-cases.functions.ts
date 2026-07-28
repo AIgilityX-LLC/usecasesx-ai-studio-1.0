@@ -4,11 +4,9 @@ import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
 
 function publicClient() {
-  return createClient<Database>(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_PUBLISHABLE_KEY!,
-    { auth: { persistSession: false } },
-  );
+  return createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
+    auth: { persistSession: false },
+  });
 }
 
 const ListInput = z.object({
@@ -72,8 +70,7 @@ export const listUseCases = createServerFn({ method: "GET" })
       query = query.order("impact_score", { ascending: false, nullsFirst: false });
     else if (data.sort === "maturity")
       query = query.order("maturity_score", { ascending: false, nullsFirst: false });
-    else if (data.sort === "featured")
-      query = query.order("display_order", { ascending: true });
+    else if (data.sort === "featured") query = query.order("display_order", { ascending: true });
     else query = query.order("published_at", { ascending: false, nullsFirst: false });
     query = query.order("id", { ascending: true });
 
@@ -83,12 +80,21 @@ export const listUseCases = createServerFn({ method: "GET" })
     const filtered = (rows ?? []).filter((row) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const r = row as any;
-      const inds: string[] = r.use_case_industries?.map((x: any) => x.industries?.slug).filter(Boolean) ?? [];
-      const caps: string[] = r.use_case_capabilities?.map((x: any) => x.ai_capabilities?.slug).filter(Boolean) ?? [];
-      const bfns: string[] = r.use_case_business_functions?.map((x: any) => x.business_functions?.slug).filter(Boolean) ?? [];
-      const objs: string[] = r.use_case_business_objectives?.map((x: any) => x.business_objectives?.slug).filter(Boolean) ?? [];
+      const inds: string[] =
+        r.use_case_industries?.map((x: any) => x.industries?.slug).filter(Boolean) ?? [];
+      const caps: string[] =
+        r.use_case_capabilities?.map((x: any) => x.ai_capabilities?.slug).filter(Boolean) ?? [];
+      const bfns: string[] =
+        r.use_case_business_functions
+          ?.map((x: any) => x.business_functions?.slug)
+          .filter(Boolean) ?? [];
+      const objs: string[] =
+        r.use_case_business_objectives
+          ?.map((x: any) => x.business_objectives?.slug)
+          .filter(Boolean) ?? [];
       if (data.industries.length && !data.industries.some((s) => inds.includes(s))) return false;
-      if (data.capabilities.length && !data.capabilities.some((s) => caps.includes(s))) return false;
+      if (data.capabilities.length && !data.capabilities.some((s) => caps.includes(s)))
+        return false;
       if (data.businessFunctions.length && !data.businessFunctions.some((s) => bfns.includes(s)))
         return false;
       if (data.objectives.length && !data.objectives.some((s) => objs.includes(s))) return false;

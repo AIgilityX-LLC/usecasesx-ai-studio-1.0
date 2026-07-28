@@ -36,7 +36,9 @@ test("Mobile navigation: repository page shows a filter affordance", async ({ pa
   await page.goto("/repository", { waitUntil: "domcontentloaded" });
   // Either an inline filter panel or a Filters button — one should be present.
   const filtersButton = page.getByRole("button", { name: /filter/i }).first();
-  const anyFacet = page.locator("[data-facet], input[type='search'], input[placeholder*='Search' i]").first();
+  const anyFacet = page
+    .locator("[data-facet], input[type='search'], input[placeholder*='Search' i]")
+    .first();
   const hasFilters = await filtersButton.isVisible().catch(() => false);
   const hasSearch = await anyFacet.isVisible().catch(() => false);
   expect(hasFilters || hasSearch).toBeTruthy();

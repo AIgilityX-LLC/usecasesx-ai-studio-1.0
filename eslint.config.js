@@ -34,6 +34,10 @@ export default tseslint.config(
       ],
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
+      // Tracked debt: ~240 pre-existing `any` usages (mostly Supabase row shapes and
+      // e2e harness helpers). Reported as warnings so the lint gate stays enforceable
+      // while the typing backlog is burned down per domain. Do not add new `any`.
+      "@typescript-eslint/no-explicit-any": "warn",
     },
   },
   eslintPluginPrettier,

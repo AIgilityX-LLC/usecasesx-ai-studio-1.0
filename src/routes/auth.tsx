@@ -10,7 +10,10 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Sign in — UseCasesX™" },
-      { name: "description", content: "Sign in to UseCasesX™ — Global AI Use Cases Repository & Development Studio." },
+      {
+        name: "description",
+        content: "Sign in to UseCasesX™ — Global AI Use Cases Repository & Development Studio.",
+      },
     ],
   }),
   component: AuthPage,
@@ -118,15 +121,33 @@ function AuthPage() {
 
           {mode === "signin" && (
             <p className="mt-3 text-center text-sm">
-              <Link to="/forgot-password" className="font-semibold text-primary hover:underline">Forgot your password?</Link>
+              <Link to="/forgot-password" className="font-semibold text-primary hover:underline">
+                Forgot your password?
+              </Link>
             </p>
           )}
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             {mode === "signin" ? (
-              <>No account? <button onClick={() => setMode("signup")} className="font-semibold text-primary hover:underline">Create one</button></>
+              <>
+                No account?{" "}
+                <button
+                  onClick={() => setMode("signup")}
+                  className="font-semibold text-primary hover:underline"
+                >
+                  Create one
+                </button>
+              </>
             ) : (
-              <>Already have an account? <button onClick={() => setMode("signin")} className="font-semibold text-primary hover:underline">Sign in</button></>
+              <>
+                Already have an account?{" "}
+                <button
+                  onClick={() => setMode("signin")}
+                  className="font-semibold text-primary hover:underline"
+                >
+                  Sign in
+                </button>
+              </>
             )}
           </p>
           <p className="mt-4 text-center text-xs text-muted-foreground">
@@ -135,18 +156,26 @@ function AuthPage() {
         </section>
 
         <aside className="rounded-2xl border border-primary/30 bg-card p-6">
-          <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary">Demo accounts</div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
+            Demo accounts
+          </div>
           <h2 className="mt-1 text-lg font-bold">Try UseCasesX™ instantly</h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            All demo accounts use the password <code className="rounded bg-muted px-1.5 py-0.5 font-mono">Demo@123</code>.
-            One click signs you in with the matching role and plan tier.
+            All demo accounts use the password{" "}
+            <code className="rounded bg-muted px-1.5 py-0.5 font-mono">Demo@123</code>. One click
+            signs you in with the matching role and plan tier.
           </p>
           {seedState === "error" && (
-            <p className="mt-2 text-xs text-destructive">Couldn't provision demo accounts. Check server logs.</p>
+            <p className="mt-2 text-xs text-destructive">
+              Couldn't provision demo accounts. Check server logs.
+            </p>
           )}
           <ul className="mt-4 space-y-2">
             {DEMO_ACCOUNTS.map((a) => (
-              <li key={a.email} className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background/60 px-3 py-2">
+              <li
+                key={a.email}
+                className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background/60 px-3 py-2"
+              >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold">{a.label}</span>
@@ -159,7 +188,9 @@ function AuthPage() {
                       {a.plan_type}
                     </span>
                   </div>
-                  <div className="truncate font-mono text-[11px] text-muted-foreground">{a.email}</div>
+                  <div className="truncate font-mono text-[11px] text-muted-foreground">
+                    {a.email}
+                  </div>
                 </div>
                 <button
                   onClick={() => signInDemo(a.email, a.password)}

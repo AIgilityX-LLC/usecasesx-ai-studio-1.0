@@ -1,7 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  Sparkles, Lightbulb, Gauge, Database, Hammer, Rocket, Shield, Plus, FolderOpen, BookOpen,
-  ArrowRight, CheckCircle2, FolderKanban, Layers, MoveVertical, Copy, Users, ClipboardList,
+  Sparkles,
+  Lightbulb,
+  Gauge,
+  Database,
+  Hammer,
+  Rocket,
+  Shield,
+  Plus,
+  FolderOpen,
+  BookOpen,
+  ArrowRight,
+  CheckCircle2,
+  FolderKanban,
+  Layers,
+  MoveVertical,
+  Copy,
+  Users,
+  ClipboardList,
 } from "lucide-react";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 
@@ -60,10 +76,26 @@ const STATS = [
 ];
 
 const STEPS = [
-  { n: "1", title: "Describe your ambition", desc: "Bring a business problem or pick from 1000+ proven patterns." },
-  { n: "2", title: "Validate & score", desc: "Test feasibility, data readiness, value and risk in minutes." },
-  { n: "3", title: "Govern & fund", desc: "Generate a board-ready blueprint with built-in governance." },
-  { n: "4", title: "Execute with confidence", desc: "Hand off an executable, defensible AI use case roadmap." },
+  {
+    n: "1",
+    title: "Describe your ambition",
+    desc: "Bring a business problem or pick from 1000+ proven patterns.",
+  },
+  {
+    n: "2",
+    title: "Validate & score",
+    desc: "Test feasibility, data readiness, value and risk in minutes.",
+  },
+  {
+    n: "3",
+    title: "Govern & fund",
+    desc: "Generate a board-ready blueprint with built-in governance.",
+  },
+  {
+    n: "4",
+    title: "Execute with confidence",
+    desc: "Hand off an executable, defensible AI use case roadmap.",
+  },
 ];
 
 const BENEFITS = [
@@ -118,11 +150,12 @@ function AIUseCaseStudioPage() {
             AIgilityX AI Use Case Studio™
           </h1>
           <p className="mt-2 text-sm font-medium text-muted-foreground">
-            Powered by UseCaseX™ &nbsp;|&nbsp; Integrated with SARPI™, AdvisorX™, and CyberX Sovereign AI C3G™
+            Powered by UseCaseX™ &nbsp;|&nbsp; Integrated with SARPI™, AdvisorX™, and CyberX
+            Sovereign AI C3G™
           </p>
           <p className="mt-5 max-w-3xl text-base text-muted-foreground">
-            A guided strategy workspace to help organizations and governments move
-            from AI ambition to validated, governed, fundable, and executable AI use cases.
+            A guided strategy workspace to help organizations and governments move from AI ambition
+            to validated, governed, fundable, and executable AI use cases.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-2">
@@ -154,7 +187,10 @@ function AIUseCaseStudioPage() {
 
           <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
             {STATS.map((s) => (
-              <div key={s.label} className="rounded-xl border border-border bg-card/60 p-4 text-center">
+              <div
+                key={s.label}
+                className="rounded-xl border border-border bg-card/60 p-4 text-center"
+              >
                 <div className="text-2xl font-bold text-primary">{s.value}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{s.label}</div>
               </div>
@@ -192,7 +228,9 @@ function AIUseCaseStudioPage() {
 
       <section className="border-t border-border bg-card/30">
         <div className="mx-auto max-w-[1280px] px-6 py-12">
-          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">How it works</h2>
+          <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
+            How it works
+          </h2>
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((s) => (
               <div key={s.n} className="rounded-2xl border border-border bg-background p-6">
@@ -211,7 +249,9 @@ function AIUseCaseStudioPage() {
         <div className="mx-auto max-w-[1280px] px-6 py-14">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">Use Case Boards</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">
+                Use Case Boards
+              </p>
               <h2 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
                 Organize, curate, and act on your AI use cases
               </h2>
@@ -239,7 +279,9 @@ function AIUseCaseStudioPage() {
                   <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/30">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="mt-4 text-lg font-bold tracking-tight text-foreground">{f.title}</h3>
+                  <h3 className="mt-4 text-lg font-bold tracking-tight text-foreground">
+                    {f.title}
+                  </h3>
                   <p className="mt-2 text-sm text-muted-foreground">{f.desc}</p>
                 </article>
               );
@@ -266,9 +308,12 @@ function AIUseCaseStudioPage() {
             </div>
             <div className="rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/10 via-card to-background p-8 text-center">
               <Sparkles className="mx-auto h-8 w-8 text-primary" />
-              <h3 className="mt-4 text-xl font-bold text-foreground">Turn AI ambition into funded reality</h3>
+              <h3 className="mt-4 text-xl font-bold text-foreground">
+                Turn AI ambition into funded reality
+              </h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                Create your free account and build your first validated, governance-ready AI use case today.
+                Create your free account and build your first validated, governance-ready AI use
+                case today.
               </p>
               <Link
                 to="/auth"

@@ -20,13 +20,19 @@ interface Props {
 }
 
 export function OnboardingChecklist({
-  savedCount, scoredCount, portfolioCount, reportCount,
+  savedCount,
+  scoredCount,
+  portfolioCount,
+  reportCount,
 }: Props) {
   const [dismissed, setDismissed] = useState<boolean | null>(null);
 
   useEffect(() => {
-    try { setDismissed(localStorage.getItem(KEY) === "1"); }
-    catch { setDismissed(false); }
+    try {
+      setDismissed(localStorage.getItem(KEY) === "1");
+    } catch {
+      setDismissed(false);
+    }
   }, []);
 
   const steps: Step[] = [
@@ -86,7 +92,14 @@ export function OnboardingChecklist({
         </div>
         <button
           type="button"
-          onClick={() => { try { localStorage.setItem(KEY, "1"); } catch {} setDismissed(true); }}
+          onClick={() => {
+            try {
+              localStorage.setItem(KEY, "1");
+            } catch {
+              /* storage unavailable */
+            }
+            setDismissed(true);
+          }}
           className="rounded-md border border-border bg-background px-2.5 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
         >
           Dismiss
@@ -108,20 +121,20 @@ export function OnboardingChecklist({
             <div
               aria-hidden
               className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-bold ${
-                s.done
-                  ? "bg-emerald-500/15 text-emerald-500"
-                  : "bg-primary/10 text-primary"
+                s.done ? "bg-emerald-500/15 text-emerald-500" : "bg-primary/10 text-primary"
               }`}
             >
               {s.done ? "✓" : i + 1}
             </div>
             <div className="min-w-0 flex-1">
-              <div className={`text-sm font-semibold ${s.done ? "text-muted-foreground line-through" : "text-foreground"}`}>
+              <div
+                className={`text-sm font-semibold ${s.done ? "text-muted-foreground line-through" : "text-foreground"}`}
+              >
                 {s.label}
               </div>
               <p className="mt-0.5 text-xs text-muted-foreground">{s.hint}</p>
-              {!s.done && (
-                s.cta.to ? (
+              {!s.done &&
+                (s.cta.to ? (
                   <Link
                     to={s.cta.to as "/repository"}
                     className="mt-2 inline-flex text-xs font-bold text-primary hover:underline"
@@ -136,8 +149,7 @@ export function OnboardingChecklist({
                   >
                     {s.cta.label}
                   </button>
-                )
-              )}
+                ))}
             </div>
           </li>
         ))}

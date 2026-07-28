@@ -24,7 +24,8 @@ export interface UseCaseCardData {
 }
 
 function accessTier(v?: string | null) {
-  if (v === "pro") return { label: "Pro", cls: "bg-amber-500/15 text-amber-600 dark:text-amber-400" };
+  if (v === "pro")
+    return { label: "Pro", cls: "bg-amber-500/15 text-amber-600 dark:text-amber-400" };
   if (v === "both") return { label: "Pro + Lite", cls: "bg-primary/10 text-primary" };
   return { label: "Free", cls: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" };
 }
@@ -53,7 +54,9 @@ export function UseCaseCard({
 
   const primaryIndustry = industryEntries[0];
   const primaryFunction = functionEntries[0];
-  const capabilities = (c.use_case_capabilities ?? []).map((x) => x.ai_capabilities?.name).filter(Boolean) as string[];
+  const capabilities = (c.use_case_capabilities ?? [])
+    .map((x) => x.ai_capabilities?.name)
+    .filter(Boolean) as string[];
   const aiType = capabilities[0];
   const tier = accessTier(c.visibility);
 
@@ -93,20 +96,35 @@ export function UseCaseCard({
             </span>
           )}
         </div>
-        <span className={"inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest " + tier.cls}>
+        <span
+          className={
+            "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest " +
+            tier.cls
+          }
+        >
           {tier.label}
         </span>
       </div>
 
       <Link to="/use-cases/$slug" params={{ slug: c.slug }} search={detailSearch} className="block">
-        <h3 className="text-base font-bold leading-snug text-foreground transition-colors group-hover:text-primary">{c.title}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground line-clamp-3">{c.summary}</p>
+        <h3 className="text-base font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
+          {c.title}
+        </h3>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground line-clamp-3">
+          {c.summary}
+        </p>
       </Link>
 
       <div className="mt-4 grid grid-cols-3 gap-2 border-t border-border pt-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-        <div>Value<div className="mt-0.5 text-primary">{c.value_potential ?? "—"}</div></div>
-        <div>Complexity<div className="mt-0.5 text-foreground/80">{c.complexity ?? "—"}</div></div>
-        <div>Risk<div className="mt-0.5 text-foreground/80">{c.risk_level ?? "—"}</div></div>
+        <div>
+          Value<div className="mt-0.5 text-primary">{c.value_potential ?? "—"}</div>
+        </div>
+        <div>
+          Complexity<div className="mt-0.5 text-foreground/80">{c.complexity ?? "—"}</div>
+        </div>
+        <div>
+          Risk<div className="mt-0.5 text-foreground/80">{c.risk_level ?? "—"}</div>
+        </div>
       </div>
 
       {showCompare && (
@@ -120,7 +138,13 @@ export function UseCaseCard({
           to="/use-cases/$slug"
           params={{ slug: c.slug }}
           search={detailSearch}
-          onClick={() => void trackModuleEvent("repository", "click", { interaction: "view_pattern", use_case_id: c.id, slug: c.slug })}
+          onClick={() =>
+            void trackModuleEvent("repository", "click", {
+              interaction: "view_pattern",
+              use_case_id: c.id,
+              slug: c.slug,
+            })
+          }
           className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline"
         >
           View Pattern →
@@ -138,7 +162,13 @@ export function UseCaseCard({
             {locked ? "Upgrade to Add" : "+ Add to Studio Board"}
           </button>
         ) : onSave ? (
-          <button onClick={onSave} className={"text-[11px] font-bold uppercase tracking-widest " + (saved ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
+          <button
+            onClick={onSave}
+            className={
+              "text-[11px] font-bold uppercase tracking-widest " +
+              (saved ? "text-primary" : "text-muted-foreground hover:text-foreground")
+            }
+          >
             {saved ? "★ Saved" : "☆ Save"}
           </button>
         ) : null}

@@ -2,7 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ComingSoonGate } from "@/components/ComingSoonGate";
 
 export const Route = createFileRoute("/_app/decision")({
-  head: () => ({ meta: [{ title: "DecisionX™ — UseCasesX™" }, { name: "description", content: "Capture and audit every AI investment decision." }] }),
+  head: () => ({
+    meta: [
+      { title: "DecisionX™ — UseCasesX™" },
+      { name: "description", content: "Capture and audit every AI investment decision." },
+    ],
+  }),
   component: () => (
     <ComingSoonGate
       feature="DecisionX™ — Decision Provenance Report™"

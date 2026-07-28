@@ -10,15 +10,15 @@ Single source of truth for what ships on 14 Aug 2026. Converts the 25 Jul audits
 
 ## Documents in this pack
 
-| Doc | Purpose |
-|---|---|
-| `edition-capability-matrix.md` | What Lite / Pro Founding Access / Enterprise Design Partner show |
-| `backlog-p0-p1-p2.md` | Every audited item assigned ship/repair/simplify/flag/defer + priority |
-| `outcomes-by-role.md` | One measurable completion outcome per role |
-| `fair-use-policy.md` | Complimentary Pro limits through 31 Dec 2026 (policy only) |
+| Doc                            | Purpose                                                                 |
+| ------------------------------ | ----------------------------------------------------------------------- |
+| `edition-capability-matrix.md` | What Lite / Pro Founding Access / Enterprise Design Partner show        |
+| `backlog-p0-p1-p2.md`          | Every audited item assigned ship/repair/simplify/flag/defer + priority  |
+| `outcomes-by-role.md`          | One measurable completion outcome per role                              |
+| `fair-use-policy.md`           | Complimentary Pro limits through 31 Dec 2026 (policy only)              |
 | `metrics-and-defect-policy.md` | North-star, activation events, quality bars, P0/P1 policy, freeze gates |
-| `deferred-register.md` | Append-only list of items explicitly out of launch |
-| `backlog-to-prompts.md` | Backlog → Phase 1–5 prompts + dates |
+| `deferred-register.md`         | Append-only list of items explicitly out of launch                      |
+| `backlog-to-prompts.md`        | Backlog → Phase 1–5 prompts + dates                                     |
 
 ## Freeze gates
 
@@ -39,12 +39,12 @@ Single source of truth for what ships on 14 Aug 2026. Converts the 25 Jul audits
 
 ## Sign-off
 
-| Role | Name | Date | Signature |
-|---|---|---|---|
-| Product | | | |
-| Engineering | | | |
-| Design | | | |
-| Security | | | |
+| Role        | Name | Date | Signature |
+| ----------- | ---- | ---- | --------- |
+| Product     |      |      |           |
+| Engineering |      |      |           |
+| Design      |      |      |           |
+| Security    |      |      |           |
 
 ## Rollback
 

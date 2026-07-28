@@ -48,12 +48,22 @@ export function FoundingAccessBanner({ sourcePage = "/pricing" }: { sourcePage?:
           <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
           <div>
             <p className="font-bold text-foreground">
-              {ent.isFounding ? "Founding Member — Pro access active" : `${ent.tier === "enterprise" ? "Enterprise" : "Pro"} access active`}
+              {ent.isFounding
+                ? "Founding Member — Pro access active"
+                : `${ent.tier === "enterprise" ? "Enterprise" : "Pro"} access active`}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              {ent.expiresAt
-                ? <>Gratis until <span className="font-semibold text-foreground">{FOUNDING_UNTIL_LABEL}</span>{days != null && days > 0 ? ` — ${days} day${days === 1 ? "" : "s"} remaining.` : "."}</>
-                : "Full Pro feature set unlocked across all UseCasesX™ modules."}
+              {ent.expiresAt ? (
+                <>
+                  Gratis until{" "}
+                  <span className="font-semibold text-foreground">{FOUNDING_UNTIL_LABEL}</span>
+                  {days != null && days > 0
+                    ? ` — ${days} day${days === 1 ? "" : "s"} remaining.`
+                    : "."}
+                </>
+              ) : (
+                "Full Pro feature set unlocked across all UseCasesX™ modules."
+              )}
             </p>
           </div>
         </div>
@@ -71,7 +81,8 @@ export function FoundingAccessBanner({ sourcePage = "/pricing" }: { sourcePage?:
             <p className="font-bold text-foreground">Verify your email to unlock founding Pro</p>
             <p className="mt-1 text-sm text-muted-foreground">
               We sent a confirmation link to your inbox. Once verified, sign back in and your
-              founding-member Pro access (gratis until {FOUNDING_UNTIL_LABEL}) is granted automatically.
+              founding-member Pro access (gratis until {FOUNDING_UNTIL_LABEL}) is granted
+              automatically.
             </p>
           </div>
         </div>
@@ -90,7 +101,8 @@ export function FoundingAccessBanner({ sourcePage = "/pricing" }: { sourcePage?:
               <p className="font-bold text-foreground">Join the Free Pro waitlist</p>
               <p className="mt-1 text-sm text-muted-foreground">
                 Your account isn't auto-eligible for instant founding access, but you can request
-                Free Pro (gratis until {FOUNDING_UNTIL_LABEL}). We'll confirm your early-access spot.
+                Free Pro (gratis until {FOUNDING_UNTIL_LABEL}). We'll confirm your early-access
+                spot.
               </p>
             </div>
           </div>

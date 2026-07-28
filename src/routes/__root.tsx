@@ -85,7 +85,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "author", content: "AIgilityX™" },
       { property: "og:site_name", content: "AIgilityX UseCasesX™" },
-      { property: "og:title", content: "AIgilityX UseCasesX™ — AI Use Case Discovery & Value Design Studio" },
+      {
+        property: "og:title",
+        content: "AIgilityX UseCasesX™ — AI Use Case Discovery & Value Design Studio",
+      },
       {
         property: "og:description",
         content:
@@ -93,7 +96,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "AIgilityX UseCasesX™ — AI Use Case Discovery & Value Design Studio" },
+      {
+        name: "twitter:title",
+        content: "AIgilityX UseCasesX™ — AI Use Case Discovery & Value Design Studio",
+      },
       {
         name: "twitter:description",
         content:

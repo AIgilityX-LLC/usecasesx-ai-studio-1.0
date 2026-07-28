@@ -15,7 +15,11 @@ import { Progress } from "@/components/ui/progress";
 import { Loader2, Plus, Trash2, Save, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/data-readiness")({
-  component: () => (<RequirePlan min="pro" feature="Data Readiness"><DataReadinessPage /></RequirePlan>),
+  component: () => (
+    <RequirePlan min="pro" feature="Data Readiness">
+      <DataReadinessPage />
+    </RequirePlan>
+  ),
 });
 
 type DimensionKey =
@@ -30,9 +34,18 @@ const DIMENSIONS: { key: DimensionKey; label: string; hint: string; inverse?: bo
   { key: "availability", label: "Availability", hint: "Is the data accessible today?" },
   { key: "quality", label: "Quality", hint: "Is it clean, accurate, current?" },
   { key: "accessibility", label: "Accessibility", hint: "Can the team get to it easily?" },
-  { key: "privacy_exposure", label: "Privacy Exposure", hint: "Lower is better — invert score", inverse: true },
+  {
+    key: "privacy_exposure",
+    label: "Privacy Exposure",
+    hint: "Lower is better — invert score",
+    inverse: true,
+  },
   { key: "bias_risk", label: "Bias Risk", hint: "Lower is better — invert score", inverse: true },
-  { key: "ownership_clarity", label: "Ownership Clarity", hint: "Is the data owner known and accountable?" },
+  {
+    key: "ownership_clarity",
+    label: "Ownership Clarity",
+    hint: "Is the data owner known and accountable?",
+  },
 ];
 
 type DataSource = {
@@ -70,9 +83,21 @@ const emptySource = (): DataSource => ({
 });
 
 function readinessLevel(score: number) {
-  if (score >= 80) return { label: "High Readiness", tone: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" };
-  if (score >= 60) return { label: "Medium Readiness", tone: "bg-amber-500/15 text-amber-700 dark:text-amber-300" };
-  if (score >= 40) return { label: "Low Readiness", tone: "bg-orange-500/15 text-orange-700 dark:text-orange-300" };
+  if (score >= 80)
+    return {
+      label: "High Readiness",
+      tone: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+    };
+  if (score >= 60)
+    return {
+      label: "Medium Readiness",
+      tone: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
+    };
+  if (score >= 40)
+    return {
+      label: "Low Readiness",
+      tone: "bg-orange-500/15 text-orange-700 dark:text-orange-300",
+    };
   return { label: "Not Ready", tone: "bg-red-500/15 text-red-700 dark:text-red-300" };
 }
 
@@ -135,7 +160,10 @@ function DataReadinessPage() {
 
   const dimensionAverages = useMemo(() => {
     if (sources.length === 0) {
-      return DIMENSIONS.reduce((acc, d) => ({ ...acc, [d.key]: 0 }), {} as Record<DimensionKey, number>);
+      return DIMENSIONS.reduce(
+        (acc, d) => ({ ...acc, [d.key]: 0 }),
+        {} as Record<DimensionKey, number>,
+      );
     }
     const map = (k: keyof DataSource) =>
       sources.reduce((s, src) => s + (src[k] as number), 0) / sources.length;
@@ -145,7 +173,8 @@ function DataReadinessPage() {
       accessibility: map("accessibility"),
       privacy_exposure: 6 - map("privacy_sensitivity"),
       bias_risk: 6 - map("bias_risk"),
-      ownership_clarity: sources.reduce((s, src) => s + (src.owner.trim() ? 5 : 2), 0) / sources.length,
+      ownership_clarity:
+        sources.reduce((s, src) => s + (src.owner.trim() ? 5 : 2), 0) / sources.length,
     } as Record<DimensionKey, number>;
   }, [sources]);
 
@@ -159,13 +188,19 @@ function DataReadinessPage() {
 
   const recommendations = useMemo(() => {
     const recs: string[] = [];
-    if (dimensionAverages.quality < 3.5) recs.push("Improve data quality — clean, validate, and refresh source data.");
+    if (dimensionAverages.quality < 3.5)
+      recs.push("Improve data quality — clean, validate, and refresh source data.");
     if (sources.some((s) => !s.owner.trim())) recs.push("Assign a data owner to every source.");
-    if (sources.some((s) => s.privacy_sensitivity >= 4)) recs.push("Complete a privacy impact review for sensitive data.");
-    if (sources.some((s) => s.bias_risk >= 4)) recs.push("Conduct a bias audit on high-risk data sources.");
-    if (dimensionAverages.accessibility < 3.5) recs.push("Define integration access patterns and approval workflows.");
-    if (sources.some((s) => s.approval_required)) recs.push("Secure required data-use approvals before MVP build.");
-    if (recs.length === 0) recs.push("Data foundation looks healthy — proceed to blueprint and MVP scoping.");
+    if (sources.some((s) => s.privacy_sensitivity >= 4))
+      recs.push("Complete a privacy impact review for sensitive data.");
+    if (sources.some((s) => s.bias_risk >= 4))
+      recs.push("Conduct a bias audit on high-risk data sources.");
+    if (dimensionAverages.accessibility < 3.5)
+      recs.push("Define integration access patterns and approval workflows.");
+    if (sources.some((s) => s.approval_required))
+      recs.push("Secure required data-use approvals before MVP build.");
+    if (recs.length === 0)
+      recs.push("Data foundation looks healthy — proceed to blueprint and MVP scoping.");
     return recs;
   }, [dimensionAverages, sources]);
 
@@ -178,7 +213,9 @@ function DataReadinessPage() {
 
   const handleSave = async () => {
     setSaving(true);
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       toast.error("Please sign in to save.");
       setSaving(false);
@@ -228,7 +265,11 @@ function DataReadinessPage() {
             </Link>
           </Button>
           <Button onClick={handleSave} disabled={saving}>
-            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+            {saving ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
             Save Assessment
           </Button>
         </div>
@@ -252,43 +293,96 @@ function DataReadinessPage() {
                 <div className="grid gap-3 md:grid-cols-2">
                   <div className="space-y-1">
                     <Label>Name</Label>
-                    <Input value={src.name} onChange={(e) => updateSource(src.id, { name: e.target.value })} placeholder="e.g. Customer transactions" />
+                    <Input
+                      value={src.name}
+                      onChange={(e) => updateSource(src.id, { name: e.target.value })}
+                      placeholder="e.g. Customer transactions"
+                    />
                   </div>
                   <div className="space-y-1">
                     <Label>Owner</Label>
-                    <Input value={src.owner} onChange={(e) => updateSource(src.id, { owner: e.target.value })} placeholder="e.g. CDO / Data Steward" />
+                    <Input
+                      value={src.owner}
+                      onChange={(e) => updateSource(src.id, { owner: e.target.value })}
+                      placeholder="e.g. CDO / Data Steward"
+                    />
                   </div>
                   <div className="space-y-1">
                     <Label>Format</Label>
-                    <Input value={src.format} onChange={(e) => updateSource(src.id, { format: e.target.value })} placeholder="CSV, API, DB, document…" />
+                    <Input
+                      value={src.format}
+                      onChange={(e) => updateSource(src.id, { format: e.target.value })}
+                      placeholder="CSV, API, DB, document…"
+                    />
                   </div>
                   <div className="space-y-1">
                     <Label>System / Location</Label>
-                    <Input value={src.location} onChange={(e) => updateSource(src.id, { location: e.target.value })} placeholder="System or path" />
+                    <Input
+                      value={src.location}
+                      onChange={(e) => updateSource(src.id, { location: e.target.value })}
+                      placeholder="System or path"
+                    />
                   </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-3">
-                  <ScoreInput label="Availability" value={src.availability} onChange={(v) => updateSource(src.id, { availability: v })} />
-                  <ScoreInput label="Accessibility" value={src.accessibility} onChange={(v) => updateSource(src.id, { accessibility: v })} />
-                  <ScoreInput label="Quality" value={src.quality} onChange={(v) => updateSource(src.id, { quality: v })} />
-                  <ScoreInput label="Completeness" value={src.completeness} onChange={(v) => updateSource(src.id, { completeness: v })} />
-                  <ScoreInput label="Privacy Sensitivity" value={src.privacy_sensitivity} onChange={(v) => updateSource(src.id, { privacy_sensitivity: v })} />
-                  <ScoreInput label="Bias Risk" value={src.bias_risk} onChange={(v) => updateSource(src.id, { bias_risk: v })} />
-                  <ScoreInput label="Integration Readiness" value={src.integration_readiness} onChange={(v) => updateSource(src.id, { integration_readiness: v })} />
+                  <ScoreInput
+                    label="Availability"
+                    value={src.availability}
+                    onChange={(v) => updateSource(src.id, { availability: v })}
+                  />
+                  <ScoreInput
+                    label="Accessibility"
+                    value={src.accessibility}
+                    onChange={(v) => updateSource(src.id, { accessibility: v })}
+                  />
+                  <ScoreInput
+                    label="Quality"
+                    value={src.quality}
+                    onChange={(v) => updateSource(src.id, { quality: v })}
+                  />
+                  <ScoreInput
+                    label="Completeness"
+                    value={src.completeness}
+                    onChange={(v) => updateSource(src.id, { completeness: v })}
+                  />
+                  <ScoreInput
+                    label="Privacy Sensitivity"
+                    value={src.privacy_sensitivity}
+                    onChange={(v) => updateSource(src.id, { privacy_sensitivity: v })}
+                  />
+                  <ScoreInput
+                    label="Bias Risk"
+                    value={src.bias_risk}
+                    onChange={(v) => updateSource(src.id, { bias_risk: v })}
+                  />
+                  <ScoreInput
+                    label="Integration Readiness"
+                    value={src.integration_readiness}
+                    onChange={(v) => updateSource(src.id, { integration_readiness: v })}
+                  />
                 </div>
 
                 <div className="flex items-center justify-between rounded-md border p-3">
                   <div>
                     <Label className="text-sm">Approval required</Label>
-                    <p className="text-xs text-muted-foreground">Legal, privacy, or data-owner sign-off needed</p>
+                    <p className="text-xs text-muted-foreground">
+                      Legal, privacy, or data-owner sign-off needed
+                    </p>
                   </div>
-                  <Switch checked={src.approval_required} onCheckedChange={(v) => updateSource(src.id, { approval_required: v })} />
+                  <Switch
+                    checked={src.approval_required}
+                    onCheckedChange={(v) => updateSource(src.id, { approval_required: v })}
+                  />
                 </div>
 
                 <div className="space-y-1">
                   <Label>Notes</Label>
-                  <Textarea value={src.notes} onChange={(e) => updateSource(src.id, { notes: e.target.value })} placeholder="Constraints, assumptions, dependencies…" />
+                  <Textarea
+                    value={src.notes}
+                    onChange={(e) => updateSource(src.id, { notes: e.target.value })}
+                    placeholder="Constraints, assumptions, dependencies…"
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -307,7 +401,9 @@ function DataReadinessPage() {
             <CardContent className="space-y-4">
               <div className="text-center">
                 <div className="text-5xl font-bold">{overallScore}</div>
-                <Badge className={`mt-2 ${level.tone}`} variant="secondary">{level.label}</Badge>
+                <Badge className={`mt-2 ${level.tone}`} variant="secondary">
+                  {level.label}
+                </Badge>
               </div>
               <div className="space-y-2">
                 {DIMENSIONS.map((d) => {

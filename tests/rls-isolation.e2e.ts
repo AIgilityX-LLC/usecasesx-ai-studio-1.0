@@ -56,7 +56,8 @@ async function setup(user: Awaited<ReturnType<typeof signIn>>, label: string) {
 async function main() {
   const a = await signIn(userA);
   const b = await signIn(userB);
-  if (a.userId === b.userId) throw new Error("Test misconfigured: both demo accounts resolve to the same user");
+  if (a.userId === b.userId)
+    throw new Error("Test misconfigured: both demo accounts resolve to the same user");
   console.log(`✓ signed in two distinct users (${userA}, ${userB})`);
 
   const aData = await setup(a, "A");
@@ -64,17 +65,33 @@ async function main() {
   console.log("✓ each user provisioned private board + use case");
 
   // A must not read B's board or use case
-  const { data: aSeesBoard } = await a.client.from("use_case_boards").select("id").eq("id", bData.boardId);
-  if (aSeesBoard && aSeesBoard.length > 0) throw new Error("User A can SELECT user B's board (RLS leak)");
-  const { data: aSeesUc } = await a.client.from("ai_use_cases").select("id").eq("id", bData.useCaseId);
-  if (aSeesUc && aSeesUc.length > 0) throw new Error("User A can SELECT user B's ai_use_case (RLS leak)");
+  const { data: aSeesBoard } = await a.client
+    .from("use_case_boards")
+    .select("id")
+    .eq("id", bData.boardId);
+  if (aSeesBoard && aSeesBoard.length > 0)
+    throw new Error("User A can SELECT user B's board (RLS leak)");
+  const { data: aSeesUc } = await a.client
+    .from("ai_use_cases")
+    .select("id")
+    .eq("id", bData.useCaseId);
+  if (aSeesUc && aSeesUc.length > 0)
+    throw new Error("User A can SELECT user B's ai_use_case (RLS leak)");
   console.log("✓ user A cannot read user B's rows");
 
   // B must not read A's rows either
-  const { data: bSeesBoard } = await b.client.from("use_case_boards").select("id").eq("id", aData.boardId);
-  if (bSeesBoard && bSeesBoard.length > 0) throw new Error("User B can SELECT user A's board (RLS leak)");
-  const { data: bSeesUc } = await b.client.from("ai_use_cases").select("id").eq("id", aData.useCaseId);
-  if (bSeesUc && bSeesUc.length > 0) throw new Error("User B can SELECT user A's ai_use_case (RLS leak)");
+  const { data: bSeesBoard } = await b.client
+    .from("use_case_boards")
+    .select("id")
+    .eq("id", aData.boardId);
+  if (bSeesBoard && bSeesBoard.length > 0)
+    throw new Error("User B can SELECT user A's board (RLS leak)");
+  const { data: bSeesUc } = await b.client
+    .from("ai_use_cases")
+    .select("id")
+    .eq("id", aData.useCaseId);
+  if (bSeesUc && bSeesUc.length > 0)
+    throw new Error("User B can SELECT user A's ai_use_case (RLS leak)");
   console.log("✓ user B cannot read user A's rows");
 
   // Cross-tenant UPDATE / DELETE must fail (rowcount 0 under RLS)
@@ -83,7 +100,8 @@ async function main() {
     .update({ title: "HIJACKED by A" })
     .eq("id", bData.useCaseId)
     .select("id");
-  if (hijack && hijack.length > 0) throw new Error("User A UPDATE succeeded on user B's row (RLS bypass)");
+  if (hijack && hijack.length > 0)
+    throw new Error("User A UPDATE succeeded on user B's row (RLS bypass)");
   console.log("✓ cross-tenant UPDATE blocked");
 
   const { data: nuke } = await a.client
@@ -91,7 +109,8 @@ async function main() {
     .delete()
     .eq("id", bData.boardId)
     .select("id");
-  if (nuke && nuke.length > 0) throw new Error("User A DELETE succeeded on user B's board (RLS bypass)");
+  if (nuke && nuke.length > 0)
+    throw new Error("User A DELETE succeeded on user B's board (RLS bypass)");
   console.log("✓ cross-tenant DELETE blocked");
 
   // Cleanup — each user removes their own rows

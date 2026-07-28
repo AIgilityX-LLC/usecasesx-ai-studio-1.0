@@ -67,14 +67,16 @@ const TRIGGERS: Record<
   },
   "ai-strategy-session": {
     title: "Request an AI Strategy Session",
-    description: "Tell us about your priorities and an AIgilityX advisor will reach out to schedule a session.",
+    description:
+      "Tell us about your priorities and an AIgilityX advisor will reach out to schedule a session.",
     cta: "Request Session",
     success: "Thank you. AIgilityX team will contact you for the next step.",
     interest: "AI Strategy Session",
   },
   "custom-use-case": {
     title: "Request a Custom Use Case",
-    description: "Describe the AI use case you're exploring — we'll draft one tailored to your context.",
+    description:
+      "Describe the AI use case you're exploring — we'll draft one tailored to your context.",
     cta: "Request Custom Use Case",
     success: "Thank you. AIgilityX team will draft your custom use case and follow up.",
     interest: "Sector Use Case Pack",
@@ -244,8 +246,7 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
         triggerCase: trigger,
         sourceUseCase: sourceUseCase ?? null,
         sourceUseCaseId: sourceUseCaseId ?? null,
-        sourcePage:
-          sourcePage ?? (typeof window !== "undefined" ? window.location.pathname : null),
+        sourcePage: sourcePage ?? (typeof window !== "undefined" ? window.location.pathname : null),
       };
 
       const result = await saveLeadCapture(payload);
@@ -309,28 +310,49 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
 
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <Field
-                name="fullName" label="Full name" required
-                value={form.fullName} onChange={(v) => set("fullName", v)} error={errors.fullName}
+                name="fullName"
+                label="Full name"
+                required
+                value={form.fullName}
+                onChange={(v) => set("fullName", v)}
+                error={errors.fullName}
               />
               <Field
-                name="email" label="Work email" required type="email"
-                value={form.email} onChange={(v) => set("email", v)} error={errors.email}
+                name="email"
+                label="Work email"
+                required
+                type="email"
+                value={form.email}
+                onChange={(v) => set("email", v)}
+                error={errors.email}
               />
               <Field
-                name="organization" label="Organization"
-                value={form.organization ?? ""} onChange={(v) => set("organization", v)} error={errors.organization}
+                name="organization"
+                label="Organization"
+                value={form.organization ?? ""}
+                onChange={(v) => set("organization", v)}
+                error={errors.organization}
               />
               <Field
-                name="role" label="Role"
-                value={form.role ?? ""} onChange={(v) => set("role", v)} error={errors.role}
+                name="role"
+                label="Role"
+                value={form.role ?? ""}
+                onChange={(v) => set("role", v)}
+                error={errors.role}
               />
               <Field
-                name="country" label="Country"
-                value={form.country ?? ""} onChange={(v) => set("country", v)} error={errors.country}
+                name="country"
+                label="Country"
+                value={form.country ?? ""}
+                onChange={(v) => set("country", v)}
+                error={errors.country}
               />
               <Field
-                name="industry" label="Industry"
-                value={form.industry ?? ""} onChange={(v) => set("industry", v)} error={errors.industry}
+                name="industry"
+                label="Industry"
+                value={form.industry ?? ""}
+                onChange={(v) => set("industry", v)}
+                error={errors.industry}
               />
             </div>
 
@@ -364,9 +386,7 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
                 strategy, governance, and transformation resources.
               </span>
             </label>
-            {errors.consent && (
-              <p className="mt-1 text-xs text-destructive">{errors.consent}</p>
-            )}
+            {errors.consent && <p className="mt-1 text-xs text-destructive">{errors.consent}</p>}
 
             {serverError && (
               <p className="mt-3 rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">
@@ -401,8 +421,16 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
 // Success view
 // -----------------------------------------------------------------------------
 function SuccessView({
-  triggerCase, message, eligible, onClose,
-}: { triggerCase: LeadTriggerCase; message: string; eligible?: boolean | null; onClose: () => void }) {
+  triggerCase,
+  message,
+  eligible,
+  onClose,
+}: {
+  triggerCase: LeadTriggerCase;
+  message: string;
+  eligible?: boolean | null;
+  onClose: () => void;
+}) {
   const foundingMsg =
     triggerCase === "founding-member" && eligible != null
       ? eligible
@@ -500,10 +528,21 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
 }
 
 function Field({
-  name, label, value, onChange, type = "text", required, error,
+  name,
+  label,
+  value,
+  onChange,
+  type = "text",
+  required,
+  error,
 }: {
-  name: string; label: string; value: string; onChange: (v: string) => void;
-  type?: string; required?: boolean; error?: string;
+  name: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  required?: boolean;
+  error?: string;
 }) {
   return (
     <label className="block">
@@ -522,10 +561,19 @@ function Field({
 }
 
 function SelectField({
-  name, label, value, onChange, options, error,
+  name,
+  label,
+  value,
+  onChange,
+  options,
+  error,
 }: {
-  name: string; label: string; value: string; onChange: (v: string) => void;
-  options: string[]; error?: string;
+  name: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
+  error?: string;
 }) {
   return (
     <label className="mt-4 block">
@@ -538,7 +586,9 @@ function SelectField({
       >
         <option value="">Select an interest area…</option>
         {options.map((o) => (
-          <option key={o} value={o}>{o}</option>
+          <option key={o} value={o}>
+            {o}
+          </option>
         ))}
       </select>
       {error && <p className="mt-1 text-[11px] text-destructive">{error}</p>}
@@ -547,10 +597,19 @@ function SelectField({
 }
 
 function TextareaField({
-  name, label, value, onChange, error, placeholder,
+  name,
+  label,
+  value,
+  onChange,
+  error,
+  placeholder,
 }: {
-  name: string; label: string; value: string; onChange: (v: string) => void;
-  error?: string; placeholder?: string;
+  name: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  error?: string;
+  placeholder?: string;
 }) {
   return (
     <label className="mt-4 block">

@@ -8,7 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import {
   getOrganizationSetupFn,
@@ -51,8 +57,16 @@ const UNIT_TYPES = [
 ] as const;
 
 const TAXONOMY_PANELS = [
-  { table: "taxonomy_processes", title: "Processes", hint: "Business processes an opportunity improves." },
-  { table: "taxonomy_strategic_themes", title: "Strategic themes", hint: "Strategy pillars an opportunity supports." },
+  {
+    table: "taxonomy_processes",
+    title: "Processes",
+    hint: "Business processes an opportunity improves.",
+  },
+  {
+    table: "taxonomy_strategic_themes",
+    title: "Strategic themes",
+    hint: "Strategy pillars an opportunity supports.",
+  },
   { table: "taxonomy_value_themes", title: "Value themes", hint: "Where the value shows up." },
 ] as const;
 
@@ -118,7 +132,11 @@ function OrganizationSetupPage() {
 
   if (query.isPending) {
     return (
-      <div role="status" aria-live="polite" className="mx-auto max-w-[1200px] px-6 py-16 text-sm text-muted-foreground">
+      <div
+        role="status"
+        aria-live="polite"
+        className="mx-auto max-w-[1200px] px-6 py-16 text-sm text-muted-foreground"
+      >
         <Loader2 className="mr-2 inline h-4 w-4 animate-spin" aria-hidden />
         Loading organization setup…
       </div>
@@ -145,8 +163,8 @@ function OrganizationSetupPage() {
         </h1>
         <p className="max-w-2xl text-sm text-muted-foreground">
           {data?.organization?.name ? `${data.organization.name} — ` : ""}
-          add the departments, teams or programs you plan to map opportunities to. The same structure supports
-          multi-company groups later without re-modelling your data.
+          add the departments, teams or programs you plan to map opportunities to. The same
+          structure supports multi-company groups later without re-modelling your data.
         </p>
         {!canManage && (
           <p className="text-sm text-muted-foreground">
@@ -272,7 +290,10 @@ function OrganizationSetupPage() {
         </CardHeader>
         <CardContent className="grid gap-6 sm:grid-cols-2">
           <ReadOnlyList title="Risk levels" entries={(data?.taxonomy as any)?.risk_levels ?? []} />
-          <ReadOnlyList title="Lifecycle stages" entries={(data?.taxonomy as any)?.lifecycle_stages ?? []} />
+          <ReadOnlyList
+            title="Lifecycle stages"
+            entries={(data?.taxonomy as any)?.lifecycle_stages ?? []}
+          />
         </CardContent>
       </Card>
     </div>
@@ -335,7 +356,12 @@ function TaxonomyPanel({
               onChange={(e) => setName(e.target.value)}
               placeholder="Add your own…"
             />
-            <Button type="submit" size="icon" disabled={busy || !name.trim()} aria-label={`Add ${title} entry`}>
+            <Button
+              type="submit"
+              size="icon"
+              disabled={busy || !name.trim()}
+              aria-label={`Add ${title} entry`}
+            >
               <Plus className="h-4 w-4" aria-hidden />
             </Button>
           </form>
@@ -348,7 +374,10 @@ function TaxonomyPanel({
               <li key={e.id} className="flex items-center justify-between gap-2 text-sm">
                 <span className="truncate">{e.name}</span>
                 <span className="flex items-center gap-1">
-                  <Badge variant={e.organization_id ? "default" : "outline"} className="text-[10px]">
+                  <Badge
+                    variant={e.organization_id ? "default" : "outline"}
+                    className="text-[10px]"
+                  >
                     {e.organization_id ? "Private" : "Shared"}
                   </Badge>
                   {canManage && e.organization_id && (

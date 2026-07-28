@@ -52,11 +52,8 @@ export function RequirePlan({ min, feature, children }: Props) {
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
             Your current plan is{" "}
-            <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
-              {plan.tier}
-            </code>
-            . Upgrade to unlock {feature ?? "this module"} inside the AIgilityX
-            AI Use Case Studio™.
+            <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">{plan.tier}</code>.
+            Upgrade to unlock {feature ?? "this module"} inside the AIgilityX AI Use Case Studio™.
           </p>
           <div className="mt-6 flex gap-3">
             <Button asChild>

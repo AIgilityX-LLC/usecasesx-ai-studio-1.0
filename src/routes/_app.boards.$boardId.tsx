@@ -4,28 +4,64 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import {
-  ArrowLeft, Loader2, Plus, ExternalLink, Sparkles, ShieldAlert, FileQuestion,
-  Pencil, Trash2, ArrowUp, ArrowDown, X, Library, GripVertical, Search,
+  ArrowLeft,
+  Loader2,
+  Plus,
+  ExternalLink,
+  Sparkles,
+  ShieldAlert,
+  FileQuestion,
+  Pencil,
+  Trash2,
+  ArrowUp,
+  ArrowDown,
+  X,
+  Library,
+  GripVertical,
+  Search,
 } from "lucide-react";
 import { CalendarClock, History, ListChecks, Clock } from "lucide-react";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import {
-  createBoardUseCase, listSavedCatalogUseCases, addSavedUseCaseToBoard,
-  renameBoard, deleteBoard, removeBoardUseCase, reorderBoardUseCases,
-  DuplicateBoardItemError, listRepositoryUseCasesForBoard,
+  createBoardUseCase,
+  listSavedCatalogUseCases,
+  addSavedUseCaseToBoard,
+  renameBoard,
+  deleteBoard,
+  removeBoardUseCase,
+  reorderBoardUseCases,
+  DuplicateBoardItemError,
+  listRepositoryUseCasesForBoard,
 } from "@/lib/boards";
-import { loadBoardWithItems, type LoadedBoardItem, type LoadedBoard, type BoardAuditNote } from "@/lib/boards.functions";
+import {
+  loadBoardWithItems,
+  type LoadedBoardItem,
+  type LoadedBoard,
+  type BoardAuditNote,
+} from "@/lib/boards.functions";
 import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/_app/boards/$boardId")({
@@ -70,13 +106,17 @@ function BoardDetailPage() {
   if (board.error || !board.data) {
     const err: any = board.error;
     const kind: "forbidden" | "not_found" | "error" =
-      err?.kind ?? err?.cause?.kind ??
+      err?.kind ??
+      err?.cause?.kind ??
       (err?.statusCode === 403 ? "forbidden" : err?.statusCode === 404 ? "not_found" : "error");
-    const Icon = kind === "forbidden" ? ShieldAlert : kind === "not_found" ? FileQuestion : ShieldAlert;
+    const Icon =
+      kind === "forbidden" ? ShieldAlert : kind === "not_found" ? FileQuestion : ShieldAlert;
     const heading =
-      kind === "forbidden" ? "Access denied"
-      : kind === "not_found" ? "Board not found"
-      : "Couldn't load this board";
+      kind === "forbidden"
+        ? "Access denied"
+        : kind === "not_found"
+          ? "Board not found"
+          : "Couldn't load this board";
     return (
       <div className="mx-auto max-w-2xl px-6 py-20 text-center">
         <Icon className="mx-auto h-10 w-10 text-muted-foreground/70" />
@@ -85,7 +125,9 @@ function BoardDetailPage() {
           {err?.message ?? "An unexpected error prevented this board from loading."}
         </p>
         <div className="mt-6 flex justify-center gap-2">
-          <Button variant="outline" onClick={() => board.refetch()}>Try again</Button>
+          <Button variant="outline" onClick={() => board.refetch()}>
+            Try again
+          </Button>
           <Button asChild>
             <Link to="/boards">← All boards</Link>
           </Button>
@@ -162,7 +204,9 @@ function BoardDetailPage() {
 }
 
 function BoardMetadataPanel({
-  board, itemCount, auditNotes,
+  board,
+  itemCount,
+  auditNotes,
 }: {
   board: LoadedBoard;
   itemCount: number;
@@ -170,7 +214,11 @@ function BoardMetadataPanel({
 }) {
   const fmt = (iso: string) =>
     new Date(iso).toLocaleString(undefined, {
-      year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   return (
     <div className="grid gap-5 lg:grid-cols-3">
@@ -227,11 +275,16 @@ function auditActionLabel(eventType: string): string {
 
 function auditLabelClass(label: string): string {
   switch (label) {
-    case "Removed": return "bg-destructive/10 text-destructive";
-    case "Added": return "bg-primary/10 text-primary";
-    case "Updated": return "bg-amber-500/10 text-amber-600 dark:text-amber-400";
-    case "Reordered": return "bg-secondary text-muted-foreground";
-    default: return "bg-secondary text-muted-foreground";
+    case "Removed":
+      return "bg-destructive/10 text-destructive";
+    case "Added":
+      return "bg-primary/10 text-primary";
+    case "Updated":
+      return "bg-amber-500/10 text-amber-600 dark:text-amber-400";
+    case "Reordered":
+      return "bg-secondary text-muted-foreground";
+    default:
+      return "bg-secondary text-muted-foreground";
   }
 }
 
@@ -248,8 +301,12 @@ function relativeTime(iso: string): string {
 }
 
 function AuditNotesPanel({
-  auditNotes, fmt,
-}: { auditNotes: BoardAuditNote[]; fmt: (iso: string) => string }) {
+  auditNotes,
+  fmt,
+}: {
+  auditNotes: BoardAuditNote[];
+  fmt: (iso: string) => string;
+}) {
   const [visible, setVisible] = useState(AUDIT_PAGE_SIZE);
   const shown = auditNotes.slice(0, visible);
   return (
@@ -270,7 +327,9 @@ function AuditNotesPanel({
                 <li key={n.id} className="flex items-start gap-3 border-l-2 border-primary/40 pl-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${auditLabelClass(label)}`}>
+                      <span
+                        className={`rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${auditLabelClass(label)}`}
+                      >
                         {label}
                       </span>
                       <p className="text-sm font-medium capitalize text-foreground">{n.summary}</p>
@@ -300,7 +359,15 @@ function AuditNotesPanel({
   );
 }
 
-function BoardItemList({ boardId, items, userId }: { boardId: string; items: LoadedBoardItem[]; userId: string }) {
+function BoardItemList({
+  boardId,
+  items,
+  userId,
+}: {
+  boardId: string;
+  items: LoadedBoardItem[];
+  userId: string;
+}) {
   const qc = useQueryClient();
   // Local order for snappy reordering; resynced when server items change.
   const [order, setOrder] = useState<LoadedBoardItem[]>(items);
@@ -379,8 +446,14 @@ function BoardItemList({ boardId, items, userId }: { boardId: string; items: Loa
           key={uc.id}
           draggable
           onDragStart={() => setDragIndex(index)}
-          onDragOver={(e) => { e.preventDefault(); setOverIndex(index); }}
-          onDragEnd={() => { setDragIndex(null); setOverIndex(null); }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setOverIndex(index);
+          }}
+          onDragEnd={() => {
+            setDragIndex(null);
+            setOverIndex(null);
+          }}
           onDrop={(e) => {
             e.preventDefault();
             if (dragIndex !== null) commitDrop(dragIndex, index);
@@ -394,7 +467,10 @@ function BoardItemList({ boardId, items, userId }: { boardId: string; items: Loa
           } ${dragIndex === index ? "opacity-50" : ""}`}
         >
           <div className="flex flex-col items-center gap-1 pt-0.5">
-            <span className="cursor-grab text-muted-foreground/60 active:cursor-grabbing" aria-hidden>
+            <span
+              className="cursor-grab text-muted-foreground/60 active:cursor-grabbing"
+              aria-hidden
+            >
               <GripVertical className="h-4 w-4" />
             </span>
             <button
@@ -456,12 +532,18 @@ function BoardItemList({ boardId, items, userId }: { boardId: string; items: Loa
         </div>
       ))}
 
-      <AlertDialog open={!!pendingRemove} onOpenChange={(o) => { if (!o) setPendingRemove(null); }}>
+      <AlertDialog
+        open={!!pendingRemove}
+        onOpenChange={(o) => {
+          if (!o) setPendingRemove(null);
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Remove use case from board?</AlertDialogTitle>
             <AlertDialogDescription>
-              “{pendingRemove?.title}” will be removed from this board. You can undo this from the toast right after.
+              “{pendingRemove?.title}” will be removed from this board. You can undo this from the
+              toast right after.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -485,8 +567,14 @@ function BoardItemList({ boardId, items, userId }: { boardId: string; items: Loa
 }
 
 function RenameBoardDialog({
-  boardId, currentTitle, currentDescription,
-}: { boardId: string; currentTitle: string; currentDescription: string | null }) {
+  boardId,
+  currentTitle,
+  currentDescription,
+}: {
+  boardId: string;
+  currentTitle: string;
+  currentDescription: string | null;
+}) {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState(currentTitle);
@@ -637,7 +725,9 @@ function AddItemDialog({ userId, boardId }: { userId: string; boardId: string })
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add a use case to this board</DialogTitle>
-          <DialogDescription>Start with a title; you can build the rest in Studio.</DialogDescription>
+          <DialogDescription>
+            Start with a title; you can build the rest in Studio.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
@@ -747,11 +837,7 @@ function AddSavedDialog({ userId, boardId }: { userId: string; boardId: string }
                   <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.summary}</div>
                 )}
               </div>
-              <Button
-                size="sm"
-                onClick={() => add.mutate(s.use_case_id)}
-                disabled={add.isPending}
-              >
+              <Button size="sm" onClick={() => add.mutate(s.use_case_id)} disabled={add.isPending}>
                 {add.isPending && <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />}
                 Add
               </Button>
@@ -759,7 +845,9 @@ function AddSavedDialog({ userId, boardId }: { userId: string; boardId: string }
           ))}
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)}>Close</Button>
+          <Button variant="ghost" onClick={() => setOpen(false)}>
+            Close
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -808,7 +896,8 @@ function AddFromRepositoryDialog({ userId, boardId }: { userId: string; boardId:
           await addSavedUseCaseToBoard({ userId, boardId, catalogUseCaseId: id });
           added += 1;
         } catch (e: any) {
-          if (e instanceof DuplicateBoardItemError || e?.name === "DuplicateBoardItemError") dupes += 1;
+          if (e instanceof DuplicateBoardItemError || e?.name === "DuplicateBoardItemError")
+            dupes += 1;
           else throw e;
         }
       }
@@ -837,7 +926,13 @@ function AddFromRepositoryDialog({ userId, boardId }: { userId: string; boardId:
   };
 
   return (
-    <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSelected(new Set()); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) setSelected(new Set());
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="outline" className="gap-1.5">
           <Library className="h-4 w-4" /> Add from Repository
@@ -847,7 +942,8 @@ function AddFromRepositoryDialog({ userId, boardId }: { userId: string; boardId:
         <DialogHeader>
           <DialogTitle>Add use cases from the repository</DialogTitle>
           <DialogDescription>
-            Select one or more use cases to add to this board. Items already on the board are disabled to prevent duplicates.
+            Select one or more use cases to add to this board. Items already on the board are
+            disabled to prevent duplicates.
           </DialogDescription>
         </DialogHeader>
         <div className="relative">
@@ -893,19 +989,29 @@ function AddFromRepositoryDialog({ userId, boardId }: { userId: string; boardId:
                 disabled={r.already_on_board}
                 onClick={() => toggle(r.use_case_id)}
                 className={`flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-                  isSelected ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border bg-card hover:border-primary/40"
+                  isSelected
+                    ? "border-primary bg-primary/5 ring-1 ring-primary"
+                    : "border-border bg-card hover:border-primary/40"
                 }`}
               >
                 <span
                   className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded border text-[11px] font-bold ${
-                    isSelected ? "border-primary bg-primary text-primary-foreground" : "border-border text-transparent"
+                    isSelected
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border text-transparent"
                   }`}
                 >
                   ✓
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-semibold text-foreground">{r.title}</span>
-                  {r.summary && <span className="mt-1 line-clamp-2 block text-xs text-muted-foreground">{r.summary}</span>}
+                  <span className="block truncate text-sm font-semibold text-foreground">
+                    {r.title}
+                  </span>
+                  {r.summary && (
+                    <span className="mt-1 line-clamp-2 block text-xs text-muted-foreground">
+                      {r.summary}
+                    </span>
+                  )}
                 </span>
                 {r.already_on_board && (
                   <span className="shrink-0 rounded-md bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
@@ -917,8 +1023,13 @@ function AddFromRepositoryDialog({ userId, boardId }: { userId: string; boardId:
           })}
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)} disabled={add.isPending}>Cancel</Button>
-          <Button onClick={() => add.mutate([...selected])} disabled={add.isPending || selected.size === 0}>
+          <Button variant="ghost" onClick={() => setOpen(false)} disabled={add.isPending}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => add.mutate([...selected])}
+            disabled={add.isPending || selected.size === 0}
+          >
             {add.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Add {selected.size > 0 ? `${selected.size} ` : ""}to board
           </Button>

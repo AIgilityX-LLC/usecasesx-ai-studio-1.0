@@ -20,7 +20,11 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/c3g-governance")({
-  component: () => (<RequirePlan min="pro" feature="C3G™ governance"><C3GGovernancePage /></RequirePlan>),
+  component: () => (
+    <RequirePlan min="pro" feature="C3G™ governance">
+      <C3GGovernancePage />
+    </RequirePlan>
+  ),
 });
 
 const RISK_OPTIONS = [
@@ -104,10 +108,7 @@ function C3GGovernancePage() {
     })();
   }, [useCaseId]);
 
-  const toggle = (
-    group: "controls" | "frameworks" | "approvals",
-    key: string,
-  ) =>
+  const toggle = (group: "controls" | "frameworks" | "approvals", key: string) =>
     setData((d) => ({
       ...d,
       [group]: { ...d[group], [key]: !d[group][key] },
@@ -143,12 +144,10 @@ function C3GGovernancePage() {
     <div className="mx-auto max-w-6xl space-y-6 p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            C3G™ Governance
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">C3G™ Governance</h1>
           <p className="max-w-2xl text-muted-foreground">
-            Prepare this AI use case for governance, risk, compliance, approval,
-            and audit through CyberX Sovereign AI C3G™.
+            Prepare this AI use case for governance, risk, compliance, approval, and audit through
+            CyberX Sovereign AI C3G™.
           </p>
           {existing && (
             <Badge
@@ -161,10 +160,7 @@ function C3GGovernancePage() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" asChild>
-            <Link
-              to="/studio/use-case/$id/advisorx"
-              params={{ id: useCaseId }}
-            >
+            <Link to="/studio/use-case/$id/advisorx" params={{ id: useCaseId }}>
               ← AdvisorX
             </Link>
           </Button>
@@ -256,9 +252,7 @@ function C3GGovernancePage() {
             <div className="rounded-md bg-primary/10 p-2 text-primary">
               <ClipboardCheck className="h-5 w-5" />
             </div>
-            <CardTitle className="text-base">
-              Approval Workflow Readiness
-            </CardTitle>
+            <CardTitle className="text-base">Approval Workflow Readiness</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {APPROVAL_OPTIONS.map((a) => (
@@ -289,9 +283,7 @@ function C3GGovernancePage() {
             id="notes"
             rows={4}
             value={data.notes}
-            onChange={(e) =>
-              setData((d) => ({ ...d, notes: e.target.value }))
-            }
+            onChange={(e) => setData((d) => ({ ...d, notes: e.target.value }))}
             placeholder="Context, residual risks, conditions, or approver comments…"
           />
         </CardContent>
@@ -299,12 +291,8 @@ function C3GGovernancePage() {
 
       <Card className="border-dashed">
         <CardContent className="pt-6 text-sm text-muted-foreground">
-          Full C3G integration (live policy sync, approval routing, audit log
-          export) can be enabled in{" "}
-          <span className="font-medium text-foreground">
-            Enterprise configuration
-          </span>
-          .
+          Full C3G integration (live policy sync, approval routing, audit log export) can be enabled
+          in <span className="font-medium text-foreground">Enterprise configuration</span>.
         </CardContent>
       </Card>
 

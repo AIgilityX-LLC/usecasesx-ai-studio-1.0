@@ -65,20 +65,11 @@ export type EntitlementDefinition = {
   platformAdminBypass?: boolean;
 };
 
-const ALL_MEMBERS: WorkspaceRole[] = [
-  "owner",
-  "admin",
-  "contributor",
-  "facilitator",
-  "viewer",
-];
+const ALL_MEMBERS: WorkspaceRole[] = ["owner", "admin", "contributor", "facilitator", "viewer"];
 const EDITORS: WorkspaceRole[] = ["owner", "admin", "contributor", "facilitator"];
 const MANAGERS: WorkspaceRole[] = ["owner", "admin"];
 
-export const ENTITLEMENT_CATALOGUE: Record<
-  EntitlementKey,
-  EntitlementDefinition
-> = {
+export const ENTITLEMENT_CATALOGUE: Record<EntitlementKey, EntitlementDefinition> = {
   "repository.browse": {
     key: "repository.browse",
     label: "Browse the repository",
@@ -304,9 +295,7 @@ export const ENTITLEMENT_CATALOGUE: Record<
   },
 };
 
-export const ENTITLEMENT_KEYS = Object.keys(
-  ENTITLEMENT_CATALOGUE,
-) as EntitlementKey[];
+export const ENTITLEMENT_KEYS = Object.keys(ENTITLEMENT_CATALOGUE) as EntitlementKey[];
 
 export function isEntitlementKey(value: string): value is EntitlementKey {
   return Object.prototype.hasOwnProperty.call(ENTITLEMENT_CATALOGUE, value);

@@ -14,7 +14,11 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Sparkles, FileDown, FileText, Send, ShieldCheck, Bot, Save } from "lucide-react";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/blueprint")({
-  component: () => (<RequirePlan min="pro" feature="Blueprint Builder"><BlueprintPage /></RequirePlan>),
+  component: () => (
+    <RequirePlan min="pro" feature="Blueprint Builder">
+      <BlueprintPage />
+    </RequirePlan>
+  ),
 });
 
 const SECTIONS = [
@@ -48,7 +52,13 @@ const emptyBlueprint = (): Blueprint =>
 // Map our 19 sections onto the blueprints table columns by packing related sections together.
 const COLUMN_MAP: Record<string, SectionKey[]> = {
   executive_summary: ["executive_summary"],
-  business_case: ["problem_statement", "strategic_alignment", "target_users", "current_state", "future_state"],
+  business_case: [
+    "problem_statement",
+    "strategic_alignment",
+    "target_users",
+    "current_state",
+    "future_state",
+  ],
   technical_scope: ["ai_approach", "pilot_scope"],
   data_requirements: ["data_sources", "data_readiness_summary"],
   model_approach: ["mvp_prediction", "feasibility_summary"],
@@ -135,7 +145,9 @@ function BlueprintPage() {
 
       const arr = (v: any): any[] => (Array.isArray(v) ? v : []);
       const bullets = (items: any[], fallback = "—") =>
-        items.length ? items.map((i) => `• ${typeof i === "string" ? i : JSON.stringify(i)}`).join("\n") : fallback;
+        items.length
+          ? items.map((i) => `• ${typeof i === "string" ? i : JSON.stringify(i)}`).join("\n")
+          : fallback;
 
       const feasText = feas
         ? `Total Score: ${feas.total_score ?? "—"} / 100 — Recommendation: ${feas.recommendation ?? "—"}\n` +
@@ -157,25 +169,31 @@ function BlueprintPage() {
           `Recommendations:\n${bullets(arr(dr.mitigation_recommendations))}`
         : "Complete the Data Readiness module to populate this section.";
 
-      const sources = arr(dr?.missing_data_gaps)
-        .map((s: any) => `• ${s.name || "Unnamed"} — owner: ${s.owner || "TBD"} (${s.format || "format TBD"})`)
-        .join("\n") || bullets(arr(uc?.data_sources));
+      const sources =
+        arr(dr?.missing_data_gaps)
+          .map(
+            (s: any) =>
+              `• ${s.name || "Unnamed"} — owner: ${s.owner || "TBD"} (${s.format || "format TBD"})`,
+          )
+          .join("\n") || bullets(arr(uc?.data_sources));
 
       const score = Number(feas?.total_score ?? 0);
-      const recommendation = score >= 80
-        ? "Pursue — proceed to pilot with full governance."
-        : score >= 60
-        ? "Refine — strengthen weakest pillar before pilot."
-        : score >= 40
-        ? "Hold — re-scope or re-assess data and value."
-        : feas
-        ? "Reject — fundamentals not in place."
-        : "Complete feasibility and data readiness assessments to receive a recommendation.";
+      const recommendation =
+        score >= 80
+          ? "Pursue — proceed to pilot with full governance."
+          : score >= 60
+            ? "Refine — strengthen weakest pillar before pilot."
+            : score >= 40
+              ? "Hold — re-scope or re-assess data and value."
+              : feas
+                ? "Reject — fundamentals not in place."
+                : "Complete feasibility and data readiness assessments to receive a recommendation.";
 
       setBlueprint({
         executive_summary: `${uc?.title ?? "AI Use Case"} — ${uc?.problem_statement ?? ""}\n\nProposed AI approach: ${uc?.ai_type ?? "TBD"}. Feasibility ${feas?.total_score ?? "—"}/100, Data Readiness ${dr?.overall_data_readiness_score ?? "—"}/100.`,
         problem_statement: uc?.problem_statement ?? "",
-        strategic_alignment: "Aligns with organizational AI strategy and priority outcomes. Replace with specific strategy references.",
+        strategic_alignment:
+          "Aligns with organizational AI strategy and priority outcomes. Replace with specific strategy references.",
         target_users: uc?.beneficiaries ?? bullets(arr(uc?.stakeholders)),
         current_state: uc?.current_state ?? "",
         future_state: uc?.future_state ?? "",
@@ -188,11 +206,17 @@ function BlueprintPage() {
         expected_benefits: bullets(arr(uc?.expected_benefits)),
         kpis: bullets(arr(uc?.kpis)),
         risks_governance: `Risks:\n${bullets(arr(uc?.risks))}\n\nControls:\n${bullets(arr(uc?.controls))}`,
-        oversight_plan: "Human-in-the-loop review for high-impact predictions; clear escalation, override, and audit logging.",
-        mvp_prediction: uc?.minimum_viable_prediction ?? "Define the single most valuable prediction to validate first.",
-        pilot_scope: uc?.mvp_scope ?? "Define scope, users, duration, success criteria, and exit conditions.",
-        roadmap: "Phase 1: Discovery (4 wks)\nPhase 2: Data & Prototype (6 wks)\nPhase 3: Pilot (8 wks)\nPhase 4: Scale & Govern (ongoing).",
-        budget: "Estimate covering data engineering, modeling, MLOps, governance, change management, and contingency.",
+        oversight_plan:
+          "Human-in-the-loop review for high-impact predictions; clear escalation, override, and audit logging.",
+        mvp_prediction:
+          uc?.minimum_viable_prediction ??
+          "Define the single most valuable prediction to validate first.",
+        pilot_scope:
+          uc?.mvp_scope ?? "Define scope, users, duration, success criteria, and exit conditions.",
+        roadmap:
+          "Phase 1: Discovery (4 wks)\nPhase 2: Data & Prototype (6 wks)\nPhase 3: Pilot (8 wks)\nPhase 4: Scale & Govern (ongoing).",
+        budget:
+          "Estimate covering data engineering, modeling, MLOps, governance, change management, and contingency.",
         recommendation,
       });
       setEditing(true);
@@ -213,7 +237,10 @@ function BlueprintPage() {
       .eq("use_case_id", useCaseId)
       .maybeSingle();
     const { error } = existing
-      ? await supabase.from("blueprints").update(packed as any).eq("id", existing.id)
+      ? await supabase
+          .from("blueprints")
+          .update(packed as any)
+          .eq("id", existing.id)
       : await supabase.from("blueprints").insert({ use_case_id: useCaseId, ...packed } as any);
     setSaving(false);
     if (error) {
@@ -261,12 +288,15 @@ function BlueprintPage() {
 
   const exportWord = async () => {
     const children = [
-      new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun("AI Use Case Blueprint")] }),
+      new Paragraph({
+        heading: HeadingLevel.HEADING_1,
+        children: [new TextRun("AI Use Case Blueprint")],
+      }),
       ...SECTIONS.flatMap(({ key, label }) => [
         new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun(label)] }),
-        ...(blueprint[key] || "—").split("\n").map(
-          (line) => new Paragraph({ children: [new TextRun(line)] }),
-        ),
+        ...(blueprint[key] || "—")
+          .split("\n")
+          .map((line) => new Paragraph({ children: [new TextRun(line)] })),
       ]),
     ];
     const doc = new Document({ sections: [{ children }] });
@@ -293,7 +323,11 @@ function BlueprintPage() {
   };
 
   const wordCount = useMemo(
-    () => Object.values(blueprint).reduce((n, t) => n + (t?.trim() ? t.trim().split(/\s+/).length : 0), 0),
+    () =>
+      Object.values(blueprint).reduce(
+        (n, t) => n + (t?.trim() ? t.trim().split(/\s+/).length : 0),
+        0,
+      ),
     [blueprint],
   );
 
@@ -311,12 +345,20 @@ function BlueprintPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">AI Use Case Blueprint</h1>
           <p className="text-muted-foreground">
-            A structured, fundable, governable specification — generated from your canvas, feasibility, and data readiness.
+            A structured, fundable, governable specification — generated from your canvas,
+            feasibility, and data readiness.
           </p>
           <div className="mt-2 flex gap-2 text-xs">
             <Badge variant="secondary">{SECTIONS.length} sections</Badge>
             <Badge variant="secondary">{wordCount} words</Badge>
-            {hasSaved && <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" variant="secondary">Saved</Badge>}
+            {hasSaved && (
+              <Badge
+                className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                variant="secondary"
+              >
+                Saved
+              </Badge>
+            )}
           </div>
         </div>
         <div className="flex flex-wrap justify-end gap-2">
@@ -336,14 +378,22 @@ function BlueprintPage() {
       <Card>
         <CardContent className="flex flex-wrap gap-2 pt-6">
           <Button onClick={handleGenerate} disabled={generating}>
-            {generating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+            {generating ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Sparkles className="mr-2 h-4 w-4" />
+            )}
             Generate Blueprint
           </Button>
           <Button variant="outline" onClick={() => setEditing((v) => !v)}>
             {editing ? "Preview Blueprint" : "Edit Blueprint"}
           </Button>
           <Button variant="outline" onClick={handleSave} disabled={saving}>
-            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+            {saving ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
             Save
           </Button>
           <Button variant="outline" onClick={exportPDF}>

@@ -7,8 +7,7 @@ import {
 import { trackCTAEvent } from "./usecasex.tracking";
 import { isEligibleEmail } from "./entitlements";
 
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export interface LeadCapturePayload {
   fullName: string;

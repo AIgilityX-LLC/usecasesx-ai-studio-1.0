@@ -43,7 +43,11 @@ export function CompareToggle({ slug, className = "" }: { slug: string; classNam
       type="button"
       onClick={() => {
         compareStore.toggle(slug);
-        void trackModuleEvent("repository", "click", { interaction: "add_to_compare", slug, active: !active });
+        void trackModuleEvent("repository", "click", {
+          interaction: "add_to_compare",
+          slug,
+          active: !active,
+        });
       }}
       disabled={full}
       className={
@@ -54,7 +58,13 @@ export function CompareToggle({ slug, className = "" }: { slug: string; classNam
         " " +
         className
       }
-      title={full ? `Compare is full (max ${compareStore.MAX})` : active ? "Remove from compare" : "Add to compare"}
+      title={
+        full
+          ? `Compare is full (max ${compareStore.MAX})`
+          : active
+            ? "Remove from compare"
+            : "Add to compare"
+      }
     >
       {active ? "✓ In compare" : full ? "Compare full" : "Add to compare"}
     </button>

@@ -22,7 +22,12 @@ import type { UseCaseCardData } from "@/components/UseCaseCard";
 import { Link } from "@tanstack/react-router";
 import { Can } from "@/components/Can";
 import { SEGMENTS, SECTORS } from "@/lib/segments";
-import { derivePriority, deriveRoiRange, industrySlugsOf, segmentsForIndustries } from "@/lib/usecasex.derive";
+import {
+  derivePriority,
+  deriveRoiRange,
+  industrySlugsOf,
+  segmentsForIndustries,
+} from "@/lib/usecasex.derive";
 
 const sortValues = ["relevant", "value", "complexity", "risk", "ttv", "newest"] as const;
 type SortKey = (typeof sortValues)[number];
@@ -87,10 +92,13 @@ const taxQ = queryOptions({
 
 function mapSort(s: SortKey | undefined): "recent" | "impact" | "maturity" | "featured" {
   switch (s) {
-    case "value": return "impact";
-    case "newest": return "recent";
+    case "value":
+      return "impact";
+    case "newest":
+      return "recent";
     case "relevant":
-    default: return "recent";
+    default:
+      return "recent";
   }
 }
 
@@ -98,13 +106,19 @@ export const Route = createFileRoute("/_app/repository")({
   head: () => ({
     meta: [
       { title: "Explore 1000+ AI Use Cases — UseCasesX™" },
-      { name: "description", content: "Filter AI, GenAI, Agentic AI and automation use cases by industry, function, value, complexity, risk and readiness." },
+      {
+        name: "description",
+        content:
+          "Filter AI, GenAI, Agentic AI and automation use cases by industry, function, value, complexity, risk and readiness.",
+      },
     ],
   }),
   validateSearch: searchSchema,
   loader: ({ context }) => context.queryClient.ensureQueryData(taxQ),
   component: Page,
-  errorComponent: ({ error }) => <div className="p-12 text-center text-destructive">{error.message}</div>,
+  errorComponent: ({ error }) => (
+    <div className="p-12 text-center text-destructive">{error.message}</div>
+  ),
   notFoundComponent: () => <div className="p-12 text-center">Not found</div>,
 });
 
@@ -122,7 +136,11 @@ function Page() {
   const handleAddToBoard = (c: UseCaseCardData) => {
     if (!plan.isAuthed) {
       toast.message("Sign in to add patterns to a Studio Board.");
-      void trackModuleEvent("repository", "lock_attempt", { interaction: "add_to_studio_board", reason: "unauthenticated", use_case_id: c.id });
+      void trackModuleEvent("repository", "lock_attempt", {
+        interaction: "add_to_studio_board",
+        reason: "unauthenticated",
+        use_case_id: c.id,
+      });
       return;
     }
     if (isLite && c.visibility === "pro") {
@@ -130,11 +148,18 @@ function Page() {
         description: "Upgrade to unlock all premium AI use case patterns.",
         action: { label: "Upgrade", onClick: () => window.location.assign("/pro") },
       });
-      void trackModuleEvent("repository", "lock_attempt", { interaction: "add_to_studio_board", reason: "pro_locked", use_case_id: c.id });
+      void trackModuleEvent("repository", "lock_attempt", {
+        interaction: "add_to_studio_board",
+        reason: "pro_locked",
+        use_case_id: c.id,
+      });
       return;
     }
     track("cta_clicked", { cta: "add_to_studio_board", use_case_id: c.id });
-    void trackModuleEvent("repository", "click", { interaction: "add_to_studio_board", use_case_id: c.id });
+    void trackModuleEvent("repository", "click", {
+      interaction: "add_to_studio_board",
+      use_case_id: c.id,
+    });
     setBoardPattern(c);
   };
 
@@ -146,11 +171,20 @@ function Page() {
 
   useEffect(() => {
     if (search.industry && !(search.industries && search.industries.length)) {
-      navigate({ search: (prev: Search) => ({ ...prev, industries: [search.industry as string], industry: undefined }), replace: true });
+      navigate({
+        search: (prev: Search) => ({
+          ...prev,
+          industries: [search.industry as string],
+          industry: undefined,
+        }),
+        replace: true,
+      });
     }
   }, [search.industry, search.industries, navigate]);
 
-  useEffect(() => { void trackModuleEvent("repository", "view"); }, []);
+  useEffect(() => {
+    void trackModuleEvent("repository", "view");
+  }, []);
 
   const update = (p: Partial<Search>) =>
     navigate({
@@ -167,22 +201,25 @@ function Page() {
 
   const sort = (search.sort as SortKey | undefined) ?? "relevant";
 
-  const queryInput = useMemo(() => ({
-    q: search.q ?? "",
-    industries: effectiveIndustries,
-    capabilities: search.capabilities ?? [],
-    businessFunctions: search.businessFunctions ?? [],
-    objectives: search.objectives ?? [],
-    maturity: search.maturity ?? [],
-    valuePotential: search.valuePotential ?? [],
-    complexity: search.complexity ?? [],
-    riskLevel: search.riskLevel ?? [],
-    timeToValue: search.timeToValue ?? [],
-    deploymentModel: search.deploymentModel ?? [],
-    securityClassification: search.securityClassification ?? [],
-    sort: mapSort(sort),
-    limit: 120,
-  }), [search, effectiveIndustries, sort]);
+  const queryInput = useMemo(
+    () => ({
+      q: search.q ?? "",
+      industries: effectiveIndustries,
+      capabilities: search.capabilities ?? [],
+      businessFunctions: search.businessFunctions ?? [],
+      objectives: search.objectives ?? [],
+      maturity: search.maturity ?? [],
+      valuePotential: search.valuePotential ?? [],
+      complexity: search.complexity ?? [],
+      riskLevel: search.riskLevel ?? [],
+      timeToValue: search.timeToValue ?? [],
+      deploymentModel: search.deploymentModel ?? [],
+      securityClassification: search.securityClassification ?? [],
+      sort: mapSort(sort),
+      limit: 120,
+    }),
+    [search, effectiveIndustries, sort],
+  );
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["use-cases", "explore", queryInput],
@@ -215,18 +252,45 @@ function Page() {
 
   const sorted = useMemo(() => {
     // Client-side sort fallback for sort keys not natively supported by the server fn.
-    const rank: Record<string, number> = { Low: 1, Short: 1, Medium: 2, High: 3, Critical: 4, Long: 3 };
+    const rank: Record<string, number> = {
+      Low: 1,
+      Short: 1,
+      Medium: 2,
+      High: 3,
+      Critical: 4,
+      Long: 3,
+    };
     const arr = [...derivedFiltered];
-    if (sort === "complexity") arr.sort((a, b) => (rank[a.complexity ?? ""] ?? 99) - (rank[b.complexity ?? ""] ?? 99));
-    else if (sort === "risk") arr.sort((a, b) => (rank[a.risk_level ?? ""] ?? 99) - (rank[b.risk_level ?? ""] ?? 99));
-    else if (sort === "ttv") arr.sort((a, b) => (rank[a.time_to_value ?? ""] ?? 99) - (rank[b.time_to_value ?? ""] ?? 99));
-    if (governanceFirst) arr.sort((a, b) => (rank[b.risk_level ?? ""] ?? 0) - (rank[a.risk_level ?? ""] ?? 0));
+    if (sort === "complexity")
+      arr.sort((a, b) => (rank[a.complexity ?? ""] ?? 99) - (rank[b.complexity ?? ""] ?? 99));
+    else if (sort === "risk")
+      arr.sort((a, b) => (rank[a.risk_level ?? ""] ?? 99) - (rank[b.risk_level ?? ""] ?? 99));
+    else if (sort === "ttv")
+      arr.sort((a, b) => (rank[a.time_to_value ?? ""] ?? 99) - (rank[b.time_to_value ?? ""] ?? 99));
+    if (governanceFirst)
+      arr.sort((a, b) => (rank[b.risk_level ?? ""] ?? 0) - (rank[a.risk_level ?? ""] ?? 0));
     return arr;
   }, [derivedFiltered, sort, governanceFirst]);
 
   type ChipKey = keyof FacetState;
   const chips: { key: ChipKey; value: string; label: string }[] = [];
-  const facetKeys: ChipKey[] = ["segments","sectors","industries","capabilities","businessFunctions","objectives","priority","maturity","valuePotential","roiRange","complexity","riskLevel","timeToValue","deploymentModel","securityClassification"];
+  const facetKeys: ChipKey[] = [
+    "segments",
+    "sectors",
+    "industries",
+    "capabilities",
+    "businessFunctions",
+    "objectives",
+    "priority",
+    "maturity",
+    "valuePotential",
+    "roiRange",
+    "complexity",
+    "riskLevel",
+    "timeToValue",
+    "deploymentModel",
+    "securityClassification",
+  ];
   const labelMaps: Partial<Record<ChipKey, Record<string, string>>> = {
     industries: Object.fromEntries(tax.industries.map((i) => [i.slug, i.name])),
     capabilities: Object.fromEntries(tax.capabilities.map((i) => [i.slug, i.name])),
@@ -237,41 +301,72 @@ function Page() {
     roiRange: { high: "High ROI", medium: "Medium ROI", low: "Emerging ROI" },
   };
   for (const k of facetKeys) {
-    const vals = k === "industries" ? effectiveIndustries : ((search as Record<string, string[] | undefined>)[k] ?? []);
+    const vals =
+      k === "industries"
+        ? effectiveIndustries
+        : ((search as Record<string, string[] | undefined>)[k] ?? []);
     for (const v of vals) chips.push({ key: k, value: v, label: labelMaps[k]?.[v] ?? v });
   }
   const activeCount = chips.length;
 
   const removeChip = (key: ChipKey, value: string) => {
     if (key === "industries") {
-      update({ industries: effectiveIndustries.filter((x: string) => x !== value), industry: undefined });
+      update({
+        industries: effectiveIndustries.filter((x: string) => x !== value),
+        industry: undefined,
+      });
       track("filter_used", { facet: key, value, action: "remove" });
-      void trackModuleEvent("repository", "click", { interaction: "filter_change", facet: key, action: "remove" });
+      void trackModuleEvent("repository", "click", {
+        interaction: "filter_change",
+        facet: key,
+        action: "remove",
+      });
       return;
     }
     const cur = (search as Record<string, string[] | undefined>)[key] ?? [];
     update({ [key]: cur.filter((x) => x !== value) } as Partial<Search>);
     track("filter_used", { facet: key, value, action: "remove" });
-    void trackModuleEvent("repository", "click", { interaction: "filter_change", facet: key, action: "remove" });
+    void trackModuleEvent("repository", "click", {
+      interaction: "filter_change",
+      facet: key,
+      action: "remove",
+    });
   };
 
   const clearAll = () => {
     update({
-      industries: undefined, industry: undefined, capabilities: undefined, businessFunctions: undefined,
-      objectives: undefined, maturity: undefined, valuePotential: undefined,
-      complexity: undefined, riskLevel: undefined, timeToValue: undefined,
-      sectors: undefined, tags: undefined,
-      segments: undefined, priority: undefined, roiRange: undefined,
-      deploymentModel: undefined, securityClassification: undefined,
+      industries: undefined,
+      industry: undefined,
+      capabilities: undefined,
+      businessFunctions: undefined,
+      objectives: undefined,
+      maturity: undefined,
+      valuePotential: undefined,
+      complexity: undefined,
+      riskLevel: undefined,
+      timeToValue: undefined,
+      sectors: undefined,
+      tags: undefined,
+      segments: undefined,
+      priority: undefined,
+      roiRange: undefined,
+      deploymentModel: undefined,
+      securityClassification: undefined,
     });
     track("filter_used", { action: "clear_all" });
-    void trackModuleEvent("repository", "click", { interaction: "filter_change", action: "clear_all" });
+    void trackModuleEvent("repository", "click", {
+      interaction: "filter_change",
+      action: "clear_all",
+    });
   };
 
   const handleFilterChange = (patch: Partial<Search>) => {
     update(patch);
     Object.entries(patch).forEach(([facet, value]) => track("filter_used", { facet, value }));
-    Object.keys(patch).forEach((facet) => void trackModuleEvent("repository", "click", { interaction: "filter_change", facet }));
+    Object.keys(patch).forEach(
+      (facet) =>
+        void trackModuleEvent("repository", "click", { interaction: "filter_change", facet }),
+    );
   };
 
   const submitSearch = (e: React.FormEvent) => {
@@ -291,7 +386,11 @@ function Page() {
       <PageHero
         tone="dark"
         eyebrow="UseCasesX™ · Explore"
-        title={<>Explore <span className="text-primary">AI Use Cases</span></>}
+        title={
+          <>
+            Explore <span className="text-primary">AI Use Cases</span>
+          </>
+        }
         description="Search, filter and compare AI, GenAI, Agentic AI and automation use cases across 18+ industries."
         actions={
           <Can action="repo.create">
@@ -305,7 +404,13 @@ function Page() {
         }
       >
         <form onSubmit={submitSearch} className="relative flex max-w-2xl">
-          <svg className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <circle cx="11" cy="11" r="7" />
             <path d="m20 20-3-3" strokeLinecap="round" />
           </svg>
@@ -344,19 +449,33 @@ function Page() {
             <PresetBar currentSearch={search as Record<string, unknown>} />
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
               <p className="text-sm text-muted-foreground">
-                <span className="font-mono text-base font-bold text-foreground">{sorted.length}</span> use case{sorted.length === 1 ? "" : "s"}
-                {(search.q ?? "").trim() && <> for <span className="font-semibold text-foreground">"{search.q}"</span></>}
-                {isFetching && !isLoading && <span className="ml-2 text-xs text-muted-foreground/70">updating…</span>}
+                <span className="font-mono text-base font-bold text-foreground">
+                  {sorted.length}
+                </span>{" "}
+                use case{sorted.length === 1 ? "" : "s"}
+                {(search.q ?? "").trim() && (
+                  <>
+                    {" "}
+                    for <span className="font-semibold text-foreground">"{search.q}"</span>
+                  </>
+                )}
+                {isFetching && !isLoading && (
+                  <span className="ml-2 text-xs text-muted-foreground/70">updating…</span>
+                )}
               </p>
               <div className="flex items-center gap-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Sort</label>
+                <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Sort
+                </label>
                 <select
                   value={sort}
                   onChange={(e) => update({ sort: e.target.value as SortKey })}
                   className="rounded-md border border-input bg-background px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   {(Object.keys(SORT_LABELS) as SortKey[]).map((k) => (
-                    <option key={k} value={k}>{SORT_LABELS[k]}</option>
+                    <option key={k} value={k}>
+                      {SORT_LABELS[k]}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -365,7 +484,13 @@ function Page() {
             {(activeCount > 0 || (search.q ?? "").trim()) && (
               <div className="mb-5 flex flex-wrap items-center gap-2">
                 {(search.q ?? "").trim() && (
-                  <Chip label={`Search: "${search.q}"`} onRemove={() => { setQ(""); update({ q: undefined }); }} />
+                  <Chip
+                    label={`Search: "${search.q}"`}
+                    onRemove={() => {
+                      setQ("");
+                      update({ q: undefined });
+                    }}
+                  />
                 )}
                 {chips.map((c) => (
                   <Chip
@@ -374,7 +499,10 @@ function Page() {
                     onRemove={() => removeChip(c.key, c.value)}
                   />
                 ))}
-                <button onClick={clearAll} className="ml-1 text-[11px] font-bold uppercase tracking-widest text-primary hover:underline">
+                <button
+                  onClick={clearAll}
+                  className="ml-1 text-[11px] font-bold uppercase tracking-widest text-primary hover:underline"
+                >
                   Clear all
                 </button>
               </div>
@@ -393,7 +521,11 @@ function Page() {
                 action={
                   <div className="flex flex-wrap items-center justify-center gap-3">
                     <button
-                      onClick={() => { setQ(""); clearAll(); update({ q: undefined }); }}
+                      onClick={() => {
+                        setQ("");
+                        clearAll();
+                        update({ q: undefined });
+                      }}
                       className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-sm hover:brightness-110"
                     >
                       Clear search & filters
@@ -469,7 +601,9 @@ function Page() {
       <CompareTray />
       <AddToStudioBoardDialog
         open={!!boardPattern}
-        onOpenChange={(o) => { if (!o) setBoardPattern(null); }}
+        onOpenChange={(o) => {
+          if (!o) setBoardPattern(null);
+        }}
         pattern={boardPattern}
       />
     </>

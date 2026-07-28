@@ -2,7 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ModuleStub } from "@/components/ModuleStub";
 
 export const Route = createFileRoute("/_app/patterns")({
-  head: () => ({ meta: [{ title: "Pattern Library — UseCasesX™" }, { name: "description", content: "Reusable AI patterns across the repository." }] }),
+  head: () => ({
+    meta: [
+      { title: "Pattern Library — UseCasesX™" },
+      { name: "description", content: "Reusable AI patterns across the repository." },
+    ],
+  }),
   component: () => (
     <ModuleStub
       badge="Pattern Library"

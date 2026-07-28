@@ -26,7 +26,11 @@ export function derivePriority(c: {
 }): "Quick Win" | "Strategic Bet" | "Easy Extra" | "Moonshot" {
   const value =
     typeof c.impact_score === "number"
-      ? c.impact_score >= 66 ? "high" : c.impact_score >= 34 ? "medium" : "low"
+      ? c.impact_score >= 66
+        ? "high"
+        : c.impact_score >= 34
+          ? "medium"
+          : "low"
       : level(c.value_potential);
   const complexity = level(c.complexity);
   const highValue = value === "high" || value === "medium";
@@ -62,7 +66,8 @@ export function segmentsForIndustries(industrySlugs: string[]): string[] {
 
 /** Extract industry slugs from a listUseCases row shape. */
 export function industrySlugsOf(row: Record<string, unknown>): string[] {
-  const rel = (row.use_case_industries as Array<{ industries?: { slug?: string } }> | undefined) ?? [];
+  const rel =
+    (row.use_case_industries as Array<{ industries?: { slug?: string } }> | undefined) ?? [];
   return rel.map((x) => x.industries?.slug).filter((s): s is string => Boolean(s));
 }
 

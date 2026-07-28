@@ -11,10 +11,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Can } from "@/components/Can";
 
@@ -88,29 +98,38 @@ function BoardsPage() {
         }
       />
       <section className="bg-secondary/40">
-      <div className="mx-auto max-w-[1280px] px-6 py-12 space-y-8">
-        {boards.error && (
-          <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
-            {(boards.error as Error).message}
-          </div>
-        )}
+        <div className="mx-auto max-w-[1280px] px-6 py-12 space-y-8">
+          {boards.error && (
+            <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+              {(boards.error as Error).message}
+            </div>
+          )}
 
-        {items.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border bg-card py-20 text-center">
-            <FolderKanban className="mx-auto h-10 w-10 text-muted-foreground/60" />
-            <p className="mt-4 text-lg font-semibold text-foreground">No boards yet</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Create your first board to start organizing AI use cases.
-            </p>
-            <Can action="boards.create" fallback={<p className="text-xs text-muted-foreground">You need editor or admin access to create boards.</p>}>
-              <div className="inline-flex"><CreateBoardDialog userId={session!.user.id} variant="primary" /></div>
-            </Can>
-          </div>
-        ) : (
-          <BoardsBrowser items={items} onDelete={(id) => del.mutate(id)} />
-        )}
-      </div>
-    </section>
+          {items.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border bg-card py-20 text-center">
+              <FolderKanban className="mx-auto h-10 w-10 text-muted-foreground/60" />
+              <p className="mt-4 text-lg font-semibold text-foreground">No boards yet</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Create your first board to start organizing AI use cases.
+              </p>
+              <Can
+                action="boards.create"
+                fallback={
+                  <p className="text-xs text-muted-foreground">
+                    You need editor or admin access to create boards.
+                  </p>
+                }
+              >
+                <div className="inline-flex">
+                  <CreateBoardDialog userId={session!.user.id} variant="primary" />
+                </div>
+              </Can>
+            </div>
+          ) : (
+            <BoardsBrowser items={items} onDelete={(id) => del.mutate(id)} />
+          )}
+        </div>
+      </section>
     </>
   );
 }
@@ -123,18 +142,26 @@ function BoardsBrowser({ items, onDelete }: { items: BoardRow[]; onDelete: (id: 
   const q = query.trim().toLowerCase();
   const now = Date.now();
   const filtered = items
-    .filter((b) => (q ? b.title.toLowerCase().includes(q) || (b.description ?? "").toLowerCase().includes(q) : true))
+    .filter((b) =>
+      q
+        ? b.title.toLowerCase().includes(q) || (b.description ?? "").toLowerCase().includes(q)
+        : true,
+    )
     .filter((b) => {
       if (win === "all") return true;
       return now - new Date(b.updated_at).getTime() <= WINDOW_MS[win];
     })
     .sort((a, b) => {
       switch (sort) {
-        case "name_asc": return a.title.localeCompare(b.title);
-        case "created_desc": return +new Date(b.created_at) - +new Date(a.created_at) < 0 ? 1 : -1;
-        case "updated_asc": return +new Date(a.updated_at) - +new Date(b.updated_at);
+        case "name_asc":
+          return a.title.localeCompare(b.title);
+        case "created_desc":
+          return +new Date(b.created_at) - +new Date(a.created_at) < 0 ? 1 : -1;
+        case "updated_asc":
+          return +new Date(a.updated_at) - +new Date(b.updated_at);
         case "updated_desc":
-        default: return +new Date(b.updated_at) - +new Date(a.updated_at);
+        default:
+          return +new Date(b.updated_at) - +new Date(a.updated_at);
       }
     });
 
@@ -195,7 +222,9 @@ function BoardsBrowser({ items, onDelete }: { items: BoardRow[]; onDelete: (id: 
         <div className="rounded-2xl border border-dashed border-border bg-card py-16 text-center">
           <FolderKanban className="mx-auto h-9 w-9 text-muted-foreground/60" />
           <p className="mt-3 text-sm font-semibold text-foreground">No boards match your filters</p>
-          <p className="mt-1 text-xs text-muted-foreground">Try a different search term or time window.</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Try a different search term or time window.
+          </p>
         </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -267,7 +296,13 @@ function BoardCard({ board, onDelete }: { board: BoardRow; onDelete: () => void 
   );
 }
 
-function CreateBoardDialog({ userId, variant = "secondary" }: { userId: string; variant?: "primary" | "secondary" }) {
+function CreateBoardDialog({
+  userId,
+  variant = "secondary",
+}: {
+  userId: string;
+  variant?: "primary" | "secondary";
+}) {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -298,7 +333,16 @@ function CreateBoardDialog({ userId, variant = "secondary" }: { userId: string; 
   });
 
   return (
-    <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) { setErrorMsg(null); setProgress(null); } }}>
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) {
+          setErrorMsg(null);
+          setProgress(null);
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant={variant === "primary" ? "default" : "default"} className="gap-1.5">
           <Plus className="h-4 w-4" /> New Board
@@ -351,12 +395,10 @@ function CreateBoardDialog({ userId, variant = "secondary" }: { userId: string; 
           <Button variant="ghost" onClick={() => setOpen(false)} disabled={create.isPending}>
             Cancel
           </Button>
-          <Button
-            onClick={() => create.mutate()}
-            disabled={create.isPending || !title.trim()}
-          >
+          <Button onClick={() => create.mutate()} disabled={create.isPending || !title.trim()}>
             {create.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {errorMsg ? "Retry" : "Create"} &amp; Open <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
+            {errorMsg ? "Retry" : "Create"} &amp; Open{" "}
+            <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -12,10 +12,9 @@ export const ensureUserWorkspaceFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin.rpc(
-      "ensure_user_workspace" as any,
-      { _user_id: context.userId },
-    );
+    const { data, error } = await supabaseAdmin.rpc("ensure_user_workspace" as any, {
+      _user_id: context.userId,
+    });
     if (error) throw error;
     if (!data) throw new Error("Workspace provisioning returned no workspace id.");
     return data as unknown as string;
@@ -50,7 +49,11 @@ export const getWorkspaceContextFn = createServerFn({ method: "GET" })
     const organizationId = workspace.organization_id;
 
     const [orgResult, memberResult, wsMemberResult, entitlementResult] = await Promise.all([
-      supabaseAdmin.from("organizations").select("id, name, plan").eq("id", organizationId).maybeSingle(),
+      supabaseAdmin
+        .from("organizations")
+        .select("id, name, plan")
+        .eq("id", organizationId)
+        .maybeSingle(),
       supabaseAdmin
         .from("organization_members" as any)
         .select("role, status")

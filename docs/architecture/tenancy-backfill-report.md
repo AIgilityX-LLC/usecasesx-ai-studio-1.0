@@ -4,7 +4,6 @@ Scope executed: steps **T1–T6** of `docs/architecture/tenancy-migration-plan.m
 Step **T7** (`SET NOT NULL`, removal of the legacy `user_id = auth.uid()` compatibility
 predicate) remains deferred, as approved.
 
-
 ## Migrations applied
 
 1. **Tenancy foundation** — new tables `organization_members`, `workspace_members`,
@@ -22,16 +21,16 @@ Nothing was dropped, renamed, or reassigned. All column additions are nullable.
 
 ## Backfill result (verified post-migration)
 
-| Check | Count |
-|---|---|
-| `profiles` | 0 |
-| `workspaces` | 0 |
-| `organization_members` created | 0 |
-| `workspace_members` created | 0 |
-| `entitlements` created | 0 |
-| `plans` seeded | 3 (`lite`, `pro_founding`, `enterprise`) |
-| `ai_use_cases` with NULL `workspace_id` | 0 |
-| `use_case_boards` with NULL `organization_id` | 0 |
+| Check                                         | Count                                    |
+| --------------------------------------------- | ---------------------------------------- |
+| `profiles`                                    | 0                                        |
+| `workspaces`                                  | 0                                        |
+| `organization_members` created                | 0                                        |
+| `workspace_members` created                   | 0                                        |
+| `entitlements` created                        | 0                                        |
+| `plans` seeded                                | 3 (`lite`, `pro_founding`, `enterprise`) |
+| `ai_use_cases` with NULL `workspace_id`       | 0                                        |
+| `use_case_boards` with NULL `organization_id` | 0                                        |
 
 The tenant tables were empty at T=0, so the backfill was a no-op on data and there are
 **zero orphan rows**. Every future row is populated by the sync triggers at insert time,
@@ -81,15 +80,13 @@ The `workspace_id IS NULL` allowance in the write predicates is the compatibilit
 the `BEFORE INSERT` sync triggers stamp tenancy, so it only covers rows whose parent has
 no resolvable workspace. It is removed at T7 together with `SET NOT NULL`.
 
-
-
 ## Open risks
 
-| ID | Risk | Mitigation |
-|---|---|---|
-| TEN-1 | `user_in_workspace()` body rewritten; many policies call it | Fallback branch preserves prior behaviour exactly; membership only widens |
-| TEN-6 | Child tables have no FK to `ai_use_cases`, so sync triggers resolve by id lookup | Trigger leaves NULL when no parent matches; no insert fails |
-| TEN-3 | `SET NOT NULL` still pending | Deferred to T7, gated on a zero-null verification query |
+| ID    | Risk                                                                             | Mitigation                                                                |
+| ----- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| TEN-1 | `user_in_workspace()` body rewritten; many policies call it                      | Fallback branch preserves prior behaviour exactly; membership only widens |
+| TEN-6 | Child tables have no FK to `ai_use_cases`, so sync triggers resolve by id lookup | Trigger leaves NULL when no parent matches; no insert fails               |
+| TEN-3 | `SET NOT NULL` still pending                                                     | Deferred to T7, gated on a zero-null verification query                   |
 
 ## Rollback / forward-fix
 

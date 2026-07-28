@@ -37,32 +37,28 @@ const PLATFORMS = [
   {
     name: "AdvisorX",
     tag: "Executive & Board Advisory",
-    description:
-      "Converts use case portfolios into executive recommendations and board briefs.",
+    description: "Converts use case portfolios into executive recommendations and board briefs.",
     accent: "from-amber-500/20 to-amber-500/0",
     border: "border-amber-500/30",
   },
   {
     name: "FlowX",
     tag: "Agentic Workflow Design",
-    description:
-      "Converts use cases into agentic workflows and automation designs.",
+    description: "Converts use cases into agentic workflows and automation designs.",
     accent: "from-emerald-500/20 to-emerald-500/0",
     border: "border-emerald-500/30",
   },
   {
     name: "PrivacyX",
     tag: "Privacy & Data Protection",
-    description:
-      "Assesses privacy-sensitive use cases and data protection requirements.",
+    description: "Assesses privacy-sensitive use cases and data protection requirements.",
     accent: "from-violet-500/20 to-violet-500/0",
     border: "border-violet-500/30",
   },
   {
     name: "AssureX",
     tag: "Trust · Assurance · Explainability",
-    description:
-      "Validates trust, assurance, evidence, explainability, and human oversight.",
+    description: "Validates trust, assurance, evidence, explainability, and human oversight.",
     accent: "from-cyan-500/20 to-cyan-500/0",
     border: "border-cyan-500/30",
   },
@@ -100,7 +96,8 @@ const ENDPOINTS: { method: "GET" | "POST"; path: string; purpose: string }[] = [
   {
     method: "GET",
     path: "/api/usecasex/use-cases/{id}/integration-metadata",
-    purpose: "Fetch integration-ready metadata for a single use case (risk, ROI, readiness, platforms).",
+    purpose:
+      "Fetch integration-ready metadata for a single use case (risk, ROI, readiness, platforms).",
   },
   {
     method: "GET",
@@ -145,8 +142,8 @@ function ApiIntegrationPreview() {
             UseCasesX Powers AI Opportunity Intelligence Across the AIgilityX Ecosystem
           </h1>
           <p className="mt-6 max-w-3xl text-pretty text-lg text-muted-foreground md:text-xl">
-            One independent repository. Multiple platform extensions. API-ready for SARPI, CyberX C3G, AdvisorX,
-            FlowX, PrivacyX, AssureX, and future AIgilityX platforms.
+            One independent repository. Multiple platform extensions. API-ready for SARPI, CyberX
+            C3G, AdvisorX, FlowX, PrivacyX, AssureX, and future AIgilityX platforms.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <button
@@ -170,7 +167,9 @@ function ApiIntegrationPreview() {
       <section className="mx-auto max-w-6xl px-6 py-16 md:py-20">
         <div className="mb-10 flex items-end justify-between gap-6">
           <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">Architecture principles</p>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+              Architecture principles
+            </p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
               Central repository. Distributed usage.
             </h2>
@@ -218,7 +217,9 @@ function ApiIntegrationPreview() {
       {/* Integration cards */}
       <section className="mx-auto max-w-6xl px-6 py-16 md:py-20">
         <div className="mb-10">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">Platform extensions</p>
+          <p className="text-xs uppercase tracking-widest text-muted-foreground">
+            Platform extensions
+          </p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
             Six ecosystem integrations, one shared intelligence layer
           </h2>
@@ -236,9 +237,13 @@ function ApiIntegrationPreview() {
               <div className="relative">
                 <div className="flex items-baseline justify-between gap-3">
                   <h3 className="text-xl font-semibold">{p.name}</h3>
-                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground">API</span>
+                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                    API
+                  </span>
                 </div>
-                <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{p.tag}</p>
+                <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">
+                  {p.tag}
+                </p>
                 <p className="mt-4 text-sm leading-relaxed text-foreground/85">{p.description}</p>
               </div>
             </article>
@@ -250,13 +255,15 @@ function ApiIntegrationPreview() {
       <section className="border-t border-border bg-card/30">
         <div className="mx-auto max-w-6xl px-6 py-16 md:py-20">
           <div className="mb-10">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">Mock API surface</p>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">
+              Mock API surface
+            </p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
               Endpoint preview
             </h2>
             <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-              A representative slice of the UseCasesX integration API. Final contracts are issued during the
-              Integration Architecture Review.
+              A representative slice of the UseCasesX integration API. Final contracts are issued
+              during the Integration Architecture Review.
             </p>
           </div>
           <div className="overflow-hidden rounded-xl border border-border bg-background font-mono text-sm">
@@ -293,8 +300,8 @@ function ApiIntegrationPreview() {
             Ready to plug UseCasesX into your AIgilityX stack?
           </h2>
           <p className="mt-4 max-w-2xl text-muted-foreground">
-            Request an Integration Architecture Review and we'll map the right APIs, governance touchpoints, and
-            platform extensions for your organization.
+            Request an Integration Architecture Review and we'll map the right APIs, governance
+            touchpoints, and platform extensions for your organization.
           </p>
           <button
             type="button"

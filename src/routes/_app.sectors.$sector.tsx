@@ -26,7 +26,9 @@ export const Route = createFileRoute("/_app/sectors/$sector")({
     if (!getSector(params.sector)) throw notFound();
   },
   component: SectorPage,
-  errorComponent: ({ error }) => <MissingDataFallback title="Sector failed to load" reason={error.message} />,
+  errorComponent: ({ error }) => (
+    <MissingDataFallback title="Sector failed to load" reason={error.message} />
+  ),
   notFoundComponent: () => <MissingDataFallback title="Sector not found" />,
 });
 
@@ -52,10 +54,16 @@ function SectorPage() {
         description={sec.blurb}
         actions={
           <>
-            <Link to="/repository" className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-110">
+            <Link
+              to="/repository"
+              className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-110"
+            >
               Explore all use cases →
             </Link>
-            <Link to="/quick-wins" className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary">
+            <Link
+              to="/quick-wins"
+              className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary"
+            >
               See Quick Wins matrix
             </Link>
           </>
@@ -65,18 +73,29 @@ function SectorPage() {
       <div className="mx-auto max-w-[1200px] px-6 py-12">
         {parentSegments.length > 0 && (
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Part of:</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              Part of:
+            </span>
             {parentSegments.map((s) => (
-              <Link key={s.slug} to="/segments/$segment" params={{ segment: s.slug }} className="rounded-md border border-border px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-secondary">
+              <Link
+                key={s.slug}
+                to="/segments/$segment"
+                params={{ segment: s.slug }}
+                className="rounded-md border border-border px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-secondary"
+              >
                 {s.name}
               </Link>
             ))}
           </div>
         )}
 
-        <h2 className="mt-10 text-2xl font-bold tracking-tight text-foreground">Use cases in {sec.name}</h2>
+        <h2 className="mt-10 text-2xl font-bold tracking-tight text-foreground">
+          Use cases in {sec.name}
+        </h2>
         {isLoading ? (
-          <div className="mt-6"><CardSkeleton /></div>
+          <div className="mt-6">
+            <CardSkeleton />
+          </div>
         ) : cases.length === 0 ? (
           <p className="mt-6 text-muted-foreground">No published use cases in this sector yet.</p>
         ) : (
@@ -91,10 +110,17 @@ function SectorPage() {
       <CtaTriad />
 
       <div className="mx-auto max-w-[1200px] px-6 py-12">
-        <h2 className="text-sm font-bold uppercase tracking-widest text-primary">Browse other sectors</h2>
+        <h2 className="text-sm font-bold uppercase tracking-widest text-primary">
+          Browse other sectors
+        </h2>
         <div className="mt-4 flex flex-wrap gap-2">
           {SECTORS.filter((s) => s.slug !== sec.slug).map((s) => (
-            <Link key={s.slug} to="/sectors/$sector" params={{ sector: s.slug }} className="rounded-md border border-border bg-card px-3 py-1.5 text-sm font-semibold text-foreground hover:bg-secondary">
+            <Link
+              key={s.slug}
+              to="/sectors/$sector"
+              params={{ sector: s.slug }}
+              className="rounded-md border border-border bg-card px-3 py-1.5 text-sm font-semibold text-foreground hover:bg-secondary"
+            >
               {s.name}
             </Link>
           ))}
