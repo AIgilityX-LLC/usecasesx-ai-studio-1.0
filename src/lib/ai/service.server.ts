@@ -104,7 +104,7 @@ async function run<T>(
   userPrompt: string,
 ): Promise<AiResult<T>> {
   const prompt = promptFor(task);
-  const schema = OUTPUT_SCHEMAS[task] as z.ZodType<T>;
+  const schema = OUTPUT_SCHEMAS[task] as unknown as z.ZodType<T>;
   const alias = ctx.providerAlias ?? null;
   const model = resolveModel(prompt.tier, alias);
 
@@ -208,8 +208,8 @@ async function run<T>(
   };
 }
 
-function lines(parts: Array<string | false | null | undefined>): string {
-  return parts.filter(Boolean).join("\n");
+function lines(parts: Array<unknown>): string {
+  return parts.filter((p): p is string => typeof p === "string" && p.length > 0).join("\n");
 }
 
 /* ------------------------------------------------------------- AIService */
