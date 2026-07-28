@@ -38,7 +38,6 @@ export default tseslint.config(
       // e2e harness helpers). Reported as warnings so the lint gate stays enforceable
       // while the typing backlog is burned down per domain. Do not add new `any`.
       "@typescript-eslint/no-explicit-any": "warn",
-
     },
   },
   eslintPluginPrettier,
