@@ -10,8 +10,20 @@ import {
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, useSidebar,
 } from "@/components/ui/sidebar";
 import { usePlan } from "@/hooks/usePlan";
+import { PUBLIC_LAUNCH_FEATURES } from "@/lib/feature-flags";
 
-type Item = { to: string; label: string; icon: React.ComponentType<{ className?: string }>; pro?: boolean; admin?: boolean };
+type Item = {
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  pro?: boolean;
+  admin?: boolean;
+  /**
+   * Feature switch. When false the entry is not rendered at all, so a surface
+   * that is designed but not shipped can never appear as live navigation.
+   */
+  flag?: boolean;
+};
 
 const CORE: Item[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -20,9 +32,9 @@ const CORE: Item[] = [
   { to: "/quick-wins", label: "Quick Wins Matrix", icon: Grid2x2 },
   { to: "/roi-calculator", label: "ROI & Mission Value", icon: Calculator },
   { to: "/insights", label: "Deployment Intelligence", icon: BarChart3 },
-  { to: "/studio", label: "AI Use Case Studio", icon: Sparkles },
-  { to: "/my-use-cases", label: "My Use Cases", icon: FolderHeart },
-  { to: "/boards", label: "Use Case Boards", icon: KanbanSquare },
+  { to: "/studio", label: "AI Use Case Studio", icon: Sparkles, flag: PUBLIC_LAUNCH_FEATURES.studio },
+  { to: "/my-use-cases", label: "My Use Cases", icon: FolderHeart, flag: PUBLIC_LAUNCH_FEATURES.myUseCases },
+  { to: "/boards", label: "Use Case Boards", icon: KanbanSquare, flag: PUBLIC_LAUNCH_FEATURES.boards },
   { to: "/submit", label: "Submit a Use Case", icon: Send },
   { to: "/patterns", label: "Pattern Library", icon: BookOpen },
 ];
@@ -39,6 +51,7 @@ const INTEGRATIONS: Item[] = [
   { to: "/advisorx", label: "AdvisorX Guidance", icon: Compass, pro: true },
   { to: "/cyberx/c3g/intake", label: "C3G Governance", icon: Shield, pro: true },
 ];
+
 
 const ADMIN: Item[] = [
   { to: "/reports", label: "Reports", icon: FileBarChart },
