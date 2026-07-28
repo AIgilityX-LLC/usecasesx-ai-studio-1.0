@@ -176,7 +176,6 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      </SidebarContent>
     </Sidebar>
   );
 }
