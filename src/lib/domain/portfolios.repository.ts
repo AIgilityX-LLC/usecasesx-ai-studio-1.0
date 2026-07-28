@@ -15,7 +15,6 @@ import {
   recordProductEvent,
 } from "@/lib/telemetry";
 
-
 export type PortfolioCreateInput = {
   name: string;
   type: string;

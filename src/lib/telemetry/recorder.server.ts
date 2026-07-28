@@ -59,7 +59,8 @@ export async function writeProductEvent(
     request_id: requestId,
     properties: redactRecord(input.properties),
   });
-  if (error) console.warn("[telemetry] product event rejected", { event: input.event, code: error.code });
+  if (error)
+    console.warn("[telemetry] product event rejected", { event: input.event, code: error.code });
   return requestId;
 }
 

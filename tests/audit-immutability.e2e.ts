@@ -108,7 +108,10 @@ async function main() {
       .delete()
       .eq("request_id", marker)
       .select("id");
-    check("product events cannot be deleted", !!peDelete.error || (peDelete.data?.length ?? 0) === 0);
+    check(
+      "product events cannot be deleted",
+      !!peDelete.error || (peDelete.data?.length ?? 0) === 0,
+    );
 
     const peForge = await client.from("product_events").insert({
       user_id: "00000000-0000-4000-8000-000000000000",
