@@ -1,13 +1,44 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  LayoutDashboard, Library, Sparkles, FolderHeart, KanbanSquare,
-  BookOpen, Gauge, Database, Hammer, Map, Rocket, Compass, Shield, BarChart3,
-  FileBarChart, Settings, Lock, Crown, Users, Send, LineChart, Inbox,
-  Grid2x2, Calculator, Wand2, UserCog, ShieldCheck,
+  LayoutDashboard,
+  Library,
+  Sparkles,
+  FolderHeart,
+  KanbanSquare,
+  BookOpen,
+  Gauge,
+  Database,
+  Hammer,
+  Map,
+  Rocket,
+  Compass,
+  Shield,
+  BarChart3,
+  FileBarChart,
+  Settings,
+  Lock,
+  Crown,
+  Users,
+  Send,
+  LineChart,
+  Inbox,
+  Grid2x2,
+  Calculator,
+  Wand2,
+  UserCog,
+  ShieldCheck,
 } from "lucide-react";
 import {
-  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
-  SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, useSidebar,
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarHeader,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { usePlan } from "@/hooks/usePlan";
 import { PUBLIC_LAUNCH_FEATURES } from "@/lib/feature-flags";
@@ -32,9 +63,24 @@ const CORE: Item[] = [
   { to: "/quick-wins", label: "Quick Wins Matrix", icon: Grid2x2 },
   { to: "/roi-calculator", label: "ROI & Mission Value", icon: Calculator },
   { to: "/insights", label: "Deployment Intelligence", icon: BarChart3 },
-  { to: "/studio", label: "AI Use Case Studio", icon: Sparkles, flag: PUBLIC_LAUNCH_FEATURES.studio },
-  { to: "/my-use-cases", label: "My Use Cases", icon: FolderHeart, flag: PUBLIC_LAUNCH_FEATURES.myUseCases },
-  { to: "/boards", label: "Use Case Boards", icon: KanbanSquare, flag: PUBLIC_LAUNCH_FEATURES.boards },
+  {
+    to: "/studio",
+    label: "AI Use Case Studio",
+    icon: Sparkles,
+    flag: PUBLIC_LAUNCH_FEATURES.studio,
+  },
+  {
+    to: "/my-use-cases",
+    label: "My Use Cases",
+    icon: FolderHeart,
+    flag: PUBLIC_LAUNCH_FEATURES.myUseCases,
+  },
+  {
+    to: "/boards",
+    label: "Use Case Boards",
+    icon: KanbanSquare,
+    flag: PUBLIC_LAUNCH_FEATURES.boards,
+  },
   { to: "/submit", label: "Submit a Use Case", icon: Send },
   { to: "/patterns", label: "Pattern Library", icon: BookOpen },
 ];
@@ -51,7 +97,6 @@ const INTEGRATIONS: Item[] = [
   { to: "/advisorx", label: "AdvisorX Guidance", icon: Compass, pro: true },
   { to: "/cyberx/c3g/intake", label: "C3G Governance", icon: Shield, pro: true },
 ];
-
 
 const ADMIN: Item[] = [
   { to: "/reports", label: "Reports", icon: FileBarChart },
@@ -86,8 +131,6 @@ export function AppSidebar() {
     to === "/" || to === "/account"
       ? pathname === to || pathname === `${to}/`
       : pathname.startsWith(to);
-
-
 
   const renderItem = (item: Item) => {
     const locked = item.pro && !isPro;
@@ -175,7 +218,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
     </Sidebar>
   );
 }

@@ -1,13 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 /**
  * Signed-out mobile navigation. The desktop top nav is `hidden lg:flex`, so
@@ -15,11 +9,7 @@ import {
  * Patterns, Studio or Resources. Signed-in users use the sidebar's own
  * off-canvas sheet instead.
  */
-export function MobileNav({
-  items,
-}: {
-  items: { to: string; label: string }[];
-}) {
+export function MobileNav({ items }: { items: { to: string; label: string }[] }) {
   const [open, setOpen] = useState(false);
 
   return (

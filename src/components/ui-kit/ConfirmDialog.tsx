@@ -53,8 +53,7 @@ export function ConfirmDialog({
               void onConfirm();
             }}
             className={cn(
-              destructive &&
-                "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+              destructive && "bg-destructive text-destructive-foreground hover:bg-destructive/90",
             )}
           >
             {busy ? "Working…" : confirmLabel}

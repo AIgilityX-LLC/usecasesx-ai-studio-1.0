@@ -1,13 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export type StatusTone =
-  | "neutral"
-  | "info"
-  | "success"
-  | "warning"
-  | "danger"
-  | "accent";
+export type StatusTone = "neutral" | "info" | "success" | "warning" | "danger" | "accent";
 
 /**
  * Single source of truth for small status pills (draft / scored / archived,

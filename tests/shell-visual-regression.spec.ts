@@ -48,9 +48,7 @@ for (const viewport of VIEWPORTS) {
 
         // Navigation must be reachable: desktop top nav or the mobile menu button.
         if (viewport.name === "mobile") {
-          await expect(
-            page.getByRole("button", { name: /open navigation menu/i }),
-          ).toBeVisible();
+          await expect(page.getByRole("button", { name: /open navigation menu/i })).toBeVisible();
         } else {
           await expect(page.locator("nav[aria-label='Primary']")).toBeVisible();
         }

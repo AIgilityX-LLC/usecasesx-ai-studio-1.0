@@ -58,7 +58,8 @@ export function SiteShell({ children }: { children: ReactNode }) {
             <span className="font-mono text-[11px] font-black text-primary">UX</span>
           </div>
           <div className="hidden text-[11px] font-bold uppercase tracking-[0.18em] text-foreground sm:block">
-            UseCasesX™ <span className="text-muted-foreground">· AIgilityX AI Use Case Studio™</span>
+            UseCasesX™{" "}
+            <span className="text-muted-foreground">· AIgilityX AI Use Case Studio™</span>
           </div>
         </Link>
         {isAuthed && (
@@ -122,7 +123,6 @@ export function SiteShell({ children }: { children: ReactNode }) {
           </Link>
         )}
       </div>
-
     </header>
   );
 
@@ -131,7 +131,9 @@ export function SiteShell({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
         <SkipToContent />
         {headerInner}
-        <main id="main-content" tabIndex={-1} className="flex-1 outline-none">{children}</main>
+        <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
+          {children}
+        </main>
         <UseCasesXFooter />
       </div>
     );
@@ -147,7 +149,9 @@ export function SiteShell({ children }: { children: ReactNode }) {
         <SidebarInset className="flex min-w-0 flex-1 flex-col">
           {headerInner}
           <EmailVerificationBanner />
-          <main id="main-content" tabIndex={-1} className="flex-1 outline-none">{children}</main>
+          <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
+            {children}
+          </main>
           <UseCasesXFooter />
         </SidebarInset>
       </div>
