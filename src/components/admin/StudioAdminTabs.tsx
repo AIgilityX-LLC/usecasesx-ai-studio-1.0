@@ -36,7 +36,9 @@ function readLS<T>(k: string, fallback: T): T {
 function writeLS<T>(k: string, v: T) {
   try {
     localStorage.setItem(k, JSON.stringify(v));
-  } catch {}
+  } catch {
+    /* storage unavailable */
+  }
 }
 
 // ============================================================

@@ -95,7 +95,9 @@ export function OnboardingChecklist({
           onClick={() => {
             try {
               localStorage.setItem(KEY, "1");
-            } catch {}
+            } catch {
+              /* storage unavailable */
+            }
             setDismissed(true);
           }}
           className="rounded-md border border-border bg-background px-2.5 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
