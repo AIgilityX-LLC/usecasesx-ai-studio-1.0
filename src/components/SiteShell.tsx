@@ -5,6 +5,8 @@ import { Crown } from "lucide-react";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { AppBreadcrumb } from "./AppBreadcrumb";
+import { MobileNav } from "./MobileNav";
+
 import { UseCasesXFooter } from "./UseCasesXFooter";
 import { EmailVerificationBanner } from "./EmailVerificationBanner";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
@@ -49,7 +51,8 @@ export function SiteShell({ children }: { children: ReactNode }) {
   const headerInner = (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-border bg-background/85 px-4 backdrop-blur">
       <div className="flex min-w-0 items-center gap-3">
-        {isAuthed && <SidebarTrigger />}
+        {isAuthed ? <SidebarTrigger /> : <MobileNav items={TOP_NAV} />}
+
         <Link to="/" className="flex items-center gap-2">
           <div className="grid h-7 w-7 place-items-center rounded-md bg-primary/15 ring-1 ring-primary/40">
             <span className="font-mono text-[11px] font-black text-primary">UX</span>
