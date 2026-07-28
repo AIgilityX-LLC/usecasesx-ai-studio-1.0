@@ -8,6 +8,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { normalizeError, unwrapResult } from "./errors";
 import { requireUserId } from "./ownership";
 import { parseInput, portfolioCreateSchema, portfolioPatchSchema, uuidSchema } from "./validation";
+import {
+  AUDIT_EVENTS,
+  PRODUCT_EVENTS,
+  recordAuditEvent,
+  recordProductEvent,
+} from "@/lib/telemetry";
+
 
 export type PortfolioCreateInput = {
   name: string;
