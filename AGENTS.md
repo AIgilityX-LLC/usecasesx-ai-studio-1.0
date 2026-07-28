@@ -136,5 +136,7 @@ Any plan check must resolve through `useEntitlement`/`usePlan`. Gate UI with `<R
 - `docs/architecture/architecture-principles.md`
 - `docs/architecture/domain-boundaries.md` — domain/repository layer
 - `docs/architecture/ai-boundary.md` — provider-neutral AI services & fair use
+- `docs/architecture/auditability-and-instrumentation.md` — audit events, product/activation events, privacy redaction
+
 - `docs/security/security-baseline.md`
 - `docs/PRE_BETA_RELEASE_CHECKLIST.md`, `docs/PRE_BETA_TEST_PLAN.md`
