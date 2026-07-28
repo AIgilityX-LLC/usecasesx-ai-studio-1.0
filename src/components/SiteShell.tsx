@@ -5,6 +5,8 @@ import { Crown } from "lucide-react";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { AppBreadcrumb } from "./AppBreadcrumb";
+import { MobileNav } from "./MobileNav";
+
 import { UseCasesXFooter } from "./UseCasesXFooter";
 import { EmailVerificationBanner } from "./EmailVerificationBanner";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
@@ -49,13 +51,15 @@ export function SiteShell({ children }: { children: ReactNode }) {
   const headerInner = (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-border bg-background/85 px-4 backdrop-blur">
       <div className="flex min-w-0 items-center gap-3">
-        {isAuthed && <SidebarTrigger />}
+        {isAuthed ? <SidebarTrigger /> : <MobileNav items={TOP_NAV} />}
+
         <Link to="/" className="flex items-center gap-2">
           <div className="grid h-7 w-7 place-items-center rounded-md bg-primary/15 ring-1 ring-primary/40">
             <span className="font-mono text-[11px] font-black text-primary">UX</span>
           </div>
           <div className="hidden text-[11px] font-bold uppercase tracking-[0.18em] text-foreground sm:block">
-            UseCasesX™ <span className="text-muted-foreground">· AIgilityX AI Use Case Studio™</span>
+            UseCasesX™{" "}
+            <span className="text-muted-foreground">· AIgilityX AI Use Case Studio™</span>
           </div>
         </Link>
         {isAuthed && (
@@ -119,7 +123,6 @@ export function SiteShell({ children }: { children: ReactNode }) {
           </Link>
         )}
       </div>
-
     </header>
   );
 
@@ -128,7 +131,9 @@ export function SiteShell({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
         <SkipToContent />
         {headerInner}
-        <main id="main-content" tabIndex={-1} className="flex-1 outline-none">{children}</main>
+        <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
+          {children}
+        </main>
         <UseCasesXFooter />
       </div>
     );
@@ -144,7 +149,9 @@ export function SiteShell({ children }: { children: ReactNode }) {
         <SidebarInset className="flex min-w-0 flex-1 flex-col">
           {headerInner}
           <EmailVerificationBanner />
-          <main id="main-content" tabIndex={-1} className="flex-1 outline-none">{children}</main>
+          <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
+            {children}
+          </main>
           <UseCasesXFooter />
         </SidebarInset>
       </div>

@@ -1,17 +1,60 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  LayoutDashboard, Library, Sparkles, FolderHeart, KanbanSquare,
-  BookOpen, Gauge, Database, Hammer, Map, Rocket, Compass, Shield, BarChart3,
-  FileBarChart, Settings, Lock, Crown, Users, Send, LineChart, Inbox,
-  Grid2x2, Calculator, Wand2, UserCog, ShieldCheck,
+  LayoutDashboard,
+  Library,
+  Sparkles,
+  FolderHeart,
+  KanbanSquare,
+  BookOpen,
+  Gauge,
+  Database,
+  Hammer,
+  Map,
+  Rocket,
+  Compass,
+  Shield,
+  BarChart3,
+  FileBarChart,
+  Settings,
+  Lock,
+  Crown,
+  Users,
+  Send,
+  LineChart,
+  Inbox,
+  Grid2x2,
+  Calculator,
+  Wand2,
+  UserCog,
+  ShieldCheck,
 } from "lucide-react";
 import {
-  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
-  SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, useSidebar,
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarHeader,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { usePlan } from "@/hooks/usePlan";
+import { PUBLIC_LAUNCH_FEATURES } from "@/lib/feature-flags";
 
-type Item = { to: string; label: string; icon: React.ComponentType<{ className?: string }>; pro?: boolean; admin?: boolean };
+type Item = {
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  pro?: boolean;
+  admin?: boolean;
+  /**
+   * Feature switch. When false the entry is not rendered at all, so a surface
+   * that is designed but not shipped can never appear as live navigation.
+   */
+  flag?: boolean;
+};
 
 const CORE: Item[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -20,9 +63,24 @@ const CORE: Item[] = [
   { to: "/quick-wins", label: "Quick Wins Matrix", icon: Grid2x2 },
   { to: "/roi-calculator", label: "ROI & Mission Value", icon: Calculator },
   { to: "/insights", label: "Deployment Intelligence", icon: BarChart3 },
-  { to: "/studio", label: "AI Use Case Studio", icon: Sparkles },
-  { to: "/my-use-cases", label: "My Use Cases", icon: FolderHeart },
-  { to: "/boards", label: "Use Case Boards", icon: KanbanSquare },
+  {
+    to: "/studio",
+    label: "AI Use Case Studio",
+    icon: Sparkles,
+    flag: PUBLIC_LAUNCH_FEATURES.studio,
+  },
+  {
+    to: "/my-use-cases",
+    label: "My Use Cases",
+    icon: FolderHeart,
+    flag: PUBLIC_LAUNCH_FEATURES.myUseCases,
+  },
+  {
+    to: "/boards",
+    label: "Use Case Boards",
+    icon: KanbanSquare,
+    flag: PUBLIC_LAUNCH_FEATURES.boards,
+  },
   { to: "/submit", label: "Submit a Use Case", icon: Send },
   { to: "/patterns", label: "Pattern Library", icon: BookOpen },
 ];
@@ -51,7 +109,12 @@ const ACCOUNT: Item[] = [
   { to: "/account", label: "Account Settings", icon: UserCog },
   { to: "/account/security", label: "Security", icon: ShieldCheck },
   { to: "/entitlement", label: "My Plan", icon: Crown },
-  { to: "/module-analytics", label: "Module Analytics", icon: LineChart },
+  {
+    to: "/module-analytics",
+    label: "Module Analytics",
+    icon: LineChart,
+    flag: PUBLIC_LAUNCH_FEATURES.lifecycleAnalytics,
+  },
 ];
 
 export function AppSidebar() {
@@ -59,6 +122,10 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const { isPro, isAdmin } = usePlan();
+
+  /** Single visibility gate: feature flag first, then role. */
+  const visible = (items: Item[]) =>
+    items.filter((item) => item.flag !== false && (!item.admin || isAdmin));
 
   const isActive = (to: string) =>
     to === "/" || to === "/account"
@@ -119,37 +186,35 @@ export function AppSidebar() {
         <SidebarGroup>
           {!collapsed && <SidebarGroupLabel>Platform</SidebarGroupLabel>}
           <SidebarGroupContent>
-            <SidebarMenu>{CORE.map(renderItem)}</SidebarMenu>
+            <SidebarMenu>{visible(CORE).map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarGroup>
           {!collapsed && <SidebarGroupLabel>Studio Modules</SidebarGroupLabel>}
           <SidebarGroupContent>
-            <SidebarMenu>{STUDIO_PRO.map(renderItem)}</SidebarMenu>
+            <SidebarMenu>{visible(STUDIO_PRO).map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarGroup>
           {!collapsed && <SidebarGroupLabel>Integrations</SidebarGroupLabel>}
           <SidebarGroupContent>
-            <SidebarMenu>{INTEGRATIONS.map(renderItem)}</SidebarMenu>
+            <SidebarMenu>{visible(INTEGRATIONS).map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarGroup>
           {!collapsed && <SidebarGroupLabel>Workspace</SidebarGroupLabel>}
           <SidebarGroupContent>
-            <SidebarMenu>
-              {ADMIN.filter((i) => !i.admin || isAdmin).map(renderItem)}
-            </SidebarMenu>
+            <SidebarMenu>{visible(ADMIN).map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarGroup>
           {!collapsed && <SidebarGroupLabel>Account</SidebarGroupLabel>}
           <SidebarGroupContent>
-            <SidebarMenu>{ACCOUNT.map(renderItem)}</SidebarMenu>
+            <SidebarMenu>{visible(ACCOUNT).map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

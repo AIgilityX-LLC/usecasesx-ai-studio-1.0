@@ -23,10 +23,14 @@ export const PRIMARY_NAV_TARGETS = [
 export const SIDEBAR_NAV_TARGETS = [
   "/dashboard",
   "/repository",
+  "/discover",
+  "/quick-wins",
+  "/roi-calculator",
   "/insights",
   "/studio",
   "/my-use-cases",
   "/boards",
+  "/submit",
   "/patterns",
   "/feasibility",
   "/data-readiness",
@@ -37,6 +41,12 @@ export const SIDEBAR_NAV_TARGETS = [
   "/cyberx/c3g/intake",
   "/reports",
   "/administration",
+  "/admin-submissions",
+  "/admin-waitlist",
+  "/account",
+  "/account/security",
+  "/entitlement",
+  "/module-analytics",
 ] as const;
 
 /**
@@ -69,8 +79,7 @@ export function useNavLinkIntegrityCheck(extraTargets: string[] = []) {
       routesById?: Record<string, { fullPath?: string }>;
       matchRoutes?: (pathname: string) => { fullPath?: string; routeId?: string }[];
     };
-    const routeList =
-      r.flatRoutes ?? (r.routesById ? Object.values(r.routesById) : []);
+    const routeList = r.flatRoutes ?? (r.routesById ? Object.values(r.routesById) : []);
     if (routeList.length === 0) return; // router not ready / API unavailable
     const knownPaths = new Set(
       routeList.map((route) => {
@@ -80,13 +89,7 @@ export function useNavLinkIntegrityCheck(extraTargets: string[] = []) {
     );
 
     // Scan BOTH the top nav and the sidebar so neither surface can drift.
-    const targets = [
-      ...new Set([
-        ...PRIMARY_NAV_TARGETS,
-        ...SIDEBAR_NAV_TARGETS,
-        ...extraTargets,
-      ]),
-    ];
+    const targets = [...new Set([...PRIMARY_NAV_TARGETS, ...SIDEBAR_NAV_TARGETS, ...extraTargets])];
     const broken = targets.filter((t) => {
       const normalized = t.replace(/\/$/, "") || "/";
       return !knownPaths.has(normalized);
@@ -111,7 +114,7 @@ export function useNavLinkIntegrityCheck(extraTargets: string[] = []) {
         try {
           const matches = r.matchRoutes!(normalized) ?? [];
           const leaf = matches[matches.length - 1];
-          const resolved = ((leaf?.fullPath ?? normalized).replace(/\/$/, "") || "/");
+          const resolved = (leaf?.fullPath ?? normalized).replace(/\/$/, "") || "/";
           if (resolved !== normalized && EXPECTED_REDIRECTS[normalized] !== resolved) {
             unexpected.push({ target: normalized, resolved });
           }
