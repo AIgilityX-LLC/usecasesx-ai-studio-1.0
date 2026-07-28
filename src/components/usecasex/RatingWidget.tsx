@@ -84,15 +84,13 @@ export function RatingWidget({ slug }: { slug: string }) {
     if (!userId || !comment.trim()) return;
     setSaving(true);
     setMsg(null);
-    const { error } = await supabase
-      .from("use_case_feedback")
-      .insert({
-        use_case_slug: slug,
-        user_id: userId,
-        comment: comment.trim(),
-        sentiment,
-        is_public: true,
-      });
+    const { error } = await supabase.from("use_case_feedback").insert({
+      use_case_slug: slug,
+      user_id: userId,
+      comment: comment.trim(),
+      sentiment,
+      is_public: true,
+    });
     setSaving(false);
     if (error) {
       setMsg(error.message);

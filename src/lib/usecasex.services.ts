@@ -45,7 +45,7 @@ export function formatServiceError(err: unknown): string {
 /** Dev-only error logger. Components can render this when NODE_ENV !== 'production'. */
 export function devError(scope: string, err: unknown): void {
   if (import.meta.env?.MODE === "production") return;
-  // eslint-disable-next-line no-console
+
   console.error(`[usecasex:${scope}]`, err);
 }
 

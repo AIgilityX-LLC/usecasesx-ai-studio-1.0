@@ -83,17 +83,15 @@ export const seedDemoAccounts = createServerFn({ method: "POST" }).handler(async
     if (!userId) continue;
 
     // Upsert profile with plan
-    await supabaseAdmin
-      .from("profiles")
-      .upsert(
-        {
-          user_id: userId,
-          email: acct.email,
-          plan_type: acct.plan_type,
-          full_name: `${acct.label} Demo`,
-        },
-        { onConflict: "user_id" },
-      );
+    await supabaseAdmin.from("profiles").upsert(
+      {
+        user_id: userId,
+        email: acct.email,
+        plan_type: acct.plan_type,
+        full_name: `${acct.label} Demo`,
+      },
+      { onConflict: "user_id" },
+    );
 
     // Assign role (if any)
     if (acct.role) {
