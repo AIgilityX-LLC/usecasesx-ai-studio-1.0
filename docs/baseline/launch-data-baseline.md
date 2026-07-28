@@ -11,12 +11,12 @@ baseline that was seeded and how to reproduce it.
 
 ### 1. Canonical taxonomy (public reference data)
 
-| Table                  | Rows |
-| ---------------------- | ---- |
-| `industries`           | 18   |
-| `ai_capabilities`      | 20   |
-| `business_functions`   | 20   |
-| `business_objectives`  | 17   |
+| Table                 | Rows |
+| --------------------- | ---- |
+| `industries`          | 18   |
+| `ai_capabilities`     | 20   |
+| `business_functions`  | 20   |
+| `business_objectives` | 17   |
 
 ### 2. Reference repository content
 
@@ -25,7 +25,7 @@ business-function and objective junctions plus two headline metrics.
 Visibility `both`, status `published` — readable by anonymous visitors, which is
 what the Lite discovery journey requires.
 
-This is deliberately a *small* reference set. The full 180-record catalogue is
+This is deliberately a _small_ reference set. The full 180-record catalogue is
 still available via `scripts/seed/emit.py`.
 
 ### 3. Demo accounts
@@ -67,14 +67,14 @@ from `PUBLIC` and granted to `authenticated` + `service_role` only. The existing
 
 ## Verification evidence
 
-| Check                                   | Result |
-| --------------------------------------- | ------ |
-| `bun run test:rls`                      | PASS — cross-tenant read/update/delete all denied |
-| `bun run test:tenancy`                  | PASS — distinct tenants, membership-derived roles, no self-granted entitlements |
-| `bun run test:rls:taxonomy`             | PASS — 18/18 checks, no tenant-private leakage to anon |
-| `bun run lint`                          | 0 errors, 255 warnings (tracked `no-explicit-any` debt) |
-| `tsgo` typecheck                        | PASS |
-| C3 — tenancy backfill on insert         | PASS — new board + `ai_use_cases` rows resolve `organization_id` + `workspace_id` automatically |
+| Check                           | Result                                                                                          |
+| ------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `bun run test:rls`              | PASS — cross-tenant read/update/delete all denied                                               |
+| `bun run test:tenancy`          | PASS — distinct tenants, membership-derived roles, no self-granted entitlements                 |
+| `bun run test:rls:taxonomy`     | PASS — 18/18 checks, no tenant-private leakage to anon                                          |
+| `bun run lint`                  | 0 errors, 255 warnings (tracked `no-explicit-any` debt)                                         |
+| `tsgo` typecheck                | PASS                                                                                            |
+| C3 — tenancy backfill on insert | PASS — new board + `ai_use_cases` rows resolve `organization_id` + `workspace_id` automatically |
 
 ## Rollback
 
