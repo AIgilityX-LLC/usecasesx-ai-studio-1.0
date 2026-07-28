@@ -476,7 +476,7 @@ function SarpiSection() {
         <div className="mt-20">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">WHY USECASESX - AI USECASE STUDIO</div>
           <h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            The AI Use Case OS for SMEs, Enterprises&nbsp;Governments, & Regulators.
+            The AI Use Case OS for SMEs, Enterprises, Governments &amp; Regulators.
           </h2>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {pillars.map((p) => (
