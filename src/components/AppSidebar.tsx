@@ -64,7 +64,12 @@ const ACCOUNT: Item[] = [
   { to: "/account", label: "Account Settings", icon: UserCog },
   { to: "/account/security", label: "Security", icon: ShieldCheck },
   { to: "/entitlement", label: "My Plan", icon: Crown },
-  { to: "/module-analytics", label: "Module Analytics", icon: LineChart },
+  {
+    to: "/module-analytics",
+    label: "Module Analytics",
+    icon: LineChart,
+    flag: PUBLIC_LAUNCH_FEATURES.lifecycleAnalytics,
+  },
 ];
 
 export function AppSidebar() {
@@ -73,10 +78,16 @@ export function AppSidebar() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const { isPro, isAdmin } = usePlan();
 
+  /** Single visibility gate: feature flag first, then role. */
+  const visible = (items: Item[]) =>
+    items.filter((item) => item.flag !== false && (!item.admin || isAdmin));
+
   const isActive = (to: string) =>
     to === "/" || to === "/account"
       ? pathname === to || pathname === `${to}/`
       : pathname.startsWith(to);
+
+
 
   const renderItem = (item: Item) => {
     const locked = item.pro && !isPro;
