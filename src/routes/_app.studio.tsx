@@ -60,7 +60,11 @@ function StudioPage() {
   const [context, setContext] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [current, setCurrent] = useState<{ draft: StudioDraft; model: string } | null>(null);
+  const [current, setCurrent] = useState<{
+    draft: StudioDraft;
+    model: string;
+    provenance?: import("@/lib/ai/types").AiProvenance | null;
+  } | null>(null);
 
   const canSubmit = organization.trim().length > 0 && objective.trim().length > 0 && !loading;
 
@@ -77,7 +81,11 @@ function StudioPage() {
       if (!res.ok || !res.draft) {
         setError(res.error ?? "Failed to draft use case.");
       } else {
-        setCurrent({ draft: res.draft as StudioDraft, model: res.meta?.model ?? "" });
+        setCurrent({
+          draft: res.draft as StudioDraft,
+          model: res.meta?.model ?? "",
+          provenance: res.provenance,
+        });
       }
     } catch (e) {
       console.error(e);
@@ -96,6 +104,7 @@ function StudioPage() {
       provider,
       model: current.model,
       draft: current.draft,
+      provenance: current.provenance ?? undefined,
     });
     trackCTAEvent("studio_draft_saved", { provider });
     setCurrent(null);

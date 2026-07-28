@@ -2,6 +2,7 @@
 // Mock-first; localStorage-backed. Independent of the catalog-based saved store.
 import { useCallback, useEffect, useState } from "react";
 import type { StudioDraft, StudioProvider } from "./usecasex.studio.functions";
+import type { AiProvenance } from "./ai/types";
 
 export interface StudioSavedDraft {
   id: string;
@@ -12,6 +13,8 @@ export interface StudioSavedDraft {
   provider: StudioProvider;
   model: string;
   draft: StudioDraft;
+  /** AI provenance stamp. Absent on drafts saved before provenance tracking. */
+  provenance?: AiProvenance;
 }
 
 const KEY = "usecasex.studio.drafts.v1";
