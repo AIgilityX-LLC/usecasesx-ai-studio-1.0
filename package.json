@@ -22,6 +22,7 @@
     "check:nav-integrity": "node scripts/check-nav-integrity.mjs",
     "check:compare": "node scripts/check-compare-analytics.mjs",
     "test:authz": "bun run tests/authz-matrix.e2e.ts",
+    "test:audit": "bun run tests/audit-immutability.e2e.ts",
     "test:unit": "bun test tests/unit"
   },
   "dependencies": {

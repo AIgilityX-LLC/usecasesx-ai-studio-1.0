@@ -32,6 +32,8 @@ import type {
   GenerateExecutiveSummaryOutput,
 } from "./schemas";
 import { aiFailure, type AiFairUse, type AiResult } from "./types";
+import { writeAuditEvent } from "@/lib/telemetry/recorder.server";
+import { AUDIT_EVENTS } from "@/lib/telemetry/events";
 
 export type AiCallContext = {
   supabase: SupabaseClient<any, any, any>;
@@ -113,7 +115,19 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
   }
 
   // 1. Entitlement — the server is the security boundary, not hidden buttons.
-  if (!evaluate(subject, "ai.assist").allowed) return aiFailure("forbidden");
+  if (!evaluate(subject, "ai.assist").allowed) {
+    await writeAuditEvent(
+      { supabase: ctx.supabase, userId: ctx.userId, tenant: subject },
+      {
+        event: AUDIT_EVENTS.aiAssistDenied,
+        entity: { type: ctx.entity?.type ?? "ai_task", id: ctx.entity?.id ?? null },
+        next: { task, reason: "entitlement" },
+        severity: "notice",
+        source: "ai",
+      },
+    );
+    return aiFailure("forbidden");
+  }
 
   // 2. Fair use.
   let fairUse: AiFairUse | null = null;
@@ -184,6 +198,16 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
     usage: response.usage,
     promptVersion: prompt.version,
   });
+
+  await writeAuditEvent(
+    { supabase: ctx.supabase, userId: ctx.userId, tenant: subject },
+    {
+      event: AUDIT_EVENTS.aiAssistUsed,
+      entity: { type: ctx.entity?.type ?? "ai_task", id: ctx.entity?.id ?? null },
+      next: { task, model, prompt_version: prompt.version, duration_ms: durationMs },
+      source: "ai",
+    },
+  );
 
   return {
     ok: true,

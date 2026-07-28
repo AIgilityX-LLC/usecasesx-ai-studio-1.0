@@ -10,6 +10,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { normalizeError, unwrapResult } from "./errors";
 import { requireUserId } from "./ownership";
 import {
+  AUDIT_EVENTS,
+  PRODUCT_EVENTS,
+  recordAuditEvent,
+  recordProductEvent,
+} from "@/lib/telemetry";
+import {
   parseInput,
   prioritySchema,
   savedUseCasePatchSchema,
@@ -63,6 +69,11 @@ export async function saveUseCase(
       { onConflict: "user_id,use_case_id" },
     );
   if (result.error) throw normalizeError(result.error);
+  await recordAuditEvent({
+    event: AUDIT_EVENTS.entityCreated,
+    entity: { type: "saved_use_case", id },
+    next: { priority: prio },
+  });
 }
 
 export async function unsaveUseCase(userId: string | null, useCaseId: string): Promise<void> {
@@ -74,6 +85,10 @@ export async function unsaveUseCase(userId: string | null, useCaseId: string): P
     .eq("user_id", uid)
     .eq("use_case_id", id);
   if (result.error) throw normalizeError(result.error);
+  await recordAuditEvent({
+    event: AUDIT_EVENTS.entityDeleted,
+    entity: { type: "saved_use_case", id },
+  });
 }
 
 export async function updateSavedUseCase(
@@ -90,6 +105,11 @@ export async function updateSavedUseCase(
     .eq("user_id", uid)
     .eq("use_case_id", id);
   if (result.error) throw normalizeError(result.error);
+  await recordAuditEvent({
+    event: AUDIT_EVENTS.entityUpdated,
+    entity: { type: "saved_use_case", id },
+    next: clean as Record<string, unknown>,
+  });
 }
 
 export async function upsertUseCaseScore(
@@ -108,6 +128,17 @@ export async function upsertUseCaseScore(
       { onConflict: "user_id,use_case_id" },
     );
   if (result.error) throw normalizeError(result.error);
+  const requestId = await recordAuditEvent({
+    event: AUDIT_EVENTS.entityUpdated,
+    entity: { type: "use_case_score", id },
+    next: toColumns(parsed) as unknown as Record<string, unknown>,
+  });
+  await recordProductEvent({
+    event: PRODUCT_EVENTS.useCaseScored,
+    entity: { type: "use_case", id },
+    properties: { total: toColumns(parsed).total },
+    requestId,
+  });
 }
 
 export function parseScore(score: unknown) {
