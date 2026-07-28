@@ -85,8 +85,7 @@ async function main() {
     const src = readFileSync("src/routes/_app.boards.$boardId.tsx", "utf8");
     await check('route renders "Board not found" heading for not_found kind', async () => {
       if (!src.includes("Board not found")) throw new Error("missing heading");
-      if (!/kind\s*===\s*['"]not_found['"]/.test(src))
-        throw new Error("missing not_found branch");
+      if (!/kind\s*===\s*['"]not_found['"]/.test(src)) throw new Error("missing not_found branch");
     });
     await check('route renders a "Try again" button wired to refetch', async () => {
       if (!/Try again/.test(src)) throw new Error("missing Try again label");
