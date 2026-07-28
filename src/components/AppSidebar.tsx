@@ -143,39 +143,39 @@ export function AppSidebar() {
         <SidebarGroup>
           {!collapsed && <SidebarGroupLabel>Platform</SidebarGroupLabel>}
           <SidebarGroupContent>
-            <SidebarMenu>{CORE.map(renderItem)}</SidebarMenu>
+            <SidebarMenu>{visible(CORE).map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarGroup>
           {!collapsed && <SidebarGroupLabel>Studio Modules</SidebarGroupLabel>}
           <SidebarGroupContent>
-            <SidebarMenu>{STUDIO_PRO.map(renderItem)}</SidebarMenu>
+            <SidebarMenu>{visible(STUDIO_PRO).map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarGroup>
           {!collapsed && <SidebarGroupLabel>Integrations</SidebarGroupLabel>}
           <SidebarGroupContent>
-            <SidebarMenu>{INTEGRATIONS.map(renderItem)}</SidebarMenu>
+            <SidebarMenu>{visible(INTEGRATIONS).map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarGroup>
           {!collapsed && <SidebarGroupLabel>Workspace</SidebarGroupLabel>}
           <SidebarGroupContent>
-            <SidebarMenu>
-              {ADMIN.filter((i) => !i.admin || isAdmin).map(renderItem)}
-            </SidebarMenu>
+            <SidebarMenu>{visible(ADMIN).map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarGroup>
           {!collapsed && <SidebarGroupLabel>Account</SidebarGroupLabel>}
           <SidebarGroupContent>
-            <SidebarMenu>{ACCOUNT.map(renderItem)}</SidebarMenu>
+            <SidebarMenu>{visible(ACCOUNT).map(renderItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+      </SidebarContent>
+
       </SidebarContent>
     </Sidebar>
   );
