@@ -16,6 +16,8 @@ import {
 } from "./events";
 
 export type ServerTelemetryContext = {
+  // Matches the middleware-provided client shape used across the server layer.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: SupabaseClient<any, any, any>;
   userId: string;
   tenant?: TelemetryTenant;

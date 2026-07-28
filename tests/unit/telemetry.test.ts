@@ -64,7 +64,10 @@ describe("privacy redaction", () => {
     const long = redact("x".repeat(900)) as string;
     expect(long.endsWith("[truncated]")).toBe(true);
     expect(long.length).toBeLessThan(560);
-    const deep = redact({ a: { b: { c: { d: { e: 1 } } } } }) as any;
+    const deep = redact({ a: { b: { c: { d: { e: 1 } } } } }) as Record<
+      string,
+      Record<string, Record<string, Record<string, unknown>>>
+    >;
     expect(deep.a.b.c.d).toBe("[depth-limited]");
   });
 

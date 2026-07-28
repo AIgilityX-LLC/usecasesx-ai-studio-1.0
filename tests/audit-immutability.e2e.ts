@@ -122,10 +122,12 @@ async function main() {
     const { data: funnel, error: funnelError } = await client
       .from("activation_funnel_daily" as never)
       .select("day, workspace_id, event_name, event_count, user_count");
-    const row = (funnel ?? []).find((r: any) => r.event_name === "portfolio.created");
+    const row = (funnel ?? []).find(
+      (r: Record<string, unknown>) => r.event_name === "portfolio.created",
+    ) as Record<string, unknown> | undefined;
     check(
       "activation events countable by day + workspace",
-      !funnelError && !!row && Number((row as any).event_count) >= 1,
+      !funnelError && !!row && Number(row?.event_count) >= 1,
       funnelError?.message ?? "",
     );
   } finally {
