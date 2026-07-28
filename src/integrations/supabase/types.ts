@@ -345,7 +345,12 @@ export type Database = {
           event_type: string
           id: string
           new_value: Json | null
+          organization_id: string | null
           previous_value: Json | null
+          request_id: string | null
+          severity: string
+          source: string | null
+          workspace_id: string | null
         }
         Insert: {
           actor_id?: string | null
@@ -355,7 +360,12 @@ export type Database = {
           event_type: string
           id?: string
           new_value?: Json | null
+          organization_id?: string | null
           previous_value?: Json | null
+          request_id?: string | null
+          severity?: string
+          source?: string | null
+          workspace_id?: string | null
         }
         Update: {
           actor_id?: string | null
@@ -365,7 +375,12 @@ export type Database = {
           event_type?: string
           id?: string
           new_value?: Json | null
+          organization_id?: string | null
           previous_value?: Json | null
+          request_id?: string | null
+          severity?: string
+          source?: string | null
+          workspace_id?: string | null
         }
         Relationships: []
       }
@@ -1325,6 +1340,48 @@ export type Database = {
           target_quarter?: string | null
           updated_at?: string
           user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
+      product_events: {
+        Row: {
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          event_name: string
+          id: string
+          occurred_at: string
+          organization_id: string | null
+          properties: Json
+          request_id: string | null
+          user_id: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          event_name: string
+          id?: string
+          occurred_at?: string
+          organization_id?: string | null
+          properties?: Json
+          request_id?: string | null
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          event_name?: string
+          id?: string
+          occurred_at?: string
+          organization_id?: string | null
+          properties?: Json
+          request_id?: string | null
+          user_id?: string | null
           workspace_id?: string | null
         }
         Relationships: []
@@ -2859,6 +2916,17 @@ export type Database = {
       }
     }
     Views: {
+      activation_funnel_daily: {
+        Row: {
+          day: string | null
+          event_count: number | null
+          event_name: string | null
+          organization_id: string | null
+          user_count: number | null
+          workspace_id: string | null
+        }
+        Relationships: []
+      }
       use_case_rating_aggregates: {
         Row: {
           avg_rating: number | null
