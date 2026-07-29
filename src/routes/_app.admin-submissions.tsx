@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import * as adminRepo from "@/lib/domain/admin.repository";
+import { toUserMessage } from "@/lib/domain/errors";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { RequireRoles } from "@/components/RequireRoles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,12 +70,12 @@ function AdminSubmissions() {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("use_case_submissions")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) toast.error(error.message);
-    setRows((data as Submission[]) ?? []);
+    try {
+      setRows(await adminRepo.listSubmissions<Submission>());
+    } catch (e) {
+      toast.error(toUserMessage(e, "We could not load submissions."));
+      setRows([]);
+    }
     setLoading(false);
   };
   useEffect(() => {
@@ -82,17 +83,14 @@ function AdminSubmissions() {
   }, []);
 
   const review = async (s: Submission, next: SubmissionStatus) => {
-    const { error } = await supabase
-      .from("use_case_submissions")
-      .update({
+    try {
+      await adminRepo.reviewSubmission({
+        id: s.id,
         status: next,
-        review_notes: notes || s.review_notes,
-        reviewed_by: session?.user.id ?? null,
-        reviewed_at: new Date().toISOString(),
-      })
-      .eq("id", s.id);
-    if (error) {
-      toast.error("Update failed: " + error.message);
+        reviewNotes: notes || s.review_notes,
+      });
+    } catch (e) {
+      toast.error(toUserMessage(e, "We could not update this submission."));
       return;
     }
     setRows((prev) =>

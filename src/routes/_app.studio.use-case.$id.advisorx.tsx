@@ -3,7 +3,8 @@ import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer
 import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import * as studioRepo from "@/lib/domain/studio.repository";
+import { toUserMessage } from "@/lib/domain/errors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -194,31 +195,15 @@ function AdvisorXPage() {
 
   useEffect(() => {
     (async () => {
-      const [{ data: uc }, { data: feas }, { data: dr }, { data: links }] = await Promise.all([
-        supabase.from("ai_use_cases").select("*").eq("id", useCaseId).maybeSingle(),
-        supabase
-          .from("feasibility_scores")
-          .select("*")
-          .eq("use_case_id", useCaseId)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
-        supabase
-          .from("data_readiness_assessments")
-          .select("*")
-          .eq("use_case_id", useCaseId)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
-        supabase
-          .from("integration_links")
-          .select("*")
-          .eq("use_case_id", useCaseId)
-          .eq("integration_type", "AdvisorX"),
+      const [uc, feas, dr, links] = await Promise.all([
+        studioRepo.getStudioUseCase(useCaseId).catch(() => null),
+        studioRepo.getLatestFeasibility(useCaseId, "*", "created_at").catch(() => null),
+        studioRepo.getLatestDataReadiness(useCaseId).catch(() => null),
+        studioRepo.listIntegrationLinks<any>(useCaseId, "AdvisorX").catch(() => []),
       ]);
       setContext({ uc, feas, dr });
       const map: Partial<Record<AdvisorKey, Review>> = {};
-      (links ?? []).forEach((row) => {
+      links.forEach((row: any) => {
         const meta = row.metadata as any;
         if (meta?.advisor && meta?.review) map[meta.advisor as AdvisorKey] = meta.review as Review;
       });
@@ -230,17 +215,19 @@ function AdvisorXPage() {
     setBusy(`${advisor}-${action}`);
     const review = buildReview(advisor, context.uc, context.feas, context.dr);
     setReviews((prev) => ({ ...prev, [advisor]: review }));
-    const { error } = await supabase.from("integration_links").insert({
-      use_case_id: useCaseId,
-      integration_type: "AdvisorX",
-      status: action === "review" ? "reviewed" : "recommended",
-      metadata: { advisor, action, review, generated_at: new Date().toISOString() },
-    });
-    setBusy(null);
-    if (error) {
-      toast.error(error.message);
+    try {
+      await studioRepo.createIntegrationLink({
+        useCaseId,
+        integrationType: "AdvisorX",
+        status: action === "review" ? "reviewed" : "recommended",
+        metadata: { advisor, action, review, generated_at: new Date().toISOString() },
+      });
+    } catch (e) {
+      setBusy(null);
+      toast.error(toUserMessage(e, "We could not save this review."));
       return;
     }
+    setBusy(null);
     toast.success(
       action === "review" ? "AdvisorX review generated." : "Recommendations generated.",
     );
@@ -254,25 +241,14 @@ function AdvisorXPage() {
     }
     setBusy(`${advisor}-blueprint`);
     const block = `\n\n---\n\n${formatReview(advisor, review)}`;
-    const { data: existing } = await supabase
-      .from("blueprints")
-      .select("id, executive_summary")
-      .eq("use_case_id", useCaseId)
-      .maybeSingle();
-    const merged = (existing?.executive_summary ?? "") + block;
-    const { error } = existing
-      ? await supabase
-          .from("blueprints")
-          .update({ executive_summary: merged } as any)
-          .eq("id", existing.id)
-      : await supabase
-          .from("blueprints")
-          .insert({ use_case_id: useCaseId, executive_summary: merged } as any);
-    setBusy(null);
-    if (error) {
-      toast.error(error.message);
+    try {
+      await studioRepo.appendBlueprintSummary(useCaseId, block);
+    } catch (e) {
+      setBusy(null);
+      toast.error(toUserMessage(e, "We could not update the blueprint."));
       return;
     }
+    setBusy(null);
     toast.success("Recommendations added to Blueprint.");
   };
 

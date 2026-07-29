@@ -3,7 +3,8 @@ import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer
 import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import * as studioRepo from "@/lib/domain/studio.repository";
+import { toUserMessage } from "@/lib/domain/errors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -56,13 +57,9 @@ function SarpiPage() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from("integration_links")
-        .select("*")
-        .eq("use_case_id", useCaseId)
-        .eq("integration_type", "SARPI");
+      const data = await studioRepo.listIntegrationLinks(useCaseId, "SARPI").catch(() => []);
       const map: Record<string, any> = {};
-      (data ?? []).forEach((row) => {
+      data.forEach((row: any) => {
         const k = (row.metadata as any)?.assessment ?? "all";
         map[k] = row;
       });
@@ -72,25 +69,20 @@ function SarpiPage() {
 
   const createAssessment = async (assessment: CardKey | "all", title: string) => {
     setCreating(assessment);
-    const { data, error } = await supabase
-      .from("integration_links")
-      .insert({
-        use_case_id: useCaseId,
-        integration_type: "SARPI",
+    let data: any;
+    try {
+      data = await studioRepo.createIntegrationLink({
+        useCaseId,
+        integrationType: "SARPI",
         status: "draft",
-        metadata: {
-          assessment,
-          title,
-          created_at: new Date().toISOString(),
-        },
-      })
-      .select()
-      .single();
-    setCreating(null);
-    if (error) {
-      toast.error(error.message);
+        metadata: { assessment, title, created_at: new Date().toISOString() },
+      });
+    } catch (e) {
+      setCreating(null);
+      toast.error(toUserMessage(e, "We could not start this assessment."));
       return;
     }
+    setCreating(null);
     setExisting((prev) => ({ ...prev, [assessment]: data }));
     toast.success(
       "SARPI integration record created. Full SARPI API connection can be enabled in Enterprise configuration.",

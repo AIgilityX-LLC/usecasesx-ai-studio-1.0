@@ -11,6 +11,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
+import * as studioRepo from "@/lib/domain/studio.repository";
+import { toUserMessage } from "@/lib/domain/errors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -154,29 +156,27 @@ function FeasibilityPage() {
         return;
       }
 
-      const { data: uc, error } = await supabase
-        .from("ai_use_cases")
-        .select("id, title, board_id")
-        .eq("id", id)
-        .maybeSingle();
+      const uc = await studioRepo
+        .getStudioUseCase<{
+          id: string;
+          title: string;
+          board_id: string;
+        }>(id, "id, title, board_id")
+        .catch(() => null);
       if (!active) return;
-      if (error || !uc) {
+      if (!uc) {
         toast.error("Use case not found.");
         setLoading(false);
         return;
       }
       setUseCase(uc);
 
-      const { data: existing } = await supabase
-        .from("feasibility_scores")
-        .select(
+      const existing = await studioRepo
+        .getLatestFeasibility(
+          id,
           "id, desirability_score, viability_score, feasibility_score, governability_score, sustainability_score, notes",
         )
-        .eq("use_case_id", id)
-        .order("updated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
+        .catch(() => null);
       if (existing) {
         // Reconstruct rough per-question answers from pillar score (uniform fill).
         const restore = emptyAnswers();
@@ -250,21 +250,16 @@ function FeasibilityPage() {
       notes: notes.trim() || null,
     };
 
-    const res = existingId
-      ? await supabase
-          .from("feasibility_scores")
-          .update(payload)
-          .eq("id", existingId)
-          .select("id")
-          .single()
-      : await supabase.from("feasibility_scores").insert(payload).select("id").single();
-
-    setSaving(false);
-    if (res.error) {
-      toast.error(res.error.message);
+    let savedId: string;
+    try {
+      savedId = await studioRepo.saveFeasibility({ existingId, payload });
+    } catch (e) {
+      setSaving(false);
+      toast.error(toUserMessage(e, "We could not save these scores."));
       return;
     }
-    if (!existingId && res.data) setExistingId(res.data.id);
+    setSaving(false);
+    if (!existingId) setExistingId(savedId);
     toast.success("Feasibility scores saved.");
     if (next === "blueprint")
       navigate({ to: "/blueprint", search: { useCase: useCase.id } as never });

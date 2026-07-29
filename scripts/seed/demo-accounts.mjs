@@ -8,13 +8,24 @@
  * Requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the environment.
  *   bun run scripts/seed/demo-accounts.mjs
  */
+import { randomBytes } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 
 const url = process.env.SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!url || !serviceKey) throw new Error("Missing SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY");
 
-const PASSWORD = process.env.SMOKE_DEMO_PASSWORD ?? "Demo@123";
+/**
+ * Per-run credentials. Provide DEMO_SEED_PASSWORD (or SMOKE_DEMO_PASSWORD, used
+ * by the e2e suites) in the environment, otherwise a strong random password is
+ * generated for this run and printed once at the end. No shared password is
+ * ever committed to the repository.
+ */
+const PASSWORD =
+  process.env.DEMO_SEED_PASSWORD ??
+  process.env.SMOKE_DEMO_PASSWORD ??
+  `Ux-${randomBytes(18).toString("base64url")}`;
+const GENERATED = !process.env.DEMO_SEED_PASSWORD && !process.env.SMOKE_DEMO_PASSWORD;
 
 const ACCOUNTS = [
   { email: "admin@demo.usecasex.app", label: "Admin", role: "admin", plan: "enterprise" },
@@ -81,4 +92,12 @@ for (const acct of ACCOUNTS) {
   );
 }
 
-console.log(`\n${ACCOUNTS.length} demo accounts ready (password: ${PASSWORD}).`);
+console.log(`\n${ACCOUNTS.length} demo accounts ready.`);
+if (GENERATED) {
+  console.log(
+    `\nGenerated password for this run (shown once — store it or re-run with ` +
+      `DEMO_SEED_PASSWORD set):\n\n  ${PASSWORD}\n`,
+  );
+} else {
+  console.log("Password taken from DEMO_SEED_PASSWORD / SMOKE_DEMO_PASSWORD.");
+}

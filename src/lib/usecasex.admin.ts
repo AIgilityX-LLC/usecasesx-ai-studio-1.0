@@ -1,8 +1,9 @@
-// Supabase-backed admin store for UseCasesX™ catalogue authoring.
-// Public API preserved so existing admin UI continues to work.
+// Admin store for UseCasesX™ catalogue authoring.
+// Public API preserved; all data access goes through src/lib/domain/admin.repository.
 
 import { useCallback, useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import * as adminRepo from "@/lib/domain/admin.repository";
+import { toUserMessage } from "@/lib/domain/errors";
 import type { Level, Risk, Maturity, TTV } from "@/lib/usecasex.mock";
 
 export type Visibility = "Free/Lite" | "Pro" | "Both" | "Hidden";
@@ -309,145 +310,11 @@ function toDbPatch(uc: AdminUseCase) {
   };
 }
 
-/* ---------------- audit log ---------------- */
+/* ---------------- data access (domain layer) ---------------- */
 
-async function writeAudit(useCaseId: string | null, action: string, detail?: string) {
-  const { data: u } = await supabase.auth.getUser();
-  if (!u.user) return;
-  await supabase.from("use_case_audit_log").insert({
-    use_case_id: useCaseId,
-    actor_id: u.user.id,
-    action,
-    detail: detail ?? null,
-  });
-}
-
-async function loadAuditMap(ids: string[]): Promise<Record<string, AuditEntry[]>> {
-  if (ids.length === 0) return {};
-  const { data } = await supabase
-    .from("use_case_audit_log")
-    .select("use_case_id, action, detail, actor_id, created_at")
-    .in("use_case_id", ids)
-    .order("created_at", { ascending: true });
-  const map: Record<string, AuditEntry[]> = {};
-  for (const row of data ?? []) {
-    const id = (row as any).use_case_id as string;
-    if (!map[id]) map[id] = [];
-    map[id].push({
-      ts: (row as any).created_at,
-      actor: (row as any).actor_id ?? "system",
-      action: (row as any).action,
-      detail: (row as any).detail ?? undefined,
-    });
-  }
-  return map;
-}
-
-/* ---------------- taxonomy join helpers ---------------- */
-
-async function fetchTaxonomyMaps() {
-  const [ind, fn, ai, obj] = await Promise.all([
-    supabase.from("industries").select("id, slug"),
-    supabase.from("business_functions").select("id, slug"),
-    supabase.from("ai_capabilities").select("id, slug"),
-    supabase.from("business_objectives").select("id, slug"),
-  ]);
-  const toMap = (rows: any[] | null) => {
-    const byId: Record<string, string> = {},
-      bySlug: Record<string, string> = {};
-    for (const r of rows ?? []) {
-      byId[r.id] = r.slug;
-      bySlug[r.slug] = r.id;
-    }
-    return { byId, bySlug };
-  };
-  return {
-    industries: toMap(ind.data),
-    functions: toMap(fn.data),
-    aiTypes: toMap(ai.data),
-    objectives: toMap(obj.data),
-  };
-}
-
-async function attachPrimaryTaxonomy(rows: DbUseCase[]) {
-  if (rows.length === 0) return rows;
-  const ids = rows.map((r) => r.id);
-  const [ind, fn, ai, obj, tax] = await Promise.all([
-    supabase.from("use_case_industries").select("use_case_id, industry_id").in("use_case_id", ids),
-    supabase
-      .from("use_case_business_functions")
-      .select("use_case_id, business_function_id")
-      .in("use_case_id", ids),
-    supabase
-      .from("use_case_capabilities")
-      .select("use_case_id, capability_id")
-      .in("use_case_id", ids),
-    supabase
-      .from("use_case_business_objectives")
-      .select("use_case_id, objective_id")
-      .in("use_case_id", ids),
-    fetchTaxonomyMaps(),
-  ]);
-  const pick = (data: any[] | null, key: string, map: Record<string, string>) => {
-    const out: Record<string, string> = {};
-    for (const r of data ?? []) if (!out[r.use_case_id]) out[r.use_case_id] = map[r[key]] ?? "";
-    return out;
-  };
-  const indMap = pick(ind.data, "industry_id", tax.industries.byId);
-  const fnMap = pick(fn.data, "business_function_id", tax.functions.byId);
-  const aiMap = pick(ai.data, "capability_id", tax.aiTypes.byId);
-  const objMap = pick(obj.data, "objective_id", tax.objectives.byId);
-  return rows.map<DbUseCase>((r) => ({
-    ...r,
-    _industry_slug: indMap[(r as any).id] ?? "",
-    _business_function_slug: fnMap[(r as any).id] ?? "",
-    _ai_type_slug: aiMap[(r as any).id] ?? "",
-    _objective_slug: objMap[(r as any).id] ?? "",
-  }));
-}
-
-async function syncJoinRow(
-  table: string,
-  useCaseId: string,
-  fkCol: string,
-  lookupTable: string,
-  slug: string,
-) {
-  // Replace the single primary mapping with the provided slug.
-  await supabase
-    .from(table as any)
-    .delete()
-    .eq("use_case_id", useCaseId);
-  if (!slug) return;
-  const { data } = await supabase
-    .from(lookupTable as any)
-    .select("id")
-    .eq("slug", slug)
-    .maybeSingle();
-  const id = (data as any)?.id;
-  if (id) await supabase.from(table as any).insert({ use_case_id: useCaseId, [fkCol]: id });
-}
-
-async function syncTaxonomyJoins(useCaseId: string, uc: AdminUseCase) {
-  await Promise.all([
-    syncJoinRow("use_case_industries", useCaseId, "industry_id", "industries", uc.industry),
-    syncJoinRow(
-      "use_case_business_functions",
-      useCaseId,
-      "business_function_id",
-      "business_functions",
-      uc.businessFunction,
-    ),
-    syncJoinRow("use_case_capabilities", useCaseId, "capability_id", "ai_capabilities", uc.aiType),
-    syncJoinRow(
-      "use_case_business_objectives",
-      useCaseId,
-      "objective_id",
-      "business_objectives",
-      uc.businessObjective,
-    ),
-  ]);
-}
+// All catalogue reads/writes go through the admin repository so validation,
+// ownership and error normalization live in one place.
+// See docs/architecture/domain-boundaries.md.
 
 /* ---------------- hook ---------------- */
 
@@ -458,21 +325,19 @@ export function useAdminStore() {
 
   const reload = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("use_cases")
-      .select("*")
-      .order("updated_at", { ascending: false });
-    if (error) {
-      setError(error.message);
+    try {
+      const rows = await adminRepo.attachPrimaryTaxonomy(
+        (await adminRepo.listUseCases()) as adminRepo.UseCaseRow[],
+      );
+      const audits = await adminRepo.loadUseCaseAuditMap(rows.map((r) => r.id));
+      setList(rows.map((r) => fromDb(r as DbUseCase, audits[r.id] ?? [])));
+      setError(null);
+    } catch (e) {
+      setError(toUserMessage(e, "We could not load the catalogue."));
       setList([]);
+    } finally {
       setLoading(false);
-      return;
     }
-    const rows = await attachPrimaryTaxonomy((data ?? []) as DbUseCase[]);
-    const audits = await loadAuditMap(rows.map((r) => r.id));
-    setList(rows.map((r) => fromDb(r, audits[r.id] ?? [])));
-    setError(null);
-    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -488,40 +353,36 @@ export function useAdminStore() {
       }
       const isNew = uc.id.startsWith("new-") || uc.id.startsWith("dup-");
       const patch = toDbPatch(uc);
-      const { data: u } = await supabase.auth.getUser();
 
-      let savedId = uc.id;
-      if (isNew) {
-        const { data, error } = await (supabase as any)
-          .from("use_cases")
-          .insert({ ...patch, submitted_by: u.user?.id })
-          .select("id")
-          .single();
-        if (error) {
-          setError(error.message);
-          return null;
-        }
-        savedId = (data as any).id;
-      } else {
-        const { error } = await (supabase as any).from("use_cases").update(patch).eq("id", uc.id);
-        if (error) {
-          setError(error.message);
-          return null;
-        }
+      try {
+        const savedId = isNew
+          ? await adminRepo.insertUseCase(patch)
+          : (await adminRepo.updateUseCase(uc.id, patch), uc.id);
+        await adminRepo.syncTaxonomyJoins(savedId, {
+          industry: uc.industry,
+          businessFunction: uc.businessFunction,
+          aiType: uc.aiType,
+          businessObjective: uc.businessObjective,
+        });
+        await adminRepo.writeUseCaseAudit(savedId, action, uc.changeNotes || undefined);
+        await reload();
+        return { ...uc, id: savedId };
+      } catch (e) {
+        setError(toUserMessage(e, "We could not save this use case."));
+        return null;
       }
-      await syncTaxonomyJoins(savedId, uc);
-      await writeAudit(savedId, action, uc.changeNotes || undefined);
-      await reload();
-      return { ...uc, id: savedId };
     },
     [reload],
   );
 
   const remove = useCallback(
     async (id: string) => {
-      await writeAudit(id, "Deleted");
-      const { error } = await supabase.from("use_cases").delete().eq("id", id);
-      if (error) setError(error.message);
+      try {
+        await adminRepo.writeUseCaseAudit(id, "Deleted");
+        await adminRepo.deleteUseCase(id);
+      } catch (e) {
+        setError(toUserMessage(e, "We could not delete this use case."));
+      }
       await reload();
     },
     [reload],
@@ -538,14 +399,15 @@ export function useAdminStore() {
             : contentStatus === "submitted_for_review"
               ? "review"
               : "draft";
-      const patch: Record<string, any> = { content_status: contentStatus, status: lifecycle };
+      const patch: Record<string, unknown> = { content_status: contentStatus, status: lifecycle };
       if (contentStatus === "published") patch.published_at = new Date().toISOString();
-      const { error } = await (supabase as any).from("use_cases").update(patch).eq("id", id);
-      if (error) {
-        setError(error.message);
+      try {
+        await adminRepo.updateUseCase(id, patch);
+        await adminRepo.writeUseCaseAudit(id, action);
+      } catch (e) {
+        setError(toUserMessage(e, "We could not update the status."));
         return;
       }
-      await writeAudit(id, action);
       await reload();
     },
     [reload],
@@ -553,39 +415,26 @@ export function useAdminStore() {
 
   const duplicate = useCallback(
     async (id: string) => {
-      const { data, error } = await supabase.from("use_cases").select("*").eq("id", id).single();
-      if (error || !data) {
-        setError(error?.message ?? "Use case not found");
+      try {
+        const src = (await adminRepo.getUseCase(id)) as DbUseCase;
+        const copy: Record<string, unknown> = {
+          ...src,
+          slug: `${src.slug}-copy-${Date.now().toString(36).slice(-4)}`,
+          title: `${src.title} (copy)`,
+          content_status: "draft",
+          status: "draft",
+          is_featured: false,
+          published_at: null,
+        };
+        delete copy.id;
+        delete copy.created_at;
+        delete copy.updated_at;
+        const newId = await adminRepo.insertUseCase(copy);
+        await adminRepo.writeUseCaseAudit(newId, "Duplicated", `From ${src.slug}`);
+      } catch (e) {
+        setError(toUserMessage(e, "We could not duplicate this use case."));
         return;
       }
-      const { data: u } = await supabase.auth.getUser();
-      const src = data as DbUseCase;
-      const copy = {
-        ...src,
-        id: undefined,
-        slug: `${src.slug}-copy-${Date.now().toString(36).slice(-4)}`,
-        title: `${src.title} (copy)`,
-        content_status: "draft",
-        status: "draft",
-        is_featured: false,
-        published_at: null,
-        submitted_by: u.user?.id,
-        created_at: undefined,
-        updated_at: undefined,
-      };
-      delete (copy as any).id;
-      delete (copy as any).created_at;
-      delete (copy as any).updated_at;
-      const { data: ins, error: insErr } = await (supabase as any)
-        .from("use_cases")
-        .insert(copy)
-        .select("id")
-        .single();
-      if (insErr) {
-        setError(insErr.message);
-        return;
-      }
-      await writeAudit((ins as any).id, "Duplicated", `From ${src.slug}`);
       await reload();
     },
     [reload],

@@ -3,7 +3,8 @@ import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer
 import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import * as studioRepo from "@/lib/domain/studio.repository";
+import { toUserMessage } from "@/lib/domain/errors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -86,14 +87,10 @@ function C3GGovernancePage() {
 
   useEffect(() => {
     (async () => {
-      const { data: rows } = await supabase
-        .from("integration_links")
-        .select("*")
-        .eq("use_case_id", useCaseId)
-        .eq("integration_type", "C3G")
-        .order("created_at", { ascending: false })
-        .limit(1);
-      const row = rows?.[0];
+      const rows = await studioRepo
+        .listIntegrationLinks<any>(useCaseId, "C3G", { latestFirst: true, limit: 1 })
+        .catch(() => []);
+      const row = rows[0];
       if (row) {
         setExisting(row);
         const meta = (row.metadata as any) ?? {};
@@ -116,24 +113,20 @@ function C3GGovernancePage() {
 
   const createRecord = async () => {
     setCreating(true);
-    const { data: row, error } = await supabase
-      .from("integration_links")
-      .insert({
-        use_case_id: useCaseId,
-        integration_type: "C3G",
+    let row: any;
+    try {
+      row = await studioRepo.createIntegrationLink({
+        useCaseId,
+        integrationType: "C3G",
         status: "draft",
-        metadata: {
-          ...data,
-          created_at: new Date().toISOString(),
-        },
-      })
-      .select()
-      .single();
-    setCreating(false);
-    if (error) {
-      toast.error(error.message);
+        metadata: { ...data, created_at: new Date().toISOString() },
+      });
+    } catch (e) {
+      setCreating(false);
+      toast.error(toUserMessage(e, "We could not create this governance record."));
       return;
     }
+    setCreating(false);
     setExisting(row);
     toast.success(
       "C3G governance record created. Full C3G integration can be enabled in Enterprise configuration.",

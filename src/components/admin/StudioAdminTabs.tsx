@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import * as adminRepo from "@/lib/domain/admin.repository";
+import { toUserMessage } from "@/lib/domain/errors";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -364,12 +365,12 @@ export function OrganizationsAdminTab() {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("organizations")
-      .select("id,name,plan,industry,country,type")
-      .order("name");
-    if (error) toast.error(error.message);
-    setOrgs((data ?? []) as Org[]);
+    try {
+      setOrgs(await adminRepo.listOrganizations<Org>());
+    } catch (e) {
+      toast.error(toUserMessage(e, "We could not load organizations."));
+      setOrgs([]);
+    }
     setLoading(false);
   };
   useEffect(() => {
@@ -377,9 +378,10 @@ export function OrganizationsAdminTab() {
   }, []);
 
   const updatePlan = async (org: Org, plan: string) => {
-    const { error } = await supabase.from("organizations").update({ plan }).eq("id", org.id);
-    if (error) {
-      toast.error(error.message);
+    try {
+      await adminRepo.updateOrganizationPlan(org.id, plan);
+    } catch (e) {
+      toast.error(toUserMessage(e, "We could not update this plan."));
       return;
     }
     toast.success(`Plan updated for ${org.name}`);

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import * as adminRepo from "@/lib/domain/admin.repository";
+import { toUserMessage } from "@/lib/domain/errors";
 import { RequireRoles } from "@/components/RequireRoles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -77,12 +78,12 @@ function WaitlistAdmin() {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("lead_captures")
-      .select("id, full_name, email, company, cta, eligible, waitlist_status, created_at")
-      .order("created_at", { ascending: false });
-    if (error) toast.error("Failed to load leads: " + error.message);
-    setLeads((data as Lead[]) ?? []);
+    try {
+      setLeads(await adminRepo.listWaitlistLeads<Lead>());
+    } catch (e) {
+      toast.error(toUserMessage(e, "We could not load the waitlist."));
+      setLeads([]);
+    }
     setLoading(false);
   };
 
@@ -91,9 +92,10 @@ function WaitlistAdmin() {
   }, []);
 
   const updateStatus = async (id: string, waitlist_status: string) => {
-    const { error } = await supabase.from("lead_captures").update({ waitlist_status }).eq("id", id);
-    if (error) {
-      toast.error("Update failed: " + error.message);
+    try {
+      await adminRepo.updateLeadWaitlistStatus(id, waitlist_status);
+    } catch (e) {
+      toast.error(toUserMessage(e, "We could not update this lead."));
       return;
     }
     setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, waitlist_status } : l)));
