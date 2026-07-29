@@ -174,12 +174,6 @@ function FeasibilityPage() {
         id,
         "id, desirability_score, viability_score, feasibility_score, governability_score, sustainability_score, notes",
       );
-      const _unusedFeasibilityQuery = (null as unknown as { eq: (a: string, b: string) => void })
-        ?.eq?.("use_case_id", id)
-        .order("updated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
       if (existing) {
         // Reconstruct rough per-question answers from pillar score (uniform fill).
         const restore = emptyAnswers();
@@ -253,21 +247,16 @@ function FeasibilityPage() {
       notes: notes.trim() || null,
     };
 
-    const res = existingId
-      ? await supabase
-          .from("feasibility_scores")
-          .update(payload)
-          .eq("id", existingId)
-          .select("id")
-          .single()
-      : await supabase.from("feasibility_scores").insert(payload).select("id").single();
-
-    setSaving(false);
-    if (res.error) {
-      toast.error(res.error.message);
+    let savedId: string;
+    try {
+      savedId = await studioRepo.saveFeasibility(payload, existingId);
+    } catch (e) {
+      setSaving(false);
+      toast.error(toUserMessage(e, "We could not save these scores."));
       return;
     }
-    if (!existingId && res.data) setExistingId(res.data.id);
+    setSaving(false);
+    if (!existingId) setExistingId(savedId);
     toast.success("Feasibility scores saved.");
     if (next === "blueprint")
       navigate({ to: "/blueprint", search: { useCase: useCase.id } as never });
