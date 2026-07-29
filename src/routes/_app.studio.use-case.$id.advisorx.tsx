@@ -241,25 +241,14 @@ function AdvisorXPage() {
     }
     setBusy(`${advisor}-blueprint`);
     const block = `\n\n---\n\n${formatReview(advisor, review)}`;
-    const { data: existing } = await supabase
-      .from("blueprints")
-      .select("id, executive_summary")
-      .eq("use_case_id", useCaseId)
-      .maybeSingle();
-    const merged = (existing?.executive_summary ?? "") + block;
-    const { error } = existing
-      ? await supabase
-          .from("blueprints")
-          .update({ executive_summary: merged } as any)
-          .eq("id", existing.id)
-      : await supabase
-          .from("blueprints")
-          .insert({ use_case_id: useCaseId, executive_summary: merged } as any);
-    setBusy(null);
-    if (error) {
-      toast.error(error.message);
+    try {
+      await studioRepo.appendBlueprintSummary(useCaseId, block);
+    } catch (e) {
+      setBusy(null);
+      toast.error(toUserMessage(e, "We could not update the blueprint."));
       return;
     }
+    setBusy(null);
     toast.success("Recommendations added to Blueprint.");
   };
 
