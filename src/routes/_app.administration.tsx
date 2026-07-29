@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import * as adminRepo from "@/lib/domain/admin.repository";
+import { exportBaseline } from "@/lib/baseline-export.functions";
 import { toUserMessage } from "@/lib/domain/errors";
 import {
   useAdminStore,
@@ -128,9 +130,12 @@ function AdminPageInner() {
               Manage the AI use case catalogue, taxonomy, platform mapping, leads, and analytics.
             </p>
           </div>
-          <Badge variant="secondary" className="text-xs">
-            Signed-in role: {roleLabel}
-          </Badge>
+          <div className="flex items-center gap-3">
+            <BaselineExportButton />
+            <Badge variant="secondary" className="text-xs">
+              Signed-in role: {roleLabel}
+            </Badge>
+          </div>
         </header>
 
         <Tabs defaultValue="overview" className="w-full">
@@ -1769,5 +1774,35 @@ function SettingsTab() {
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+/** Admin-only JSON export of the seeded launch baseline (verification / demos). */
+function BaselineExportButton() {
+  const run = useServerFn(exportBaseline);
+  const [busy, setBusy] = useState(false);
+
+  const download = async () => {
+    setBusy(true);
+    try {
+      const payload = await run();
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `usecasesx-baseline-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("Baseline export failed. Admin role required.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Button variant="outline" size="sm" onClick={download} disabled={busy}>
+      {busy ? "Exporting…" : "Export baseline JSON"}
+    </Button>
   );
 }
