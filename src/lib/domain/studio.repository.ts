@@ -27,10 +27,7 @@ export async function requireCurrentUserId(): Promise<string> {
 
 /* ---------------- ai_use_cases ---------------- */
 
-export async function getStudioUseCase<T = any>(
-  id: string,
-  columns = "*",
-): Promise<T | null> {
+export async function getStudioUseCase<T = any>(id: string, columns = "*"): Promise<T | null> {
   const result = await supabase.from("ai_use_cases").select(columns).eq("id", id).maybeSingle();
   return (unwrapResult(result, { allowNull: true }) ?? null) as T | null;
 }
@@ -68,7 +65,10 @@ export async function getLatestFeasibility<T = any>(
 
 export async function listFeasibilityForUseCases<T = any>(useCaseIds: string[]): Promise<T[]> {
   if (useCaseIds.length === 0) return [];
-  const result = await supabase.from("feasibility_scores").select("*").in("use_case_id", useCaseIds);
+  const result = await supabase
+    .from("feasibility_scores")
+    .select("*")
+    .in("use_case_id", useCaseIds);
   return (unwrapResult(result, { allowNull: true }) ?? []) as T[];
 }
 
@@ -85,7 +85,11 @@ export async function saveFeasibility(input: {
         .eq("id", input.existingId)
         .select("id")
         .single()
-    : await (supabase as any).from("feasibility_scores").insert(input.payload).select("id").single();
+    : await (supabase as any)
+        .from("feasibility_scores")
+        .insert(input.payload)
+        .select("id")
+        .single();
   const row = unwrapResult(result);
   return (row as { id: string }).id;
 }

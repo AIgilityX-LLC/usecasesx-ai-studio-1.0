@@ -38,7 +38,10 @@ export async function listUseCases(): Promise<UseCaseRow[]> {
 
 export async function getUseCase(id: string): Promise<UseCaseRow> {
   const result = await supabase.from("use_cases").select("*").eq("id", id).maybeSingle();
-  const row = unwrapResult(result, { allowNull: true, notFoundMessage: "We could not find that use case." });
+  const row = unwrapResult(result, {
+    allowNull: true,
+    notFoundMessage: "We could not find that use case.",
+  });
   if (!row) throw new DomainError("not_found", "We could not find that use case.");
   return row as UseCaseRow;
 }

@@ -157,10 +157,11 @@ function FeasibilityPage() {
       }
 
       const uc = await studioRepo
-        .getStudioUseCase<{ id: string; title: string; board_id: string }>(
-          id,
-          "id, title, board_id",
-        )
+        .getStudioUseCase<{
+          id: string;
+          title: string;
+          board_id: string;
+        }>(id, "id, title, board_id")
         .catch(() => null);
       if (!active) return;
       if (!uc) {

@@ -129,7 +129,6 @@ function AuthPage() {
             <Link to="/">← Back to UseCasesX™</Link>
           </p>
         </section>
-
       </div>
     </SiteShell>
   );

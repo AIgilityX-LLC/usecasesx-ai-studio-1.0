@@ -45,9 +45,7 @@ function DeliverablesHub() {
   useEffect(() => {
     (async () => {
       const [uc, rows] = await Promise.all([
-        studioRepo
-          .getStudioUseCase<{ title: string }>(id, "title")
-          .catch(() => null),
+        studioRepo.getStudioUseCase<{ title: string }>(id, "title").catch(() => null),
         loadDeliverables(id),
       ]);
       setTitle(uc?.title ?? null);
