@@ -11,6 +11,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
+import * as studioRepo from "@/lib/domain/studio.repository";
+import { toUserMessage } from "@/lib/domain/errors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -154,25 +156,26 @@ function FeasibilityPage() {
         return;
       }
 
-      const { data: uc, error } = await supabase
-        .from("ai_use_cases")
-        .select("id, title, board_id")
-        .eq("id", id)
-        .maybeSingle();
+      const uc = await studioRepo
+        .getStudioUseCase<{ id: string; title: string; board_id: string | null }>(
+          id,
+          "id, title, board_id",
+        )
+        .catch(() => null);
       if (!active) return;
-      if (error || !uc) {
+      if (!uc) {
         toast.error("Use case not found.");
         setLoading(false);
         return;
       }
       setUseCase(uc);
 
-      const { data: existing } = await supabase
-        .from("feasibility_scores")
-        .select(
-          "id, desirability_score, viability_score, feasibility_score, governability_score, sustainability_score, notes",
-        )
-        .eq("use_case_id", id)
+      const existing = await studioRepo.getLatestFeasibilityLegacy(
+        id,
+        "id, desirability_score, viability_score, feasibility_score, governability_score, sustainability_score, notes",
+      );
+      const _unusedFeasibilityQuery = (null as unknown as { eq: (a: string, b: string) => void })
+        ?.eq?.("use_case_id", id)
         .order("updated_at", { ascending: false })
         .limit(1)
         .maybeSingle();

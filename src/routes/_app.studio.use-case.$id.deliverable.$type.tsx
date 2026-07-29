@@ -3,7 +3,7 @@ import { RequirePlan } from "@/components/RequirePlan";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import * as studioRepo from "@/lib/domain/studio.repository";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -149,8 +149,8 @@ function DeliverableEditor() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const [{ data: uc }, existing, all] = await Promise.all([
-        supabase.from("ai_use_cases").select("title").eq("id", id).maybeSingle(),
+      const [uc, existing, all] = await Promise.all([
+        studioRepo.getStudioUseCase<{ title: string }>(id, "title").catch(() => null),
         loadDeliverable(id, dType),
         dType === "handover_package" ? loadDeliverables(id) : Promise.resolve([]),
       ]);

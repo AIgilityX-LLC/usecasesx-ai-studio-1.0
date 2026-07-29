@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import * as adminRepo from "@/lib/domain/admin.repository";
+import { toUserMessage } from "@/lib/domain/errors";
 import {
   useAdminStore,
   emptyUseCase,
@@ -1172,12 +1173,12 @@ function TaxonomyTab() {
   const [msg, setMsg] = useState<string | null>(null);
 
   const loadMeta = async () => {
-    const { data } = await supabase
-      .from("taxonomy_meta")
-      .select("version, published_at")
-      .eq("id", 1)
-      .maybeSingle();
-    if (data) setMeta(data as any);
+    try {
+      const data = await adminRepo.getTaxonomyMeta();
+      if (data) setMeta(data);
+    } catch {
+      setMeta(null);
+    }
   };
   useEffect(() => {
     loadMeta();
@@ -1186,21 +1187,14 @@ function TaxonomyTab() {
   const publish = async () => {
     setPublishing(true);
     setMsg(null);
-    const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase
-      .from("taxonomy_meta")
-      .update({
-        version: (meta?.version ?? 0) + 1,
-        published_at: new Date().toISOString(),
-        published_by: u.user?.id ?? null,
-      })
-      .eq("id", 1);
-    setPublishing(false);
-    if (error) {
-      setMsg(`Publish failed: ${error.message}`);
-    } else {
+    try {
+      await adminRepo.publishTaxonomy((meta?.version ?? 0) + 1);
       setMsg("Taxonomy published — version bumped and now live on the public API.");
       loadMeta();
+    } catch (e) {
+      setMsg(`Publish failed: ${toUserMessage(e, "Please try again.")}`);
+    } finally {
+      setPublishing(false);
     }
   };
 
@@ -1267,12 +1261,11 @@ function SectorWorkflowEditor() {
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("taxonomy_sectors")
-      .select("*")
-      .order("sort_order")
-      .order("name");
-    setRows((data as unknown as SectorRow[]) ?? []);
+    try {
+      setRows(await adminRepo.listSectors<SectorRow>());
+    } catch {
+      setRows([]);
+    }
     setLoading(false);
   };
   useEffect(() => {
@@ -1285,45 +1278,43 @@ function SectorWorkflowEditor() {
       .toLowerCase()
       .replace(/[^a-z0-9-]+/g, "-");
     if (!slug || !newName.trim()) return;
-    const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase.from("taxonomy_sectors").insert({
-      slug,
-      name: newName.trim(),
-      sort_order: rows.length,
-      status: "pending",
-      submitted_by: u.user?.id ?? null,
-      submitted_at: new Date().toISOString(),
-    } as any);
-    if (!error) {
+    try {
+      await adminRepo.createSector({ slug, name: newName.trim(), sortOrder: rows.length });
       setNewSlug("");
       setNewName("");
       load();
       trackCTAEvent("admin_sector_submitted", { slug });
-    } else alert(error.message);
+    } catch (e) {
+      alert(toUserMessage(e, "We could not add this sector."));
+    }
   };
 
   const setStatus = async (id: string, status: string) => {
-    const patch: Partial<SectorRow> = { status, is_featured: status === "featured" };
-    const { error } = await supabase
-      .from("taxonomy_sectors")
-      .update(patch as any)
-      .eq("id", id);
-    if (!error) {
+    try {
+      await adminRepo.updateSector(id, { status, is_featured: status === "featured" });
       load();
       trackCTAEvent(`admin_sector_${status}`, { id });
-    } else alert(error.message);
+    } catch (e) {
+      alert(toUserMessage(e, "We could not update this sector."));
+    }
   };
 
   const rename = async (id: string, name: string) => {
-    const { error } = await supabase.from("taxonomy_sectors").update({ name }).eq("id", id);
-    if (!error) load();
-    else alert(error.message);
+    try {
+      await adminRepo.updateSector(id, { name });
+      load();
+    } catch (e) {
+      alert(toUserMessage(e, "We could not rename this sector."));
+    }
   };
 
   const remove = async (id: string) => {
-    const { error } = await supabase.from("taxonomy_sectors").delete().eq("id", id);
-    if (!error) load();
-    else alert(error.message);
+    try {
+      await adminRepo.deleteSector(id);
+      load();
+    } catch (e) {
+      alert(toUserMessage(e, "We could not remove this sector."));
+    }
   };
 
   const filtered = statusF === "all" ? rows : rows.filter((r) => r.status === statusF);
@@ -1466,12 +1457,11 @@ function TaxonomyEditor({ table, title }: { table: string; title: string }) {
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from(table as any)
-      .select("*")
-      .order("sort_order")
-      .order("name");
-    setRows((data as unknown as TaxRow[]) ?? []);
+    try {
+      setRows(await adminRepo.listTaxonomyRows<TaxRow>(table));
+    } catch {
+      setRows([]);
+    }
     setLoading(false);
   };
   useEffect(() => {
@@ -1484,32 +1474,36 @@ function TaxonomyEditor({ table, title }: { table: string; title: string }) {
       .toLowerCase()
       .replace(/[^a-z0-9-]+/g, "-");
     if (!slug || !newName.trim()) return;
-    const { error } = await supabase
-      .from(table as any)
-      .insert({ slug, name: newName.trim(), sort_order: rows.length });
-    if (!error) {
+    try {
+      await adminRepo.createTaxonomyRow(table, {
+        slug,
+        name: newName.trim(),
+        sortOrder: rows.length,
+      });
       setNewSlug("");
       setNewName("");
       load();
-    } else alert(error.message);
+    } catch (e) {
+      alert(toUserMessage(e, "We could not add this entry."));
+    }
   };
 
   const update = async (id: string, patch: Partial<TaxRow>) => {
-    const { error } = await supabase
-      .from(table as any)
-      .update(patch)
-      .eq("id", id);
-    if (!error) load();
-    else alert(error.message);
+    try {
+      await adminRepo.updateTaxonomyRow(table, id, patch);
+      load();
+    } catch (e) {
+      alert(toUserMessage(e, "We could not update this entry."));
+    }
   };
 
   const remove = async (id: string) => {
-    const { error } = await supabase
-      .from(table as any)
-      .delete()
-      .eq("id", id);
-    if (!error) load();
-    else alert(error.message);
+    try {
+      await adminRepo.deleteTaxonomyRow(table, id);
+      load();
+    } catch (e) {
+      alert(toUserMessage(e, "We could not remove this entry."));
+    }
   };
 
   return (
@@ -1615,14 +1609,11 @@ function LeadsTab() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     (async () => {
-      const { data, error } = await supabase
-        .from("lead_captures")
-        .select(
-          "id, full_name, email, company, country, interest_area, cta, source_page, lead_status, created_at",
-        )
-        .order("created_at", { ascending: false })
-        .limit(200);
-      if (!error) setLeads(data ?? []);
+      try {
+        setLeads(await adminRepo.listPipelineLeads(200));
+      } catch {
+        setLeads([]);
+      }
       setLoading(false);
     })();
   }, []);
@@ -1677,12 +1668,11 @@ function CtaTab() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from("cta_events")
-        .select("id, cta, target_platform, target_route, source_page, created_at")
-        .order("created_at", { ascending: false })
-        .limit(500);
-      setEvents(data ?? []);
+      try {
+        setEvents(await adminRepo.listCtaEvents(500));
+      } catch {
+        setEvents([]);
+      }
       setLoading(false);
     })();
   }, []);

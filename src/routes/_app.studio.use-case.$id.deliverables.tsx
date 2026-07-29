@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { RequirePlan } from "@/components/RequirePlan";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import * as studioRepo from "@/lib/domain/studio.repository";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -44,8 +44,10 @@ function DeliverablesHub() {
 
   useEffect(() => {
     (async () => {
-      const [{ data: uc }, rows] = await Promise.all([
-        supabase.from("ai_use_cases").select("title").eq("id", id).maybeSingle(),
+      const [uc, rows] = await Promise.all([
+        studioRepo
+          .getStudioUseCase<{ title: string }>(id, "title")
+          .catch(() => null),
         loadDeliverables(id),
       ]);
       setTitle(uc?.title ?? null);

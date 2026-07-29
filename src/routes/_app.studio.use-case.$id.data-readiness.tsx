@@ -3,7 +3,8 @@ import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer
 import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import * as studioRepo from "@/lib/domain/studio.repository";
+import { toUserMessage } from "@/lib/domain/errors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -141,14 +142,8 @@ function DataReadinessPage() {
 
   useEffect(() => {
     (async () => {
-      const { data, error } = await supabase
-        .from("data_readiness_assessments")
-        .select("*")
-        .eq("use_case_id", useCaseId)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (!error && data) {
+      const data = await studioRepo.getLatestDataReadiness(useCaseId).catch(() => null);
+      if (data) {
         const gaps = (data.missing_data_gaps as any) ?? [];
         if (Array.isArray(gaps) && gaps.length > 0 && gaps[0]?.name !== undefined) {
           setSources(gaps as DataSource[]);
@@ -213,31 +208,25 @@ function DataReadinessPage() {
 
   const handleSave = async () => {
     setSaving(true);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      toast.error("Please sign in to save.");
+    try {
+      await studioRepo.createDataReadiness({
+        use_case_id: useCaseId,
+        data_availability_score: dimensionAverages.availability,
+        data_quality_score: dimensionAverages.quality,
+        data_accessibility_score: dimensionAverages.accessibility,
+        privacy_exposure_score: dimensionAverages.privacy_exposure,
+        bias_risk_score: dimensionAverages.bias_risk,
+        ownership_clarity_score: dimensionAverages.ownership_clarity,
+        overall_data_readiness_score: overallScore,
+        missing_data_gaps: sources,
+        mitigation_recommendations: recommendations,
+      });
+    } catch (e) {
       setSaving(false);
+      toast.error(toUserMessage(e, "We could not save this assessment."));
       return;
     }
-    const { error } = await supabase.from("data_readiness_assessments").insert({
-      use_case_id: useCaseId,
-      data_availability_score: dimensionAverages.availability,
-      data_quality_score: dimensionAverages.quality,
-      data_accessibility_score: dimensionAverages.accessibility,
-      privacy_exposure_score: dimensionAverages.privacy_exposure,
-      bias_risk_score: dimensionAverages.bias_risk,
-      ownership_clarity_score: dimensionAverages.ownership_clarity,
-      overall_data_readiness_score: overallScore,
-      missing_data_gaps: sources as any,
-      mitigation_recommendations: recommendations as any,
-    });
     setSaving(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
     toast.success("Data readiness assessment saved.");
   };
 

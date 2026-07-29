@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import * as studioRepo from "@/lib/domain/studio.repository";
+import { toUserMessage } from "@/lib/domain/errors";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -33,15 +34,14 @@ function UseCaseDetailPage() {
   useEffect(() => {
     let active = true;
     (async () => {
-      const { data } = await supabase
-        .from("ai_use_cases")
-        .select(
+      const data = await studioRepo
+        .getStudioUseCase<UC>(
+          id,
           "id,title,status,ai_type,risk_level,problem_statement,current_state,future_state,created_at,updated_at",
         )
-        .eq("id", id)
-        .maybeSingle();
+        .catch(() => null);
       if (active) {
-        setUc(data as UC | null);
+        setUc(data);
         setLoading(false);
       }
     })();

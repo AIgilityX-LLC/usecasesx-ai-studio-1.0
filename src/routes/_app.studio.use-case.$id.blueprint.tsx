@@ -6,7 +6,8 @@ import { toast } from "sonner";
 import jsPDF from "jspdf";
 import { Document, Packer, Paragraph, HeadingLevel, TextRun } from "docx";
 import { saveAs } from "file-saver";
-import { supabase } from "@/integrations/supabase/client";
+import * as studioRepo from "@/lib/domain/studio.repository";
+import { toUserMessage } from "@/lib/domain/errors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -106,13 +107,7 @@ function BlueprintPage() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from("blueprints")
-        .select("*")
-        .eq("use_case_id", useCaseId)
-        .order("updated_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      const data = await studioRepo.getBlueprint(useCaseId, "*", true).catch(() => null);
       if (data) {
         setBlueprint(unpackFromDb(data));
         setHasSaved(true);
@@ -125,22 +120,10 @@ function BlueprintPage() {
   const handleGenerate = async () => {
     setGenerating(true);
     try {
-      const [{ data: uc }, { data: feas }, { data: dr }] = await Promise.all([
-        supabase.from("ai_use_cases").select("*").eq("id", useCaseId).maybeSingle(),
-        supabase
-          .from("feasibility_scores")
-          .select("*")
-          .eq("use_case_id", useCaseId)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
-        supabase
-          .from("data_readiness_assessments")
-          .select("*")
-          .eq("use_case_id", useCaseId)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
+      const [uc, feas, dr] = await Promise.all([
+        studioRepo.getStudioUseCase(useCaseId),
+        studioRepo.getLatestFeasibility(useCaseId, "*", "created_at"),
+        studioRepo.getLatestDataReadiness(useCaseId),
       ]);
 
       const arr = (v: any): any[] => (Array.isArray(v) ? v : []);
@@ -231,22 +214,14 @@ function BlueprintPage() {
   const handleSave = async () => {
     setSaving(true);
     const packed = packForDb(blueprint);
-    const { data: existing } = await supabase
-      .from("blueprints")
-      .select("id")
-      .eq("use_case_id", useCaseId)
-      .maybeSingle();
-    const { error } = existing
-      ? await supabase
-          .from("blueprints")
-          .update(packed as any)
-          .eq("id", existing.id)
-      : await supabase.from("blueprints").insert({ use_case_id: useCaseId, ...packed } as any);
-    setSaving(false);
-    if (error) {
-      toast.error(error.message);
+    try {
+      await studioRepo.saveBlueprint(useCaseId, packed as Record<string, unknown>);
+    } catch (e) {
+      setSaving(false);
+      toast.error(toUserMessage(e, "We could not save the blueprint."));
       return;
     }
+    setSaving(false);
     setHasSaved(true);
     toast.success("Blueprint saved.");
   };
@@ -309,14 +284,13 @@ function BlueprintPage() {
       toast.error("Save the blueprint before sending.");
       return;
     }
-    const { error } = await supabase.from("integration_links").insert({
-      use_case_id: useCaseId,
-      integration_type: type,
-      status: "pending",
-      metadata: { source: "blueprint", sent_at: new Date().toISOString() },
-    });
-    if (error) {
-      toast.error(error.message);
+    try {
+      await studioRepo.sendToIntegration(useCaseId, type, {
+        source: "blueprint",
+        sent_at: new Date().toISOString(),
+      });
+    } catch (e) {
+      toast.error(toUserMessage(e, `We could not send this to ${type}.`));
       return;
     }
     toast.success(`Sent to ${type}.`);
