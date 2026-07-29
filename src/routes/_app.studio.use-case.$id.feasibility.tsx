@@ -157,7 +157,7 @@ function FeasibilityPage() {
       }
 
       const uc = await studioRepo
-        .getStudioUseCase<{ id: string; title: string; board_id: string | null }>(
+        .getStudioUseCase<{ id: string; title: string; board_id: string }>(
           id,
           "id, title, board_id",
         )
@@ -170,10 +170,12 @@ function FeasibilityPage() {
       }
       setUseCase(uc);
 
-      const existing = await studioRepo.getLatestFeasibilityLegacy(
-        id,
-        "id, desirability_score, viability_score, feasibility_score, governability_score, sustainability_score, notes",
-      );
+      const existing = await studioRepo
+        .getLatestFeasibility(
+          id,
+          "id, desirability_score, viability_score, feasibility_score, governability_score, sustainability_score, notes",
+        )
+        .catch(() => null);
       if (existing) {
         // Reconstruct rough per-question answers from pillar score (uniform fill).
         const restore = emptyAnswers();
@@ -249,7 +251,7 @@ function FeasibilityPage() {
 
     let savedId: string;
     try {
-      savedId = await studioRepo.saveFeasibility(payload, existingId);
+      savedId = await studioRepo.saveFeasibility({ existingId, payload });
     } catch (e) {
       setSaving(false);
       toast.error(toUserMessage(e, "We could not save these scores."));
