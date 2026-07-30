@@ -36,9 +36,7 @@ export async function loadJourneySummary(
     reports,
   ] = await Promise.all([
     count(supabase, "saved_use_cases", (q) => q.eq("user_id", userId)),
-    count(supabase, "opportunities", (q) =>
-      q.in("status", ["signal", "opportunity", "qualified"]),
-    ),
+    count(supabase, "opportunities", (q) => q.in("status", ["signal", "opportunity", "qualified"])),
     count(supabase, "opportunities", (q) => q.eq("status", "converted")),
     count(supabase, "ai_use_cases", (q) => q.is("completed_at", null)),
     count(supabase, "ai_use_cases", (q) => q.not("completed_at", "is", null)),

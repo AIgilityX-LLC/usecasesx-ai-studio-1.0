@@ -34,9 +34,13 @@ describe("journey next action", () => {
   });
 
   it("progresses score → portfolio → export", () => {
-    expect(nextAction(summary({ completed: 1 })).stage).toBe("score");
-    expect(nextAction(summary({ completed: 1, scored: 1 })).stage).toBe("prioritize");
-    expect(nextAction(summary({ completed: 1, scored: 1, portfolios: 1 })).to).toBe("/reports");
+    expect(nextAction(summary({ shortlisted: 1, completed: 1 })).stage).toBe("score");
+    expect(nextAction(summary({ shortlisted: 1, completed: 1, scored: 1 })).stage).toBe(
+      "prioritize",
+    );
+    expect(nextAction(summary({ shortlisted: 1, completed: 1, scored: 1, portfolios: 1 })).to).toBe(
+      "/reports",
+    );
   });
 
   it("marks reached stages from real counts only", () => {
