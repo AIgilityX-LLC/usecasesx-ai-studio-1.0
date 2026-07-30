@@ -11,7 +11,15 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { History, Loader2, RotateCcw, Save } from "lucide-react";
+import {
+  AlertTriangle,
+  GitCompareArrows,
+  History,
+  Loader2,
+  RotateCcw,
+  Save,
+  Sparkles,
+} from "lucide-react";
 
 import {
   Accordion,
@@ -24,17 +32,37 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CardSkeleton, EmptyState, ErrorState, StatusChip } from "@/components/ui-kit";
+import { Textarea } from "@/components/ui/textarea";
+import { CardSkeleton, ConfirmDialog, EmptyState, ErrorState, StatusChip } from "@/components/ui-kit";
+import { ScoreCompare } from "@/components/scoring/ScoreCompare";
 import { ScoreExplanation } from "@/components/scoring/ScoreExplanation";
-import { getScorecardStateFn, recordScoreFn } from "@/lib/scoring.functions";
+import {
+  getScorecardStateFn,
+  recordScoreFn,
+  suggestScoreEvidenceFn,
+} from "@/lib/scoring.functions";
 import { calculateScore, type Responses, type ScoreResult } from "@/lib/scoring/model";
+
+type EvidenceSuggestion = {
+  evidenceToGather: string[];
+  draftJustification: string;
+  confidence: "low" | "medium" | "high";
+};
 
 export function UseCaseScorecard({ id }: { id: string }) {
   const record = useServerFn(recordScoreFn);
+  const suggestEvidence = useServerFn(suggestScoreEvidenceFn);
   const [responses, setResponses] = useState<Responses | null>(null);
+  const [evidence, setEvidence] = useState<Record<string, string> | null>(null);
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const [viewing, setViewing] = useState<string | null>(null);
+  const [compareId, setCompareId] = useState<string | null>(null);
+  const [confirmIncomplete, setConfirmIncomplete] = useState(false);
+  const [suggesting, setSuggesting] = useState(false);
+  const [suggestions, setSuggestions] = useState<Record<string, EvidenceSuggestion>>({});
+  const [openQuestions, setOpenQuestions] = useState<string[]>([]);
+  const [showMissing, setShowMissing] = useState(false);
 
   const query = useQuery({
     queryKey: ["scorecard", id],
@@ -56,6 +84,11 @@ export function UseCaseScorecard({ id }: { id: string }) {
     () => (definition ? calculateScore(definition, current) : null),
     [definition, current],
   );
+
+  const currentEvidence: Record<string, string> = useMemo(() => {
+    if (evidence) return evidence;
+    return (latest?.evidence as Record<string, string>) ?? {};
+  }, [evidence, latest]);
 
   const viewedResult = viewing ? (results.find((r) => r.id === viewing)?.result ?? null) : null;
 
@@ -84,18 +117,68 @@ export function UseCaseScorecard({ id }: { id: string }) {
     setResponses({ ...current, [criterionId]: value });
   }
 
+  function setEvidenceFor(criterionId: string, value: string) {
+    setEvidence({ ...currentEvidence, [criterionId]: value });
+  }
+
+  /** Ask AI what evidence would support the criteria that are still unanswered. */
+  async function requestSuggestions() {
+    const targets = (live?.missing ?? []).map((m) => m.criterionId).slice(0, 40);
+    if (targets.length === 0) {
+      toast.info("Every criterion is answered — nothing left to gather evidence for.");
+      return;
+    }
+    setSuggesting(true);
+    try {
+      const res = await suggestEvidence({ data: { id, criterionIds: targets } });
+      const next: Record<string, EvidenceSuggestion> = {};
+      for (const item of res.output.items) {
+        next[item.criterionId] = {
+          evidenceToGather: item.evidenceToGather,
+          draftJustification: item.draftJustification,
+          confidence: item.confidence,
+        };
+      }
+      setSuggestions(next);
+      setOpenQuestions(res.output.openQuestions ?? []);
+      setShowMissing(true);
+      toast.success("Evidence suggestions ready. Review before you answer.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not generate evidence suggestions.",
+      );
+    } finally {
+      setSuggesting(false);
+    }
+  }
+
+  function attemptSave() {
+    if (live?.incomplete) {
+      setConfirmIncomplete(true);
+      return;
+    }
+    void save();
+  }
+
   async function save() {
     setSaving(true);
     try {
       const res = await record({
-        data: { id, responses: current, note: note.trim() || undefined },
+        data: {
+          id,
+          responses: current,
+          evidence: currentEvidence,
+          note: note.trim() || undefined,
+        },
       });
       toast.success(
         res.result.incomplete ? "Score recorded and flagged as incomplete." : "Score recorded.",
       );
       setNote("");
       setResponses(null);
+      setEvidence(null);
       setViewing(null);
+      setConfirmIncomplete(false);
       await query.refetch();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not record the score.");
