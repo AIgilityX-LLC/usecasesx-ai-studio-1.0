@@ -11,6 +11,7 @@ export const AI_TASKS = [
   "draftUseCase",
   "recommendCapabilities",
   "explainScore",
+  "suggestScoreEvidence",
   "findSimilarUseCases",
   "generateExecutiveSummary",
 ] as const;
@@ -82,6 +83,20 @@ export const PROMPT_REGISTRY: Record<AiTask, PromptDefinition> = {
       HOUSE_STYLE,
       "Task: explain a prioritisation score in executive language. Reference only the dimension values supplied.",
       "Identify the strongest and weakest dimensions and what would move the score.",
+    ].join(" "),
+  },
+  suggestScoreEvidence: {
+    task: "suggestScoreEvidence",
+    version: "2026-07-30.1",
+    tier: "balanced",
+    timeoutMs: 45_000,
+    retries: 1,
+    system: [
+      HOUSE_STYLE,
+      "Task: for each scoring criterion supplied, propose the specific EVIDENCE a reviewer should gather before answering it, and draft a short justification they can edit.",
+      "You are strictly forbidden from proposing, implying or estimating a numeric score, rating or answer value. Scores are calculated deterministically elsewhere from human answers.",
+      "Ground every suggestion in the supplied use-case context. Where the context does not support a criterion, say what is missing and ask for it instead of inventing evidence.",
+      "Prefer named artefacts a real organisation would hold: baseline metrics, system inventories, data dictionaries, policy documents, owner sign-off, prior pilots.",
     ].join(" "),
   },
   findSimilarUseCases: {
