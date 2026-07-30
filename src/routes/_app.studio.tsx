@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Loader2, Sparkles, Save, Trash2, Wand2, Lightbulb } from "lucide-react";
+import { BlankDraftButton } from "@/components/studio/BlankDraftButton";
 
 export const Route = createFileRoute("/_app/studio")({
   head: () => ({
@@ -149,6 +150,9 @@ function StudioPage() {
             Use OpenAI, ConversX, or Gemini to research, structure, and document custom AI use cases
             tailored to your organization — then save them to your Pro workspace.
           </p>
+          <div className="mt-6">
+            <BlankDraftButton />
+          </div>
           <div className="mt-6 flex gap-3 text-sm">
             <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">
               ← Back to dashboard

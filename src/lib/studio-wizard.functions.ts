@@ -257,3 +257,22 @@ export const startWizardDraftFn = createServerFn({ method: "POST" })
     if (error || !row) throw new Error(error?.message ?? "Could not create the draft.");
     return { id: row.id as string };
   });
+
+/** Read one completed version snapshot so the UI can diff it against today. */
+export const getWizardVersionFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid(), version: z.number().int() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { loadVersionSnapshot } = await import("@/lib/studio-wizard.server");
+    const row = await loadVersionSnapshot(context.supabase, data.id, data.version);
+    if (!row) return null;
+    const snapshot = (row.snapshot ?? {}) as Record<string, unknown>;
+    return {
+      version: row.version as number,
+      note: (row.note as string | null) ?? null,
+      createdAt: row.created_at as string,
+      createdBy: row.created_by as string,
+      title: (snapshot.title as string) ?? "",
+      wizardState: ((snapshot.wizard_state as WizardState) ?? {}) as WizardState,
+    };
+  });

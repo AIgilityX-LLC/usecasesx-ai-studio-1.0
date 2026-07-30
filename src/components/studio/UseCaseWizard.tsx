@@ -29,12 +29,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CardSkeleton, ErrorState, StatusChip } from "@/components/ui-kit";
+import { ContributorsList } from "@/components/studio/ContributorsList";
+import { VersionHistory, type VersionRow } from "@/components/studio/VersionHistory";
+import { DiffView } from "@/components/studio/DiffView";
 
 import {
   WIZARD_STEPS,
   STEP_IDS,
   VISIBILITY_LABELS,
   USE_CASE_VISIBILITIES,
+  diffFieldValue,
   isAssistable,
   isStepComplete,
   progressOf,
@@ -209,15 +213,21 @@ export function UseCaseWizard({ id }: { id: string }) {
     }
   }
 
+  /** What the draft would contain if this suggestion were accepted. */
+  function proposedFor(s: Suggestion): FieldValue {
+    const field = step.fields.find((f) => f.key === s.key);
+    if (field?.kind === "list") {
+      const existing = Array.isArray(stepValues[s.key]) ? (stepValues[s.key] as string[]) : [];
+      return Array.from(new Set([...existing, ...s.values]));
+    }
+    return s.values.join("\n");
+  }
+
   function acceptSuggestion(s: Suggestion) {
     const field = step.fields.find((f) => f.key === s.key);
     if (!field) return;
-    if (field.kind === "list") {
-      const existing = Array.isArray(stepValues[s.key]) ? (stepValues[s.key] as string[]) : [];
-      setValue(s.key, Array.from(new Set([...existing, ...s.values])));
-    } else {
-      setValue(s.key, s.values.join("\n"));
-    }
+    setValue(s.key, proposedFor(s));
+
     setSuggestions((prev) => (prev ?? []).filter((x) => x.key !== s.key));
     toast.success("Added to your draft. Edit it freely — it is yours now.");
   }
@@ -347,12 +357,19 @@ export function UseCaseWizard({ id }: { id: string }) {
               </SelectContent>
             </Select>
           </div>
-          {record.versions.length > 0 && (
-            <p className="pt-2">
-              {record.versions.length} completed version{record.versions.length === 1 ? "" : "s"} on
-              record.
-            </p>
-          )}
+          <div className="pt-2">
+            <ContributorsList
+              ownerUserId={record.ownerUserId ?? null}
+              contributors={record.contributors}
+            />
+          </div>
+          <div className="pt-2">
+            <VersionHistory
+              useCaseId={id}
+              versions={record.versions as VersionRow[]}
+              currentState={wizardState}
+            />
+          </div>
         </div>
       </nav>
 
@@ -467,11 +484,14 @@ export function UseCaseWizard({ id }: { id: string }) {
                       {suggestions.map((s) => (
                         <li key={s.key} className="rounded-md bg-muted/50 p-3">
                           <p className="text-xs font-medium">{s.label}</p>
-                          <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm">
-                            {s.values.map((v, i) => (
-                              <li key={i}>{v}</li>
-                            ))}
-                          </ul>
+                          <p className="mt-1 text-[11px] text-muted-foreground">
+                            Proposed change to your draft — nothing is written until you accept.
+                          </p>
+                          <DiffView
+                            changes={diffFieldValue(stepValues[s.key], proposedFor(s))}
+                            className="mt-2"
+                          />
+
                           {provenance && (
                             <p className="mt-2 text-[11px] text-muted-foreground">{provenance}</p>
                           )}
