@@ -59,6 +59,7 @@ import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
 import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
 import { Route as AppOpportunitiesIndexRouteImport } from './routes/_app.opportunities.index'
+import { Route as AppOpportunitiesIdRouteImport } from './routes/_app.opportunities.$id'
 import { Route as AppOpportunitiesNewRouteImport } from './routes/_app.opportunities.new'
 import { Route as AppSectorsSectorRouteImport } from './routes/_app.sectors.$sector'
 import { Route as AppSegmentsSegmentRouteImport } from './routes/_app.segments.$segment'
@@ -327,6 +328,11 @@ const AppOpportunitiesIndexRoute = AppOpportunitiesIndexRouteImport.update({
   path: '/opportunities/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppOpportunitiesIdRoute = AppOpportunitiesIdRouteImport.update({
+  id: '/opportunities/$id',
+  path: '/opportunities/$id',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppOpportunitiesNewRoute = AppOpportunitiesNewRouteImport.update({
   id: '/opportunities/new',
   path: '/opportunities/new',
@@ -475,6 +481,7 @@ export interface FileRoutesByFullPath {
   '/account/security': typeof AppAccountSecurityRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
+  '/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/opportunities/new': typeof AppOpportunitiesNewRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
   '/segments/$segment': typeof AppSegmentsSegmentRoute
@@ -542,6 +549,7 @@ export interface FileRoutesByTo {
   '/account/security': typeof AppAccountSecurityRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
+  '/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/opportunities/new': typeof AppOpportunitiesNewRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
   '/segments/$segment': typeof AppSegmentsSegmentRoute
@@ -613,6 +621,7 @@ export interface FileRoutesById {
   '/_app/account/security': typeof AppAccountSecurityRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/boards/collections': typeof AppBoardsCollectionsRoute
+  '/_app/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/_app/opportunities/new': typeof AppOpportunitiesNewRoute
   '/_app/sectors/$sector': typeof AppSectorsSectorRoute
   '/_app/segments/$segment': typeof AppSegmentsSegmentRoute
@@ -684,6 +693,7 @@ export interface FileRouteTypes {
     | '/account/security'
     | '/boards/$boardId'
     | '/boards/collections'
+    | '/opportunities/$id'
     | '/opportunities/new'
     | '/sectors/$sector'
     | '/segments/$segment'
@@ -751,6 +761,7 @@ export interface FileRouteTypes {
     | '/account/security'
     | '/boards/$boardId'
     | '/boards/collections'
+    | '/opportunities/$id'
     | '/opportunities/new'
     | '/sectors/$sector'
     | '/segments/$segment'
@@ -821,6 +832,7 @@ export interface FileRouteTypes {
     | '/_app/account/security'
     | '/_app/boards/$boardId'
     | '/_app/boards/collections'
+    | '/_app/opportunities/$id'
     | '/_app/opportunities/new'
     | '/_app/sectors/$sector'
     | '/_app/segments/$segment'
@@ -1208,6 +1220,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOpportunitiesIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/opportunities/$id': {
+      id: '/_app/opportunities/$id'
+      path: '/opportunities/$id'
+      fullPath: '/opportunities/$id'
+      preLoaderRoute: typeof AppOpportunitiesIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/opportunities/new': {
       id: '/_app/opportunities/new'
       path: '/opportunities/new'
@@ -1437,6 +1456,7 @@ interface AppRouteChildren {
   AppSarpiRoute: typeof AppSarpiRoute
   AppStudioRoute: typeof AppStudioRouteWithChildren
   AppSubmitRoute: typeof AppSubmitRoute
+  AppOpportunitiesIdRoute: typeof AppOpportunitiesIdRoute
   AppOpportunitiesNewRoute: typeof AppOpportunitiesNewRoute
   AppSectorsSectorRoute: typeof AppSectorsSectorRoute
   AppSegmentsSegmentRoute: typeof AppSegmentsSegmentRoute
@@ -1482,6 +1502,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSarpiRoute: AppSarpiRoute,
   AppStudioRoute: AppStudioRouteWithChildren,
   AppSubmitRoute: AppSubmitRoute,
+  AppOpportunitiesIdRoute: AppOpportunitiesIdRoute,
   AppOpportunitiesNewRoute: AppOpportunitiesNewRoute,
   AppSectorsSectorRoute: AppSectorsSectorRoute,
   AppSegmentsSegmentRoute: AppSegmentsSegmentRoute,
