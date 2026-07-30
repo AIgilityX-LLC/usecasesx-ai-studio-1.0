@@ -105,8 +105,11 @@ function OpportunitiesPage() {
         <EmptyState
           title="No opportunities captured yet"
           description="Start with the problem — a name and what is going wrong today is enough."
-          actionLabel="Capture opportunity"
-          actionHref="/opportunities/new"
+          action={
+            <Button asChild>
+              <Link to="/opportunities/new">Capture opportunity</Link>
+            </Button>
+          }
         />
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
@@ -121,10 +124,9 @@ function OpportunitiesPage() {
                   >
                     {row.title}
                   </Link>
-                  <StatusChip
-                    tone={STATUS_META[row.status].tone}
-                    label={STATUS_META[row.status].label}
-                  />
+                  <StatusChip tone={STATUS_META[row.status].tone}>
+                    {STATUS_META[row.status].label}
+                  </StatusChip>
                 </div>
                 {row.painPoint ? (
                   <p className="line-clamp-2 text-sm text-muted-foreground">{row.painPoint}</p>

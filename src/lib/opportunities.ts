@@ -25,12 +25,12 @@ export type OpportunityStatus = (typeof OPPORTUNITY_STATUSES)[number];
 
 export const STATUS_META: Record<
   OpportunityStatus,
-  { label: string; description: string; tone: "muted" | "info" | "success" | "warning" }
+  { label: string; description: string; tone: "neutral" | "info" | "success" | "warning" }
 > = {
   signal: {
     label: "Signal",
     description: "Something was noticed. Not yet framed as a business problem.",
-    tone: "muted",
+    tone: "neutral",
   },
   opportunity: {
     label: "Opportunity",
@@ -55,7 +55,7 @@ export const STATUS_META: Record<
   archived: {
     label: "Archived",
     description: "No longer pursued. Retained for the record.",
-    tone: "muted",
+    tone: "neutral",
   },
 };
 
