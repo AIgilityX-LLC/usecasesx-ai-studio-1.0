@@ -101,6 +101,8 @@ export type StoredResult = {
   scorecardSlug: string;
   scorecardVersion: number;
   responses: Record<string, number>;
+  /** Human-authored justification per criterion, captured with the answers. */
+  evidence: Record<string, string>;
   composite: number | null;
   riskAdjusted: number | null;
   completeness: number;
@@ -121,6 +123,7 @@ function toStored(row: any): StoredResult {
     scorecardSlug: row.scorecard_slug,
     scorecardVersion: row.scorecard_version,
     responses: (row.responses ?? {}) as Record<string, number>,
+    evidence: (explanation.evidence ?? {}) as Record<string, string>,
     composite: row.composite_score === null ? null : Number(row.composite_score),
     riskAdjusted: row.risk_adjusted_score === null ? null : Number(row.risk_adjusted_score),
     completeness: row.completeness === null ? 0 : Number(row.completeness),
@@ -154,6 +157,7 @@ export async function insertResult(
     useCaseId: string;
     scorecardId: string;
     responses: Record<string, number>;
+    evidence: Record<string, string>;
     result: ScoreResult;
     note: string | null;
     createdBy: string;
@@ -174,7 +178,7 @@ export async function insertResult(
       completeness: result.completeness,
       confidence: result.confidence,
       recommendation: result.recommendation?.id ?? null,
-      explanation: { result },
+      explanation: { result, evidence: input.evidence },
       note: input.note,
       created_by: input.createdBy,
     })
@@ -184,13 +188,85 @@ export async function insertResult(
   return toStored(data);
 }
 
+export type LatestScore = {
+  useCaseId: string;
+  composite: number | null;
+  riskAdjusted: number | null;
+  completeness: number;
+  confidence: string | null;
+  recommendation: string | null;
+  scoredAt: string;
+  /** True when the result was recorded below the definition's completeness floor. */
+  incomplete: boolean;
+};
+
+/**
+ * Most recent result per use case, for list and portfolio surfaces.
+ *
+ * RLS already scopes `scorecard_results` to the caller's workspace, so ids the
+ * caller cannot see simply return no row rather than an error.
+ */
+export async function latestScoresFor(
+  supabase: Db,
+  useCaseIds: string[],
+): Promise<Record<string, LatestScore>> {
+  if (useCaseIds.length === 0) return {};
+  const { data, error } = await supabase
+    .from("scorecard_results")
+    .select(
+      "id, use_case_id, composite_score, risk_adjusted_score, completeness, confidence, recommendation, explanation, created_at",
+    )
+    .in("use_case_id", useCaseIds)
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(error.message);
+
+  const latest: Record<string, LatestScore> = {};
+  for (const row of data ?? []) {
+    const id = (row as any).use_case_id as string;
+    // Rows arrive newest-first, so the first one seen per id is the latest.
+    if (latest[id]) continue;
+    const result = ((row as any).explanation?.result ?? null) as ScoreResult | null;
+    latest[id] = {
+      useCaseId: id,
+      composite:
+        (row as any).composite_score === null ? null : Number((row as any).composite_score),
+      riskAdjusted:
+        (row as any).risk_adjusted_score === null ? null : Number((row as any).risk_adjusted_score),
+      completeness: (row as any).completeness === null ? 0 : Number((row as any).completeness),
+      confidence: (row as any).confidence ?? null,
+      recommendation: (row as any).recommendation ?? null,
+      scoredAt: (row as any).created_at,
+      incomplete: Boolean(result?.incomplete),
+    };
+  }
+  return latest;
+}
+
 /** Workspace of the use case, used for tenant-aware scorecard resolution. */
 export async function useCaseTenancy(supabase: Db, useCaseId: string) {
   const { data, error } = await supabase
     .from("ai_use_cases")
-    .select("id, title, workspace_id, organization_id")
+    .select(
+      "id, title, workspace_id, organization_id, problem_statement, current_state, future_state, ai_type, beneficiaries, mvp_scope",
+    )
     .eq("id", useCaseId)
     .maybeSingle();
   if (error) throw new Error(error.message);
   return data ?? null;
+}
+
+/**
+ * Flatten the author's own words about a use case into prompt context.
+ * Only fields the author wrote are included — nothing is inferred here.
+ */
+export function useCaseNarrative(useCase: any): string | undefined {
+  const parts = [
+    useCase?.problem_statement && `Problem: ${useCase.problem_statement}`,
+    useCase?.current_state && `Current state: ${useCase.current_state}`,
+    useCase?.future_state && `Future state: ${useCase.future_state}`,
+    useCase?.ai_type && `AI type: ${useCase.ai_type}`,
+    useCase?.beneficiaries && `Beneficiaries: ${useCase.beneficiaries}`,
+    useCase?.mvp_scope && `MVP scope: ${useCase.mvp_scope}`,
+  ].filter((p): p is string => typeof p === "string" && p.trim().length > 0);
+  return parts.length > 0 ? parts.join("\n").slice(0, 4000) : undefined;
 }

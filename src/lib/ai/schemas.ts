@@ -68,6 +68,21 @@ export const explainScoreSchema = z.object({
 });
 export type ExplainScoreOutput = z.infer<typeof explainScoreSchema>;
 
+export const suggestScoreEvidenceSchema = z.object({
+  items: z.array(
+    z.object({
+      criterionId: shortText,
+      /** Artefacts or facts the reviewer should gather before answering. */
+      evidenceToGather: list,
+      /** Editable draft justification. Never contains a score. */
+      draftJustification: shortText,
+      confidence: z.enum(["low", "medium", "high"]),
+    }),
+  ),
+  openQuestions: list,
+});
+export type SuggestScoreEvidenceOutput = z.infer<typeof suggestScoreEvidenceSchema>;
+
 export const findSimilarUseCasesSchema = z.object({
   matches: z.array(
     z.object({
@@ -93,6 +108,7 @@ export const OUTPUT_SCHEMAS = {
   draftUseCase: draftUseCaseSchema,
   recommendCapabilities: recommendCapabilitiesSchema,
   explainScore: explainScoreSchema,
+  suggestScoreEvidence: suggestScoreEvidenceSchema,
   findSimilarUseCases: findSimilarUseCasesSchema,
   generateExecutiveSummary: generateExecutiveSummarySchema,
 } satisfies Record<AiTask, z.ZodTypeAny>;
@@ -196,6 +212,27 @@ export const TOOL_SCHEMAS: Record<AiTask, ReturnType<typeof tool>> = {
     weaknesses: strArray,
     recommendedActions: strArray,
   }),
+  suggestScoreEvidence: tool(
+    "suggest_score_evidence",
+    "Propose the evidence needed to answer scoring criteria. Never returns a score.",
+    {
+      items: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            criterionId: { type: "string" },
+            evidenceToGather: strArray,
+            draftJustification: { type: "string" },
+            confidence: { type: "string", enum: ["low", "medium", "high"] },
+          },
+          required: ["criterionId", "evidenceToGather", "draftJustification", "confidence"],
+          additionalProperties: false,
+        },
+      },
+      openQuestions: strArray,
+    },
+  ),
   findSimilarUseCases: tool(
     "find_similar_use_cases",
     "Select the most similar use cases from the supplied candidates.",

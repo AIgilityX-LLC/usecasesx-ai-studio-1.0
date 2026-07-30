@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DecisionHistory } from "@/components/DecisionHistory";
+import { PriorityScore } from "@/components/scoring/PriorityScore";
+import { useLatestScores } from "@/hooks/useLatestScores";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/")({
   head: () => ({ meta: [{ title: "Use Case Detail — AI Use Case Studio" }] }),
@@ -29,6 +31,7 @@ type UC = {
 function UseCaseDetailPage() {
   const { id } = Route.useParams();
   const [uc, setUc] = useState<UC | null>(null);
+  const { scoreFor } = useLatestScores([id]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -68,6 +71,7 @@ function UseCaseDetailPage() {
               <Badge variant="outline">{uc.status}</Badge>
               {uc.ai_type && <Badge variant="secondary">{uc.ai_type}</Badge>}
               {uc.risk_level && <Badge variant="secondary">Risk: {uc.risk_level}</Badge>}
+              <PriorityScore score={scoreFor(id)} />
             </div>
           )}
         </header>

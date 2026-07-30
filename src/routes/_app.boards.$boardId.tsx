@@ -1,6 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { PriorityScore } from "@/components/scoring/PriorityScore";
+import { useLatestScores } from "@/hooks/useLatestScores";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import {
@@ -371,6 +373,7 @@ function BoardItemList({
   const qc = useQueryClient();
   // Local order for snappy reordering; resynced when server items change.
   const [order, setOrder] = useState<LoadedBoardItem[]>(items);
+  const { scoreFor } = useLatestScores(order.map((i) => i.id));
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [overIndex, setOverIndex] = useState<number | null>(null);
   useEffect(() => {
@@ -500,6 +503,7 @@ function BoardItemList({
                   {uc.ai_type}
                 </span>
               )}
+              <PriorityScore score={scoreFor(uc.id)} />
             </div>
             <Link
               to="/studio/use-case/$id"
