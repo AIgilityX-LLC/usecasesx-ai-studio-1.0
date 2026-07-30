@@ -347,13 +347,21 @@ export function UseCaseWizard({ id }: { id: string }) {
               </SelectContent>
             </Select>
           </div>
-          {record.versions.length > 0 && (
-            <p className="pt-2">
-              {record.versions.length} completed version{record.versions.length === 1 ? "" : "s"} on
-              record.
-            </p>
-          )}
+          <div className="pt-2">
+            <ContributorsList
+              ownerUserId={record.ownerUserId ?? null}
+              contributors={record.contributors}
+            />
+          </div>
+          <div className="pt-2">
+            <VersionHistory
+              useCaseId={id}
+              versions={record.versions as VersionRow[]}
+              currentState={wizardState}
+            />
+          </div>
         </div>
+
       </nav>
 
       {/* ------------------------------------------------------------ panel */}
