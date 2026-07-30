@@ -541,11 +541,12 @@ function Page() {
           <div className="flex-1">
             <PresetBar currentSearch={search as Record<string, unknown>} />
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground" aria-live="polite">
                 <span className="font-mono text-base font-bold text-foreground">
-                  {sorted.length}
+                  {derivedActive ? sorted.length : total}
                 </span>{" "}
-                use case{sorted.length === 1 ? "" : "s"}
+                use case{(derivedActive ? sorted.length : total) === 1 ? "" : "s"}
+
                 {(search.q ?? "").trim() && (
                   <>
                     {" "}
