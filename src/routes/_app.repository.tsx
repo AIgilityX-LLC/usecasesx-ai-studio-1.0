@@ -2,13 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState, useEffect } from "react";
 import { z } from "zod";
-import { listUseCases, listTaxonomies } from "@/lib/use-cases.functions";
+import { listUseCases, listTaxonomies, listRepositoryFacets } from "@/lib/use-cases.functions";
 import { type FacetState } from "@/components/UseCaseFilters";
 import { HorizontalFilters } from "@/components/usecasex/HorizontalFilters";
+import { CuratedCollections } from "@/components/usecasex/CuratedCollections";
 import { PageHero } from "@/components/usecasex/PageHero";
 import { UseCaseCard } from "@/components/UseCaseCard";
 import { EmptyState } from "@/components/EmptyState";
+import { ErrorState } from "@/components/ui-kit/ErrorState";
 import { CardSkeleton } from "@/components/LoadingSkeleton";
+
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { PresetBar } from "@/components/usecasex/PresetBar";
 import { CompareTray } from "@/components/usecasex/CompareTray";
@@ -39,6 +42,9 @@ const searchSchema = z.object({
   capabilities: z.array(z.string()).optional(),
   businessFunctions: z.array(z.string()).optional(),
   objectives: z.array(z.string()).optional(),
+  processes: z.array(z.string()).optional(),
+  page: z.number().int().optional(),
+
   maturity: z.array(z.string()).optional(),
   valuePotential: z.array(z.string()).optional(),
   complexity: z.array(z.string()).optional(),
@@ -70,6 +76,7 @@ const FACET_LABELS: Record<string, string> = {
   capabilities: "AI Pattern",
   businessFunctions: "Business Function",
   objectives: "Objective",
+  processes: "Business Process",
   maturity: "Maturity",
   valuePotential: "Value",
   complexity: "Complexity",
@@ -102,6 +109,51 @@ function mapSort(s: SortKey | undefined): "recent" | "impact" | "maturity" | "fe
   }
 }
 
+/** Cards per page; `page` in the URL is the number of pages loaded. */
+const PAGE_SIZE = 24;
+const MAX_PAGES = 5;
+
+/** Build the server-fn input from URL search state. Shared by loader + component. */
+function buildListInput(search: Search) {
+  const industries = search.industries?.length
+    ? search.industries
+    : search.industry
+      ? [search.industry]
+      : [];
+  const page = Math.min(Math.max(search.page ?? 1, 1), MAX_PAGES);
+  return {
+    q: search.q ?? "",
+    industries,
+    capabilities: search.capabilities ?? [],
+    businessFunctions: search.businessFunctions ?? [],
+    objectives: search.objectives ?? [],
+    processes: search.processes ?? [],
+    maturity: search.maturity ?? [],
+    valuePotential: search.valuePotential ?? [],
+    complexity: search.complexity ?? [],
+    riskLevel: search.riskLevel ?? [],
+    timeToValue: search.timeToValue ?? [],
+    deploymentModel: search.deploymentModel ?? [],
+    securityClassification: search.securityClassification ?? [],
+    sort: mapSort(search.sort as SortKey | undefined),
+    limit: Math.min(PAGE_SIZE * page, 120),
+    page: 1,
+  };
+}
+
+const listQ = (input: ReturnType<typeof buildListInput>) =>
+  queryOptions({
+    queryKey: ["use-cases", "explore", input],
+    queryFn: () => listUseCases({ data: input }),
+    staleTime: 60 * 1000,
+  });
+
+const facetsQ = queryOptions({
+  queryKey: ["repository", "facets"],
+  queryFn: () => listRepositoryFacets(),
+  staleTime: 5 * 60 * 1000,
+});
+
 export const Route = createFileRoute("/_app/repository")({
   head: () => ({
     meta: [
@@ -114,7 +166,16 @@ export const Route = createFileRoute("/_app/repository")({
     ],
   }),
   validateSearch: searchSchema,
-  loader: ({ context }) => context.queryClient.ensureQueryData(taxQ),
+  loaderDeps: ({ search }) => ({ search }),
+  // Server-render the first page of results so the repository is crawlable.
+  loader: async ({ context, deps }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(taxQ),
+      context.queryClient.ensureQueryData(facetsQ),
+      context.queryClient.ensureQueryData(listQ(buildListInput(deps.search as Search))),
+    ]);
+  },
+
   component: Page,
   errorComponent: ({ error }) => (
     <div className="p-12 text-center text-destructive">{error.message}</div>
@@ -202,33 +263,18 @@ function Page() {
   const sort = (search.sort as SortKey | undefined) ?? "relevant";
 
   const queryInput = useMemo(
-    () => ({
-      q: search.q ?? "",
-      industries: effectiveIndustries,
-      capabilities: search.capabilities ?? [],
-      businessFunctions: search.businessFunctions ?? [],
-      objectives: search.objectives ?? [],
-      maturity: search.maturity ?? [],
-      valuePotential: search.valuePotential ?? [],
-      complexity: search.complexity ?? [],
-      riskLevel: search.riskLevel ?? [],
-      timeToValue: search.timeToValue ?? [],
-      deploymentModel: search.deploymentModel ?? [],
-      securityClassification: search.securityClassification ?? [],
-      sort: mapSort(sort),
-      limit: 120,
-    }),
-    [search, effectiveIndustries, sort],
+    () => buildListInput({ ...search, industries: effectiveIndustries }),
+    [search, effectiveIndustries],
   );
 
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["use-cases", "explore", queryInput],
-    queryFn: () => listUseCases({ data: queryInput }),
+  const { data, isLoading, isFetching, isError, refetch } = useQuery({
+    ...listQ(queryInput),
     placeholderData: (prev) => prev,
-    staleTime: 60 * 1000,
   });
+  const facets = useQuery(facetsQ);
 
   const cases = data?.cases ?? [];
+
   const derivedFiltered = useMemo(() => {
     const segs = search.segments ?? [];
     const prio = search.priority ?? [];
@@ -272,6 +318,49 @@ function Page() {
     return arr;
   }, [derivedFiltered, sort, governanceFirst]);
 
+  // ---- Result counts, progressive loading, conversion helpers ----
+  const page = Math.min(Math.max(search.page ?? 1, 1), MAX_PAGES);
+  const total = data?.total ?? 0;
+  const derivedActive = !!(
+    search.segments?.length ||
+    search.sectors?.length ||
+    search.priority?.length ||
+    search.roiRange?.length
+  );
+  const reachedPageCap = page >= MAX_PAGES && (data?.hasMore ?? false);
+  const canLoadMore = !derivedActive && (data?.hasMore ?? false) && page < MAX_PAGES;
+
+  const loadMore = () => {
+    update({ page: page + 1 });
+    track("results_load_more", { page: page + 1, total });
+    void trackModuleEvent("repository", "click", { interaction: "load_more", page: page + 1 });
+  };
+
+  const trackConversion = (intent: string) => {
+    track("conversion_intent", { intent, q: search.q, filters: activeCount, total });
+    void trackModuleEvent("repository", "click", { interaction: "conversion_intent", intent });
+  };
+
+  const copyViewLink = () => {
+    if (typeof window === "undefined") return;
+    void navigator.clipboard
+      .writeText(window.location.href)
+      .then(() => toast.success("Link to this view copied."))
+      .catch(() => toast.error("Could not copy the link."));
+    trackConversion("copy_view_link");
+  };
+
+  const selectCollection = (key: string, slug: string, name: string) => {
+    update({ [key]: [slug], page: undefined } as Partial<Search>);
+    track("collection_selected", { facet: key, value: slug });
+    void trackModuleEvent("repository", "click", {
+      interaction: "collection_selected",
+      facet: key,
+      value: slug,
+      name,
+    });
+  };
+
   type ChipKey = keyof FacetState;
   const chips: { key: ChipKey; value: string; label: string }[] = [];
   const facetKeys: ChipKey[] = [
@@ -281,6 +370,8 @@ function Page() {
     "capabilities",
     "businessFunctions",
     "objectives",
+    "processes",
+
     "priority",
     "maturity",
     "valuePotential",
@@ -296,6 +387,8 @@ function Page() {
     capabilities: Object.fromEntries(tax.capabilities.map((i) => [i.slug, i.name])),
     businessFunctions: Object.fromEntries(tax.businessFunctions.map((i) => [i.slug, i.name])),
     objectives: Object.fromEntries(tax.objectives.map((i) => [i.slug, i.name])),
+    processes: Object.fromEntries((facets.data?.processes ?? []).map((i) => [i.slug, i.name])),
+
     segments: Object.fromEntries(SEGMENTS.map((s) => [s.slug, s.short])),
     sectors: Object.fromEntries(SECTORS.map((s) => [s.slug, s.name])),
     roiRange: { high: "High ROI", medium: "Medium ROI", low: "Emerging ROI" },
@@ -308,6 +401,8 @@ function Page() {
     for (const v of vals) chips.push({ key: k, value: v, label: labelMaps[k]?.[v] ?? v });
   }
   const activeCount = chips.length;
+  /** True when the visitor has narrowed the view in any way. */
+  const hasAnyRefinement = activeCount > 0 || !!(search.q ?? "").trim();
 
   const removeChip = (key: ChipKey, value: string) => {
     if (key === "industries") {
@@ -340,6 +435,7 @@ function Page() {
       capabilities: undefined,
       businessFunctions: undefined,
       objectives: undefined,
+      processes: undefined,
       maturity: undefined,
       valuePotential: undefined,
       complexity: undefined,
@@ -352,7 +448,9 @@ function Page() {
       roiRange: undefined,
       deploymentModel: undefined,
       securityClassification: undefined,
+      page: undefined,
     });
+
     track("filter_used", { action: "clear_all" });
     void trackModuleEvent("repository", "click", {
       interaction: "filter_change",
@@ -361,7 +459,8 @@ function Page() {
   };
 
   const handleFilterChange = (patch: Partial<Search>) => {
-    update(patch);
+    // Any facet change restarts progressive loading at page 1.
+    update({ ...patch, page: undefined });
     Object.entries(patch).forEach(([facet, value]) => track("filter_used", { facet, value }));
     Object.keys(patch).forEach(
       (facet) =>
@@ -371,7 +470,7 @@ function Page() {
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    update({ q: q || undefined });
+    update({ q: q || undefined, page: undefined });
     if (q) track("search_used", { q });
     if (q) void trackModuleEvent("repository", "click", { interaction: "search" });
   };
@@ -434,6 +533,11 @@ function Page() {
               ...tax,
               segments: SEGMENTS.map((s) => ({ slug: s.slug, name: s.name })),
               sectors: SECTORS.map((s) => ({ slug: s.slug, name: s.name })),
+              // Only offered when published content is actually linked to processes.
+              processes: (facets.data?.processes ?? []).map((p) => ({
+                slug: p.slug,
+                name: p.name,
+              })),
             }}
             value={{ ...search, industries: effectiveIndustries } as Partial<FacetState>}
             onChange={(p) => handleFilterChange(p as Partial<Search>)}
@@ -448,11 +552,11 @@ function Page() {
           <div className="flex-1">
             <PresetBar currentSearch={search as Record<string, unknown>} />
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground" aria-live="polite">
                 <span className="font-mono text-base font-bold text-foreground">
-                  {sorted.length}
+                  {derivedActive ? sorted.length : total}
                 </span>{" "}
-                use case{sorted.length === 1 ? "" : "s"}
+                use case{(derivedActive ? sorted.length : total) === 1 ? "" : "s"}
                 {(search.q ?? "").trim() && (
                   <>
                     {" "}
@@ -508,7 +612,17 @@ function Page() {
               </div>
             )}
 
-            {isLoading ? (
+            {!hasAnyRefinement && facets.data && (
+              <CuratedCollections facets={facets.data} onSelect={selectCollection} />
+            )}
+
+            {isError ? (
+              <ErrorState
+                title="We could not load the repository."
+                description="The use case library is temporarily unavailable. Your filters have been kept — try again."
+                onRetry={() => void refetch()}
+              />
+            ) : isLoading ? (
               <CardSkeleton count={6} />
             ) : sorted.length === 0 && (activeCount > 0 || (search.q ?? "").trim()) ? (
               <EmptyState
@@ -567,20 +681,78 @@ function Page() {
                 }
               />
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {sorted.map((c) => {
-                  const cd = c as UseCaseCardData;
-                  const locked = isLite && cd.visibility === "pro";
-                  return (
-                    <UseCaseCard
-                      key={cd.id}
-                      c={cd}
-                      onAddToBoard={handleAddToBoard}
-                      locked={locked}
-                    />
-                  );
-                })}
-              </div>
+              <>
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {sorted.map((c) => {
+                    const cd = c as UseCaseCardData;
+                    const locked = isLite && cd.visibility === "pro";
+                    return (
+                      <UseCaseCard
+                        key={cd.id}
+                        c={cd}
+                        onAddToBoard={handleAddToBoard}
+                        locked={locked}
+                      />
+                    );
+                  })}
+                </div>
+
+                <div className="mt-8 flex flex-col items-center gap-3">
+                  {canLoadMore ? (
+                    <>
+                      <button
+                        onClick={loadMore}
+                        disabled={isFetching}
+                        className="rounded-md border border-primary/40 bg-primary/10 px-6 py-2.5 text-sm font-bold text-primary transition-colors hover:bg-primary/20 disabled:opacity-60"
+                      >
+                        {isFetching ? "Loading…" : "Load more use cases"}
+                      </button>
+                      <p className="text-xs text-muted-foreground">
+                        Showing {sorted.length} of {total}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      {reachedPageCap
+                        ? `Showing the first ${sorted.length} of ${total} — refine your filters to narrow the set.`
+                        : `Showing all ${sorted.length} matching use case${sorted.length === 1 ? "" : "s"}.`}
+                    </p>
+                  )}
+                </div>
+
+                {/* Context-preserving conversion band */}
+                <div className="mt-10 rounded-2xl border border-border bg-card p-6">
+                  <h2 className="text-base font-bold text-foreground">
+                    Turn this shortlist into a decision
+                  </h2>
+                  <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+                    Take the {sorted.length} use case{sorted.length === 1 ? "" : "s"} in this view
+                    into the AI Use Case Studio to capture your own opportunity, score it and build
+                    a portfolio.
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <Link
+                      to="/ai-use-case-studio"
+                      onClick={() => trackConversion("open_studio")}
+                      className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110"
+                    >
+                      Capture an opportunity in Studio
+                    </Link>
+                    <button
+                      onClick={copyViewLink}
+                      className="rounded-md border border-border bg-background px-5 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
+                    >
+                      Copy link to this view
+                    </button>
+                    <button
+                      onClick={openCustomRequest}
+                      className="rounded-md border border-border bg-background px-5 py-2.5 text-sm font-bold text-muted-foreground hover:bg-secondary"
+                    >
+                      Request a custom pack
+                    </button>
+                  </div>
+                </div>
+              </>
             )}
           </div>
         </div>
