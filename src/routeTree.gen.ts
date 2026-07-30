@@ -58,6 +58,7 @@ import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.se
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
 import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
+import { Route as AppOpportunitiesIndexRouteImport } from './routes/_app.opportunities.index'
 import { Route as AppSectorsSectorRouteImport } from './routes/_app.sectors.$sector'
 import { Route as AppSegmentsSegmentRouteImport } from './routes/_app.segments.$segment'
 import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
@@ -320,6 +321,11 @@ const AppBoardsCollectionsRoute = AppBoardsCollectionsRouteImport.update({
   path: '/collections',
   getParentRoute: () => AppBoardsRoute,
 } as any)
+const AppOpportunitiesIndexRoute = AppOpportunitiesIndexRouteImport.update({
+  id: '/opportunities/',
+  path: '/opportunities/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppSectorsSectorRoute = AppSectorsSectorRouteImport.update({
   id: '/sectors/$sector',
   path: '/sectors/$sector',
@@ -469,6 +475,7 @@ export interface FileRoutesByFullPath {
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/account/': typeof AppAccountIndexRoute
   '/boards/': typeof AppBoardsIndexRoute
+  '/opportunities/': typeof AppOpportunitiesIndexRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
@@ -534,6 +541,7 @@ export interface FileRoutesByTo {
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/account': typeof AppAccountIndexRoute
   '/boards': typeof AppBoardsIndexRoute
+  '/opportunities': typeof AppOpportunitiesIndexRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
@@ -603,6 +611,7 @@ export interface FileRoutesById {
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/_app/account/': typeof AppAccountIndexRoute
   '/_app/boards/': typeof AppBoardsIndexRoute
+  '/_app/opportunities/': typeof AppOpportunitiesIndexRoute
   '/_app/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
@@ -672,6 +681,7 @@ export interface FileRouteTypes {
     | '/use-cases/$slug'
     | '/account/'
     | '/boards/'
+    | '/opportunities/'
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
@@ -737,6 +747,7 @@ export interface FileRouteTypes {
     | '/use-cases/$slug'
     | '/account'
     | '/boards'
+    | '/opportunities'
     | '/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
@@ -805,6 +816,7 @@ export interface FileRouteTypes {
     | '/_app/use-cases/$slug'
     | '/_app/account/'
     | '/_app/boards/'
+    | '/_app/opportunities/'
     | '/_app/cyberx/c3g/intake'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
@@ -1177,6 +1189,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBoardsCollectionsRouteImport
       parentRoute: typeof AppBoardsRoute
     }
+    '/_app/opportunities/': {
+      id: '/_app/opportunities/'
+      path: '/opportunities'
+      fullPath: '/opportunities/'
+      preLoaderRoute: typeof AppOpportunitiesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/sectors/$sector': {
       id: '/_app/sectors/$sector'
       path: '/sectors/$sector'
@@ -1402,6 +1421,7 @@ interface AppRouteChildren {
   AppSectorsSectorRoute: typeof AppSectorsSectorRoute
   AppSegmentsSegmentRoute: typeof AppSegmentsSegmentRoute
   AppUseCasesSlugRoute: typeof AppUseCasesSlugRoute
+  AppOpportunitiesIndexRoute: typeof AppOpportunitiesIndexRoute
   AppCyberxC3gIntakeRoute: typeof AppCyberxC3gIntakeRoute
 }
 
@@ -1445,6 +1465,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSectorsSectorRoute: AppSectorsSectorRoute,
   AppSegmentsSegmentRoute: AppSegmentsSegmentRoute,
   AppUseCasesSlugRoute: AppUseCasesSlugRoute,
+  AppOpportunitiesIndexRoute: AppOpportunitiesIndexRoute,
   AppCyberxC3gIntakeRoute: AppCyberxC3gIntakeRoute,
 }
 
@@ -1478,13 +1499,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
