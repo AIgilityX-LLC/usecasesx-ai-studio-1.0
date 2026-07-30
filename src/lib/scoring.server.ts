@@ -255,3 +255,19 @@ export async function useCaseTenancy(supabase: Db, useCaseId: string) {
   if (error) throw new Error(error.message);
   return data ?? null;
 }
+
+/**
+ * Flatten the author's own words about a use case into prompt context.
+ * Only fields the author wrote are included — nothing is inferred here.
+ */
+export function useCaseNarrative(useCase: any): string | undefined {
+  const parts = [
+    useCase?.problem_statement && `Problem: ${useCase.problem_statement}`,
+    useCase?.current_state && `Current state: ${useCase.current_state}`,
+    useCase?.future_state && `Future state: ${useCase.future_state}`,
+    useCase?.ai_type && `AI type: ${useCase.ai_type}`,
+    useCase?.beneficiaries && `Beneficiaries: ${useCase.beneficiaries}`,
+    useCase?.mvp_scope && `MVP scope: ${useCase.mvp_scope}`,
+  ].filter((p): p is string => typeof p === "string" && p.trim().length > 0);
+  return parts.length > 0 ? parts.join("\n").slice(0, 4000) : undefined;
+}
