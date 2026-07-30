@@ -76,6 +76,7 @@ import { Route as AppStudioUseCaseIdDataReadinessRouteImport } from './routes/_a
 import { Route as AppStudioUseCaseIdDeliverablesRouteImport } from './routes/_app.studio.use-case.$id.deliverables'
 import { Route as AppStudioUseCaseIdFeasibilityRouteImport } from './routes/_app.studio.use-case.$id.feasibility'
 import { Route as AppStudioUseCaseIdSarpiRouteImport } from './routes/_app.studio.use-case.$id.sarpi'
+import { Route as AppStudioUseCaseIdWizardRouteImport } from './routes/_app.studio.use-case.$id.wizard'
 import { Route as ApiPublicUsecasexUseCasesSlugRouteImport } from './routes/api/public/usecasex/use-cases.$slug'
 import { Route as AppStudioUseCaseIdDeliverableTypeRouteImport } from './routes/_app.studio.use-case.$id.deliverable.$type'
 
@@ -421,6 +422,12 @@ const AppStudioUseCaseIdSarpiRoute = AppStudioUseCaseIdSarpiRouteImport.update({
   path: '/use-case/$id/sarpi',
   getParentRoute: () => AppStudioRoute,
 } as any)
+const AppStudioUseCaseIdWizardRoute =
+  AppStudioUseCaseIdWizardRouteImport.update({
+    id: '/use-case/$id/wizard',
+    path: '/use-case/$id/wizard',
+    getParentRoute: () => AppStudioRoute,
+  } as any)
 const ApiPublicUsecasexUseCasesSlugRoute =
   ApiPublicUsecasexUseCasesSlugRouteImport.update({
     id: '/$slug',
@@ -500,6 +507,7 @@ export interface FileRoutesByFullPath {
   '/studio/use-case/$id/deliverables': typeof AppStudioUseCaseIdDeliverablesRoute
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
+  '/studio/use-case/$id/wizard': typeof AppStudioUseCaseIdWizardRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
   '/studio/use-case/$id/': typeof AppStudioUseCaseIdIndexRoute
   '/studio/use-case/$id/deliverable/$type': typeof AppStudioUseCaseIdDeliverableTypeRoute
@@ -568,6 +576,7 @@ export interface FileRoutesByTo {
   '/studio/use-case/$id/deliverables': typeof AppStudioUseCaseIdDeliverablesRoute
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
+  '/studio/use-case/$id/wizard': typeof AppStudioUseCaseIdWizardRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
   '/studio/use-case/$id': typeof AppStudioUseCaseIdIndexRoute
   '/studio/use-case/$id/deliverable/$type': typeof AppStudioUseCaseIdDeliverableTypeRoute
@@ -640,6 +649,7 @@ export interface FileRoutesById {
   '/_app/studio/use-case/$id/deliverables': typeof AppStudioUseCaseIdDeliverablesRoute
   '/_app/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/_app/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
+  '/_app/studio/use-case/$id/wizard': typeof AppStudioUseCaseIdWizardRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
   '/_app/studio/use-case/$id/': typeof AppStudioUseCaseIdIndexRoute
   '/_app/studio/use-case/$id/deliverable/$type': typeof AppStudioUseCaseIdDeliverableTypeRoute
@@ -712,6 +722,7 @@ export interface FileRouteTypes {
     | '/studio/use-case/$id/deliverables'
     | '/studio/use-case/$id/feasibility'
     | '/studio/use-case/$id/sarpi'
+    | '/studio/use-case/$id/wizard'
     | '/api/public/usecasex/use-cases/$slug'
     | '/studio/use-case/$id/'
     | '/studio/use-case/$id/deliverable/$type'
@@ -780,6 +791,7 @@ export interface FileRouteTypes {
     | '/studio/use-case/$id/deliverables'
     | '/studio/use-case/$id/feasibility'
     | '/studio/use-case/$id/sarpi'
+    | '/studio/use-case/$id/wizard'
     | '/api/public/usecasex/use-cases/$slug'
     | '/studio/use-case/$id'
     | '/studio/use-case/$id/deliverable/$type'
@@ -851,6 +863,7 @@ export interface FileRouteTypes {
     | '/_app/studio/use-case/$id/deliverables'
     | '/_app/studio/use-case/$id/feasibility'
     | '/_app/studio/use-case/$id/sarpi'
+    | '/_app/studio/use-case/$id/wizard'
     | '/api/public/usecasex/use-cases/$slug'
     | '/_app/studio/use-case/$id/'
     | '/_app/studio/use-case/$id/deliverable/$type'
@@ -1339,6 +1352,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudioUseCaseIdSarpiRouteImport
       parentRoute: typeof AppStudioRoute
     }
+    '/_app/studio/use-case/$id/wizard': {
+      id: '/_app/studio/use-case/$id/wizard'
+      path: '/use-case/$id/wizard'
+      fullPath: '/studio/use-case/$id/wizard'
+      preLoaderRoute: typeof AppStudioUseCaseIdWizardRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
     '/api/public/usecasex/use-cases/$slug': {
       id: '/api/public/usecasex/use-cases/$slug'
       path: '/$slug'
@@ -1397,6 +1417,7 @@ interface AppStudioRouteChildren {
   AppStudioUseCaseIdDeliverablesRoute: typeof AppStudioUseCaseIdDeliverablesRoute
   AppStudioUseCaseIdFeasibilityRoute: typeof AppStudioUseCaseIdFeasibilityRoute
   AppStudioUseCaseIdSarpiRoute: typeof AppStudioUseCaseIdSarpiRoute
+  AppStudioUseCaseIdWizardRoute: typeof AppStudioUseCaseIdWizardRoute
   AppStudioUseCaseIdIndexRoute: typeof AppStudioUseCaseIdIndexRoute
   AppStudioUseCaseIdDeliverableTypeRoute: typeof AppStudioUseCaseIdDeliverableTypeRoute
 }
@@ -1410,6 +1431,7 @@ const AppStudioRouteChildren: AppStudioRouteChildren = {
   AppStudioUseCaseIdDeliverablesRoute: AppStudioUseCaseIdDeliverablesRoute,
   AppStudioUseCaseIdFeasibilityRoute: AppStudioUseCaseIdFeasibilityRoute,
   AppStudioUseCaseIdSarpiRoute: AppStudioUseCaseIdSarpiRoute,
+  AppStudioUseCaseIdWizardRoute: AppStudioUseCaseIdWizardRoute,
   AppStudioUseCaseIdIndexRoute: AppStudioUseCaseIdIndexRoute,
   AppStudioUseCaseIdDeliverableTypeRoute:
     AppStudioUseCaseIdDeliverableTypeRoute,
@@ -1541,13 +1563,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
