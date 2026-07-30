@@ -2,7 +2,7 @@
  * Scoring engine — determinism, weighting, completeness and explainability.
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 
 import { DEFAULT_SCORECARD } from "@/lib/scoring/default-scorecard";
 import {
