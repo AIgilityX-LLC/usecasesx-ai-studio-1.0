@@ -530,10 +530,32 @@ function UseCaseDetailPage() {
                   ))}
                 </div>
               )}
-              <div className="mt-4 flex flex-wrap items-center gap-2">
+              <div className="mt-6">
+                <DecisionActions
+                  useCaseId={c.id}
+                  slug={c.slug}
+                  title={c.title}
+                  summary={c.summary}
+                  pendingIntent={
+                    intent === "save" || intent === "customize"
+                      ? (intent as "save" | "customize")
+                      : undefined
+                  }
+                  onIntentResolved={() =>
+                    navigate({
+                      to: "/use-cases/$slug",
+                      params: { slug: c.slug },
+                      search: (prev) => ({ ...prev, intent: undefined }),
+                      replace: true,
+                    })
+                  }
+                />
+              </div>
+              <div className="no-print mt-4 flex flex-wrap items-center gap-2">
                 <CompareToggle slug={c.slug} />
                 <AddToCollectionButton useCaseId={c.id} />
               </div>
+
             </div>
           </div>
         </header>
