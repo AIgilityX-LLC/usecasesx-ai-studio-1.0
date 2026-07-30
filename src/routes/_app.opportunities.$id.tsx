@@ -110,7 +110,7 @@ function OpportunityDetailPage() {
     try {
       const result = await convert({ data: { id } });
       toast.success(result.reused ? "Opening the existing use case" : "Use case draft created");
-      navigate({ to: "/studio/use-case/$id", params: { id: result.draftId } });
+      navigate({ to: "/studio/use-case/$id/wizard", params: { id: result.draftId } });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not convert this opportunity.");
     } finally {
@@ -147,8 +147,8 @@ function OpportunityDetailPage() {
             </Select>
             {opp.convertedUseCaseId ? (
               <Button asChild variant="secondary">
-                <Link to="/studio/use-case/$id" params={{ id: opp.convertedUseCaseId }}>
-                  Open use case <ArrowRight className="ml-2 h-4 w-4" />
+                <Link to="/studio/use-case/$id/wizard" params={{ id: opp.convertedUseCaseId }}>
+                  Continue design <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             ) : (
