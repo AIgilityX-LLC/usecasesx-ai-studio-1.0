@@ -312,10 +312,9 @@ export function UseCaseWizard({ id }: { id: string }) {
 
         <div className="space-y-2 px-1 text-xs text-muted-foreground">
           <div className="flex flex-wrap items-center gap-2">
-            <StatusChip
-              tone={record.completedAt ? "success" : "info"}
-              label={record.completedAt ? "Defined" : "In design"}
-            />
+            <StatusChip tone={record.completedAt ? "success" : "info"}>
+              {record.completedAt ? "Defined" : "In design"}
+            </StatusChip>
             <Badge variant="outline">v{completedVersion ?? record.version}</Badge>
           </div>
           {lineage && <p>{lineage}</p>}
