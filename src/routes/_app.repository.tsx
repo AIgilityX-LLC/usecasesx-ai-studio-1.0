@@ -433,6 +433,7 @@ function Page() {
       capabilities: undefined,
       businessFunctions: undefined,
       objectives: undefined,
+      processes: undefined,
       maturity: undefined,
       valuePotential: undefined,
       complexity: undefined,
@@ -445,7 +446,9 @@ function Page() {
       roiRange: undefined,
       deploymentModel: undefined,
       securityClassification: undefined,
+      page: undefined,
     });
+
     track("filter_used", { action: "clear_all" });
     void trackModuleEvent("repository", "click", {
       interaction: "filter_change",
