@@ -25,6 +25,7 @@ import {
   Grid2x2,
   Calculator,
   Wand2,
+  Lightbulb,
   UserCog,
   ShieldCheck,
 } from "lucide-react";
