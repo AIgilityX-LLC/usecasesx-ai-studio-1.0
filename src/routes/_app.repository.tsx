@@ -371,6 +371,8 @@ function Page() {
     "capabilities",
     "businessFunctions",
     "objectives",
+    "processes",
+
     "priority",
     "maturity",
     "valuePotential",
