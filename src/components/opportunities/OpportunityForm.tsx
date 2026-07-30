@@ -91,10 +91,13 @@ export function OpportunityForm({
 
   useUnsavedChanges(dirty && !saving);
 
-  const set = useCallback(<K extends keyof OpportunityDraft>(key: K, value: OpportunityDraft[K]) => {
-    setDraft((prev) => ({ ...prev, [key]: value }));
-    setDirty(true);
-  }, []);
+  const set = useCallback(
+    <K extends keyof OpportunityDraft>(key: K, value: OpportunityDraft[K]) => {
+      setDraft((prev) => ({ ...prev, [key]: value }));
+      setDirty(true);
+    },
+    [],
+  );
 
   /* --- local draft survives a refresh before the first server save --------- */
   useEffect(() => {
@@ -174,7 +177,9 @@ export function OpportunityForm({
       .filter(Boolean)
       .join("\n\n");
     if (!draft.title.trim() || description.trim().length < 20) {
-      toast.error("Add a pain point or desired outcome first so the assistant has something to work with.");
+      toast.error(
+        "Add a pain point or desired outcome first so the assistant has something to work with.",
+      );
       return;
     }
     setAssistLoading(true);
@@ -215,10 +220,10 @@ export function OpportunityForm({
   function addEvidence() {
     const label = evidenceLabel.trim();
     if (!label) return;
-    set("evidence", [
-      ...draft.evidence,
-      { label, url: evidenceUrl.trim() || null, note: null },
-    ].slice(0, 20));
+    set(
+      "evidence",
+      [...draft.evidence, { label, url: evidenceUrl.trim() || null, note: null }].slice(0, 20),
+    );
     setEvidenceLabel("");
     setEvidenceUrl("");
   }

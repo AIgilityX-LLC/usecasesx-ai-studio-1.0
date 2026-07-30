@@ -143,19 +143,17 @@ export async function findSimilar(
   supabase: Db,
   title: string,
   excludeId?: string | null,
-): Promise<{ opportunities: Array<{ id: string; title: string; status: string }>; repository: Array<{ slug: string; title: string }> }> {
+): Promise<{
+  opportunities: Array<{ id: string; title: string; status: string }>;
+  repository: Array<{ slug: string; title: string }>;
+}> {
   const words = keywordsOf(title);
   if (words.length === 0) return { opportunities: [], repository: [] };
   const filter = words.map((w) => `title.ilike.%${w}%`).join(",");
 
   const [own, repo] = await Promise.all([
     supabase.from("opportunities").select("id, title, status").or(filter).limit(5),
-    supabase
-      .from("use_cases")
-      .select("slug, title")
-      .eq("status", "published")
-      .or(filter)
-      .limit(4),
+    supabase.from("use_cases").select("slug, title").eq("status", "published").or(filter).limit(4),
   ]);
 
   return {

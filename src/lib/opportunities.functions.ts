@@ -68,9 +68,8 @@ export const saveOpportunityFn = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const { resolveWorkspaceId, toColumns, toOpportunity } = await import(
-      "@/lib/opportunities.server"
-    );
+    const { resolveWorkspaceId, toColumns, toOpportunity } =
+      await import("@/lib/opportunities.server");
     const { writeAuditEvent, writeProductEvent } = await import("@/lib/telemetry/recorder.server");
     const { AUDIT_EVENTS, PRODUCT_EVENTS } = await import("@/lib/telemetry/events");
 
@@ -235,9 +234,8 @@ export const convertOpportunityFn = createServerFn({ method: "POST" })
   .inputValidator((d) => idSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const { getOpportunity, ensureCaptureBoard, nextBoardPosition } = await import(
-      "@/lib/opportunities.server"
-    );
+    const { getOpportunity, ensureCaptureBoard, nextBoardPosition } =
+      await import("@/lib/opportunities.server");
     const { writeAuditEvent, writeProductEvent } = await import("@/lib/telemetry/recorder.server");
     const { AUDIT_EVENTS, PRODUCT_EVENTS } = await import("@/lib/telemetry/events");
 

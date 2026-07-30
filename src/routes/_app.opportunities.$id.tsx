@@ -12,7 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PageHeader, ErrorState, CardSkeleton, StatusChip, ConfirmDialog } from "@/components/ui-kit";
+import {
+  PageHeader,
+  ErrorState,
+  CardSkeleton,
+  StatusChip,
+  ConfirmDialog,
+} from "@/components/ui-kit";
 import { OpportunityForm } from "@/components/opportunities/OpportunityForm";
 import {
   convertOpportunityFn,
