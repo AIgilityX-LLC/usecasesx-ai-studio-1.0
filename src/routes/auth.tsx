@@ -1,10 +1,19 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { z } from "zod";
+import { fallback, zodValidator } from "@tanstack/zod-adapter";
 
 import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/SiteShell";
 
+/** `redirect` + `intent` let a signed-out action resume after sign-in. */
+const authSearchSchema = z.object({
+  redirect: fallback(z.string().optional(), undefined),
+  intent: fallback(z.string().optional(), undefined),
+});
+
 export const Route = createFileRoute("/auth")({
+  validateSearch: zodValidator(authSearchSchema),
   head: () => ({
     meta: [
       { title: "Sign in — UseCasesX™" },
@@ -19,6 +28,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { redirect, intent } = Route.useSearch();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,11 +37,23 @@ function AuthPage() {
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (!session) return;
+      // Only same-origin in-app paths are honoured, never an external URL.
+      const safeRedirect =
+        redirect && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : null;
+      if (safeRedirect) {
+        navigate({
+          to: safeRedirect,
+          search: intent ? ({ intent } as never) : undefined,
+          replace: true,
+        });
+        return;
+      }
       // /onboarding forwards straight to /dashboard when setup is already done.
-      if (session) navigate({ to: "/onboarding", replace: true });
+      navigate({ to: "/onboarding", replace: true });
     });
     return () => data.subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, redirect, intent]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
