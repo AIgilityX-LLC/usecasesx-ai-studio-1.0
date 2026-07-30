@@ -165,8 +165,10 @@ export const listRepositoryFacets = createServerFn({ method: "GET" }).handler(as
     const join = TAXONOMY_JOINS[facet];
     const { data, error } = await sb
       .from(join.table)
-      .select(`use_case_id, ${join.ref}!inner(slug, name)`);
+      .select(`use_case_id, ${join.ref}!inner(slug, name), use_cases!inner(visibility)`)
+      .in("use_cases.visibility", ["free_lite", "both"]);
     if (error) throw new Error(error.message);
+
     const bySlug = new Map<string, { slug: string; name: string; count: number }>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     for (const row of (data ?? []) as any[]) {
