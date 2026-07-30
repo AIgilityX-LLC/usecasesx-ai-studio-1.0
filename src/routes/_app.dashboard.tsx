@@ -1,9 +1,11 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { ProDashboard } from "@/components/ProDashboard";
 import { PlatformBanner } from "@/components/PlatformBanner";
+import { ProductTour } from "@/components/ProductTour";
+
 
 type Profile = {
   full_name: string | null;
