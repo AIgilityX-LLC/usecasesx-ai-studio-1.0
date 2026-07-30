@@ -63,8 +63,10 @@ export function CuratedCollections({
   onSelect: (key: CollectionKey, slug: string, name: string) => void;
   perGroup?: number;
 }) {
-  const groups = GROUPS.map((g) => ({ ...g, options: (facets[g.key] ?? []).slice(0, perGroup) }))
-    .filter((g) => g.options.length > 0);
+  const groups = GROUPS.map((g) => ({
+    ...g,
+    options: (facets[g.key] ?? []).slice(0, perGroup),
+  })).filter((g) => g.options.length > 0);
 
   if (groups.length === 0) return null;
 

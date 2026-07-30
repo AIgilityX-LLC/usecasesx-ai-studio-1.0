@@ -361,8 +361,6 @@ function Page() {
     });
   };
 
-
-
   type ChipKey = keyof FacetState;
   const chips: { key: ChipKey; value: string; label: string }[] = [];
   const facetKeys: ChipKey[] = [
@@ -405,7 +403,6 @@ function Page() {
   const activeCount = chips.length;
   /** True when the visitor has narrowed the view in any way. */
   const hasAnyRefinement = activeCount > 0 || !!(search.q ?? "").trim();
-
 
   const removeChip = (key: ChipKey, value: string) => {
     if (key === "industries") {
@@ -542,7 +539,6 @@ function Page() {
                 name: p.name,
               })),
             }}
-
             value={{ ...search, industries: effectiveIndustries } as Partial<FacetState>}
             onChange={(p) => handleFilterChange(p as Partial<Search>)}
             onClear={clearAll}
@@ -561,7 +557,6 @@ function Page() {
                   {derivedActive ? sorted.length : total}
                 </span>{" "}
                 use case{(derivedActive ? sorted.length : total) === 1 ? "" : "s"}
-
                 {(search.q ?? "").trim() && (
                   <>
                     {" "}
@@ -759,7 +754,6 @@ function Page() {
                 </div>
               </>
             )}
-
           </div>
         </div>
       </div>

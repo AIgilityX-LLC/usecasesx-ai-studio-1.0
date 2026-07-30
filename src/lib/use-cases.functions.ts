@@ -100,10 +100,7 @@ export const listUseCases = createServerFn({ method: "GET" })
       return { cases: [], total: 0, page, pageSize, hasMore: false };
     }
 
-    let query = sb
-      .from("use_cases")
-      .select(SELECT, { count: "exact" })
-      .eq("status", "published");
+    let query = sb.from("use_cases").select(SELECT, { count: "exact" }).eq("status", "published");
 
     if (idFilter !== null) query = query.in("id", idFilter);
     if (data.featuredOnly) query = query.eq("is_featured", true);
@@ -174,11 +171,17 @@ export const listRepositoryFacets = createServerFn({ method: "GET" }).handler(as
     for (const row of (data ?? []) as any[]) {
       const ref = row[join.ref];
       if (!ref?.slug) continue;
-      const entry = bySlug.get(ref.slug) ?? { slug: ref.slug, name: ref.name ?? ref.slug, count: 0 };
+      const entry = bySlug.get(ref.slug) ?? {
+        slug: ref.slug,
+        name: ref.name ?? ref.slug,
+        count: 0,
+      };
       entry.count += 1;
       bySlug.set(ref.slug, entry);
     }
-    return Array.from(bySlug.values()).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+    return Array.from(bySlug.values()).sort(
+      (a, b) => b.count - a.count || a.name.localeCompare(b.name),
+    );
   }
 
   const [industries, capabilities, businessFunctions, objectives, processes] = await Promise.all([
@@ -191,7 +194,6 @@ export const listRepositoryFacets = createServerFn({ method: "GET" }).handler(as
 
   return { industries, capabilities, businessFunctions, objectives, processes };
 });
-
 
 export const getUseCase = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ slug: z.string().min(1).max(200) }).parse(d))

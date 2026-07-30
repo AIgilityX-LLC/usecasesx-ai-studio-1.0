@@ -13,7 +13,6 @@ interface Props {
     tags?: { slug: string; name: string }[];
     segments?: { slug: string; name: string }[];
     processes?: { slug: string; name: string }[];
-
   };
   value: Partial<FacetState>;
   onChange: (patch: Partial<FacetState>) => void;
@@ -108,7 +107,6 @@ export function HorizontalFilters({ tax, value, onChange, onClear, activeCount }
     ...(tax.tags && tax.tags.length
       ? [{ key: "tags" as const, label: "Tags", options: tax.tags }]
       : []),
-
   ];
 
   const keyFacets = facets.filter((f) => KEY_FACETS.has(f.key));

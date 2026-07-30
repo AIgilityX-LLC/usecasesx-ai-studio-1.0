@@ -11,7 +11,6 @@ export type CtaEvent =
   | "collection_selected"
   | "conversion_intent";
 
-
 export function track(event: CtaEvent, payload?: Record<string, unknown>): void {
   if (typeof window === "undefined") return;
   void persistEvent(event, payload);
