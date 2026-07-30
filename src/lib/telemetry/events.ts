@@ -63,6 +63,10 @@ export const PRODUCT_EVENTS = {
   workspaceCreated: "workspace.created",
 
   opportunityCaptured: "opportunity.captured",
+  opportunityUpdated: "opportunity.updated",
+  opportunityStatusChanged: "opportunity.status_changed",
+  opportunityAiAssisted: "opportunity.ai_assisted",
+  opportunityConverted: "opportunity.converted",
   useCaseCompleted: "use_case.completed",
   useCaseScored: "use_case.scored",
   portfolioCreated: "portfolio.created",

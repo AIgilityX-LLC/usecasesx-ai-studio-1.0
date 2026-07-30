@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Bookmark, BookmarkCheck, Printer, Share2, Wand2 } from "lucide-react";
+import { Bookmark, BookmarkCheck, Lightbulb, Printer, Share2, Wand2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -166,6 +166,14 @@ export function DecisionActions({
         {saved ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
         {saved ? "Saved to shortlist" : busy === "save" ? "Saving…" : "Save to shortlist"}
       </button>
+      <Link
+        to="/opportunities/new"
+        search={{ source: "repository" as const, fromUseCase: useCaseId, title }}
+        className={`${btn} border border-border bg-background hover:bg-muted`}
+      >
+        <Lightbulb className="h-4 w-4" />
+        Capture as opportunity
+      </Link>
       <button
         type="button"
         onClick={onCustomize}

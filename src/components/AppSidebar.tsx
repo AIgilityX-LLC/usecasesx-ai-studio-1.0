@@ -25,6 +25,7 @@ import {
   Grid2x2,
   Calculator,
   Wand2,
+  Lightbulb,
   UserCog,
   ShieldCheck,
 } from "lucide-react";
@@ -60,6 +61,7 @@ const CORE: Item[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/repository", label: "Global Repository", icon: Library },
   { to: "/discover", label: "Discovery Wizard", icon: Wand2 },
+  { to: "/opportunities", label: "Opportunities", icon: Lightbulb, pro: true },
   { to: "/quick-wins", label: "Quick Wins Matrix", icon: Grid2x2 },
   { to: "/roi-calculator", label: "ROI & Mission Value", icon: Calculator },
   { to: "/insights", label: "Deployment Intelligence", icon: BarChart3 },

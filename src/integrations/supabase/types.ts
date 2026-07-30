@@ -241,6 +241,7 @@ export type Database = {
           problem_statement: string | null;
           risk_level: string | null;
           risks: Json | null;
+          source_opportunity_id: string | null;
           source_use_case_id: string | null;
           stakeholders: Json | null;
           status: string;
@@ -270,6 +271,7 @@ export type Database = {
           problem_statement?: string | null;
           risk_level?: string | null;
           risks?: Json | null;
+          source_opportunity_id?: string | null;
           source_use_case_id?: string | null;
           stakeholders?: Json | null;
           status?: string;
@@ -299,6 +301,7 @@ export type Database = {
           problem_statement?: string | null;
           risk_level?: string | null;
           risks?: Json | null;
+          source_opportunity_id?: string | null;
           source_use_case_id?: string | null;
           stakeholders?: Json | null;
           status?: string;
@@ -319,6 +322,13 @@ export type Database = {
             columns: ["pattern_id"];
             isOneToOne: false;
             referencedRelation: "use_case_patterns";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "ai_use_cases_source_opportunity_id_fkey";
+            columns: ["source_opportunity_id"];
+            isOneToOne: false;
+            referencedRelation: "opportunities";
             referencedColumns: ["id"];
           },
           {
@@ -1063,6 +1073,155 @@ export type Database = {
           user_id?: string | null;
         };
         Relationships: [];
+      };
+      opportunities: {
+        Row: {
+          ai_assisted: boolean;
+          ai_suggested_at: string | null;
+          ai_suggestions: Json | null;
+          baseline: string | null;
+          business_function: string | null;
+          converted_at: string | null;
+          converted_use_case_id: string | null;
+          created_at: string;
+          created_by: string;
+          desired_outcome: string | null;
+          evidence: Json;
+          id: string;
+          org_unit_id: string | null;
+          organization_id: string | null;
+          owner_name: string | null;
+          owner_user_id: string | null;
+          pain_point: string | null;
+          process: string | null;
+          process_id: string | null;
+          source: Database["public"]["Enums"]["opportunity_source"];
+          source_reference: string | null;
+          source_use_case_id: string | null;
+          stakeholders: Json;
+          status: Database["public"]["Enums"]["opportunity_status"];
+          strategic_objective: string | null;
+          strategic_theme_id: string | null;
+          title: string;
+          updated_at: string;
+          urgency: Database["public"]["Enums"]["opportunity_urgency"];
+          workspace_id: string;
+        };
+        Insert: {
+          ai_assisted?: boolean;
+          ai_suggested_at?: string | null;
+          ai_suggestions?: Json | null;
+          baseline?: string | null;
+          business_function?: string | null;
+          converted_at?: string | null;
+          converted_use_case_id?: string | null;
+          created_at?: string;
+          created_by: string;
+          desired_outcome?: string | null;
+          evidence?: Json;
+          id?: string;
+          org_unit_id?: string | null;
+          organization_id?: string | null;
+          owner_name?: string | null;
+          owner_user_id?: string | null;
+          pain_point?: string | null;
+          process?: string | null;
+          process_id?: string | null;
+          source?: Database["public"]["Enums"]["opportunity_source"];
+          source_reference?: string | null;
+          source_use_case_id?: string | null;
+          stakeholders?: Json;
+          status?: Database["public"]["Enums"]["opportunity_status"];
+          strategic_objective?: string | null;
+          strategic_theme_id?: string | null;
+          title: string;
+          updated_at?: string;
+          urgency?: Database["public"]["Enums"]["opportunity_urgency"];
+          workspace_id: string;
+        };
+        Update: {
+          ai_assisted?: boolean;
+          ai_suggested_at?: string | null;
+          ai_suggestions?: Json | null;
+          baseline?: string | null;
+          business_function?: string | null;
+          converted_at?: string | null;
+          converted_use_case_id?: string | null;
+          created_at?: string;
+          created_by?: string;
+          desired_outcome?: string | null;
+          evidence?: Json;
+          id?: string;
+          org_unit_id?: string | null;
+          organization_id?: string | null;
+          owner_name?: string | null;
+          owner_user_id?: string | null;
+          pain_point?: string | null;
+          process?: string | null;
+          process_id?: string | null;
+          source?: Database["public"]["Enums"]["opportunity_source"];
+          source_reference?: string | null;
+          source_use_case_id?: string | null;
+          stakeholders?: Json;
+          status?: Database["public"]["Enums"]["opportunity_status"];
+          strategic_objective?: string | null;
+          strategic_theme_id?: string | null;
+          title?: string;
+          updated_at?: string;
+          urgency?: Database["public"]["Enums"]["opportunity_urgency"];
+          workspace_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "opportunities_converted_use_case_id_fkey";
+            columns: ["converted_use_case_id"];
+            isOneToOne: false;
+            referencedRelation: "ai_use_cases";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "opportunities_org_unit_id_fkey";
+            columns: ["org_unit_id"];
+            isOneToOne: false;
+            referencedRelation: "organization_units";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "opportunities_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "opportunities_process_id_fkey";
+            columns: ["process_id"];
+            isOneToOne: false;
+            referencedRelation: "taxonomy_processes";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "opportunities_source_use_case_id_fkey";
+            columns: ["source_use_case_id"];
+            isOneToOne: false;
+            referencedRelation: "use_cases";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "opportunities_strategic_theme_id_fkey";
+            columns: ["strategic_theme_id"];
+            isOneToOne: false;
+            referencedRelation: "taxonomy_strategic_themes";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "opportunities_workspace_id_fkey";
+            columns: ["workspace_id"];
+            isOneToOne: false;
+            referencedRelation: "workspaces";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       organization_members: {
         Row: {
@@ -2994,6 +3153,15 @@ export type Database = {
         | "editor"
         | "user";
       maturity_stage: "concept" | "prototype" | "pilot" | "production" | "scaled";
+      opportunity_source: "scratch" | "repository" | "workshop" | "referral";
+      opportunity_status:
+        | "signal"
+        | "opportunity"
+        | "qualified"
+        | "converted"
+        | "deferred"
+        | "archived";
+      opportunity_urgency: "now" | "next" | "later" | "unknown";
       org_unit_type:
         | "group"
         | "company"
@@ -3151,6 +3319,16 @@ export const Constants = {
         "user",
       ],
       maturity_stage: ["concept", "prototype", "pilot", "production", "scaled"],
+      opportunity_source: ["scratch", "repository", "workshop", "referral"],
+      opportunity_status: [
+        "signal",
+        "opportunity",
+        "qualified",
+        "converted",
+        "deferred",
+        "archived",
+      ],
+      opportunity_urgency: ["now", "next", "later", "unknown"],
       org_unit_type: [
         "group",
         "company",
