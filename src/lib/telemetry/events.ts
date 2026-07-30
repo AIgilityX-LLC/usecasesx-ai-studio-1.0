@@ -73,6 +73,10 @@ export const PRODUCT_EVENTS = {
   reportExported: "report.exported",
   workshopStarted: "workshop.started",
   advisoryRequested: "advisory.requested",
+
+  // journey funnel (dashboard next-action surface)
+  journeyStageViewed: "journey.stage_viewed",
+  journeyActionTaken: "journey.action_taken",
 } as const;
 
 export type ProductEventName = (typeof PRODUCT_EVENTS)[keyof typeof PRODUCT_EVENTS];
