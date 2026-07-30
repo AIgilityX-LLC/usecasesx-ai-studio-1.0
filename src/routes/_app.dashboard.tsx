@@ -6,7 +6,6 @@ import { ProDashboard } from "@/components/ProDashboard";
 import { PlatformBanner } from "@/components/PlatformBanner";
 import { ProductTour } from "@/components/ProductTour";
 
-
 type Profile = {
   full_name: string | null;
   organization: string | null;
@@ -73,7 +72,9 @@ function DashboardPage() {
           {!setupDone ? (
             <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-primary/30 bg-primary/5 p-5">
               <div>
-                <p className="text-sm font-bold text-foreground">Finish setting up your workspace</p>
+                <p className="text-sm font-bold text-foreground">
+                  Finish setting up your workspace
+                </p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Under a minute — it personalizes your repository, scoring and portfolio.
                 </p>
@@ -93,4 +94,3 @@ function DashboardPage() {
     </>
   );
 }
-

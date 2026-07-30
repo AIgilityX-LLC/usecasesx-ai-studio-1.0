@@ -33,7 +33,6 @@ function AuthPage() {
     return () => data.subscription.unsubscribe();
   }, [navigate]);
 
-
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
