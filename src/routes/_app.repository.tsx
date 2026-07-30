@@ -105,6 +105,51 @@ function mapSort(s: SortKey | undefined): "recent" | "impact" | "maturity" | "fe
   }
 }
 
+/** Cards per page; `page` in the URL is the number of pages loaded. */
+const PAGE_SIZE = 24;
+const MAX_PAGES = 5;
+
+/** Build the server-fn input from URL search state. Shared by loader + component. */
+function buildListInput(search: Search) {
+  const industries = search.industries?.length
+    ? search.industries
+    : search.industry
+      ? [search.industry]
+      : [];
+  const page = Math.min(Math.max(search.page ?? 1, 1), MAX_PAGES);
+  return {
+    q: search.q ?? "",
+    industries,
+    capabilities: search.capabilities ?? [],
+    businessFunctions: search.businessFunctions ?? [],
+    objectives: search.objectives ?? [],
+    processes: search.processes ?? [],
+    maturity: search.maturity ?? [],
+    valuePotential: search.valuePotential ?? [],
+    complexity: search.complexity ?? [],
+    riskLevel: search.riskLevel ?? [],
+    timeToValue: search.timeToValue ?? [],
+    deploymentModel: search.deploymentModel ?? [],
+    securityClassification: search.securityClassification ?? [],
+    sort: mapSort(search.sort as SortKey | undefined),
+    limit: Math.min(PAGE_SIZE * page, 120),
+    page: 1,
+  };
+}
+
+const listQ = (input: ReturnType<typeof buildListInput>) =>
+  queryOptions({
+    queryKey: ["use-cases", "explore", input],
+    queryFn: () => listUseCases({ data: input }),
+    staleTime: 60 * 1000,
+  });
+
+const facetsQ = queryOptions({
+  queryKey: ["repository", "facets"],
+  queryFn: () => listRepositoryFacets(),
+  staleTime: 5 * 60 * 1000,
+});
+
 export const Route = createFileRoute("/_app/repository")({
   head: () => ({
     meta: [
@@ -117,7 +162,16 @@ export const Route = createFileRoute("/_app/repository")({
     ],
   }),
   validateSearch: searchSchema,
-  loader: ({ context }) => context.queryClient.ensureQueryData(taxQ),
+  loaderDeps: ({ search }) => ({ search }),
+  // Server-render the first page of results so the repository is crawlable.
+  loader: async ({ context, deps }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(taxQ),
+      context.queryClient.ensureQueryData(facetsQ),
+      context.queryClient.ensureQueryData(listQ(buildListInput(deps.search as Search))),
+    ]);
+  },
+
   component: Page,
   errorComponent: ({ error }) => (
     <div className="p-12 text-center text-destructive">{error.message}</div>
