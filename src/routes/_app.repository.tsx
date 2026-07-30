@@ -398,6 +398,9 @@ function Page() {
     for (const v of vals) chips.push({ key: k, value: v, label: labelMaps[k]?.[v] ?? v });
   }
   const activeCount = chips.length;
+  /** True when the visitor has narrowed the view in any way. */
+  const hasAnyRefinement = activeCount > 0 || !!(search.q ?? "").trim();
+
 
   const removeChip = (key: ChipKey, value: string) => {
     if (key === "industries") {
