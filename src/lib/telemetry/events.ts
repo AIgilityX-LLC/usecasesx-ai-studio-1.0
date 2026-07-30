@@ -56,7 +56,12 @@ export type AuditEventInput = {
 
 export const PRODUCT_EVENTS = {
   registered: "user.registered",
+  onboardingStarted: "onboarding.started",
+  onboardingCompleted: "onboarding.completed",
+  onboardingSkipped: "onboarding.skipped",
+  tourCompleted: "tour.completed",
   workspaceCreated: "workspace.created",
+
   opportunityCaptured: "opportunity.captured",
   useCaseCompleted: "use_case.completed",
   useCaseScored: "use_case.scored",

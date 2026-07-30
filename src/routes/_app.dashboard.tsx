@@ -1,9 +1,10 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { ProDashboard } from "@/components/ProDashboard";
 import { PlatformBanner } from "@/components/PlatformBanner";
+import { ProductTour } from "@/components/ProductTour";
 
 type Profile = {
   full_name: string | null;
@@ -29,6 +30,7 @@ function DashboardPage() {
   const navigate = useNavigate();
   const session = useSupabaseSession();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [setupDone, setSetupDone] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,11 +47,8 @@ function DashboardPage() {
         .eq("user_id", session.user.id)
         .maybeSingle();
       if (!active) return;
-      if (!p?.profile_completed) {
-        navigate({ to: "/profile", replace: true });
-        return;
-      }
       setProfile(p);
+      setSetupDone(Boolean(p?.profile_completed));
       setLoading(false);
     })();
     return () => {
@@ -70,9 +69,28 @@ function DashboardPage() {
       <PlatformBanner />
       <section className="border-b border-border bg-background">
         <div className="mx-auto max-w-[1280px] px-6 py-12">
+          {!setupDone ? (
+            <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-primary/30 bg-primary/5 p-5">
+              <div>
+                <p className="text-sm font-bold text-foreground">
+                  Finish setting up your workspace
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Under a minute — it personalizes your repository, scoring and portfolio.
+                </p>
+              </div>
+              <Link
+                to="/onboarding"
+                className="rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110"
+              >
+                Continue setup →
+              </Link>
+            </div>
+          ) : null}
           <ProDashboard profile={profile} />
         </div>
       </section>
+      {setupDone ? <ProductTour /> : null}
     </>
   );
 }
