@@ -137,21 +137,30 @@ export function ProDashboard({ profile }: Props) {
           <p className="mt-1 text-sm text-muted-foreground">
             Themed groupings of your saved use cases.
           </p>
-          <ul className="mt-4 divide-y divide-border">
-            {portfolios.map((p) => (
-              <li key={p.id} className="flex items-center justify-between py-3">
-                <div>
-                  <div className="text-sm font-semibold text-foreground">{p.name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {p.objective} · {p.useCaseIds.length} use cases
+          {portfolios.length === 0 ? (
+            <p className="mt-4 text-sm text-muted-foreground">
+              No portfolios yet. Group scored use cases into a board to build an investment view.
+            </p>
+          ) : (
+            <ul className="mt-4 divide-y divide-border">
+              {portfolios.map((p) => (
+                <li key={p.id} className="flex items-center justify-between py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-foreground">{p.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {p.objective} · {p.useCaseIds.length} use cases
+                    </div>
                   </div>
-                </div>
-                <button className="rounded-md border border-border px-2.5 py-1.5 text-xs font-semibold hover:bg-secondary">
-                  Open
-                </button>
-              </li>
-            ))}
-          </ul>
+                  <Link
+                    to="/boards"
+                    className="rounded-md border border-border px-2.5 py-1.5 text-xs font-semibold hover:bg-secondary"
+                  >
+                    Open
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="rounded-2xl border border-border bg-card p-6">
