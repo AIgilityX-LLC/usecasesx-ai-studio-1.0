@@ -98,9 +98,9 @@ export function ScoreCompare({ from, to }: { from: ComparableResult; to: Compara
         {!diff.sameDefinition && (
           <p className="flex items-start gap-2 rounded-md border border-border bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
             <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
-            These results were produced by different scorecard versions (
-            {diff.fromVersionLabel} → {diff.toVersionLabel}). Treat the movement as indicative, not
-            like-for-like.
+            These results were produced by different scorecard versions ({
+              diff.fromVersionLabel
+            } → {diff.toVersionLabel}). Treat the movement as indicative, not like-for-like.
           </p>
         )}
 

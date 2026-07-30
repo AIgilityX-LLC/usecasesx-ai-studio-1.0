@@ -228,11 +228,10 @@ export async function latestScoresFor(
     const result = ((row as any).explanation?.result ?? null) as ScoreResult | null;
     latest[id] = {
       useCaseId: id,
-      composite: (row as any).composite_score === null ? null : Number((row as any).composite_score),
+      composite:
+        (row as any).composite_score === null ? null : Number((row as any).composite_score),
       riskAdjusted:
-        (row as any).risk_adjusted_score === null
-          ? null
-          : Number((row as any).risk_adjusted_score),
+        (row as any).risk_adjusted_score === null ? null : Number((row as any).risk_adjusted_score),
       completeness: (row as any).completeness === null ? 0 : Number((row as any).completeness),
       confidence: (row as any).confidence ?? null,
       recommendation: (row as any).recommendation ?? null,

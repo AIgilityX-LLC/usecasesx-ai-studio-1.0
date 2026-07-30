@@ -119,9 +119,7 @@ export const recordScoreFn = createServerFn({ method: "POST" })
  */
 export const getLatestScoresFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
-    z.object({ useCaseIds: z.array(z.string().uuid()).max(200) }).parse(d),
-  )
+  .inputValidator((d) => z.object({ useCaseIds: z.array(z.string().uuid()).max(200) }).parse(d))
   .handler(async ({ data, context }) => {
     const { latestScoresFor } = await import("@/lib/scoring.server");
     return latestScoresFor(context.supabase, [...new Set(data.useCaseIds)]);
@@ -143,9 +141,8 @@ export const suggestScoreEvidenceFn = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data, context }) => {
-    const { resolveScorecard, useCaseTenancy, useCaseNarrative } = await import(
-      "@/lib/scoring.server"
-    );
+    const { resolveScorecard, useCaseTenancy, useCaseNarrative } =
+      await import("@/lib/scoring.server");
     const { AIService } = await import("@/lib/ai/service.server");
 
     const useCase = await useCaseTenancy(context.supabase, data.id);

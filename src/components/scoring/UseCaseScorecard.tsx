@@ -33,7 +33,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { CardSkeleton, ConfirmDialog, EmptyState, ErrorState, StatusChip } from "@/components/ui-kit";
+import {
+  CardSkeleton,
+  ConfirmDialog,
+  EmptyState,
+  ErrorState,
+  StatusChip,
+} from "@/components/ui-kit";
+import { PriorityScore } from "@/components/scoring/PriorityScore";
 import { ScoreCompare } from "@/components/scoring/ScoreCompare";
 import { ScoreExplanation } from "@/components/scoring/ScoreExplanation";
 import {
@@ -89,6 +96,28 @@ export function UseCaseScorecard({ id }: { id: string }) {
     if (evidence) return evidence;
     return (latest?.evidence as Record<string, string>) ?? {};
   }, [evidence, latest]);
+
+  /**
+   * Comparison always runs baseline (the selected older result) → latest, so
+   * "up" consistently means the score improved over time.
+   */
+  const comparePair = useMemo(() => {
+    if (!compareId || !latest || compareId === latest.id) return null;
+    const baseline = results.find((r) => r.id === compareId);
+    if (!baseline?.result || !latest.result) return null;
+    return {
+      from: {
+        id: baseline.id,
+        label: `${new Date(baseline.createdAt).toLocaleString()} (${baseline.scorecardSlug} v${baseline.scorecardVersion})`,
+        result: baseline.result,
+      },
+      to: {
+        id: latest.id,
+        label: `Latest — ${new Date(latest.createdAt).toLocaleString()}`,
+        result: latest.result,
+      },
+    };
+  }, [compareId, latest, results]);
 
   const viewedResult = viewing ? (results.find((r) => r.id === viewing)?.result ?? null) : null;
 
@@ -223,7 +252,10 @@ export function UseCaseScorecard({ id }: { id: string }) {
             {live && live.missing.length > 0 && (
               <div className="space-y-2 rounded-md border border-border bg-muted/40 p-3">
                 <p className="flex items-start gap-2 text-sm">
-                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+                  <AlertTriangle
+                    className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
+                    aria-hidden
+                  />
                   <span>
                     <span className="font-medium">
                       {live.missing.length} criterion{live.missing.length === 1 ? "" : "s"} still
@@ -271,7 +303,9 @@ export function UseCaseScorecard({ id }: { id: string }) {
                 )}
                 {openQuestions.length > 0 && (
                   <div className="space-y-1">
-                    <p className="text-xs font-medium">AI needs answers to these before it can help further</p>
+                    <p className="text-xs font-medium">
+                      AI needs answers to these before it can help further
+                    </p>
                     <ul className="list-disc space-y-1 pl-5 text-xs text-muted-foreground">
                       {openQuestions.map((q) => (
                         <li key={q}>{q}</li>
@@ -316,95 +350,99 @@ export function UseCaseScorecard({ id }: { id: string }) {
                     const unanswered = typeof current[crit.id] !== "number";
                     const suggestion = suggestions[crit.id];
                     return (
-                    <fieldset
-                      key={crit.id}
-                      className={
-                        unanswered && showMissing
-                          ? "space-y-2 rounded-md border border-dashed border-border p-3"
-                          : "space-y-2"
-                      }
-                    >
-                      <legend className="text-sm font-medium">
-                        {crit.label}
-                        <span className="ml-2 text-xs font-normal text-muted-foreground">
-                          weight {crit.weight}
-                          {crit.inverse ? " · lower exposure scores higher" : ""}
-                        </span>
-                        {unanswered && (
-                          <StatusChip tone="warning" className="ml-2 align-middle">
-                            unanswered
-                          </StatusChip>
-                        )}
-                      </legend>
-                      {crit.help && <p className="text-xs text-muted-foreground">{crit.help}</p>}
-                      <RadioGroup
-                        value={
-                          typeof current[crit.id] === "number"
-                            ? String(current[crit.id])
-                            : undefined
+                      <fieldset
+                        key={crit.id}
+                        className={
+                          unanswered && showMissing
+                            ? "space-y-2 rounded-md border border-dashed border-border p-3"
+                            : "space-y-2"
                         }
-                        onValueChange={(v) => setAnswer(crit.id, Number(v))}
-                        className="grid gap-1.5 sm:grid-cols-2 xl:grid-cols-3"
                       >
-                        {crit.scale.map((opt) => {
-                          const optId = `${crit.id}-${opt.value}`;
-                          return (
-                            <div key={optId} className="flex items-center gap-2">
-                              <RadioGroupItem id={optId} value={String(opt.value)} />
-                              <Label
-                                htmlFor={optId}
-                                className="cursor-pointer text-xs font-normal leading-tight"
-                              >
-                                {opt.label}
-                              </Label>
-                            </div>
-                          );
-                        })}
-                      </RadioGroup>
-                      {suggestion && (
-                        <div className="space-y-1.5 rounded-md border border-border bg-muted/40 p-3 text-xs">
-                          <p className="flex items-center gap-1.5 font-medium">
-                            <Sparkles className="h-3.5 w-3.5" aria-hidden />
-                            Evidence to gather
-                            <StatusChip tone="neutral">{suggestion.confidence} confidence</StatusChip>
-                          </p>
-                          <ul className="list-disc space-y-0.5 pl-5 text-muted-foreground">
-                            {suggestion.evidenceToGather.map((e) => (
-                              <li key={e}>{e}</li>
-                            ))}
-                          </ul>
-                          <div className="flex flex-wrap items-center gap-2 pt-1">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setEvidenceFor(crit.id, suggestion.draftJustification)}
-                            >
-                              Use draft justification
-                            </Button>
-                            <span className="text-muted-foreground">
-                              AI never sets the answer — you still choose the rating.
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                      <div className="space-y-1">
-                        <Label
-                          htmlFor={`evidence-${crit.id}`}
-                          className="text-xs font-normal text-muted-foreground"
+                        <legend className="text-sm font-medium">
+                          {crit.label}
+                          <span className="ml-2 text-xs font-normal text-muted-foreground">
+                            weight {crit.weight}
+                            {crit.inverse ? " · lower exposure scores higher" : ""}
+                          </span>
+                          {unanswered && (
+                            <StatusChip tone="warning" className="ml-2 align-middle">
+                              unanswered
+                            </StatusChip>
+                          )}
+                        </legend>
+                        {crit.help && <p className="text-xs text-muted-foreground">{crit.help}</p>}
+                        <RadioGroup
+                          value={
+                            typeof current[crit.id] === "number"
+                              ? String(current[crit.id])
+                              : undefined
+                          }
+                          onValueChange={(v) => setAnswer(crit.id, Number(v))}
+                          className="grid gap-1.5 sm:grid-cols-2 xl:grid-cols-3"
                         >
-                          Evidence / justification (optional)
-                        </Label>
-                        <Textarea
-                          id={`evidence-${crit.id}`}
-                          rows={2}
-                          maxLength={2000}
-                          value={currentEvidence[crit.id] ?? ""}
-                          placeholder="What evidence supports this answer?"
-                          onChange={(e) => setEvidenceFor(crit.id, e.target.value)}
-                        />
-                      </div>
-                    </fieldset>
+                          {crit.scale.map((opt) => {
+                            const optId = `${crit.id}-${opt.value}`;
+                            return (
+                              <div key={optId} className="flex items-center gap-2">
+                                <RadioGroupItem id={optId} value={String(opt.value)} />
+                                <Label
+                                  htmlFor={optId}
+                                  className="cursor-pointer text-xs font-normal leading-tight"
+                                >
+                                  {opt.label}
+                                </Label>
+                              </div>
+                            );
+                          })}
+                        </RadioGroup>
+                        {suggestion && (
+                          <div className="space-y-1.5 rounded-md border border-border bg-muted/40 p-3 text-xs">
+                            <p className="flex items-center gap-1.5 font-medium">
+                              <Sparkles className="h-3.5 w-3.5" aria-hidden />
+                              Evidence to gather
+                              <StatusChip tone="neutral">
+                                {suggestion.confidence} confidence
+                              </StatusChip>
+                            </p>
+                            <ul className="list-disc space-y-0.5 pl-5 text-muted-foreground">
+                              {suggestion.evidenceToGather.map((e) => (
+                                <li key={e}>{e}</li>
+                              ))}
+                            </ul>
+                            <div className="flex flex-wrap items-center gap-2 pt-1">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  setEvidenceFor(crit.id, suggestion.draftJustification)
+                                }
+                              >
+                                Use draft justification
+                              </Button>
+                              <span className="text-muted-foreground">
+                                AI never sets the answer — you still choose the rating.
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                        <div className="space-y-1">
+                          <Label
+                            htmlFor={`evidence-${crit.id}`}
+                            className="text-xs font-normal text-muted-foreground"
+                          >
+                            Evidence / justification (optional)
+                          </Label>
+                          <Textarea
+                            id={`evidence-${crit.id}`}
+                            rows={2}
+                            maxLength={2000}
+                            value={currentEvidence[crit.id] ?? ""}
+                            placeholder="What evidence supports this answer?"
+                            onChange={(e) => setEvidenceFor(crit.id, e.target.value)}
+                          />
+                        </div>
+                      </fieldset>
                     );
                   })}
                 </AccordionContent>
@@ -479,6 +517,8 @@ export function UseCaseScorecard({ id }: { id: string }) {
           </>
         ) : null}
 
+        {comparePair && <ScoreCompare from={comparePair.from} to={comparePair.to} />}
+
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
@@ -517,7 +557,19 @@ export function UseCaseScorecard({ id }: { id: string }) {
                         </StatusChip>
                       </span>
                     </button>
-                    {r.note && <p className="px-3 pt-1 text-xs text-muted-foreground">{r.note}</p>}
+                    <div className="flex flex-wrap items-center gap-3 px-3 pt-1">
+                      {results.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setCompareId(compareId === r.id ? null : r.id)}
+                          className="inline-flex items-center gap-1 text-xs text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          <GitCompareArrows className="h-3 w-3" aria-hidden />
+                          {compareId === r.id ? "Stop comparing" : "Compare with latest"}
+                        </button>
+                      )}
+                      {r.note && <p className="text-xs text-muted-foreground">{r.note}</p>}
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -525,6 +577,20 @@ export function UseCaseScorecard({ id }: { id: string }) {
           </CardContent>
         </Card>
       </div>
+      <ConfirmDialog
+        open={confirmIncomplete}
+        onOpenChange={setConfirmIncomplete}
+        title="Record a provisional score?"
+        description={
+          live
+            ? `${live.missing.length} criterion${live.missing.length === 1 ? " is" : "s are"} unanswered, so completeness is ${Math.round(live.completeness * 100)}% — below the ${Math.round(definition.minimumCompleteness * 100)}% threshold. The result will be stored and clearly flagged as incomplete, and confidence will read "${live.confidence}".`
+            : undefined
+        }
+        confirmLabel="Record as provisional"
+        cancelLabel="Keep answering"
+        busy={saving}
+        onConfirm={() => void save()}
+      />
     </div>
   );
 }
