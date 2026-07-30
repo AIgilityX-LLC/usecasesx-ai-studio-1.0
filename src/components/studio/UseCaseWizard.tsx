@@ -479,11 +479,14 @@ export function UseCaseWizard({ id }: { id: string }) {
                       {suggestions.map((s) => (
                         <li key={s.key} className="rounded-md bg-muted/50 p-3">
                           <p className="text-xs font-medium">{s.label}</p>
-                          <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm">
-                            {s.values.map((v, i) => (
-                              <li key={i}>{v}</li>
-                            ))}
-                          </ul>
+                          <p className="mt-1 text-[11px] text-muted-foreground">
+                            Proposed change to your draft — nothing is written until you accept.
+                          </p>
+                          <DiffView
+                            changes={diffFieldValue(stepValues[s.key], proposedFor(s))}
+                            className="mt-2"
+                          />
+
                           {provenance && (
                             <p className="mt-2 text-[11px] text-muted-foreground">{provenance}</p>
                           )}
