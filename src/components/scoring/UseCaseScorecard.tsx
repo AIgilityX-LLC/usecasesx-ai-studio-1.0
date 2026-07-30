@@ -201,6 +201,87 @@ export function UseCaseScorecard({ id }: { id: string }) {
               Version {definition.version} · {answeredCount} of {totalCount} criteria answered
             </p>
           </CardHeader>
+          <CardContent className="space-y-3 pt-0">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                Current priority
+              </span>
+              <PriorityScore
+                score={
+                  live
+                    ? {
+                        riskAdjusted: live.riskAdjusted,
+                        completeness: live.completeness,
+                        confidence: live.confidence,
+                        recommendation: live.recommendation?.id ?? null,
+                        incomplete: live.incomplete,
+                      }
+                    : null
+                }
+              />
+            </div>
+            {live && live.missing.length > 0 && (
+              <div className="space-y-2 rounded-md border border-border bg-muted/40 p-3">
+                <p className="flex items-start gap-2 text-sm">
+                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+                  <span>
+                    <span className="font-medium">
+                      {live.missing.length} criterion{live.missing.length === 1 ? "" : "s"} still
+                      unanswered.
+                    </span>{" "}
+                    <span className="text-muted-foreground">
+                      {live.incomplete
+                        ? `Below the ${Math.round(definition.minimumCompleteness * 100)}% completeness threshold — any score recorded now will be flagged as provisional.`
+                        : "The score is above the completeness threshold, but the gaps still lower confidence."}
+                    </span>
+                  </span>
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowMissing((v) => !v)}
+                  >
+                    {showMissing ? "Hide" : "Show"} unanswered criteria
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => void requestSuggestions()}
+                    disabled={suggesting}
+                  >
+                    {suggesting ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+                    ) : (
+                      <Sparkles className="mr-2 h-4 w-4" aria-hidden />
+                    )}
+                    Suggest supporting evidence
+                  </Button>
+                </div>
+                {showMissing && (
+                  <ul className="list-disc space-y-1 pl-5 text-xs text-muted-foreground">
+                    {live.missing.map((m) => (
+                      <li key={m.criterionId}>
+                        {m.dimensionLabel} — {m.label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {openQuestions.length > 0 && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium">AI needs answers to these before it can help further</p>
+                    <ul className="list-disc space-y-1 pl-5 text-xs text-muted-foreground">
+                      {openQuestions.map((q) => (
+                        <li key={q}>{q}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
         </Card>
 
         <Accordion
@@ -231,14 +312,29 @@ export function UseCaseScorecard({ id }: { id: string }) {
                 </AccordionTrigger>
                 <AccordionContent className="space-y-5 pb-4">
                   <p className="text-sm text-muted-foreground">{dim.intent}</p>
-                  {dim.criteria.map((crit) => (
-                    <fieldset key={crit.id} className="space-y-2">
+                  {dim.criteria.map((crit) => {
+                    const unanswered = typeof current[crit.id] !== "number";
+                    const suggestion = suggestions[crit.id];
+                    return (
+                    <fieldset
+                      key={crit.id}
+                      className={
+                        unanswered && showMissing
+                          ? "space-y-2 rounded-md border border-dashed border-border p-3"
+                          : "space-y-2"
+                      }
+                    >
                       <legend className="text-sm font-medium">
                         {crit.label}
                         <span className="ml-2 text-xs font-normal text-muted-foreground">
                           weight {crit.weight}
                           {crit.inverse ? " · lower exposure scores higher" : ""}
                         </span>
+                        {unanswered && (
+                          <StatusChip tone="warning" className="ml-2 align-middle">
+                            unanswered
+                          </StatusChip>
+                        )}
                       </legend>
                       {crit.help && <p className="text-xs text-muted-foreground">{crit.help}</p>}
                       <RadioGroup
@@ -265,8 +361,52 @@ export function UseCaseScorecard({ id }: { id: string }) {
                           );
                         })}
                       </RadioGroup>
+                      {suggestion && (
+                        <div className="space-y-1.5 rounded-md border border-border bg-muted/40 p-3 text-xs">
+                          <p className="flex items-center gap-1.5 font-medium">
+                            <Sparkles className="h-3.5 w-3.5" aria-hidden />
+                            Evidence to gather
+                            <StatusChip tone="neutral">{suggestion.confidence} confidence</StatusChip>
+                          </p>
+                          <ul className="list-disc space-y-0.5 pl-5 text-muted-foreground">
+                            {suggestion.evidenceToGather.map((e) => (
+                              <li key={e}>{e}</li>
+                            ))}
+                          </ul>
+                          <div className="flex flex-wrap items-center gap-2 pt-1">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setEvidenceFor(crit.id, suggestion.draftJustification)}
+                            >
+                              Use draft justification
+                            </Button>
+                            <span className="text-muted-foreground">
+                              AI never sets the answer — you still choose the rating.
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      <div className="space-y-1">
+                        <Label
+                          htmlFor={`evidence-${crit.id}`}
+                          className="text-xs font-normal text-muted-foreground"
+                        >
+                          Evidence / justification (optional)
+                        </Label>
+                        <Textarea
+                          id={`evidence-${crit.id}`}
+                          rows={2}
+                          maxLength={2000}
+                          value={currentEvidence[crit.id] ?? ""}
+                          placeholder="What evidence supports this answer?"
+                          onChange={(e) => setEvidenceFor(crit.id, e.target.value)}
+                        />
+                      </div>
                     </fieldset>
-                  ))}
+                    );
+                  })}
                 </AccordionContent>
               </AccordionItem>
             );
@@ -286,7 +426,7 @@ export function UseCaseScorecard({ id }: { id: string }) {
               />
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button onClick={() => void save()} disabled={saving || answeredCount === 0}>
+              <Button onClick={attemptSave} disabled={saving || answeredCount === 0}>
                 {saving ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
                 ) : (
@@ -294,8 +434,15 @@ export function UseCaseScorecard({ id }: { id: string }) {
                 )}
                 Record this score
               </Button>
-              {responses && (
-                <Button variant="ghost" onClick={() => setResponses(null)} disabled={saving}>
+              {(responses || evidence) && (
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setResponses(null);
+                    setEvidence(null);
+                  }}
+                  disabled={saving}
+                >
                   <RotateCcw className="mr-2 h-4 w-4" aria-hidden />
                   Reset to last recorded
                 </Button>
