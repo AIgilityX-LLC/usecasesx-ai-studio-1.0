@@ -388,6 +388,8 @@ function Page() {
     capabilities: Object.fromEntries(tax.capabilities.map((i) => [i.slug, i.name])),
     businessFunctions: Object.fromEntries(tax.businessFunctions.map((i) => [i.slug, i.name])),
     objectives: Object.fromEntries(tax.objectives.map((i) => [i.slug, i.name])),
+    processes: Object.fromEntries((facets.data?.processes ?? []).map((i) => [i.slug, i.name])),
+
     segments: Object.fromEntries(SEGMENTS.map((s) => [s.slug, s.short])),
     sectors: Object.fromEntries(SECTORS.map((s) => [s.slug, s.name])),
     roiRange: { high: "High ROI", medium: "Medium ROI", low: "Emerging ROI" },
