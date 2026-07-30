@@ -56,6 +56,8 @@ export function ProDashboard({ profile }: Props) {
 
   return (
     <div className="space-y-10">
+      <JourneyPanel />
+
       <OnboardingChecklist
         savedCount={saved.length}
         scoredCount={scores.length}
