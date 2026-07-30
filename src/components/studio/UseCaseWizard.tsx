@@ -29,6 +29,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CardSkeleton, ErrorState, StatusChip } from "@/components/ui-kit";
+import { ContributorsList } from "@/components/studio/ContributorsList";
+import { VersionHistory, type VersionRow } from "@/components/studio/VersionHistory";
+import { DiffView } from "@/components/studio/DiffView";
+
 
 import {
   WIZARD_STEPS,
