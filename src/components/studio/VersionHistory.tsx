@@ -48,9 +48,7 @@ export function VersionHistory({
     enabled: open && selected !== null,
   });
 
-  const diff = snapshot.data
-    ? diffWizardState(snapshot.data.wizardState, currentState)
-    : [];
+  const diff = snapshot.data ? diffWizardState(snapshot.data.wizardState, currentState) : [];
 
   return (
     <Dialog

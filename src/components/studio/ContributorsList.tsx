@@ -17,7 +17,9 @@ export function ContributorsList({
   const session = useSupabaseSession();
   const me = session?.user?.id ?? null;
   const myName =
-    (session?.user?.user_metadata?.full_name as string | undefined) ?? session?.user?.email ?? "You";
+    (session?.user?.user_metadata?.full_name as string | undefined) ??
+    session?.user?.email ??
+    "You";
 
   const ids = Array.from(new Set([ownerUserId, ...contributors].filter(Boolean) as string[]));
 

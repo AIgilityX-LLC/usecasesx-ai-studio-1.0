@@ -33,7 +33,6 @@ import { ContributorsList } from "@/components/studio/ContributorsList";
 import { VersionHistory, type VersionRow } from "@/components/studio/VersionHistory";
 import { DiffView } from "@/components/studio/DiffView";
 
-
 import {
   WIZARD_STEPS,
   STEP_IDS,
@@ -41,7 +40,6 @@ import {
   USE_CASE_VISIBILITIES,
   diffFieldValue,
   isAssistable,
-
   isStepComplete,
   progressOf,
   validateAll,
@@ -373,7 +371,6 @@ export function UseCaseWizard({ id }: { id: string }) {
             />
           </div>
         </div>
-
       </nav>
 
       {/* ------------------------------------------------------------ panel */}

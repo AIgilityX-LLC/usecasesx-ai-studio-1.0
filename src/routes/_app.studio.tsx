@@ -28,7 +28,6 @@ import { Separator } from "@/components/ui/separator";
 import { Loader2, Sparkles, Save, Trash2, Wand2, Lightbulb } from "lucide-react";
 import { BlankDraftButton } from "@/components/studio/BlankDraftButton";
 
-
 export const Route = createFileRoute("/_app/studio")({
   head: () => ({
     meta: [
@@ -162,7 +161,6 @@ function StudioPage() {
               Saved catalog use cases
             </Link>
           </div>
-
         </div>
       </section>
 
