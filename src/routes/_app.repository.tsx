@@ -336,7 +336,7 @@ function Page() {
   };
 
   const trackConversion = (intent: string) => {
-    track("conversion_intent", { intent, q: search.q, filters: activeCountRef.current, total });
+    track("conversion_intent", { intent, q: search.q, filters: activeCount, total });
     void trackModuleEvent("repository", "click", { interaction: "conversion_intent", intent });
   };
 
