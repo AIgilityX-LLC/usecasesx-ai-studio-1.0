@@ -527,7 +527,13 @@ function Page() {
               ...tax,
               segments: SEGMENTS.map((s) => ({ slug: s.slug, name: s.name })),
               sectors: SECTORS.map((s) => ({ slug: s.slug, name: s.name })),
+              // Only offered when published content is actually linked to processes.
+              processes: (facets.data?.processes ?? []).map((p) => ({
+                slug: p.slug,
+                name: p.name,
+              })),
             }}
+
             value={{ ...search, industries: effectiveIndustries } as Partial<FacetState>}
             onChange={(p) => handleFilterChange(p as Partial<Search>)}
             onClear={clearAll}
