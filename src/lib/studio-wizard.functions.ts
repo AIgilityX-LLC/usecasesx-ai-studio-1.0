@@ -59,8 +59,7 @@ export const saveWizardStepFn = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const { loadUseCase, mergeState, mirrorColumns } =
-      await import("@/lib/studio-wizard.server");
+    const { loadUseCase, mergeState, mirrorColumns } = await import("@/lib/studio-wizard.server");
     const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
     const { AUDIT_EVENTS } = await import("@/lib/telemetry/events");
 

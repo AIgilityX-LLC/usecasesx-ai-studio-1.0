@@ -14,7 +14,8 @@ export const Route = createFileRoute("/_app/studio/use-case/$id/wizard")({
       { property: "og:title", content: "Design a use case — AI Use Case Studio™" },
       {
         property: "og:description",
-        content: "Nine guided steps from business problem to a versioned, decision-ready AI use case.",
+        content:
+          "Nine guided steps from business problem to a versioned, decision-ready AI use case.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

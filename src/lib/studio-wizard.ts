@@ -108,7 +108,12 @@ export const WIZARD_STEPS: WizardStep[] = [
       },
       { key: "strategicObjective", label: "Strategic objective", kind: "textarea" },
       { key: "processScope", label: "Processes in scope", kind: "list", advanced: true },
-      { key: "geographyScope", label: "Geography / entities in scope", kind: "text", advanced: true },
+      {
+        key: "geographyScope",
+        label: "Geography / entities in scope",
+        kind: "text",
+        advanced: true,
+      },
     ],
   },
   {
@@ -177,7 +182,13 @@ export const WIZARD_STEPS: WizardStep[] = [
     title: "Value & KPIs",
     intent: "Make the expected value measurable.",
     fields: [
-      { key: "expectedBenefits", label: "Expected benefits", kind: "list", required: true, minItems: 1 },
+      {
+        key: "expectedBenefits",
+        label: "Expected benefits",
+        kind: "list",
+        required: true,
+        minItems: 1,
+      },
       {
         key: "kpis",
         label: "KPIs",
@@ -195,8 +206,20 @@ export const WIZARD_STEPS: WizardStep[] = [
     title: "Feasibility & delivery",
     intent: "Be honest about effort and sequencing.",
     fields: [
-      { key: "complexity", label: "Delivery complexity", kind: "select", options: LEVELS, required: true },
-      { key: "timeToValue", label: "Time to value", kind: "select", options: TIME_TO_VALUE, required: true },
+      {
+        key: "complexity",
+        label: "Delivery complexity",
+        kind: "select",
+        options: LEVELS,
+        required: true,
+      },
+      {
+        key: "timeToValue",
+        label: "Time to value",
+        kind: "select",
+        options: TIME_TO_VALUE,
+        required: true,
+      },
       { key: "deliveryApproach", label: "Delivery approach", kind: "textarea" },
       { key: "dependencies", label: "Dependencies", kind: "list", advanced: true },
       { key: "effortEstimate", label: "Indicative effort", kind: "text", advanced: true },
@@ -207,11 +230,22 @@ export const WIZARD_STEPS: WizardStep[] = [
     title: "Risk & governance",
     intent: "Surface the risks before anyone commits budget.",
     fields: [
-      { key: "riskLevel", label: "Overall risk level", kind: "select", options: LEVELS, required: true },
+      {
+        key: "riskLevel",
+        label: "Overall risk level",
+        kind: "select",
+        options: LEVELS,
+        required: true,
+      },
       { key: "risks", label: "Key risks", kind: "list", required: true, minItems: 1 },
       { key: "controls", label: "Controls / mitigations", kind: "list" },
       { key: "governanceNotes", label: "Governance notes", kind: "textarea", advanced: true },
-      { key: "privacyNotes", label: "Privacy / data protection notes", kind: "textarea", advanced: true },
+      {
+        key: "privacyNotes",
+        label: "Privacy / data protection notes",
+        kind: "textarea",
+        advanced: true,
+      },
     ],
   },
   {

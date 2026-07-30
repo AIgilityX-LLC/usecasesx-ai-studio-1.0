@@ -99,14 +99,17 @@ export function UseCaseWizard({ id }: { id: string }) {
     setVisibility((record.visibility as UseCaseVisibility) ?? "workspace");
   }
 
-  const setValue = useCallback((key: string, value: FieldValue) => {
-    setState((prev) => {
-      const base: WizardState = prev ? { ...prev } : {};
-      const current = base[step.id] ?? {};
-      base[step.id] = { ...current, [key]: value };
-      return base;
-    });
-  }, [step.id]);
+  const setValue = useCallback(
+    (key: string, value: FieldValue) => {
+      setState((prev) => {
+        const base: WizardState = prev ? { ...prev } : {};
+        const current = base[step.id] ?? {};
+        base[step.id] = { ...current, [key]: value };
+        return base;
+      });
+    },
+    [step.id],
+  );
 
   const persist = useCallback(
     async (nextStepId?: string) => {
@@ -172,13 +175,19 @@ export function UseCaseWizard({ id }: { id: string }) {
         },
       });
       if (!res.ok || !res.data) {
-        toast.error(res.error ?? "The assistant is unavailable right now. You can continue without it.");
+        toast.error(
+          res.error ?? "The assistant is unavailable right now. You can continue without it.",
+        );
         return;
       }
       const d = res.data;
       const map: Record<string, Suggestion[]> = {
         solution: [
-          { key: "proposedSolution", label: "Solution concept", values: [d.refinedSolutionConcept] },
+          {
+            key: "proposedSolution",
+            label: "Solution concept",
+            values: [d.refinedSolutionConcept],
+          },
         ],
         dataTechnology: [
           { key: "dataSources", label: "Data sources", values: d.suggestedDataRequirements },
@@ -322,7 +331,10 @@ export function UseCaseWizard({ id }: { id: string }) {
             <Label htmlFor="visibility" className="text-xs">
               Visibility
             </Label>
-            <Select value={visibility ?? "workspace"} onValueChange={(v) => handleVisibility(v as UseCaseVisibility)}>
+            <Select
+              value={visibility ?? "workspace"}
+              onValueChange={(v) => handleVisibility(v as UseCaseVisibility)}
+            >
               <SelectTrigger id="visibility" className="h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>
@@ -472,7 +484,9 @@ export function UseCaseWizard({ id }: { id: string }) {
                               size="sm"
                               variant="ghost"
                               onClick={() =>
-                                setSuggestions((prev) => (prev ?? []).filter((x) => x.key !== s.key))
+                                setSuggestions((prev) =>
+                                  (prev ?? []).filter((x) => x.key !== s.key),
+                                )
                               }
                             >
                               Reject
@@ -707,7 +721,10 @@ function ReviewPanel({
         )}
 
         {issues.length > 0 && (
-          <div role="alert" className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm">
+          <div
+            role="alert"
+            className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm"
+          >
             <p className="font-medium">{issues.length} required answer(s) still missing:</p>
             <ul className="mt-1 list-disc space-y-0.5 pl-5">
               {issues.map((i) => (

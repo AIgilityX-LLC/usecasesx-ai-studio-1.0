@@ -61,7 +61,11 @@ export function mergeState(
 }
 
 export async function loadUseCase(supabase: SupabaseClient<any, any, any>, id: string) {
-  const { data, error } = await supabase.from("ai_use_cases").select("*").eq("id", id).maybeSingle();
+  const { data, error } = await supabase
+    .from("ai_use_cases")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
   if (error) throw new Error(error.message);
   return data ?? null;
 }
