@@ -166,6 +166,14 @@ export function DecisionActions({
         {saved ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
         {saved ? "Saved to shortlist" : busy === "save" ? "Saving…" : "Save to shortlist"}
       </button>
+      <Link
+        to="/opportunities/new"
+        search={{ source: "repository" as const, fromUseCase: useCaseId, title }}
+        className={`${btn} border border-border bg-background hover:bg-muted`}
+      >
+        <Lightbulb className="h-4 w-4" />
+        Capture as opportunity
+      </Link>
       <button
         type="button"
         onClick={onCustomize}
