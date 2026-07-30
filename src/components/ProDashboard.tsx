@@ -10,6 +10,7 @@ import {
 } from "@/hooks/usecasex-dashboard";
 import { Can } from "@/components/Can";
 import { OnboardingChecklist } from "@/components/OnboardingChecklist";
+import { JourneyPanel } from "@/components/dashboard/JourneyPanel";
 
 interface Props {
   profile?: {
