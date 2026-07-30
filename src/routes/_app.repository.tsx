@@ -42,6 +42,9 @@ const searchSchema = z.object({
   capabilities: z.array(z.string()).optional(),
   businessFunctions: z.array(z.string()).optional(),
   objectives: z.array(z.string()).optional(),
+  processes: z.array(z.string()).optional(),
+  page: z.number().int().optional(),
+
   maturity: z.array(z.string()).optional(),
   valuePotential: z.array(z.string()).optional(),
   complexity: z.array(z.string()).optional(),
