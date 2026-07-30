@@ -14,6 +14,9 @@ const idSchema = z.object({ id: z.string().uuid() });
 
 const responsesInput = z.record(z.string().min(1), z.number().int().min(0).max(10));
 
+/** Human-authored justification per criterion. Never influences the maths. */
+const evidenceInput = z.record(z.string().min(1), z.string().trim().max(2000));
+
 /** Definition + prior results for one use case. */
 export const getScorecardStateFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -45,6 +48,7 @@ export const recordScoreFn = createServerFn({ method: "POST" })
       .object({
         id: z.string().uuid(),
         responses: responsesInput,
+        evidence: evidenceInput.optional(),
         note: z.string().trim().max(500).optional(),
       })
       .parse(d),
@@ -70,6 +74,7 @@ export const recordScoreFn = createServerFn({ method: "POST" })
       useCaseId: data.id,
       scorecardId: scorecard.id,
       responses,
+      evidence: data.evidence ?? {},
       result,
       note: data.note ?? null,
       createdBy: userId,
@@ -106,4 +111,68 @@ export const recordScoreFn = createServerFn({ method: "POST" })
     });
 
     return { stored, result };
+  });
+
+/**
+ * Latest recorded score per use case, for list, board and portfolio surfaces.
+ * Ids the caller cannot see are simply absent from the map.
+ */
+export const getLatestScoresFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ useCaseIds: z.array(z.string().uuid()).max(200) }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { latestScoresFor } = await import("@/lib/scoring.server");
+    return latestScoresFor(context.supabase, [...new Set(data.useCaseIds)]);
+  });
+
+/**
+ * Ask AI what evidence would support the unanswered (or all) criteria.
+ * The output schema has no numeric field, so a suggestion can never move a
+ * score — a human still answers every criterion.
+ */
+export const suggestScoreEvidenceFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        criterionIds: z.array(z.string().min(1)).min(1).max(40),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { resolveScorecard, useCaseTenancy, useCaseNarrative } = await import(
+      "@/lib/scoring.server"
+    );
+    const { AIService } = await import("@/lib/ai/service.server");
+
+    const useCase = await useCaseTenancy(context.supabase, data.id);
+    if (!useCase) throw new Error("We could not find that use case.");
+
+    const scorecard = await resolveScorecard(
+      context.supabase,
+      (useCase.workspace_id as string | null) ?? null,
+    );
+    const wanted = new Set(data.criterionIds);
+    const criteria = scorecard.definition.dimensions.flatMap((dim) =>
+      dim.criteria
+        .filter((c) => wanted.has(c.id))
+        .map((c) => ({ id: c.id, label: c.label, dimension: dim.label, help: c.help })),
+    );
+    if (criteria.length === 0) throw new Error("No matching criteria to support.");
+
+    return AIService.suggestScoreEvidence(
+      {
+        supabase: context.supabase,
+        userId: context.userId,
+        entity: { type: "use_case", id: data.id },
+      },
+      {
+        title: (useCase.title as string) ?? "Untitled use case",
+        context: useCaseNarrative(useCase),
+        criteria,
+      },
+    );
   });
