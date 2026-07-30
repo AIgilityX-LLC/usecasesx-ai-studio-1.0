@@ -231,35 +231,48 @@ export function ProDashboard({ profile }: Props) {
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold text-foreground">Reports</h2>
             <Can action="dashboard.export">
-              <button className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:brightness-110">
+              <Link
+                to="/reports"
+                className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:brightness-110"
+              >
                 Generate new report
-              </button>
+              </Link>
             </Can>
           </div>
-          <ul className="mt-4 divide-y divide-border">
-            {reports.map((r) => (
-              <li key={r.id} className="flex items-center justify-between py-3">
-                <div>
-                  <div className="text-sm font-semibold text-foreground">{r.title}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {r.kind} · {new Date(r.createdAt).toLocaleDateString()} · {r.useCaseCount} cases
+          {reports.length === 0 ? (
+            <p className="mt-4 text-sm text-muted-foreground">
+              No reports yet. Once you have scored use cases, generate a board-ready export.
+            </p>
+          ) : (
+            <ul className="mt-4 divide-y divide-border">
+              {reports.map((r) => (
+                <li key={r.id} className="flex items-center justify-between py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-foreground">{r.title}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {r.kind} · {new Date(r.createdAt).toLocaleDateString()} · {r.useCaseCount}{" "}
+                      cases
+                    </div>
                   </div>
-                </div>
-                <Can
-                  action="dashboard.export"
-                  fallback={
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                      Sign in to download
-                    </span>
-                  }
-                >
-                  <button className="rounded-md border border-border px-2.5 py-1.5 text-xs font-semibold hover:bg-secondary">
-                    Download
-                  </button>
-                </Can>
-              </li>
-            ))}
-          </ul>
+                  <Can
+                    action="dashboard.export"
+                    fallback={
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                        Sign in to download
+                      </span>
+                    }
+                  >
+                    <Link
+                      to="/reports"
+                      className="rounded-md border border-border px-2.5 py-1.5 text-xs font-semibold hover:bg-secondary"
+                    >
+                      Open
+                    </Link>
+                  </Can>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="rounded-2xl border border-border bg-card p-6">
