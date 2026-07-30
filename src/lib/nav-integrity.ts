@@ -24,6 +24,7 @@ export const SIDEBAR_NAV_TARGETS = [
   "/dashboard",
   "/repository",
   "/discover",
+  "/opportunities",
   "/quick-wins",
   "/roi-calculator",
   "/insights",
