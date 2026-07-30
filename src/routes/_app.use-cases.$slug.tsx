@@ -117,20 +117,47 @@ async function logIntegrationEvent(input: {
 const detailSearchSchema = z.object({
   dept: fallback(z.string().optional(), undefined),
   func: fallback(z.string().optional(), undefined),
+  /** Action to resume after a sign-in round trip ("save" | "customize"). */
+  intent: fallback(z.string().optional(), undefined),
 });
 
 export const Route = createFileRoute("/_app/use-cases/$slug")({
   validateSearch: zodValidator(detailSearchSchema),
-  head: ({ params }) => ({
-    meta: [
-      { title: `${params.slug} — UseCasesX™` },
-      {
-        name: "description",
-        content:
-          "AI use case detail — business problem, AI solution, value, data, KPIs, ROI, implementation, governance, cyber, and privacy.",
-      },
-    ],
-  }),
+  // Published, publicly readable data only — no workspace or account data is
+  // ever exposed through the loader or the share/SEO metadata below.
+  loader: async ({ params }) => {
+    try {
+      const row = (await getUseCase({ data: { slug: params.slug } })) as Record<string, unknown>;
+      return {
+        title: (row.title as string) ?? params.slug,
+        summary: (row.summary as string | null) ?? null,
+      };
+    } catch {
+      return null;
+    }
+  },
+  head: ({ params, loaderData }) => {
+    const title = loaderData?.title
+      ? `${loaderData.title} — UseCasesX™`.slice(0, 60)
+      : "AI use case — UseCasesX™";
+    const description = (
+      loaderData?.summary ??
+      "AI use case detail — business problem, AI solution, value, data, KPIs, implementation, governance and risk."
+    ).slice(0, 158);
+    const url = `https://usecasesx.aigilityx.com/use-cases/${params.slug}`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: [{ rel: "canonical", href: url }],
+    };
+  },
   component: UseCaseDetailPage,
   errorComponent: ({ error }) => (
     <MissingDataFallback title="Use case failed to load" reason={error.message} />
@@ -148,7 +175,7 @@ export const Route = createFileRoute("/_app/use-cases/$slug")({
 // ---------- Page ----------
 function UseCaseDetailPage() {
   const { slug } = Route.useParams();
-  const { dept, func } = Route.useSearch();
+  const { dept, func, intent } = Route.useSearch();
   const navigate = useNavigate();
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadCta, setLeadCta] = useState<"lite-pdf" | "ai-strategy-session">("lite-pdf");
@@ -158,6 +185,7 @@ function UseCaseDetailPage() {
     queryFn: () => getUseCase({ data: { slug } }),
     staleTime: 60 * 1000,
     retry: false,
+
   });
 
   // Detect "not found" from server fn error
