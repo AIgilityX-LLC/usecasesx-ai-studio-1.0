@@ -90,7 +90,7 @@ export const saveWizardStepFn = createServerFn({ method: "POST" })
 
     const { data: saved, error } = await supabase
       .from("ai_use_cases")
-      .update(patch)
+      .update(patch as never)
       .eq("id", data.id)
       .select("id, title, status, wizard_state, current_step, updated_at")
       .single();
@@ -139,7 +139,7 @@ export const setWizardMetaFn = createServerFn({ method: "POST" })
     if (Object.keys(patch).length === 0) return { ok: true };
     const { error } = await context.supabase
       .from("ai_use_cases")
-      .update(patch)
+      .update(patch as never)
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -208,7 +208,7 @@ export const completeWizardFn = createServerFn({ method: "POST" })
       next: { status: "defined", version: nextVersion },
     });
     await writeProductEvent(ctx, {
-      event: PRODUCT_EVENTS.useCaseDefined,
+      event: PRODUCT_EVENTS.useCaseCompleted,
       entity: { type: "use_case", id: data.id },
       properties: {
         version: nextVersion,
