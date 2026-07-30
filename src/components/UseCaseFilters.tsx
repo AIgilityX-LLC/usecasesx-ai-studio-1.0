@@ -5,6 +5,8 @@ export interface FacetState {
   capabilities: string[];
   businessFunctions: string[];
   objectives: string[];
+  processes: string[];
+
   maturity: string[];
   valuePotential: string[];
   complexity: string[];
