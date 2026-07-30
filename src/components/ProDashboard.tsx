@@ -500,18 +500,10 @@ function buildNextActions({
   }
   if (readinessNeeded.length > 0) {
     out.push({
-      label: "Send to SARPI / AI Readiness",
+      label: "Assess readiness in SARPI",
       reason: "Maturity is unclear for some cases.",
       icon: "◉",
-      to: "/repository",
-    });
-  }
-  if (saved.some((u) => /agentic/i.test(u.aiType))) {
-    out.push({
-      label: "Design a FlowX Workflow",
-      reason: "You have Agentic AI use cases.",
-      icon: "⚙",
-      to: "/repository",
+      to: "/sarpi",
     });
   }
   if (saved.some((u) => /decision|strategy/i.test(u.objective))) {
@@ -519,7 +511,7 @@ function buildNextActions({
       label: "Ask AdvisorX",
       reason: "Strategic decisions detected in your portfolio.",
       icon: "?",
-      to: "/repository",
+      to: "/advisorx",
     });
   }
   return out;
