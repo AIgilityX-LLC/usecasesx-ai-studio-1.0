@@ -109,22 +109,3 @@ export const recordScoreFn = createServerFn({ method: "POST" })
 
     return { stored, result };
   });
-
-/**
- * Preview a calculation without persisting it. Used for the live explanation
- * panel so the numbers on screen come from the same engine as the stored ones.
- */
-export const previewScoreFn = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid(), responses: responsesInput }).parse(d))
-  .handler(async ({ data, context }) => {
-    const { resolveScorecard, useCaseTenancy } = await import("@/lib/scoring.server");
-    const { calculateScore, pruneResponses } = await import("@/lib/scoring/model");
-    const useCase = await useCaseTenancy(context.supabase, data.id);
-    if (!useCase) throw new Error("We could not find that use case.");
-    const scorecard = await resolveScorecard(
-      context.supabase,
-      (useCase.workspace_id as string | null) ?? null,
-    );
-    return calculateScore(scorecard.definition, pruneResponses(scorecard.definition, data.responses));
-  });
