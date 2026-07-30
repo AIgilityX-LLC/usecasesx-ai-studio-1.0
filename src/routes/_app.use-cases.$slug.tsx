@@ -187,7 +187,6 @@ function UseCaseDetailPage() {
     queryFn: () => getUseCase({ data: { slug } }),
     staleTime: 60 * 1000,
     retry: false,
-
   });
 
   // Detect "not found" from server fn error
@@ -557,7 +556,6 @@ function UseCaseDetailPage() {
                 <CompareToggle slug={c.slug} />
                 <AddToCollectionButton useCaseId={c.id} />
               </div>
-
             </div>
           </div>
         </header>
