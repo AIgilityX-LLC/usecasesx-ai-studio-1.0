@@ -6,7 +6,11 @@ export type CtaEvent =
   | "filter_used"
   | "search_used"
   | "custom_use_case_requested"
-  | "cta_clicked";
+  | "cta_clicked"
+  | "results_load_more"
+  | "collection_selected"
+  | "conversion_intent";
+
 
 export function track(event: CtaEvent, payload?: Record<string, unknown>): void {
   if (typeof window === "undefined") return;
