@@ -265,24 +265,23 @@ export function ProDashboard({ profile }: Props) {
         <div className="rounded-2xl border border-border bg-card p-6">
           <h2 className="text-lg font-bold text-foreground">AIgilityX Ecosystem</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Trigger the next platform in your journey.
+            Continue in a connected module. Only modules that are live today are listed.
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {[
-              { t: "SARPI", d: "Track maturity & performance" },
-              { t: "CyberX", d: "Govern AI risks" },
-              { t: "AdvisorX", d: "Strategic decisions" },
-              { t: "FlowX", d: "Execute workflows" },
-              { t: "PrivacyX", d: "Data protection review" },
-              { t: "AssureX", d: "Validate trust & assurance" },
+              { t: "SARPI", d: "Track maturity & readiness", to: "/sarpi" as const },
+              { t: "CyberX C3G", d: "Govern AI risks", to: "/governance" as const },
+              { t: "AdvisorX", d: "Strategic decisions", to: "/advisorx" as const },
+              { t: "Blueprint", d: "Delivery-ready design", to: "/blueprint" as const },
             ].map((p) => (
-              <button
+              <Link
                 key={p.t}
+                to={p.to}
                 className="rounded-xl border border-border bg-background p-3 text-left hover:bg-secondary"
               >
                 <div className="text-sm font-semibold text-foreground">{p.t}</div>
                 <div className="text-xs text-muted-foreground">{p.d}</div>
-              </button>
+              </Link>
             ))}
           </div>
         </div>
