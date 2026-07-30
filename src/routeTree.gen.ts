@@ -76,6 +76,7 @@ import { Route as AppStudioUseCaseIdDataReadinessRouteImport } from './routes/_a
 import { Route as AppStudioUseCaseIdDeliverablesRouteImport } from './routes/_app.studio.use-case.$id.deliverables'
 import { Route as AppStudioUseCaseIdFeasibilityRouteImport } from './routes/_app.studio.use-case.$id.feasibility'
 import { Route as AppStudioUseCaseIdSarpiRouteImport } from './routes/_app.studio.use-case.$id.sarpi'
+import { Route as AppStudioUseCaseIdScorecardRouteImport } from './routes/_app.studio.use-case.$id.scorecard'
 import { Route as AppStudioUseCaseIdWizardRouteImport } from './routes/_app.studio.use-case.$id.wizard'
 import { Route as ApiPublicUsecasexUseCasesSlugRouteImport } from './routes/api/public/usecasex/use-cases.$slug'
 import { Route as AppStudioUseCaseIdDeliverableTypeRouteImport } from './routes/_app.studio.use-case.$id.deliverable.$type'
@@ -422,6 +423,12 @@ const AppStudioUseCaseIdSarpiRoute = AppStudioUseCaseIdSarpiRouteImport.update({
   path: '/use-case/$id/sarpi',
   getParentRoute: () => AppStudioRoute,
 } as any)
+const AppStudioUseCaseIdScorecardRoute =
+  AppStudioUseCaseIdScorecardRouteImport.update({
+    id: '/use-case/$id/scorecard',
+    path: '/use-case/$id/scorecard',
+    getParentRoute: () => AppStudioRoute,
+  } as any)
 const AppStudioUseCaseIdWizardRoute =
   AppStudioUseCaseIdWizardRouteImport.update({
     id: '/use-case/$id/wizard',
@@ -507,6 +514,7 @@ export interface FileRoutesByFullPath {
   '/studio/use-case/$id/deliverables': typeof AppStudioUseCaseIdDeliverablesRoute
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
+  '/studio/use-case/$id/scorecard': typeof AppStudioUseCaseIdScorecardRoute
   '/studio/use-case/$id/wizard': typeof AppStudioUseCaseIdWizardRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
   '/studio/use-case/$id/': typeof AppStudioUseCaseIdIndexRoute
@@ -576,6 +584,7 @@ export interface FileRoutesByTo {
   '/studio/use-case/$id/deliverables': typeof AppStudioUseCaseIdDeliverablesRoute
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
+  '/studio/use-case/$id/scorecard': typeof AppStudioUseCaseIdScorecardRoute
   '/studio/use-case/$id/wizard': typeof AppStudioUseCaseIdWizardRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
   '/studio/use-case/$id': typeof AppStudioUseCaseIdIndexRoute
@@ -649,6 +658,7 @@ export interface FileRoutesById {
   '/_app/studio/use-case/$id/deliverables': typeof AppStudioUseCaseIdDeliverablesRoute
   '/_app/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
   '/_app/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
+  '/_app/studio/use-case/$id/scorecard': typeof AppStudioUseCaseIdScorecardRoute
   '/_app/studio/use-case/$id/wizard': typeof AppStudioUseCaseIdWizardRoute
   '/api/public/usecasex/use-cases/$slug': typeof ApiPublicUsecasexUseCasesSlugRoute
   '/_app/studio/use-case/$id/': typeof AppStudioUseCaseIdIndexRoute
@@ -722,6 +732,7 @@ export interface FileRouteTypes {
     | '/studio/use-case/$id/deliverables'
     | '/studio/use-case/$id/feasibility'
     | '/studio/use-case/$id/sarpi'
+    | '/studio/use-case/$id/scorecard'
     | '/studio/use-case/$id/wizard'
     | '/api/public/usecasex/use-cases/$slug'
     | '/studio/use-case/$id/'
@@ -791,6 +802,7 @@ export interface FileRouteTypes {
     | '/studio/use-case/$id/deliverables'
     | '/studio/use-case/$id/feasibility'
     | '/studio/use-case/$id/sarpi'
+    | '/studio/use-case/$id/scorecard'
     | '/studio/use-case/$id/wizard'
     | '/api/public/usecasex/use-cases/$slug'
     | '/studio/use-case/$id'
@@ -863,6 +875,7 @@ export interface FileRouteTypes {
     | '/_app/studio/use-case/$id/deliverables'
     | '/_app/studio/use-case/$id/feasibility'
     | '/_app/studio/use-case/$id/sarpi'
+    | '/_app/studio/use-case/$id/scorecard'
     | '/_app/studio/use-case/$id/wizard'
     | '/api/public/usecasex/use-cases/$slug'
     | '/_app/studio/use-case/$id/'
@@ -1352,6 +1365,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudioUseCaseIdSarpiRouteImport
       parentRoute: typeof AppStudioRoute
     }
+    '/_app/studio/use-case/$id/scorecard': {
+      id: '/_app/studio/use-case/$id/scorecard'
+      path: '/use-case/$id/scorecard'
+      fullPath: '/studio/use-case/$id/scorecard'
+      preLoaderRoute: typeof AppStudioUseCaseIdScorecardRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
     '/_app/studio/use-case/$id/wizard': {
       id: '/_app/studio/use-case/$id/wizard'
       path: '/use-case/$id/wizard'
@@ -1417,6 +1437,7 @@ interface AppStudioRouteChildren {
   AppStudioUseCaseIdDeliverablesRoute: typeof AppStudioUseCaseIdDeliverablesRoute
   AppStudioUseCaseIdFeasibilityRoute: typeof AppStudioUseCaseIdFeasibilityRoute
   AppStudioUseCaseIdSarpiRoute: typeof AppStudioUseCaseIdSarpiRoute
+  AppStudioUseCaseIdScorecardRoute: typeof AppStudioUseCaseIdScorecardRoute
   AppStudioUseCaseIdWizardRoute: typeof AppStudioUseCaseIdWizardRoute
   AppStudioUseCaseIdIndexRoute: typeof AppStudioUseCaseIdIndexRoute
   AppStudioUseCaseIdDeliverableTypeRoute: typeof AppStudioUseCaseIdDeliverableTypeRoute
@@ -1431,6 +1452,7 @@ const AppStudioRouteChildren: AppStudioRouteChildren = {
   AppStudioUseCaseIdDeliverablesRoute: AppStudioUseCaseIdDeliverablesRoute,
   AppStudioUseCaseIdFeasibilityRoute: AppStudioUseCaseIdFeasibilityRoute,
   AppStudioUseCaseIdSarpiRoute: AppStudioUseCaseIdSarpiRoute,
+  AppStudioUseCaseIdScorecardRoute: AppStudioUseCaseIdScorecardRoute,
   AppStudioUseCaseIdWizardRoute: AppStudioUseCaseIdWizardRoute,
   AppStudioUseCaseIdIndexRoute: AppStudioUseCaseIdIndexRoute,
   AppStudioUseCaseIdDeliverableTypeRoute:
