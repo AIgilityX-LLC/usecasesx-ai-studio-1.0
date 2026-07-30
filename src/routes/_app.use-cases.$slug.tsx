@@ -11,6 +11,8 @@ import { AddToCollectionButton } from "@/components/AddToCollectionButton";
 import { RatingWidget } from "@/components/usecasex/RatingWidget";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { CaseStudy } from "@/components/usecasex/CaseStudy";
+import { DecisionActions } from "@/components/usecasex/DecisionActions";
+import { SourceLineage } from "@/components/usecasex/SourceLineage";
 import { supabase } from "@/integrations/supabase/client";
 import { getUseCase, listUseCases } from "@/lib/use-cases.functions";
 import { CtaTriad } from "@/components/usecasex/CtaTriad";
@@ -545,7 +547,7 @@ function UseCaseDetailPage() {
                     navigate({
                       to: "/use-cases/$slug",
                       params: { slug: c.slug },
-                      search: (prev) => ({ ...prev, intent: undefined }),
+                      search: { dept, func },
                       replace: true,
                     })
                   }
@@ -623,6 +625,15 @@ function UseCaseDetailPage() {
                 </div>
               </Section>
             )}
+
+            <SourceLineage
+              submittedBy={c.submitted_by}
+              organization={c.organization}
+              region={c.region}
+              publishedAt={c.published_at}
+              updatedAt={c.updated_at}
+              links={Array.isArray(c.use_case_links) ? c.use_case_links : []}
+            />
 
             {relatedItems.length > 0 && (
               <Section label="11 · Related Use Cases">
