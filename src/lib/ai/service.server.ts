@@ -28,6 +28,7 @@ import type {
   DraftUseCaseOutput,
   RecommendCapabilitiesOutput,
   ExplainScoreOutput,
+  SuggestScoreEvidenceOutput,
   FindSimilarUseCasesOutput,
   GenerateExecutiveSummaryOutput,
 } from "./schemas";
@@ -298,6 +299,34 @@ export const AIService = {
         `Use case: ${input.title}`,
         `Weighted total score: ${input.totalScore}`,
         `Dimension scores (0-5):\n${dims}`,
+      ]),
+    );
+  },
+
+  /**
+   * Propose evidence for scoring criteria. The output schema carries no numeric
+   * field, so this can never influence the deterministic score — it only tells
+   * a reviewer what to go and find.
+   */
+  suggestScoreEvidence(
+    ctx: AiCallContext,
+    input: {
+      title: string;
+      context?: string;
+      criteria: Array<{ id: string; label: string; dimension: string; help?: string }>;
+    },
+  ): Promise<AiResult<SuggestScoreEvidenceOutput>> {
+    const criteria = input.criteria
+      .slice(0, 40)
+      .map((c) => `- ${c.id} :: [${c.dimension}] ${c.label}${c.help ? ` — ${c.help}` : ""}`)
+      .join("\n");
+    return run(
+      "suggestScoreEvidence",
+      ctx,
+      lines([
+        `Use case: ${input.title}`,
+        input.context && `Use-case context supplied by the author:\n${input.context}`,
+        `Criteria to support (return one item per criterionId, verbatim):\n${criteria}`,
       ]),
     );
   },
