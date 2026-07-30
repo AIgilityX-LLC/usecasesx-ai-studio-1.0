@@ -1667,6 +1667,147 @@ export type Database = {
         };
         Relationships: [];
       };
+      scorecard_results: {
+        Row: {
+          completeness: number | null;
+          composite_score: number | null;
+          confidence: string | null;
+          created_at: string;
+          created_by: string;
+          dimensions: Json;
+          explanation: Json;
+          id: string;
+          note: string | null;
+          organization_id: string | null;
+          recommendation: string | null;
+          responses: Json;
+          risk_adjusted_score: number | null;
+          scorecard_id: string;
+          scorecard_slug: string;
+          scorecard_version: number;
+          use_case_id: string;
+          workspace_id: string | null;
+        };
+        Insert: {
+          completeness?: number | null;
+          composite_score?: number | null;
+          confidence?: string | null;
+          created_at?: string;
+          created_by: string;
+          dimensions?: Json;
+          explanation?: Json;
+          id?: string;
+          note?: string | null;
+          organization_id?: string | null;
+          recommendation?: string | null;
+          responses?: Json;
+          risk_adjusted_score?: number | null;
+          scorecard_id: string;
+          scorecard_slug: string;
+          scorecard_version: number;
+          use_case_id: string;
+          workspace_id?: string | null;
+        };
+        Update: {
+          completeness?: number | null;
+          composite_score?: number | null;
+          confidence?: string | null;
+          created_at?: string;
+          created_by?: string;
+          dimensions?: Json;
+          explanation?: Json;
+          id?: string;
+          note?: string | null;
+          organization_id?: string | null;
+          recommendation?: string | null;
+          responses?: Json;
+          risk_adjusted_score?: number | null;
+          scorecard_id?: string;
+          scorecard_slug?: string;
+          scorecard_version?: number;
+          use_case_id?: string;
+          workspace_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "scorecard_results_scorecard_id_fkey";
+            columns: ["scorecard_id"];
+            isOneToOne: false;
+            referencedRelation: "scorecards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "scorecard_results_use_case_id_fkey";
+            columns: ["use_case_id"];
+            isOneToOne: false;
+            referencedRelation: "ai_use_cases";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      scorecards: {
+        Row: {
+          created_at: string;
+          created_by: string | null;
+          definition: Json;
+          description: string | null;
+          id: string;
+          is_default: boolean;
+          name: string;
+          organization_id: string | null;
+          slug: string;
+          status: string;
+          updated_at: string;
+          version: number;
+          workspace_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string | null;
+          definition?: Json;
+          description?: string | null;
+          id?: string;
+          is_default?: boolean;
+          name: string;
+          organization_id?: string | null;
+          slug: string;
+          status?: string;
+          updated_at?: string;
+          version?: number;
+          workspace_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string | null;
+          definition?: Json;
+          description?: string | null;
+          id?: string;
+          is_default?: boolean;
+          name?: string;
+          organization_id?: string | null;
+          slug?: string;
+          status?: string;
+          updated_at?: string;
+          version?: number;
+          workspace_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "scorecards_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "scorecards_workspace_id_fkey";
+            columns: ["workspace_id"];
+            isOneToOne: false;
+            referencedRelation: "workspaces";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       shortlists: {
         Row: {
           added_at: string;
