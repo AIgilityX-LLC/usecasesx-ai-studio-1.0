@@ -160,8 +160,12 @@ export function UseCaseScorecard({ id }: { id: string }) {
     setSuggesting(true);
     try {
       const res = await suggestEvidence({ data: { id, criterionIds: targets } });
+      if (!res.ok) {
+        toast.error(res.error);
+        return;
+      }
       const next: Record<string, EvidenceSuggestion> = {};
-      for (const item of res.output.items) {
+      for (const item of res.data.items) {
         next[item.criterionId] = {
           evidenceToGather: item.evidenceToGather,
           draftJustification: item.draftJustification,
@@ -169,7 +173,7 @@ export function UseCaseScorecard({ id }: { id: string }) {
         };
       }
       setSuggestions(next);
-      setOpenQuestions(res.output.openQuestions ?? []);
+      setOpenQuestions(res.data.openQuestions ?? []);
       setShowMissing(true);
       toast.success("Evidence suggestions ready. Review before you answer.");
     } catch (error) {
