@@ -51,9 +51,7 @@ export const recordScoreFn = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const { resolveScorecard, insertResult, useCaseTenancy } = await import(
-      "@/lib/scoring.server"
-    );
+    const { resolveScorecard, insertResult, useCaseTenancy } = await import("@/lib/scoring.server");
     const { calculateScore, pruneResponses } = await import("@/lib/scoring/model");
     const { writeAuditEvent, writeProductEvent } = await import("@/lib/telemetry/recorder.server");
     const { AUDIT_EVENTS, PRODUCT_EVENTS } = await import("@/lib/telemetry/events");

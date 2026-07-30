@@ -175,10 +175,7 @@ export function bandFor(
  * zero, so a partially completed scorecard is not silently punished — instead
  * it is flagged through `completeness`, `confidence` and `missing`.
  */
-export function calculateScore(
-  definition: ScorecardDefinition,
-  responses: Responses,
-): ScoreResult {
+export function calculateScore(definition: ScorecardDefinition, responses: Responses): ScoreResult {
   const calculation: string[] = [];
   const missing: ScoreResult["missing"] = [];
 
@@ -289,9 +286,7 @@ export function calculateScore(
     composite === null
       ? null
       : riskDim
-        ? round1(
-            composite * (1 - definition.riskWeighting * (1 - (riskDim.score as number) / 100)),
-          )
+        ? round1(composite * (1 - definition.riskWeighting * (1 - (riskDim.score as number) / 100)))
         : composite;
 
   const recommendation = bandFor(definition, riskAdjusted);
@@ -389,10 +384,7 @@ export const scorecardDefinitionSchema = z.object({
 export const responsesSchema = z.record(z.string(), z.number().int().min(0).max(10));
 
 /** Guard against responses that reference criteria the definition does not have. */
-export function pruneResponses(
-  definition: ScorecardDefinition,
-  responses: Responses,
-): Responses {
+export function pruneResponses(definition: ScorecardDefinition, responses: Responses): Responses {
   const known = new Set(definition.dimensions.flatMap((d) => d.criteria.map((c) => c.id)));
   return Object.fromEntries(Object.entries(responses).filter(([k]) => known.has(k)));
 }

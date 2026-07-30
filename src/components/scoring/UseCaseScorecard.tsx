@@ -91,9 +91,7 @@ export function UseCaseScorecard({ id }: { id: string }) {
         data: { id, responses: current, note: note.trim() || undefined },
       });
       toast.success(
-        res.result.incomplete
-          ? "Score recorded and flagged as incomplete."
-          : "Score recorded.",
+        res.result.incomplete ? "Score recorded and flagged as incomplete." : "Score recorded.",
       );
       setNote("");
       setResponses(null);
@@ -162,7 +160,9 @@ export function UseCaseScorecard({ id }: { id: string }) {
                       {crit.help && <p className="text-xs text-muted-foreground">{crit.help}</p>}
                       <RadioGroup
                         value={
-                          typeof current[crit.id] === "number" ? String(current[crit.id]) : undefined
+                          typeof current[crit.id] === "number"
+                            ? String(current[crit.id])
+                            : undefined
                         }
                         onValueChange={(v) => setAnswer(crit.id, Number(v))}
                         className="grid gap-1.5 sm:grid-cols-2 xl:grid-cols-3"

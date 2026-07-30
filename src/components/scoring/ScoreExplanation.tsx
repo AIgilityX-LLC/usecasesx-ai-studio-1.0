@@ -71,9 +71,7 @@ export function ScoreExplanation({ result }: { result: ScoreResult }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        {band && (
-          <StatusChip tone={BAND_TONE[band.tone] ?? "neutral"}>{band.label}</StatusChip>
-        )}
+        {band && <StatusChip tone={BAND_TONE[band.tone] ?? "neutral"}>{band.label}</StatusChip>}
         <StatusChip tone={CONFIDENCE_TONE[result.confidence] ?? "neutral"}>
           {result.confidence} confidence
         </StatusChip>
