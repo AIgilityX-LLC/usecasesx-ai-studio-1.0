@@ -237,3 +237,27 @@ main#main-content > article > section:nth-of-type(even) {
   background-image: none !important;
   color: var(--navy-950);
 }
+
+/* ---- Print-friendly repository detail -------------------------------- */
+@media print {
+  .no-print,
+  header nav[aria-label="Breadcrumb"] ~ .no-print {
+    display: none !important;
+  }
+  main#main-content > section:nth-of-type(even),
+  main#main-content > article > section:nth-of-type(even),
+  main#main-content > section:nth-of-type(odd),
+  main#main-content > article > section:nth-of-type(odd) {
+    background: #fff !important;
+    color: #111 !important;
+  }
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.7em;
+    word-break: break-all;
+  }
+  section,
+  article {
+    break-inside: avoid-page;
+  }
+}
