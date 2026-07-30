@@ -10,6 +10,7 @@ import {
 } from "@/hooks/usecasex-dashboard";
 import { Can } from "@/components/Can";
 import { OnboardingChecklist } from "@/components/OnboardingChecklist";
+import { JourneyPanel } from "@/components/dashboard/JourneyPanel";
 
 interface Props {
   profile?: {
@@ -56,6 +57,8 @@ export function ProDashboard({ profile }: Props) {
 
   return (
     <div className="space-y-10">
+      <JourneyPanel />
+
       <OnboardingChecklist
         savedCount={saved.length}
         scoredCount={scores.length}
@@ -137,21 +140,30 @@ export function ProDashboard({ profile }: Props) {
           <p className="mt-1 text-sm text-muted-foreground">
             Themed groupings of your saved use cases.
           </p>
-          <ul className="mt-4 divide-y divide-border">
-            {portfolios.map((p) => (
-              <li key={p.id} className="flex items-center justify-between py-3">
-                <div>
-                  <div className="text-sm font-semibold text-foreground">{p.name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {p.objective} · {p.useCaseIds.length} use cases
+          {portfolios.length === 0 ? (
+            <p className="mt-4 text-sm text-muted-foreground">
+              No portfolios yet. Group scored use cases into a board to build an investment view.
+            </p>
+          ) : (
+            <ul className="mt-4 divide-y divide-border">
+              {portfolios.map((p) => (
+                <li key={p.id} className="flex items-center justify-between py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-foreground">{p.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {p.objective} · {p.useCaseIds.length} use cases
+                    </div>
                   </div>
-                </div>
-                <button className="rounded-md border border-border px-2.5 py-1.5 text-xs font-semibold hover:bg-secondary">
-                  Open
-                </button>
-              </li>
-            ))}
-          </ul>
+                  <Link
+                    to="/boards"
+                    className="rounded-md border border-border px-2.5 py-1.5 text-xs font-semibold hover:bg-secondary"
+                  >
+                    Open
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="rounded-2xl border border-border bg-card p-6">
@@ -231,58 +243,70 @@ export function ProDashboard({ profile }: Props) {
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold text-foreground">Reports</h2>
             <Can action="dashboard.export">
-              <button className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:brightness-110">
+              <Link
+                to="/reports"
+                className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:brightness-110"
+              >
                 Generate new report
-              </button>
+              </Link>
             </Can>
           </div>
-          <ul className="mt-4 divide-y divide-border">
-            {reports.map((r) => (
-              <li key={r.id} className="flex items-center justify-between py-3">
-                <div>
-                  <div className="text-sm font-semibold text-foreground">{r.title}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {r.kind} · {new Date(r.createdAt).toLocaleDateString()} · {r.useCaseCount} cases
+          {reports.length === 0 ? (
+            <p className="mt-4 text-sm text-muted-foreground">
+              No reports yet. Once you have scored use cases, generate a board-ready export.
+            </p>
+          ) : (
+            <ul className="mt-4 divide-y divide-border">
+              {reports.map((r) => (
+                <li key={r.id} className="flex items-center justify-between py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-foreground">{r.title}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {r.kind} · {new Date(r.createdAt).toLocaleDateString()} · {r.useCaseCount}{" "}
+                      cases
+                    </div>
                   </div>
-                </div>
-                <Can
-                  action="dashboard.export"
-                  fallback={
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                      Sign in to download
-                    </span>
-                  }
-                >
-                  <button className="rounded-md border border-border px-2.5 py-1.5 text-xs font-semibold hover:bg-secondary">
-                    Download
-                  </button>
-                </Can>
-              </li>
-            ))}
-          </ul>
+                  <Can
+                    action="dashboard.export"
+                    fallback={
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                        Sign in to download
+                      </span>
+                    }
+                  >
+                    <Link
+                      to="/reports"
+                      className="rounded-md border border-border px-2.5 py-1.5 text-xs font-semibold hover:bg-secondary"
+                    >
+                      Open
+                    </Link>
+                  </Can>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="rounded-2xl border border-border bg-card p-6">
           <h2 className="text-lg font-bold text-foreground">AIgilityX Ecosystem</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Trigger the next platform in your journey.
+            Continue in a connected module. Only modules that are live today are listed.
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {[
-              { t: "SARPI", d: "Track maturity & performance" },
-              { t: "CyberX", d: "Govern AI risks" },
-              { t: "AdvisorX", d: "Strategic decisions" },
-              { t: "FlowX", d: "Execute workflows" },
-              { t: "PrivacyX", d: "Data protection review" },
-              { t: "AssureX", d: "Validate trust & assurance" },
+              { t: "SARPI", d: "Track maturity & readiness", to: "/sarpi" as const },
+              { t: "CyberX C3G", d: "Govern AI risks", to: "/governance" as const },
+              { t: "AdvisorX", d: "Strategic decisions", to: "/advisorx" as const },
+              { t: "Blueprint", d: "Delivery-ready design", to: "/blueprint" as const },
             ].map((p) => (
-              <button
+              <Link
                 key={p.t}
+                to={p.to}
                 className="rounded-xl border border-border bg-background p-3 text-left hover:bg-secondary"
               >
                 <div className="text-sm font-semibold text-foreground">{p.t}</div>
                 <div className="text-xs text-muted-foreground">{p.d}</div>
-              </button>
+              </Link>
             ))}
           </div>
         </div>
@@ -500,18 +524,10 @@ function buildNextActions({
   }
   if (readinessNeeded.length > 0) {
     out.push({
-      label: "Send to SARPI / AI Readiness",
+      label: "Assess readiness in SARPI",
       reason: "Maturity is unclear for some cases.",
       icon: "◉",
-      to: "/repository",
-    });
-  }
-  if (saved.some((u) => /agentic/i.test(u.aiType))) {
-    out.push({
-      label: "Design a FlowX Workflow",
-      reason: "You have Agentic AI use cases.",
-      icon: "⚙",
-      to: "/repository",
+      to: "/sarpi",
     });
   }
   if (saved.some((u) => /decision|strategy/i.test(u.objective))) {
@@ -519,7 +535,7 @@ function buildNextActions({
       label: "Ask AdvisorX",
       reason: "Strategic decisions detected in your portfolio.",
       icon: "?",
-      to: "/repository",
+      to: "/advisorx",
     });
   }
   return out;

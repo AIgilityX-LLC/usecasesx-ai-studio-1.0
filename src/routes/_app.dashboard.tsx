@@ -56,6 +56,33 @@ function DashboardPage() {
     };
   }, [session, navigate]);
 
+  // Signed-out visitors are redirected, but never left on a blank screen while
+  // that navigation resolves.
+  if (session === null) {
+    return (
+      <div className="mx-auto max-w-2xl space-y-4 px-6 py-20 text-center">
+        <h1 className="text-2xl font-bold text-foreground">Sign in to open your dashboard</h1>
+        <p className="text-sm text-muted-foreground">
+          Your shortlist, opportunities, drafts and scores live in your own workspace.
+        </p>
+        <div className="flex flex-wrap justify-center gap-3">
+          <Link
+            to="/auth"
+            className="rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110"
+          >
+            Sign in
+          </Link>
+          <Link
+            to="/repository"
+            className="rounded-xl border border-border px-4 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
+          >
+            Browse the repository
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="mx-auto max-w-4xl px-6 py-16 text-sm text-muted-foreground">
