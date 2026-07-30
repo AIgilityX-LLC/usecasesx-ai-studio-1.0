@@ -229,10 +229,13 @@ export type Database = {
           ai_type: string | null
           beneficiaries: string | null
           board_id: string
+          completed_at: string | null
+          contributors: Json
           controls: Json | null
           created_at: string
           created_by: string
           current_state: string | null
+          current_step: string | null
           data_sources: Json | null
           expected_benefits: Json | null
           future_state: string | null
@@ -241,6 +244,7 @@ export type Database = {
           minimum_viable_prediction: string | null
           mvp_scope: string | null
           organization_id: string | null
+          owner_user_id: string | null
           pattern_id: string | null
           position: number
           priority_score: number | null
@@ -253,16 +257,22 @@ export type Database = {
           status: string
           title: string
           updated_at: string
+          version: number
+          visibility: string
+          wizard_state: Json
           workspace_id: string | null
         }
         Insert: {
           ai_type?: string | null
           beneficiaries?: string | null
           board_id: string
+          completed_at?: string | null
+          contributors?: Json
           controls?: Json | null
           created_at?: string
           created_by: string
           current_state?: string | null
+          current_step?: string | null
           data_sources?: Json | null
           expected_benefits?: Json | null
           future_state?: string | null
@@ -271,6 +281,7 @@ export type Database = {
           minimum_viable_prediction?: string | null
           mvp_scope?: string | null
           organization_id?: string | null
+          owner_user_id?: string | null
           pattern_id?: string | null
           position?: number
           priority_score?: number | null
@@ -283,16 +294,22 @@ export type Database = {
           status?: string
           title: string
           updated_at?: string
+          version?: number
+          visibility?: string
+          wizard_state?: Json
           workspace_id?: string | null
         }
         Update: {
           ai_type?: string | null
           beneficiaries?: string | null
           board_id?: string
+          completed_at?: string | null
+          contributors?: Json
           controls?: Json | null
           created_at?: string
           created_by?: string
           current_state?: string | null
+          current_step?: string | null
           data_sources?: Json | null
           expected_benefits?: Json | null
           future_state?: string | null
@@ -301,6 +318,7 @@ export type Database = {
           minimum_viable_prediction?: string | null
           mvp_scope?: string | null
           organization_id?: string | null
+          owner_user_id?: string | null
           pattern_id?: string | null
           position?: number
           priority_score?: number | null
@@ -313,6 +331,9 @@ export type Database = {
           status?: string
           title?: string
           updated_at?: string
+          version?: number
+          visibility?: string
+          wizard_state?: Json
           workspace_id?: string | null
         }
         Relationships: [
@@ -2786,6 +2807,50 @@ export type Database = {
           workspace_id?: string | null
         }
         Relationships: []
+      }
+      use_case_versions: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          note: string | null
+          organization_id: string | null
+          snapshot: Json
+          use_case_id: string
+          version: number
+          workspace_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          note?: string | null
+          organization_id?: string | null
+          snapshot?: Json
+          use_case_id: string
+          version: number
+          workspace_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          note?: string | null
+          organization_id?: string | null
+          snapshot?: Json
+          use_case_id?: string
+          version?: number
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "use_case_versions_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "ai_use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       use_case_views: {
         Row: {
