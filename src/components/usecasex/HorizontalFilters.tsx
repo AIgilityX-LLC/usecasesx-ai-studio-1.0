@@ -100,9 +100,13 @@ export function HorizontalFilters({ tax, value, onChange, onClear, activeCount }
       label: "Security",
       options: LEVEL(["Public", "Official", "Confidential", "Secret", "Top Secret"]),
     },
+    ...(tax.processes && tax.processes.length
+      ? [{ key: "processes" as const, label: "Business Process", options: tax.processes }]
+      : []),
     ...(tax.tags && tax.tags.length
       ? [{ key: "tags" as const, label: "Tags", options: tax.tags }]
       : []),
+
   ];
 
   const keyFacets = facets.filter((f) => KEY_FACETS.has(f.key));
