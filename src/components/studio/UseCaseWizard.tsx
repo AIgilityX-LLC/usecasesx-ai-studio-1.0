@@ -215,15 +215,21 @@ export function UseCaseWizard({ id }: { id: string }) {
     }
   }
 
+  /** What the draft would contain if this suggestion were accepted. */
+  function proposedFor(s: Suggestion): FieldValue {
+    const field = step.fields.find((f) => f.key === s.key);
+    if (field?.kind === "list") {
+      const existing = Array.isArray(stepValues[s.key]) ? (stepValues[s.key] as string[]) : [];
+      return Array.from(new Set([...existing, ...s.values]));
+    }
+    return s.values.join("\n");
+  }
+
   function acceptSuggestion(s: Suggestion) {
     const field = step.fields.find((f) => f.key === s.key);
     if (!field) return;
-    if (field.kind === "list") {
-      const existing = Array.isArray(stepValues[s.key]) ? (stepValues[s.key] as string[]) : [];
-      setValue(s.key, Array.from(new Set([...existing, ...s.values])));
-    } else {
-      setValue(s.key, s.values.join("\n"));
-    }
+    setValue(s.key, proposedFor(s));
+
     setSuggestions((prev) => (prev ?? []).filter((x) => x.key !== s.key));
     toast.success("Added to your draft. Edit it freely — it is yours now.");
   }
