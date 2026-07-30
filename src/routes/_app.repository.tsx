@@ -2,13 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState, useEffect } from "react";
 import { z } from "zod";
-import { listUseCases, listTaxonomies } from "@/lib/use-cases.functions";
+import { listUseCases, listTaxonomies, listRepositoryFacets } from "@/lib/use-cases.functions";
 import { type FacetState } from "@/components/UseCaseFilters";
 import { HorizontalFilters } from "@/components/usecasex/HorizontalFilters";
+import { CuratedCollections } from "@/components/usecasex/CuratedCollections";
 import { PageHero } from "@/components/usecasex/PageHero";
 import { UseCaseCard } from "@/components/UseCaseCard";
 import { EmptyState } from "@/components/EmptyState";
+import { ErrorState } from "@/components/ui-kit/ErrorState";
 import { CardSkeleton } from "@/components/LoadingSkeleton";
+
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { PresetBar } from "@/components/usecasex/PresetBar";
 import { CompareTray } from "@/components/usecasex/CompareTray";
