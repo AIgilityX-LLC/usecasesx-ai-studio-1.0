@@ -257,6 +257,51 @@ function Page() {
     return arr;
   }, [derivedFiltered, sort, governanceFirst]);
 
+  // ---- Result counts, progressive loading, conversion helpers ----
+  const page = Math.min(Math.max(search.page ?? 1, 1), MAX_PAGES);
+  const total = data?.total ?? 0;
+  const derivedActive = !!(
+    search.segments?.length ||
+    search.sectors?.length ||
+    search.priority?.length ||
+    search.roiRange?.length
+  );
+  const reachedPageCap = page >= MAX_PAGES && (data?.hasMore ?? false);
+  const canLoadMore = !derivedActive && (data?.hasMore ?? false) && page < MAX_PAGES;
+
+  const loadMore = () => {
+    update({ page: page + 1 });
+    track("results_load_more", { page: page + 1, total });
+    void trackModuleEvent("repository", "click", { interaction: "load_more", page: page + 1 });
+  };
+
+  const trackConversion = (intent: string) => {
+    track("conversion_intent", { intent, q: search.q, filters: activeCountRef.current, total });
+    void trackModuleEvent("repository", "click", { interaction: "conversion_intent", intent });
+  };
+
+  const copyViewLink = () => {
+    if (typeof window === "undefined") return;
+    void navigator.clipboard
+      .writeText(window.location.href)
+      .then(() => toast.success("Link to this view copied."))
+      .catch(() => toast.error("Could not copy the link."));
+    trackConversion("copy_view_link");
+  };
+
+  const selectCollection = (key: string, slug: string, name: string) => {
+    update({ [key]: [slug], page: undefined } as Partial<Search>);
+    track("collection_selected", { facet: key, value: slug });
+    void trackModuleEvent("repository", "click", {
+      interaction: "collection_selected",
+      facet: key,
+      value: slug,
+      name,
+    });
+  };
+
+
+
   type ChipKey = keyof FacetState;
   const chips: { key: ChipKey; value: string; label: string }[] = [];
   const facetKeys: ChipKey[] = [
