@@ -76,6 +76,7 @@ const FACET_LABELS: Record<string, string> = {
   capabilities: "AI Pattern",
   businessFunctions: "Business Function",
   objectives: "Objective",
+  processes: "Business Process",
   maturity: "Maturity",
   valuePotential: "Value",
   complexity: "Complexity",
@@ -461,7 +462,8 @@ function Page() {
   };
 
   const handleFilterChange = (patch: Partial<Search>) => {
-    update(patch);
+    // Any facet change restarts progressive loading at page 1.
+    update({ ...patch, page: undefined });
     Object.entries(patch).forEach(([facet, value]) => track("filter_used", { facet, value }));
     Object.keys(patch).forEach(
       (facet) =>
@@ -471,7 +473,7 @@ function Page() {
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    update({ q: q || undefined });
+    update({ q: q || undefined, page: undefined });
     if (q) track("search_used", { q });
     if (q) void trackModuleEvent("repository", "click", { interaction: "search" });
   };
