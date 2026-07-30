@@ -79,3 +79,19 @@ export async function listVersions(supabase: SupabaseClient<any, any, any>, useC
   if (error) throw new Error(error.message);
   return data ?? [];
 }
+
+/** Read one immutable version snapshot for a use case. */
+export async function loadVersionSnapshot(
+  supabase: SupabaseClient<any, any, any>,
+  useCaseId: string,
+  version: number,
+) {
+  const { data, error } = await supabase
+    .from("use_case_versions")
+    .select("id, version, note, created_at, created_by, snapshot")
+    .eq("use_case_id", useCaseId)
+    .eq("version", version)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return data ?? null;
+}

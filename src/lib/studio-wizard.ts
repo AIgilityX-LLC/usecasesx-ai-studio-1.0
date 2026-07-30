@@ -377,3 +377,66 @@ export const ASSISTABLE_STEPS: Record<string, string[]> = {
 export function isAssistable(stepId: string): boolean {
   return stepId in ASSISTABLE_STEPS;
 }
+
+/* ------------------------------------------------------------------ diffs */
+
+export type ValueChange = {
+  kind: "added" | "removed" | "unchanged";
+  value: string;
+};
+
+/**
+ * Line/entry-level diff between two field values. Text values are compared
+ * line by line so an accepted AI suggestion reads as an explicit change set.
+ */
+export function diffFieldValue(
+  before: FieldValue | undefined,
+  after: FieldValue | undefined,
+): ValueChange[] {
+  const toLines = (v: FieldValue | undefined): string[] =>
+    Array.isArray(v)
+      ? v.map((s) => s.trim()).filter(Boolean)
+      : typeof v === "string"
+        ? v
+            .split("\n")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [];
+
+  const a = toLines(before);
+  const b = toLines(after);
+  const out: ValueChange[] = [];
+  for (const line of a) out.push({ kind: b.includes(line) ? "unchanged" : "removed", value: line });
+  for (const line of b) if (!a.includes(line)) out.push({ kind: "added", value: line });
+  return out;
+}
+
+export type StateFieldDiff = {
+  stepId: string;
+  stepTitle: string;
+  key: string;
+  label: string;
+  changes: ValueChange[];
+};
+
+/** Field-level diff across the whole wizard state, skipping untouched fields. */
+export function diffWizardState(before: WizardState, after: WizardState): StateFieldDiff[] {
+  const out: StateFieldDiff[] = [];
+  for (const step of WIZARD_STEPS) {
+    const a = valuesFor(before, step.id);
+    const b = valuesFor(after, step.id);
+    for (const field of step.fields) {
+      const changes = diffFieldValue(a[field.key], b[field.key]);
+      if (changes.some((c) => c.kind !== "unchanged")) {
+        out.push({
+          stepId: step.id,
+          stepTitle: step.title,
+          key: field.key,
+          label: field.label,
+          changes,
+        });
+      }
+    }
+  }
+  return out;
+}
