@@ -39,7 +39,9 @@ import {
   STEP_IDS,
   VISIBILITY_LABELS,
   USE_CASE_VISIBILITIES,
+  diffFieldValue,
   isAssistable,
+
   isStepComplete,
   progressOf,
   validateAll,
