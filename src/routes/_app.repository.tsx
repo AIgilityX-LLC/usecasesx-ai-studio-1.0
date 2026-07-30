@@ -508,7 +508,17 @@ function Page() {
               </div>
             )}
 
-            {isLoading ? (
+            {!hasAnyRefinement && facets.data && (
+              <CuratedCollections facets={facets.data} onSelect={selectCollection} />
+            )}
+
+            {isError ? (
+              <ErrorState
+                title="We could not load the repository."
+                description="The use case library is temporarily unavailable. Your filters have been kept — try again."
+                onRetry={() => void refetch()}
+              />
+            ) : isLoading ? (
               <CardSkeleton count={6} />
             ) : sorted.length === 0 && (activeCount > 0 || (search.q ?? "").trim()) ? (
               <EmptyState
@@ -567,21 +577,80 @@ function Page() {
                 }
               />
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {sorted.map((c) => {
-                  const cd = c as UseCaseCardData;
-                  const locked = isLite && cd.visibility === "pro";
-                  return (
-                    <UseCaseCard
-                      key={cd.id}
-                      c={cd}
-                      onAddToBoard={handleAddToBoard}
-                      locked={locked}
-                    />
-                  );
-                })}
-              </div>
+              <>
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {sorted.map((c) => {
+                    const cd = c as UseCaseCardData;
+                    const locked = isLite && cd.visibility === "pro";
+                    return (
+                      <UseCaseCard
+                        key={cd.id}
+                        c={cd}
+                        onAddToBoard={handleAddToBoard}
+                        locked={locked}
+                      />
+                    );
+                  })}
+                </div>
+
+                <div className="mt-8 flex flex-col items-center gap-3">
+                  {canLoadMore ? (
+                    <>
+                      <button
+                        onClick={loadMore}
+                        disabled={isFetching}
+                        className="rounded-md border border-primary/40 bg-primary/10 px-6 py-2.5 text-sm font-bold text-primary transition-colors hover:bg-primary/20 disabled:opacity-60"
+                      >
+                        {isFetching ? "Loading…" : "Load more use cases"}
+                      </button>
+                      <p className="text-xs text-muted-foreground">
+                        Showing {sorted.length} of {total}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      {reachedPageCap
+                        ? `Showing the first ${sorted.length} of ${total} — refine your filters to narrow the set.`
+                        : `Showing all ${sorted.length} matching use case${sorted.length === 1 ? "" : "s"}.`}
+                    </p>
+                  )}
+                </div>
+
+                {/* Context-preserving conversion band */}
+                <div className="mt-10 rounded-2xl border border-border bg-card p-6">
+                  <h2 className="text-base font-bold text-foreground">
+                    Turn this shortlist into a decision
+                  </h2>
+                  <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+                    Take the {sorted.length} use case{sorted.length === 1 ? "" : "s"} in this view
+                    into the AI Use Case Studio to capture your own opportunity, score it and build
+                    a portfolio.
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <Link
+                      to="/ai-use-case-studio"
+                      onClick={() => trackConversion("open_studio")}
+                      className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110"
+                    >
+                      Capture an opportunity in Studio
+                    </Link>
+                    <button
+                      onClick={copyViewLink}
+                      className="rounded-md border border-border bg-background px-5 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
+                    >
+                      Copy link to this view
+                    </button>
+                    <button
+                      onClick={openCustomRequest}
+                      className="rounded-md border border-border bg-background px-5 py-2.5 text-sm font-bold text-muted-foreground hover:bg-secondary"
+                    >
+                      Request a custom pack
+                    </button>
+                  </div>
+                </div>
+              </>
             )}
+
           </div>
         </div>
       </div>
