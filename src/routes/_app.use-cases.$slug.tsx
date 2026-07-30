@@ -11,6 +11,8 @@ import { AddToCollectionButton } from "@/components/AddToCollectionButton";
 import { RatingWidget } from "@/components/usecasex/RatingWidget";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { CaseStudy } from "@/components/usecasex/CaseStudy";
+import { DecisionActions } from "@/components/usecasex/DecisionActions";
+import { SourceLineage } from "@/components/usecasex/SourceLineage";
 import { supabase } from "@/integrations/supabase/client";
 import { getUseCase, listUseCases } from "@/lib/use-cases.functions";
 import { CtaTriad } from "@/components/usecasex/CtaTriad";
@@ -117,20 +119,47 @@ async function logIntegrationEvent(input: {
 const detailSearchSchema = z.object({
   dept: fallback(z.string().optional(), undefined),
   func: fallback(z.string().optional(), undefined),
+  /** Action to resume after a sign-in round trip ("save" | "customize"). */
+  intent: fallback(z.string().optional(), undefined),
 });
 
 export const Route = createFileRoute("/_app/use-cases/$slug")({
   validateSearch: zodValidator(detailSearchSchema),
-  head: ({ params }) => ({
-    meta: [
-      { title: `${params.slug} — UseCasesX™` },
-      {
-        name: "description",
-        content:
-          "AI use case detail — business problem, AI solution, value, data, KPIs, ROI, implementation, governance, cyber, and privacy.",
-      },
-    ],
-  }),
+  // Published, publicly readable data only — no workspace or account data is
+  // ever exposed through the loader or the share/SEO metadata below.
+  loader: async ({ params }) => {
+    try {
+      const row = (await getUseCase({ data: { slug: params.slug } })) as Record<string, unknown>;
+      return {
+        title: (row.title as string) ?? params.slug,
+        summary: (row.summary as string | null) ?? null,
+      };
+    } catch {
+      return null;
+    }
+  },
+  head: ({ params, loaderData }) => {
+    const title = loaderData?.title
+      ? `${loaderData.title} — UseCasesX™`.slice(0, 60)
+      : "AI use case — UseCasesX™";
+    const description = (
+      loaderData?.summary ??
+      "AI use case detail — business problem, AI solution, value, data, KPIs, implementation, governance and risk."
+    ).slice(0, 158);
+    const url = `https://usecasesx.aigilityx.com/use-cases/${params.slug}`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: [{ rel: "canonical", href: url }],
+    };
+  },
   component: UseCaseDetailPage,
   errorComponent: ({ error }) => (
     <MissingDataFallback title="Use case failed to load" reason={error.message} />
@@ -148,7 +177,7 @@ export const Route = createFileRoute("/_app/use-cases/$slug")({
 // ---------- Page ----------
 function UseCaseDetailPage() {
   const { slug } = Route.useParams();
-  const { dept, func } = Route.useSearch();
+  const { dept, func, intent } = Route.useSearch();
   const navigate = useNavigate();
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadCta, setLeadCta] = useState<"lite-pdf" | "ai-strategy-session">("lite-pdf");
@@ -502,7 +531,28 @@ function UseCaseDetailPage() {
                   ))}
                 </div>
               )}
-              <div className="mt-4 flex flex-wrap items-center gap-2">
+              <div className="mt-6">
+                <DecisionActions
+                  useCaseId={c.id}
+                  slug={c.slug}
+                  title={c.title}
+                  summary={c.summary}
+                  pendingIntent={
+                    intent === "save" || intent === "customize"
+                      ? (intent as "save" | "customize")
+                      : undefined
+                  }
+                  onIntentResolved={() =>
+                    navigate({
+                      to: "/use-cases/$slug",
+                      params: { slug: c.slug },
+                      search: { dept, func },
+                      replace: true,
+                    })
+                  }
+                />
+              </div>
+              <div className="no-print mt-4 flex flex-wrap items-center gap-2">
                 <CompareToggle slug={c.slug} />
                 <AddToCollectionButton useCaseId={c.id} />
               </div>
@@ -573,6 +623,15 @@ function UseCaseDetailPage() {
                 </div>
               </Section>
             )}
+
+            <SourceLineage
+              submittedBy={c.submitted_by}
+              organization={c.organization}
+              region={c.region}
+              publishedAt={c.published_at}
+              updatedAt={c.updated_at}
+              links={Array.isArray(c.use_case_links) ? c.use_case_links : []}
+            />
 
             {relatedItems.length > 0 && (
               <Section label="11 · Related Use Cases">
