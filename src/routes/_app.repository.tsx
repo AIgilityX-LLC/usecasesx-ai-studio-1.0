@@ -202,33 +202,18 @@ function Page() {
   const sort = (search.sort as SortKey | undefined) ?? "relevant";
 
   const queryInput = useMemo(
-    () => ({
-      q: search.q ?? "",
-      industries: effectiveIndustries,
-      capabilities: search.capabilities ?? [],
-      businessFunctions: search.businessFunctions ?? [],
-      objectives: search.objectives ?? [],
-      maturity: search.maturity ?? [],
-      valuePotential: search.valuePotential ?? [],
-      complexity: search.complexity ?? [],
-      riskLevel: search.riskLevel ?? [],
-      timeToValue: search.timeToValue ?? [],
-      deploymentModel: search.deploymentModel ?? [],
-      securityClassification: search.securityClassification ?? [],
-      sort: mapSort(sort),
-      limit: 120,
-    }),
-    [search, effectiveIndustries, sort],
+    () => buildListInput({ ...search, industries: effectiveIndustries }),
+    [search, effectiveIndustries],
   );
 
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["use-cases", "explore", queryInput],
-    queryFn: () => listUseCases({ data: queryInput }),
+  const { data, isLoading, isFetching, isError, refetch } = useQuery({
+    ...listQ(queryInput),
     placeholderData: (prev) => prev,
-    staleTime: 60 * 1000,
   });
+  const facets = useQuery(facetsQ);
 
   const cases = data?.cases ?? [];
+
   const derivedFiltered = useMemo(() => {
     const segs = search.segments ?? [];
     const prio = search.priority ?? [];
