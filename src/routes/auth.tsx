@@ -27,10 +27,12 @@ function AuthPage() {
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (session) navigate({ to: "/dashboard", replace: true });
+      // /onboarding forwards straight to /dashboard when setup is already done.
+      if (session) navigate({ to: "/onboarding", replace: true });
     });
     return () => data.subscription.unsubscribe();
   }, [navigate]);
+
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
