@@ -91,7 +91,6 @@ function DashboardPage() {
     );
   }
 
-
   return (
     <>
       <PlatformBanner />
