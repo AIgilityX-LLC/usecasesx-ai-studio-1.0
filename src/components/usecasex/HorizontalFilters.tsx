@@ -12,6 +12,8 @@ interface Props {
     sectors?: { slug: string; name: string }[];
     tags?: { slug: string; name: string }[];
     segments?: { slug: string; name: string }[];
+    processes?: { slug: string; name: string }[];
+
   };
   value: Partial<FacetState>;
   onChange: (patch: Partial<FacetState>) => void;
