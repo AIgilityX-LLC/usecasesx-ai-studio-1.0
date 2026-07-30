@@ -9,7 +9,7 @@
 import { AlertTriangle, Minus } from "lucide-react";
 
 import { StatusChip, type StatusTone } from "@/components/ui-kit";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 export type PriorityScoreValue = {
@@ -77,30 +77,34 @@ export function PriorityScore({
     .join(" · ");
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span className={cn("inline-flex items-center gap-1.5", className)}>
-          <StatusChip tone={bandTone(score.recommendation)}>
-            <span className="tabular-nums font-semibold">{score.riskAdjusted}</span>
-            <span className="opacity-70">/100</span>
-          </StatusChip>
-          {showBand && (
-            <span className="text-xs text-muted-foreground">{bandLabel(score.recommendation)}</span>
-          )}
-          {score.incomplete && (
-            <AlertTriangle
-              className="h-3.5 w-3.5 text-muted-foreground"
-              aria-label="Scored on incomplete input"
-            />
-          )}
-        </span>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p className="max-w-[16rem] text-xs">
-          {detail}
-          {score.incomplete ? ". Recorded below the completeness threshold." : "."}
-        </p>
-      </TooltipContent>
-    </Tooltip>
+    <TooltipProvider delayDuration={150}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className={cn("inline-flex items-center gap-1.5", className)}>
+            <StatusChip tone={bandTone(score.recommendation)}>
+              <span className="tabular-nums font-semibold">{score.riskAdjusted}</span>
+              <span className="opacity-70">/100</span>
+            </StatusChip>
+            {showBand && (
+              <span className="text-xs text-muted-foreground">
+                {bandLabel(score.recommendation)}
+              </span>
+            )}
+            {score.incomplete && (
+              <AlertTriangle
+                className="h-3.5 w-3.5 text-muted-foreground"
+                aria-label="Scored on incomplete input"
+              />
+            )}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="max-w-[16rem] text-xs">
+            {detail}
+            {score.incomplete ? ". Recorded below the completeness threshold." : "."}
+          </p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
