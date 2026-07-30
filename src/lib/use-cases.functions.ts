@@ -15,6 +15,7 @@ const ListInput = z.object({
   capabilities: z.array(z.string()).optional().default([]),
   businessFunctions: z.array(z.string()).optional().default([]),
   objectives: z.array(z.string()).optional().default([]),
+  processes: z.array(z.string()).optional().default([]),
   maturity: z.array(z.string()).optional().default([]),
   valuePotential: z.array(z.string()).optional().default([]),
   complexity: z.array(z.string()).optional().default([]),
@@ -25,7 +26,9 @@ const ListInput = z.object({
   sort: z.enum(["recent", "impact", "maturity", "featured"]).optional().default("recent"),
   featuredOnly: z.boolean().optional().default(false),
   landingOnly: z.boolean().optional().default(false),
+  /** Page size. `limit` is kept as the legacy alias used by existing callers. */
   limit: z.number().int().min(1).max(120).optional().default(60),
+  page: z.number().int().min(1).max(500).optional().default(1),
 });
 
 const SELECT = `id, slug, title, summary, organization, organization_type, region,
@@ -38,19 +41,79 @@ const SELECT = `id, slug, title, summary, organization, organization_type, regio
   use_case_business_functions ( business_functions ( slug, name ) ),
   use_case_business_objectives ( business_objectives ( slug, name ) )` as string;
 
+/** Link tables that map a use case to a taxonomy term, keyed by facet name. */
+const TAXONOMY_JOINS = {
+  industries: { table: "use_case_industries", ref: "industries" },
+  capabilities: { table: "use_case_capabilities", ref: "ai_capabilities" },
+  businessFunctions: { table: "use_case_business_functions", ref: "business_functions" },
+  objectives: { table: "use_case_business_objectives", ref: "business_objectives" },
+  processes: { table: "use_case_processes", ref: "taxonomy_processes" },
+} as const;
+
+type TaxonomyFacet = keyof typeof TAXONOMY_JOINS;
+
+/**
+ * Resolve the set of use-case ids carrying ANY of `slugs` for one facet.
+ * Runs against RLS-protected public link tables, so unpublished or private
+ * rows can never leak into the id set.
+ */
+async function idsForFacet(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  sb: any,
+  facet: TaxonomyFacet,
+  slugs: string[],
+): Promise<string[]> {
+  const join = TAXONOMY_JOINS[facet];
+  const { data, error } = await sb
+    .from(join.table)
+    .select(`use_case_id, ${join.ref}!inner(slug)`)
+    .in(`${join.ref}.slug`, slugs);
+  if (error) throw new Error(error.message);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return Array.from(new Set((data ?? []).map((r: any) => r.use_case_id as string)));
+}
+
 export const listUseCases = createServerFn({ method: "GET" })
   .inputValidator((d) => ListInput.parse(d ?? {}))
   .handler(async ({ data }) => {
     const sb = publicClient();
 
-    let query = sb.from("use_cases").select(SELECT).eq("status", "published");
+    // 1. Intersect taxonomy facets into a concrete id set so counting and
+    //    pagination stay deterministic and happen in the database.
+    const facetSelections: Array<[TaxonomyFacet, string[]]> = (
+      Object.keys(TAXONOMY_JOINS) as TaxonomyFacet[]
+    )
+      .map((facet) => [facet, data[facet] ?? []] as [TaxonomyFacet, string[]])
+      .filter(([, slugs]) => slugs.length > 0);
 
+    let idFilter: string[] | null = null;
+    for (const [facet, slugs] of facetSelections) {
+      const ids = await idsForFacet(sb, facet, slugs);
+      idFilter = idFilter === null ? ids : idFilter.filter((id) => ids.includes(id));
+      if (idFilter.length === 0) break;
+    }
+
+    const pageSize = data.limit;
+    const page = data.page;
+
+    if (idFilter !== null && idFilter.length === 0) {
+      return { cases: [], total: 0, page, pageSize, hasMore: false };
+    }
+
+    let query = sb
+      .from("use_cases")
+      .select(SELECT, { count: "exact" })
+      .eq("status", "published");
+
+    if (idFilter !== null) query = query.in("id", idFilter);
     if (data.featuredOnly) query = query.eq("is_featured", true);
     if (data.landingOnly) query = query.eq("show_on_landing", true);
     if (data.q.trim()) {
-      const term = `%${data.q.trim()}%`;
+      // Escape PostgREST `or()` delimiters so a stray comma or parenthesis in a
+      // user query cannot alter the filter expression.
+      const term = `%${data.q.trim().replace(/[(),*]/g, " ")}%`;
       query = query.or(
-        `title.ilike.${term},summary.ilike.${term},organization.ilike.${term},business_problem.ilike.${term},deployment_model.ilike.${term},security_classification.ilike.${term}`,
+        `title.ilike.${term},summary.ilike.${term},organization.ilike.${term},business_problem.ilike.${term},ai_solution_concept.ilike.${term},deployment_model.ilike.${term},security_classification.ilike.${term}`,
       );
     }
     if (data.maturity.length)
@@ -72,37 +135,61 @@ export const listUseCases = createServerFn({ method: "GET" })
       query = query.order("maturity_score", { ascending: false, nullsFirst: false });
     else if (data.sort === "featured") query = query.order("display_order", { ascending: true });
     else query = query.order("published_at", { ascending: false, nullsFirst: false });
+    // Stable tiebreaker keeps pagination deterministic across requests.
     query = query.order("id", { ascending: true });
 
-    const { data: rows, error } = await query.limit(data.limit);
+    const from = (page - 1) * pageSize;
+    const { data: rows, error, count } = await query.range(from, from + pageSize - 1);
     if (error) throw new Error(error.message);
 
-    const filtered = (rows ?? []).filter((row) => {
+    const total = count ?? (rows ?? []).length;
+    return {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const r = row as any;
-      const inds: string[] =
-        r.use_case_industries?.map((x: any) => x.industries?.slug).filter(Boolean) ?? [];
-      const caps: string[] =
-        r.use_case_capabilities?.map((x: any) => x.ai_capabilities?.slug).filter(Boolean) ?? [];
-      const bfns: string[] =
-        r.use_case_business_functions
-          ?.map((x: any) => x.business_functions?.slug)
-          .filter(Boolean) ?? [];
-      const objs: string[] =
-        r.use_case_business_objectives
-          ?.map((x: any) => x.business_objectives?.slug)
-          .filter(Boolean) ?? [];
-      if (data.industries.length && !data.industries.some((s) => inds.includes(s))) return false;
-      if (data.capabilities.length && !data.capabilities.some((s) => caps.includes(s)))
-        return false;
-      if (data.businessFunctions.length && !data.businessFunctions.some((s) => bfns.includes(s)))
-        return false;
-      if (data.objectives.length && !data.objectives.some((s) => objs.includes(s))) return false;
-      return true;
-    });
-
-    return { cases: filtered as Array<Record<string, any>>, total: filtered.length };
+      cases: (rows ?? []) as Array<Record<string, any>>,
+      total,
+      page,
+      pageSize,
+      hasMore: from + (rows ?? []).length < total,
+    };
   });
+
+/**
+ * Facet options that actually exist on published public content, with real
+ * counts. Used to build curated collections and to hide facets that would
+ * always return zero results.
+ */
+export const listRepositoryFacets = createServerFn({ method: "GET" }).handler(async () => {
+  const sb = publicClient();
+
+  async function countsFor(facet: TaxonomyFacet) {
+    const join = TAXONOMY_JOINS[facet];
+    const { data, error } = await sb
+      .from(join.table)
+      .select(`use_case_id, ${join.ref}!inner(slug, name)`);
+    if (error) throw new Error(error.message);
+    const bySlug = new Map<string, { slug: string; name: string; count: number }>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    for (const row of (data ?? []) as any[]) {
+      const ref = row[join.ref];
+      if (!ref?.slug) continue;
+      const entry = bySlug.get(ref.slug) ?? { slug: ref.slug, name: ref.name ?? ref.slug, count: 0 };
+      entry.count += 1;
+      bySlug.set(ref.slug, entry);
+    }
+    return Array.from(bySlug.values()).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+  }
+
+  const [industries, capabilities, businessFunctions, objectives, processes] = await Promise.all([
+    countsFor("industries"),
+    countsFor("capabilities"),
+    countsFor("businessFunctions"),
+    countsFor("objectives"),
+    countsFor("processes"),
+  ]);
+
+  return { industries, capabilities, businessFunctions, objectives, processes };
+});
+
 
 export const getUseCase = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ slug: z.string().min(1).max(200) }).parse(d))
