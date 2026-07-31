@@ -264,7 +264,22 @@ export function OpportunityForm({
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="space-y-6">
+        {signedOut ? (
+          <div
+            role="status"
+            className="flex flex-col gap-3 rounded-lg border border-primary/30 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <p className="text-sm text-muted-foreground">
+              You are not signed in. Capture the problem now — your draft stays on this device, and
+              signing in saves it to your workspace.
+            </p>
+            <Button asChild size="sm" className="shrink-0">
+              <a href={signInHref("/opportunities/new")}>Sign in to save</a>
+            </Button>
+          </div>
+        ) : null}
         {/* Essentials — the only required framing */}
+
         <Card>
           <CardHeader>
             <CardTitle className="text-base">The business problem</CardTitle>
@@ -545,10 +560,13 @@ export function OpportunityForm({
           <span className="text-xs text-muted-foreground" aria-live="polite">
             {saving
               ? "Saving…"
-              : lastSavedAt
-                ? `Autosaved at ${lastSavedAt}`
-                : "Autosaves once the problem has a name"}
+              : signedOut
+                ? "Draft kept on this device — sign in to save it to your workspace"
+                : lastSavedAt
+                  ? `Autosaved at ${lastSavedAt}`
+                  : "Autosaves once the problem has a name"}
           </span>
+
         </div>
       </div>
 
