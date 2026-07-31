@@ -43,6 +43,9 @@ import {
   saveOpportunityFn,
 } from "@/lib/opportunities.functions";
 import { enrichOpportunityFn } from "@/lib/ai.functions";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
+import { isUnauthorizedError, signInHref, SIGN_IN_TO_SAVE } from "@/lib/auth-errors";
+
 
 type SavedRow = { id: string; title: string; status: string };
 
