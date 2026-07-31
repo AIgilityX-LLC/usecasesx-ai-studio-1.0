@@ -68,10 +68,13 @@ export function OpportunityForm({
   onSaved?: (id: string) => void;
 }) {
   const navigate = useNavigate();
+  const session = useSupabaseSession();
+  const signedOut = session === null;
   const save = useServerFn(saveOpportunityFn);
   const findSimilar = useServerFn(findSimilarOpportunitiesFn);
   const enrich = useServerFn(enrichOpportunityFn);
   const recordAssist = useServerFn(recordOpportunityAssistFn);
+
 
   const [draft, setDraft] = useState<OpportunityDraft>(() => initial ?? emptyDraft());
   const [id, setId] = useState<string | null>(opportunityId ?? null);
