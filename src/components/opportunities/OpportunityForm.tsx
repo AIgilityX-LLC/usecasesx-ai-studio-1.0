@@ -130,6 +130,21 @@ export function OpportunityForm({
   const persist = useCallback(
     async (silent: boolean) => {
       if (!canSave) return null;
+      // A signed-out visitor cannot persist: keep the local draft, say so
+      // plainly and offer the way back instead of failing silently.
+      if (signedOut) {
+        if (!silent) {
+          toast.error(SIGN_IN_TO_SAVE, {
+            action: {
+              label: "Sign in",
+              onClick: () => {
+                window.location.href = signInHref("/opportunities/new");
+              },
+            },
+          });
+        }
+        return null;
+      }
       setSaving(true);
       try {
         const row = await save({
@@ -143,24 +158,36 @@ export function OpportunityForm({
         onSaved?.(row.id);
         return row.id;
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Could not save the opportunity.");
+        if (isUnauthorizedError(error)) {
+          toast.error(SIGN_IN_TO_SAVE, {
+            action: {
+              label: "Sign in",
+              onClick: () => {
+                window.location.href = signInHref("/opportunities/new");
+              },
+            },
+          });
+        } else {
+          toast.error(error instanceof Error ? error.message : "Could not save the opportunity.");
+        }
         return null;
       } finally {
         setSaving(false);
       }
     },
-    [canSave, draft, id, onSaved, save, sourceUseCaseId],
+    [canSave, draft, id, onSaved, save, signedOut, sourceUseCaseId],
   );
 
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    if (!dirty || !canSave) return;
+    if (!dirty || !canSave || signedOut) return;
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
     autosaveTimer.current = setTimeout(() => void persist(true), 2500);
     return () => {
       if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
     };
-  }, [draft, dirty, canSave, persist]);
+  }, [draft, dirty, canSave, persist, signedOut]);
+
 
   /* --- non-blocking duplicate hints --------------------------------------- */
   useEffect(() => {
