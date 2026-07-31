@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate, useRouterState, Outlet } from "@tan
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { supabase } from "@/integrations/supabase/client";
 import {
   draftUseCase,
