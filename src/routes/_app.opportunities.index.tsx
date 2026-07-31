@@ -95,12 +95,28 @@ function OpportunitiesPage() {
         </Select>
       </div>
 
-      {query.isLoading ? (
+      {signedOut ? (
+        <EmptyState
+          title="Sign in to see your opportunities"
+          description="Opportunities are private to your workspace. You can still start capturing one now — the draft stays on this device until you sign in."
+          action={
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button asChild>
+                <a href={signInHref("/opportunities")}>Sign in or register</a>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/opportunities/new">Start a draft</Link>
+              </Button>
+            </div>
+          }
+        />
+      ) : query.isLoading || session === undefined ? (
         <div className="grid gap-4 md:grid-cols-2">
           <CardSkeleton />
           <CardSkeleton />
         </div>
       ) : query.isError ? (
+
         <ErrorState
           title="Could not load your opportunities"
           description="Please try again in a moment."
