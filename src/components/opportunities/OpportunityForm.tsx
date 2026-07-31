@@ -43,6 +43,8 @@ import {
   saveOpportunityFn,
 } from "@/lib/opportunities.functions";
 import { enrichOpportunityFn } from "@/lib/ai.functions";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
+import { isUnauthorizedError, signInHref, SIGN_IN_TO_SAVE } from "@/lib/auth-errors";
 
 type SavedRow = { id: string; title: string; status: string };
 
@@ -65,6 +67,8 @@ export function OpportunityForm({
   onSaved?: (id: string) => void;
 }) {
   const navigate = useNavigate();
+  const session = useSupabaseSession();
+  const signedOut = session === null;
   const save = useServerFn(saveOpportunityFn);
   const findSimilar = useServerFn(findSimilarOpportunitiesFn);
   const enrich = useServerFn(enrichOpportunityFn);
@@ -124,6 +128,21 @@ export function OpportunityForm({
   const persist = useCallback(
     async (silent: boolean) => {
       if (!canSave) return null;
+      // A signed-out visitor cannot persist: keep the local draft, say so
+      // plainly and offer the way back instead of failing silently.
+      if (signedOut) {
+        if (!silent) {
+          toast.error(SIGN_IN_TO_SAVE, {
+            action: {
+              label: "Sign in",
+              onClick: () => {
+                window.location.href = signInHref("/opportunities/new");
+              },
+            },
+          });
+        }
+        return null;
+      }
       setSaving(true);
       try {
         const row = await save({
@@ -137,24 +156,35 @@ export function OpportunityForm({
         onSaved?.(row.id);
         return row.id;
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Could not save the opportunity.");
+        if (isUnauthorizedError(error)) {
+          toast.error(SIGN_IN_TO_SAVE, {
+            action: {
+              label: "Sign in",
+              onClick: () => {
+                window.location.href = signInHref("/opportunities/new");
+              },
+            },
+          });
+        } else {
+          toast.error(error instanceof Error ? error.message : "Could not save the opportunity.");
+        }
         return null;
       } finally {
         setSaving(false);
       }
     },
-    [canSave, draft, id, onSaved, save, sourceUseCaseId],
+    [canSave, draft, id, onSaved, save, signedOut, sourceUseCaseId],
   );
 
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    if (!dirty || !canSave) return;
+    if (!dirty || !canSave || signedOut) return;
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
     autosaveTimer.current = setTimeout(() => void persist(true), 2500);
     return () => {
       if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
     };
-  }, [draft, dirty, canSave, persist]);
+  }, [draft, dirty, canSave, persist, signedOut]);
 
   /* --- non-blocking duplicate hints --------------------------------------- */
   useEffect(() => {
@@ -231,7 +261,22 @@ export function OpportunityForm({
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="space-y-6">
+        {signedOut ? (
+          <div
+            role="status"
+            className="flex flex-col gap-3 rounded-lg border border-primary/30 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <p className="text-sm text-muted-foreground">
+              You are not signed in. Capture the problem now — your draft stays on this device, and
+              signing in saves it to your workspace.
+            </p>
+            <Button asChild size="sm" className="shrink-0">
+              <a href={signInHref("/opportunities/new")}>Sign in to save</a>
+            </Button>
+          </div>
+        ) : null}
         {/* Essentials — the only required framing */}
+
         <Card>
           <CardHeader>
             <CardTitle className="text-base">The business problem</CardTitle>
@@ -512,9 +557,11 @@ export function OpportunityForm({
           <span className="text-xs text-muted-foreground" aria-live="polite">
             {saving
               ? "Saving…"
-              : lastSavedAt
-                ? `Autosaved at ${lastSavedAt}`
-                : "Autosaves once the problem has a name"}
+              : signedOut
+                ? "Draft kept on this device — sign in to save it to your workspace"
+                : lastSavedAt
+                  ? `Autosaved at ${lastSavedAt}`
+                  : "Autosaves once the problem has a name"}
           </span>
         </div>
       </div>

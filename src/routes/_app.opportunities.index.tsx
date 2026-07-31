@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
+import { signInHref } from "@/lib/auth-errors";
 import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -40,10 +42,13 @@ export const Route = createFileRoute("/_app/opportunities/")({
 function OpportunitiesPage() {
   const [status, setStatus] = useState<OpportunityStatus | "all">("all");
   const [search, setSearch] = useState("");
+  const session = useSupabaseSession();
+  const signedOut = session === null;
 
   const query = useQuery({
     queryKey: ["opportunities", status],
     queryFn: () => listOpportunitiesFn({ data: { status } }),
+    enabled: !!session,
   });
 
   const rows = useMemo(() => {
@@ -90,7 +95,22 @@ function OpportunitiesPage() {
         </Select>
       </div>
 
-      {query.isLoading ? (
+      {signedOut ? (
+        <EmptyState
+          title="Sign in to see your opportunities"
+          description="Opportunities are private to your workspace. You can still start capturing one now — the draft stays on this device until you sign in."
+          action={
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button asChild>
+                <a href={signInHref("/opportunities")}>Sign in or register</a>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/opportunities/new">Start a draft</Link>
+              </Button>
+            </div>
+          }
+        />
+      ) : query.isLoading || session === undefined ? (
         <div className="grid gap-4 md:grid-cols-2">
           <CardSkeleton />
           <CardSkeleton />
