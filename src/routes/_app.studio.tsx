@@ -50,21 +50,21 @@ const PROVIDER_META: Record<StudioProvider, { label: string; tagline: string }> 
 
 function StudioPage() {
   const navigate = useNavigate();
-  const [authChecked, setAuthChecked] = useState(false);
+  const session = useSupabaseSession();
+  const authChecked = !!session;
   const drafts = useStudioDrafts();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isStudioChild = pathname !== "/studio" && pathname !== "/studio/";
 
   useEffect(() => {
-    (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data.user) {
-        navigate({ to: "/pro", replace: true });
-        return;
-      }
-      setAuthChecked(true);
-    })();
-  }, [navigate]);
+    // `undefined` means the session is still resolving — only redirect on a
+    // confirmed signed-out state, and send visitors to sign-in (not to a plan
+    // upgrade page, which implied their plan was the problem).
+    if (session === null) {
+      navigate({ to: "/auth", search: { redirect: "/studio" } as never, replace: true });
+    }
+  }, [navigate, session]);
+
 
   const draftFn = useServerFn(draftUseCase);
   const [provider, setProvider] = useState<StudioProvider>("gemini");
