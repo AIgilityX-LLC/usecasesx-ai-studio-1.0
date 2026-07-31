@@ -40,11 +40,15 @@ export const Route = createFileRoute("/_app/opportunities/")({
 function OpportunitiesPage() {
   const [status, setStatus] = useState<OpportunityStatus | "all">("all");
   const [search, setSearch] = useState("");
+  const session = useSupabaseSession();
+  const signedOut = session === null;
 
   const query = useQuery({
     queryKey: ["opportunities", status],
     queryFn: () => listOpportunitiesFn({ data: { status } }),
+    enabled: !!session,
   });
+
 
   const rows = useMemo(() => {
     const term = search.trim().toLowerCase();
