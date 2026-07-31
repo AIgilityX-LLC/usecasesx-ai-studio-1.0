@@ -46,9 +46,7 @@ export function RequirePlan({ min, feature, children }: Props) {
               <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
                 Sign in required
               </div>
-              <h1 className="text-xl font-bold">
-                Sign in to open {feature ?? "this module"}
-              </h1>
+              <h1 className="text-xl font-bold">Sign in to open {feature ?? "this module"}</h1>
             </div>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
@@ -69,7 +67,6 @@ export function RequirePlan({ min, feature, children }: Props) {
   }
 
   if (TIER_RANK[plan.tier] < TIER_RANK[min]) {
-
     const label = min === "enterprise" ? "Enterprise" : "Pro";
     return (
       <div className="mx-auto max-w-2xl px-6 py-16">

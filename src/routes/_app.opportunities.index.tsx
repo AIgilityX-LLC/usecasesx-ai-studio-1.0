@@ -51,7 +51,6 @@ function OpportunitiesPage() {
     enabled: !!session,
   });
 
-
   const rows = useMemo(() => {
     const term = search.trim().toLowerCase();
     const list = query.data ?? [];
@@ -117,7 +116,6 @@ function OpportunitiesPage() {
           <CardSkeleton />
         </div>
       ) : query.isError ? (
-
         <ErrorState
           title="Could not load your opportunities"
           description="Please try again in a moment."

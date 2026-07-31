@@ -46,7 +46,6 @@ import { enrichOpportunityFn } from "@/lib/ai.functions";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { isUnauthorizedError, signInHref, SIGN_IN_TO_SAVE } from "@/lib/auth-errors";
 
-
 type SavedRow = { id: string; title: string; status: string };
 
 type Suggestions = {
@@ -74,7 +73,6 @@ export function OpportunityForm({
   const findSimilar = useServerFn(findSimilarOpportunitiesFn);
   const enrich = useServerFn(enrichOpportunityFn);
   const recordAssist = useServerFn(recordOpportunityAssistFn);
-
 
   const [draft, setDraft] = useState<OpportunityDraft>(() => initial ?? emptyDraft());
   const [id, setId] = useState<string | null>(opportunityId ?? null);
@@ -187,7 +185,6 @@ export function OpportunityForm({
       if (autosaveTimer.current) clearTimeout(autosaveTimer.current);
     };
   }, [draft, dirty, canSave, persist, signedOut]);
-
 
   /* --- non-blocking duplicate hints --------------------------------------- */
   useEffect(() => {
@@ -566,7 +563,6 @@ export function OpportunityForm({
                   ? `Autosaved at ${lastSavedAt}`
                   : "Autosaves once the problem has a name"}
           </span>
-
         </div>
       </div>
 

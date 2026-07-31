@@ -65,7 +65,6 @@ function StudioPage() {
     }
   }, [navigate, session]);
 
-
   const draftFn = useServerFn(draftUseCase);
   const [provider, setProvider] = useState<StudioProvider>("gemini");
   const [organization, setOrganization] = useState("");

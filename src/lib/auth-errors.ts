@@ -15,8 +15,7 @@ const UNAUTHORIZED_HINTS = [
 ];
 
 export function isUnauthorizedError(error: unknown): boolean {
-  const message =
-    error instanceof Error ? error.message : typeof error === "string" ? error : "";
+  const message = error instanceof Error ? error.message : typeof error === "string" ? error : "";
   const lowered = message.toLowerCase();
   return UNAUTHORIZED_HINTS.some((hint) => lowered.includes(hint));
 }
@@ -25,13 +24,10 @@ export function isUnauthorizedError(error: unknown): boolean {
 export function signInHref(redirectTo?: string): string {
   const target =
     redirectTo ??
-    (typeof window !== "undefined"
-      ? window.location.pathname + window.location.search
-      : "/");
+    (typeof window !== "undefined" ? window.location.pathname + window.location.search : "/");
   const safe = target.startsWith("/") && !target.startsWith("//") ? target : "/";
   return `/auth?redirect=${encodeURIComponent(safe)}`;
 }
 
 /** Message shown when work could not be saved because the session is missing. */
-export const SIGN_IN_TO_SAVE =
-  "Sign in to save. Your draft is kept on this device until you do.";
+export const SIGN_IN_TO_SAVE = "Sign in to save. Your draft is kept on this device until you do.";
