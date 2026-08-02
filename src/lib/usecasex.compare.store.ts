@@ -82,6 +82,10 @@ export const compareStore = {
 };
 
 import { useSyncExternalStore } from "react";
+
+/** Stable snapshot for SSR/hydration — must be referentially identical. */
+const getServerSnapshot = () => EMPTY_COMPARE;
+
 export function useCompare() {
-  return useSyncExternalStore(compareStore.subscribe, getSnapshot, () => EMPTY_COMPARE);
+  return useSyncExternalStore(compareStore.subscribe, getSnapshot, getServerSnapshot);
 }

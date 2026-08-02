@@ -7,7 +7,7 @@
  * stay attributable to the definition version that produced them.
  */
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -49,6 +49,7 @@ import {
   suggestScoreEvidenceFn,
 } from "@/lib/scoring.functions";
 import { calculateScore, type Responses, type ScoreResult } from "@/lib/scoring/model";
+import { isUnauthorizedError, signInHref, SIGN_IN_TO_SAVE } from "@/lib/auth-errors";
 
 type EvidenceSuggestion = {
   evidenceToGather: string[];
@@ -70,6 +71,9 @@ export function UseCaseScorecard({ id }: { id: string }) {
   const [suggestions, setSuggestions] = useState<Record<string, EvidenceSuggestion>>({});
   const [openQuestions, setOpenQuestions] = useState<string[]>([]);
   const [showMissing, setShowMissing] = useState(false);
+  /** Set when AI assistance is unavailable. Scoring itself never depends on it. */
+  const [aiStatus, setAiStatus] = useState<string | null>(null);
+  const [recovered, setRecovered] = useState(false);
 
   const query = useQuery({
     queryKey: ["scorecard", id],
@@ -96,6 +100,46 @@ export function UseCaseScorecard({ id }: { id: string }) {
     if (evidence) return evidence;
     return (latest?.evidence as Record<string, string>) ?? {};
   }, [evidence, latest]);
+
+  /**
+   * Session-expiry safety net. Answers are kept on this device until the
+   * server confirms the save, so an expired token can never look like success
+   * and nothing is lost across a re-authentication.
+   */
+  const draftKey = `usecasex.scorecard.draft.${id}`;
+
+  useEffect(() => {
+    if (typeof window === "undefined" || recovered) return;
+    setRecovered(true);
+    try {
+      const raw = window.localStorage.getItem(draftKey);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as {
+        responses?: Responses;
+        evidence?: Record<string, string>;
+        note?: string;
+      };
+      if (saved.responses) setResponses(saved.responses);
+      if (saved.evidence) setEvidence(saved.evidence);
+      if (saved.note) setNote(saved.note);
+      toast.info("Recovered unsaved scorecard answers from this device.");
+    } catch {
+      /* corrupt draft — ignore */
+    }
+  }, [draftKey, recovered]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (responses === null && evidence === null && note.trim() === "") return;
+    try {
+      window.localStorage.setItem(
+        draftKey,
+        JSON.stringify({ responses: current, evidence: currentEvidence, note }),
+      );
+    } catch {
+      /* storage full — the server save is still the source of truth */
+    }
+  }, [draftKey, responses, evidence, note, current, currentEvidence]);
 
   /**
    * Comparison always runs baseline (the selected older result) → latest, so
@@ -158,9 +202,12 @@ export function UseCaseScorecard({ id }: { id: string }) {
       return;
     }
     setSuggesting(true);
+    setAiStatus(null);
     try {
       const res = await suggestEvidence({ data: { id, criterionIds: targets } });
       if (!res.ok) {
+        // AI is optional: report the status inline and keep scoring available.
+        setAiStatus(res.error);
         toast.error(res.error);
         return;
       }
@@ -177,12 +224,30 @@ export function UseCaseScorecard({ id }: { id: string }) {
       setShowMissing(true);
       toast.success("Evidence suggestions ready. Review before you answer.");
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Could not generate evidence suggestions.",
-      );
+      if (isUnauthorizedError(error)) {
+        promptReauth();
+        return;
+      }
+      const message =
+        "AI assistance is unavailable right now. You can still answer and record the score.";
+      setAiStatus(message);
+      toast.error(message);
     } finally {
       setSuggesting(false);
     }
+  }
+
+  /** Expired session: never claim success, keep the draft, offer sign-in. */
+  function promptReauth() {
+    setConfirmIncomplete(false);
+    toast.error(SIGN_IN_TO_SAVE, {
+      action: {
+        label: "Sign in",
+        onClick: () => {
+          window.location.href = signInHref(window.location.pathname);
+        },
+      },
+    });
   }
 
   function attemptSave() {
@@ -207,6 +272,12 @@ export function UseCaseScorecard({ id }: { id: string }) {
       toast.success(
         res.result.incomplete ? "Score recorded and flagged as incomplete." : "Score recorded.",
       );
+      // Only clear the local safety copy once the server confirmed the write.
+      try {
+        window.localStorage.removeItem(draftKey);
+      } catch {
+        /* ignore */
+      }
       setNote("");
       setResponses(null);
       setEvidence(null);
@@ -214,6 +285,10 @@ export function UseCaseScorecard({ id }: { id: string }) {
       setConfirmIncomplete(false);
       await query.refetch();
     } catch (error) {
+      if (isUnauthorizedError(error)) {
+        promptReauth();
+        return;
+      }
       toast.error(error instanceof Error ? error.message : "Could not record the score.");
     } finally {
       setSaving(false);
@@ -296,6 +371,29 @@ export function UseCaseScorecard({ id }: { id: string }) {
                     Suggest supporting evidence
                   </Button>
                 </div>
+                {aiStatus && (
+                  <div
+                    role="status"
+                    className="rounded-md border border-dashed border-border bg-background p-3 text-xs"
+                  >
+                    <p className="font-medium">AI assistance unavailable</p>
+                    <p className="text-muted-foreground">
+                      {aiStatus} Scoring does not depend on AI — answer the criteria and record the
+                      score as normal.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2 h-7 px-2"
+                      onClick={() => void requestSuggestions()}
+                      disabled={suggesting}
+                    >
+                      <RotateCcw className="mr-2 h-3.5 w-3.5" aria-hidden />
+                      Try AI again
+                    </Button>
+                  </div>
+                )}
                 {showMissing && (
                   <ul className="list-disc space-y-1 pl-5 text-xs text-muted-foreground">
                     {live.missing.map((m) => (

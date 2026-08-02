@@ -66,8 +66,16 @@ export const presetsStore = {
 };
 
 import { useSyncExternalStore } from "react";
+
+/**
+ * Stable server/hydration snapshot. Returning a fresh array here makes React
+ * treat every render as a store change and warn about an infinite loop.
+ */
+const EMPTY_PRESETS: SavedPreset[] = [];
+const getServerSnapshot = () => EMPTY_PRESETS;
+
 export function useSavedPresets() {
-  return useSyncExternalStore(presetsStore.subscribe, getSnapshot, () => [] as SavedPreset[]);
+  return useSyncExternalStore(presetsStore.subscribe, getSnapshot, getServerSnapshot);
 }
 
 // Built-in shareable presets shown in the bar above results.
