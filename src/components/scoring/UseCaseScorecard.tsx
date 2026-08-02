@@ -372,6 +372,29 @@ export function UseCaseScorecard({ id }: { id: string }) {
                     Suggest supporting evidence
                   </Button>
                 </div>
+                {aiStatus && (
+                  <div
+                    role="status"
+                    className="rounded-md border border-dashed border-border bg-background p-3 text-xs"
+                  >
+                    <p className="font-medium">AI assistance unavailable</p>
+                    <p className="text-muted-foreground">
+                      {aiStatus} Scoring does not depend on AI — answer the criteria and record the
+                      score as normal.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2 h-7 px-2"
+                      onClick={() => void requestSuggestions()}
+                      disabled={suggesting}
+                    >
+                      <RotateCcw className="mr-2 h-3.5 w-3.5" aria-hidden />
+                      Try AI again
+                    </Button>
+                  </div>
+                )}
                 {showMissing && (
                   <ul className="list-disc space-y-1 pl-5 text-xs text-muted-foreground">
                     {live.missing.map((m) => (
