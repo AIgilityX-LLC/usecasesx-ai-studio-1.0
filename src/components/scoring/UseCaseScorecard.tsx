@@ -203,9 +203,12 @@ export function UseCaseScorecard({ id }: { id: string }) {
       return;
     }
     setSuggesting(true);
+    setAiStatus(null);
     try {
       const res = await suggestEvidence({ data: { id, criterionIds: targets } });
       if (!res.ok) {
+        // AI is optional: report the status inline and keep scoring available.
+        setAiStatus(res.error);
         toast.error(res.error);
         return;
       }
@@ -222,12 +225,30 @@ export function UseCaseScorecard({ id }: { id: string }) {
       setShowMissing(true);
       toast.success("Evidence suggestions ready. Review before you answer.");
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Could not generate evidence suggestions.",
-      );
+      if (isUnauthorizedError(error)) {
+        promptReauth();
+        return;
+      }
+      const message =
+        "AI assistance is unavailable right now. You can still answer and record the score.";
+      setAiStatus(message);
+      toast.error(message);
     } finally {
       setSuggesting(false);
     }
+  }
+
+  /** Expired session: never claim success, keep the draft, offer sign-in. */
+  function promptReauth() {
+    setConfirmIncomplete(false);
+    toast.error(SIGN_IN_TO_SAVE, {
+      action: {
+        label: "Sign in",
+        onClick: () => {
+          window.location.href = signInHref(window.location.pathname);
+        },
+      },
+    });
   }
 
   function attemptSave() {
@@ -252,6 +273,12 @@ export function UseCaseScorecard({ id }: { id: string }) {
       toast.success(
         res.result.incomplete ? "Score recorded and flagged as incomplete." : "Score recorded.",
       );
+      // Only clear the local safety copy once the server confirmed the write.
+      try {
+        window.localStorage.removeItem(draftKey);
+      } catch {
+        /* ignore */
+      }
       setNote("");
       setResponses(null);
       setEvidence(null);
@@ -259,6 +286,10 @@ export function UseCaseScorecard({ id }: { id: string }) {
       setConfirmIncomplete(false);
       await query.refetch();
     } catch (error) {
+      if (isUnauthorizedError(error)) {
+        promptReauth();
+        return;
+      }
       toast.error(error instanceof Error ? error.message : "Could not record the score.");
     } finally {
       setSaving(false);
