@@ -77,6 +77,7 @@ import {
   IntegrationsAdminTab,
   ReportTemplatesAdminTab,
 } from "@/components/admin/StudioAdminTabs";
+import { JourneyFunnel } from "@/components/administration/JourneyFunnel";
 import { SEGMENT_NAMES, industryNamesInSegment } from "@/lib/usecasex.derive";
 
 const ADMIN_ROLES = [
@@ -153,6 +154,7 @@ function AdminPageInner() {
             <TabsTrigger value="platforms">Platform Mapping</TabsTrigger>
             <TabsTrigger value="leads">Leads</TabsTrigger>
             <TabsTrigger value="cta">CTA Analytics</TabsTrigger>
+            <TabsTrigger value="journey">Journey Funnel</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
@@ -195,6 +197,9 @@ function AdminPageInner() {
           </TabsContent>
           <TabsContent value="cta" className="mt-6">
             <CtaTab />
+          </TabsContent>
+          <TabsContent value="journey" className="mt-6">
+            <JourneyFunnel />
           </TabsContent>
           <TabsContent value="reports" className="mt-6">
             <ReportsTab />
