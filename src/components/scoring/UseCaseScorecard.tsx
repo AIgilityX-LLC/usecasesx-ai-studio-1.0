@@ -141,7 +141,6 @@ export function UseCaseScorecard({ id }: { id: string }) {
     }
   }, [draftKey, responses, evidence, note, current, currentEvidence]);
 
-
   /**
    * Comparison always runs baseline (the selected older result) → latest, so
    * "up" consistently means the score improved over time.
