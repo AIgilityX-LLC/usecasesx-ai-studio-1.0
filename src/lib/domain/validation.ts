@@ -67,7 +67,11 @@ export const portfolioCreateSchema = z.object({
 
 export const portfolioPatchSchema = portfolioCreateSchema
   .partial()
-  .extend({ status: z.string().trim().min(1).max(40).optional() });
+  .extend({
+    status: z.string().trim().min(1).max(40).optional(),
+    reviewNotes: z.string().trim().max(4000).nullish(),
+    markReviewed: z.boolean().optional(),
+  });
 
 /**
  * Portfolio-specific decision fields. These live on the membership record and
@@ -83,8 +87,11 @@ export const portfolioEntryPatchSchema = z
     fundingState: z.enum(["unfunded", "requested", "funded", "on_hold"]).optional(),
     nextAction: z.string().trim().max(500).nullish(),
     notes: z.string().trim().max(2000).nullish(),
+    reviewNotes: z.string().trim().max(4000).nullish(),
+    markReviewed: z.boolean().optional(),
   })
   .refine((v) => Object.values(v).some((x) => x !== undefined), { message: "Nothing to update" });
+
 
 
 export const reportRequestSchema = z.object({
