@@ -26,17 +26,22 @@ import {
 } from "@/components/ui/accordion";
 import { ConfirmDialog, useUnsavedChanges } from "@/components/ui-kit";
 import {
+  clearLocalDraft,
   completionOf,
+  describeSavedAt,
   emptyDraft,
   isConvertible,
-  LOCAL_DRAFT_KEY,
   OPPORTUNITY_SOURCES,
+  readLocalDraft,
   SOURCE_LABELS,
   URGENCIES,
   URGENCY_LABELS,
+  writeLocalDraft,
   type OpportunityDraft,
   type OpportunitySource,
+  type StoredLocalDraft,
 } from "@/lib/opportunities";
+
 import {
   findSimilarOpportunitiesFn,
   recordOpportunityAssistFn,
@@ -104,24 +109,37 @@ export function OpportunityForm({
   );
 
   /* --- local draft survives a refresh before the first server save --------- */
+  const [recovered, setRecovered] = useState<StoredLocalDraft | null>(null);
+  const [restoredAt, setRestoredAt] = useState<string | null>(null);
+
   useEffect(() => {
-    if (opportunityId || initial) return;
-    try {
-      const raw = window.localStorage.getItem(LOCAL_DRAFT_KEY);
-      if (raw) setDraft({ ...emptyDraft(), ...JSON.parse(raw) });
-    } catch {
-      /* ignore unreadable drafts */
-    }
+    // An existing opportunity, or a prefilled draft (e.g. captured from a
+    // repository entry), takes precedence over anything cached locally.
+    if (opportunityId || (initial && initial.title.trim().length > 0)) return;
+    const stored = readLocalDraft();
+    if (stored && stored.draft.title.trim().length > 0) setRecovered(stored);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
+  const restoreDraft = useCallback(() => {
+    if (!recovered) return;
+    setDraft(recovered.draft);
+    setDirty(true);
+    setRestoredAt(recovered.savedAt);
+    setRecovered(null);
+    toast.success("Draft restored");
+  }, [recovered]);
+
+  const discardDraft = useCallback(() => {
+    clearLocalDraft();
+    setRecovered(null);
+    toast.success("Saved draft discarded");
   }, []);
 
   useEffect(() => {
     if (id || !dirty) return;
-    try {
-      window.localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(draft));
-    } catch {
-      /* storage may be unavailable */
-    }
+    writeLocalDraft(draft);
   }, [draft, dirty, id]);
 
   /* --- explicit + autosave ------------------------------------------------ */
@@ -151,7 +169,9 @@ export function OpportunityForm({
         setId(row.id);
         setDirty(false);
         setLastSavedAt(new Date().toLocaleTimeString());
-        window.localStorage.removeItem(LOCAL_DRAFT_KEY);
+        clearLocalDraft();
+        setRestoredAt(null);
+
         if (!silent) toast.success("Opportunity saved");
         onSaved?.(row.id);
         return row.id;
@@ -274,6 +294,34 @@ export function OpportunityForm({
               <a href={signInHref("/opportunities/new")}>Sign in to save</a>
             </Button>
           </div>
+        ) : null}
+        {recovered ? (
+          <div
+            role="status"
+            className="flex flex-col gap-3 rounded-lg border border-border bg-muted/40 p-4 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="min-w-0">
+              <p className="text-sm font-medium">Unsaved draft found on this device</p>
+              <p className="truncate text-sm text-muted-foreground">
+                “{recovered.draft.title.trim() || "Untitled problem"}” ·{" "}
+                {recovered.savedAt ? describeSavedAt(recovered.savedAt) : "saved earlier"}
+              </p>
+            </div>
+            <div className="flex shrink-0 gap-2">
+              <Button size="sm" onClick={restoreDraft}>
+                Restore draft
+              </Button>
+              <Button size="sm" variant="ghost" onClick={discardDraft}>
+                Discard
+              </Button>
+            </div>
+          </div>
+        ) : null}
+        {restoredAt && dirty ? (
+          <p role="status" className="text-xs text-muted-foreground">
+            Restored from your local draft ({describeSavedAt(restoredAt)}).{" "}
+            {signedOut ? "Sign in to save it to your workspace." : "Saving to your workspace…"}
+          </p>
         ) : null}
         {/* Essentials — the only required framing */}
 
