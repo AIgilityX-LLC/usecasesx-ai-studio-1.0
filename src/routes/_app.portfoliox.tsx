@@ -203,7 +203,14 @@ function PortfoliosPage() {
             ))}
           </nav>
 
-          {selected && <PortfolioDetail key={selected.id} portfolio={selected} store={store} />}
+          {selected && (
+            <PortfolioDetail
+              key={selected.id}
+              portfolio={selected}
+              store={store}
+              canManage={canManage}
+            />
+          )}
         </div>
       )}
     </div>
