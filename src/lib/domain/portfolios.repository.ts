@@ -42,15 +42,30 @@ export type PortfolioCreateInput = {
   organizationUnitId?: string | null;
 };
 
-export type PortfolioPatchInput = Partial<PortfolioCreateInput> & { status?: string };
+export type PortfolioPatchInput = Partial<PortfolioCreateInput> & {
+  status?: string;
+  reviewNotes?: string | null;
+  markReviewed?: boolean;
+};
 
 const PORTFOLIO_SELECT =
-  "id, name, objective, created_at, updated_at, portfolio_type, status, target_department, target_quarter, visibility, review_cadence, organization_unit_id, parent_portfolio_id, " +
-  "portfolio_items ( use_case_id, rank, decision, target_period, funding_state, next_action, notes, added_at, updated_at )";
+  "id, name, objective, created_at, updated_at, portfolio_type, status, target_department, target_quarter, visibility, review_cadence, organization_unit_id, parent_portfolio_id, review_notes, last_reviewed_at, " +
+  "portfolio_items ( use_case_id, rank, decision, target_period, funding_state, next_action, notes, review_notes, last_reviewed_at, added_at, updated_at )";
+
+type UseCaseMeta = {
+  slug: string;
+  title: string;
+  status?: string | null;
+  value_potential?: string | null;
+  complexity?: string | null;
+  risk_level?: string | null;
+  time_to_value?: string | null;
+  function_name?: string | null;
+};
 
 type PortfolioItemRow = {
   use_case_id: string;
-  use_cases?: { slug: string; title: string } | null;
+  use_cases?: UseCaseMeta | null;
 };
 
 type PortfolioRow = { portfolio_items?: PortfolioItemRow[] | null };
@@ -58,21 +73,41 @@ type PortfolioRow = { portfolio_items?: PortfolioItemRow[] | null };
 /**
  * `portfolio_items.use_case_id` intentionally carries no foreign key (the same
  * column can point at a repository entry or a workspace draft), so PostgREST
- * cannot embed the use case. We hydrate slug/title in a second read instead.
+ * cannot embed the use case. We hydrate the executive-summary fields in a
+ * second read instead. Rows the caller cannot see simply stay unhydrated.
  */
 async function attachUseCases(rows: PortfolioRow[]) {
   const ids = [
     ...new Set(rows.flatMap((row) => (row.portfolio_items ?? []).map((i) => i.use_case_id))),
   ];
   if (ids.length === 0) return rows;
-  const result = await supabase.from("use_cases").select("id, slug, title").in("id", ids);
-  const byId = new Map(
-    (unwrapResult(result, { allowNull: true }) ?? []).map((uc) => [uc.id, uc] as const),
-  );
+  const result = await supabase
+    .from("use_cases")
+    .select("id, slug, title, status, value_potential, complexity, risk_level, time_to_value")
+    .in("id", ids);
+  const useCases = unwrapResult(result, { allowNull: true }) ?? [];
+  const byId = new Map(useCases.map((uc) => [uc.id, uc] as const));
+
+  // Primary business function per use case (many-to-many join table).
+  const fnResult = await supabase
+    .from("use_case_business_functions")
+    .select("use_case_id, business_functions ( name )")
+    .in("use_case_id", ids);
+  const functionById = new Map<string, string>();
+  for (const row of (unwrapResult(fnResult, { allowNull: true }) ?? []) as {
+    use_case_id: string;
+    business_functions?: { name?: string | null } | null;
+  }[]) {
+    const name = row.business_functions?.name;
+    if (name && !functionById.has(row.use_case_id)) functionById.set(row.use_case_id, name);
+  }
+
   for (const row of rows) {
     for (const item of row.portfolio_items ?? []) {
-      const uc = byId.get(item.use_case_id);
-      item.use_cases = uc ? { slug: uc.slug, title: uc.title } : null;
+      const uc = byId.get(item.use_case_id) as UseCaseMeta | undefined;
+      item.use_cases = uc
+        ? { ...uc, function_name: functionById.get(item.use_case_id) ?? null }
+        : null;
     }
   }
   return rows;
@@ -136,6 +171,8 @@ export function toPortfolioColumns(patch: PortfolioPatchInput) {
     visibility?: string;
     review_cadence?: string | null;
     organization_unit_id?: string | null;
+    review_notes?: string | null;
+    last_reviewed_at?: string;
   } = {};
   if (patch.name !== undefined) columns.name = patch.name;
   if (patch.objective !== undefined) columns.objective = patch.objective ?? null;
@@ -148,6 +185,8 @@ export function toPortfolioColumns(patch: PortfolioPatchInput) {
   if (patch.reviewCadence !== undefined) columns.review_cadence = patch.reviewCadence ?? null;
   if (patch.organizationUnitId !== undefined)
     columns.organization_unit_id = patch.organizationUnitId ?? null;
+  if (patch.reviewNotes !== undefined) columns.review_notes = patch.reviewNotes || null;
+  if (patch.markReviewed) columns.last_reviewed_at = new Date().toISOString();
   return columns;
 }
 
@@ -160,6 +199,8 @@ export function toPortfolioEntryColumns(patch: PortfolioEntryPatch) {
     funding_state?: string;
     next_action?: string | null;
     notes?: string | null;
+    review_notes?: string | null;
+    last_reviewed_at?: string;
   } = {};
   if (patch.rank !== undefined) columns.rank = patch.rank ?? null;
   if (patch.decision !== undefined) columns.decision = patch.decision;
@@ -167,6 +208,8 @@ export function toPortfolioEntryColumns(patch: PortfolioEntryPatch) {
   if (patch.fundingState !== undefined) columns.funding_state = patch.fundingState;
   if (patch.nextAction !== undefined) columns.next_action = patch.nextAction || null;
   if (patch.notes !== undefined) columns.notes = patch.notes || null;
+  if (patch.reviewNotes !== undefined) columns.review_notes = patch.reviewNotes || null;
+  if (patch.markReviewed) columns.last_reviewed_at = new Date().toISOString();
   return columns;
 }
 
@@ -206,16 +249,32 @@ export async function addUseCaseToPortfolio(
   portfolioId: string,
   useCaseId: string,
 ) {
+  return addUseCasesToPortfolio(userId, portfolioId, [useCaseId]);
+}
+
+/**
+ * Bulk membership add. `ignoreDuplicates` on the composite key means a use case
+ * already in the portfolio is skipped rather than duplicated.
+ */
+export async function addUseCasesToPortfolio(
+  userId: string | null,
+  portfolioId: string,
+  useCaseIds: string[],
+) {
   const uid = requireUserId(userId);
   const pid = parseInput(uuidSchema, portfolioId);
-  const ucid = parseInput(uuidSchema, useCaseId);
-  const result = await supabase
-    .from("portfolio_items")
-    .upsert(
-      { portfolio_id: pid, use_case_id: ucid, added_by: uid },
-      { onConflict: "portfolio_id,use_case_id", ignoreDuplicates: true },
-    );
+  const ids = [...new Set(useCaseIds)].map((id) => parseInput(uuidSchema, id));
+  if (ids.length === 0) return;
+  const result = await supabase.from("portfolio_items").upsert(
+    ids.map((ucid) => ({ portfolio_id: pid, use_case_id: ucid, added_by: uid })),
+    { onConflict: "portfolio_id,use_case_id", ignoreDuplicates: true },
+  );
   if (result.error) throw normalizeError(result.error);
+  await recordProductEvent({
+    event: PRODUCT_EVENTS.portfolioItemAdded,
+    entity: { type: "portfolio", id: pid },
+    properties: { count: ids.length },
+  });
 }
 
 /**
@@ -240,6 +299,13 @@ export async function updatePortfolioEntry(
     .eq("portfolio_id", pid)
     .eq("use_case_id", ucid);
   if (result.error) throw normalizeError(result.error);
+  await recordProductEvent({
+    event: columns.last_reviewed_at
+      ? PRODUCT_EVENTS.portfolioReviewed
+      : PRODUCT_EVENTS.portfolioItemChanged,
+    entity: { type: "portfolio", id: pid },
+    properties: { use_case_id: ucid, fields: Object.keys(columns) },
+  });
 }
 
 export async function removeUseCaseFromPortfolio(
@@ -247,13 +313,28 @@ export async function removeUseCaseFromPortfolio(
   portfolioId: string,
   useCaseId: string,
 ) {
+  return removeUseCasesFromPortfolio(userId, portfolioId, [useCaseId]);
+}
+
+/** Bulk membership removal. The use cases themselves are never deleted. */
+export async function removeUseCasesFromPortfolio(
+  userId: string | null,
+  portfolioId: string,
+  useCaseIds: string[],
+) {
   requireUserId(userId);
   const pid = parseInput(uuidSchema, portfolioId);
-  const ucid = parseInput(uuidSchema, useCaseId);
+  const ids = [...new Set(useCaseIds)].map((id) => parseInput(uuidSchema, id));
+  if (ids.length === 0) return;
   const result = await supabase
     .from("portfolio_items")
     .delete()
     .eq("portfolio_id", pid)
-    .eq("use_case_id", ucid);
+    .in("use_case_id", ids);
   if (result.error) throw normalizeError(result.error);
+  await recordProductEvent({
+    event: PRODUCT_EVENTS.portfolioItemRemoved,
+    entity: { type: "portfolio", id: pid },
+    properties: { count: ids.length },
+  });
 }

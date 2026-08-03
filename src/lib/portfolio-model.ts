@@ -79,8 +79,19 @@ export const FUNDING_STATE_LABELS: Record<FundingState, string> = {
   on_hold: "On hold",
 };
 
+/** Read-only metadata hydrated from the source use case. Never written back. */
+export interface PortfolioEntryMeta {
+  status?: string;
+  valuePotential?: string;
+  complexity?: string;
+  riskLevel?: string;
+  timeToValue?: string;
+  functionName?: string;
+  ownerName?: string;
+}
+
 /** One use case's membership of one portfolio. The same use case may hold many. */
-export interface PortfolioEntry {
+export interface PortfolioEntry extends PortfolioEntryMeta {
   useCaseId: string;
   useCaseSlug?: string;
   useCaseTitle?: string;
@@ -90,6 +101,8 @@ export interface PortfolioEntry {
   fundingState: FundingState;
   nextAction?: string;
   notes?: string;
+  reviewNotes?: string;
+  lastReviewedAt?: string;
   addedAt: string;
   updatedAt: string;
 }
@@ -101,4 +114,7 @@ export type PortfolioEntryPatch = {
   fundingState?: FundingState;
   nextAction?: string | null;
   notes?: string | null;
+  reviewNotes?: string | null;
+  /** Set true to stamp the review date server-side on save. */
+  markReviewed?: boolean;
 };

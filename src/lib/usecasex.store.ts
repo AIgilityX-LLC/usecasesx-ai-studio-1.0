@@ -99,8 +99,12 @@ export interface Portfolio {
   useCaseSlugs: string[];
   /** Portfolio-specific decision records — one per member use case. */
   entries: PortfolioEntry[];
+  /** Executive review notes for the portfolio as a whole. */
+  reviewNotes?: string;
+  lastReviewedAt?: string;
   createdAt: string;
   updatedAt?: string;
+
 }
 
 interface StoreShape {
