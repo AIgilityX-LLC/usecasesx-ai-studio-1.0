@@ -620,15 +620,14 @@ export function OpportunityForm({
           >
             Cancel
           </Button>
-          <span className="text-xs text-muted-foreground" aria-live="polite">
-            {saving
-              ? "Saving…"
-              : signedOut
-                ? "Draft kept on this device — sign in to save it to your workspace"
-                : lastSavedAt
-                  ? `Autosaved at ${lastSavedAt}`
-                  : "Autosaves once the problem has a name"}
-          </span>
+          {autosaveState === "idle" ? (
+            <span className="text-xs text-muted-foreground">
+              Autosaves once the problem has a name
+            </span>
+          ) : (
+            <AutosaveStatus state={autosaveState} savedAt={lastSavedAt} />
+          )}
+
         </div>
       </div>
 
