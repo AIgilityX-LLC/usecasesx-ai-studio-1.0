@@ -26,17 +26,22 @@ import {
 } from "@/components/ui/accordion";
 import { ConfirmDialog, useUnsavedChanges } from "@/components/ui-kit";
 import {
+  clearLocalDraft,
   completionOf,
+  describeSavedAt,
   emptyDraft,
   isConvertible,
-  LOCAL_DRAFT_KEY,
   OPPORTUNITY_SOURCES,
+  readLocalDraft,
   SOURCE_LABELS,
   URGENCIES,
   URGENCY_LABELS,
+  writeLocalDraft,
   type OpportunityDraft,
   type OpportunitySource,
+  type StoredLocalDraft,
 } from "@/lib/opportunities";
+
 import {
   findSimilarOpportunitiesFn,
   recordOpportunityAssistFn,
