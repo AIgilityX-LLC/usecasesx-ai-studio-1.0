@@ -85,6 +85,9 @@ export function UseCaseWizard({ id }: { id: string }) {
   const [provenance, setProvenance] = useState<string | null>(null);
   const [visibility, setVisibility] = useState<UseCaseVisibility | null>(null);
   const [completedVersion, setCompletedVersion] = useState<number | null>(null);
+  const [dirty, setDirty] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
   const record = query.data;
   const wizardState: WizardState = state ?? record?.wizardState ?? {};
@@ -103,6 +106,39 @@ export function UseCaseWizard({ id }: { id: string }) {
     setVisibility((record.visibility as UseCaseVisibility) ?? "workspace");
   }
 
+  /* --- device-local safety copy of in-progress answers -------------------- */
+  const draftKey = `usecasex.wizard.draft.${id}`;
+  const [pendingDraft, setPendingDraft] = useState<LocalDraft<WizardState> | null>(null);
+  const [checkedDraft, setCheckedDraft] = useState(false);
+
+  useEffect(() => {
+    if (checkedDraft || !record) return;
+    setCheckedDraft(true);
+    const stored = readDraft<WizardState>(draftKey);
+    if (stored && Object.keys(stored.data ?? {}).length > 0) setPendingDraft(stored);
+  }, [checkedDraft, draftKey, record]);
+
+  const draftConflict = hasConflict(pendingDraft, record?.updatedAt ?? null);
+
+  const restoreWizardDraft = useCallback(() => {
+    if (!pendingDraft) return;
+    setState(pendingDraft.data);
+    setDirty(true);
+    setPendingDraft(null);
+    toast.success("Draft answers restored");
+  }, [pendingDraft]);
+
+  const discardWizardDraft = useCallback(() => {
+    clearDraft(draftKey);
+    setPendingDraft(null);
+    toast.success(draftConflict ? "Keeping the saved version" : "Device copy discarded");
+  }, [draftConflict, draftKey]);
+
+  useEffect(() => {
+    if (!dirty || !state) return;
+    writeDraft<WizardState>(draftKey, state, record?.updatedAt ?? null);
+  }, [dirty, draftKey, record, state]);
+
   const setValue = useCallback(
     (key: string, value: FieldValue) => {
       setState((prev) => {
@@ -111,6 +147,8 @@ export function UseCaseWizard({ id }: { id: string }) {
         base[step.id] = { ...current, [key]: value };
         return base;
       });
+      setDirty(true);
+      setSaveFailed(false);
     },
     [step.id],
   );
@@ -127,17 +165,33 @@ export function UseCaseWizard({ id }: { id: string }) {
             nextStep: nextStepId,
           },
         });
+        setDirty(false);
+        setSaveFailed(false);
+        setLastSavedAt(new Date().toISOString());
+        clearDraft(draftKey);
         return true;
       } catch (e) {
         console.error(e);
+        setSaveFailed(true);
         toast.error("We could not save this step. Your answers are still on screen — try again.");
         return false;
       } finally {
         setSaving(false);
       }
     },
-    [id, saveStep, step.id, wizardState],
+    [draftKey, id, saveStep, step.id, wizardState],
   );
+
+  const autosaveState: AutosaveState = saving
+    ? "saving"
+    : saveFailed
+      ? "error"
+      : dirty
+        ? "unsaved"
+        : lastSavedAt
+          ? "saved"
+          : "idle";
+
 
   async function goTo(index: number) {
     if (index === stepIndex) return;
