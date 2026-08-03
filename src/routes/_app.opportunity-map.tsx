@@ -322,8 +322,11 @@ function OpportunityMapPage() {
                 <EmptyState
                   title="No records match these filters"
                   description="Relax a filter to bring records back into the map."
-                  actionLabel="Clear filters"
-                  onAction={() => setFilters(emptyMapFilters())}
+                  action={
+                    <Button size="sm" onClick={() => setFilters(emptyMapFilters())}>
+                      Clear filters
+                    </Button>
+                  }
                 />
               ) : (
                 <OpportunityMapGrid records={filtered} axis={axis} view={view} />
@@ -336,13 +339,7 @@ function OpportunityMapPage() {
                     {INTENSITY_BAND_LABELS[band]}
                   </StatusChip>
                 ))}
-                <span>
-                  Highest cell in view: {formatValue(
-                    Math.max(0, ...filtered.map(() => 0)) || 0,
-                  ) === "0"
-                    ? ""
-                    : ""}
-                </span>
+
               </div>
 
               <p className="flex gap-2 rounded-md bg-muted/40 p-3 text-xs text-muted-foreground">
