@@ -219,11 +219,36 @@ function PortfoliosPage() {
 
 type Store = ReturnType<typeof useUseCaseXPro>;
 
-function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: Store }) {
+function PortfolioDetail({
+  portfolio,
+  store,
+  canManage,
+}: {
+  portfolio: Portfolio;
+  store: Store;
+  canManage: boolean;
+}) {
   const [view, setView] = useState<"table" | "cards">("table");
+  const [filters, setFilters] = useState<PortfolioFilterState>(EMPTY_PORTFOLIO_FILTERS);
+
+  const visibleEntries = useMemo(
+    () => applyPortfolioFilters(portfolio.entries, filters),
+    [portfolio.entries, filters],
+  );
+  const isFiltered = countActiveFilters(filters) > 0;
 
   return (
     <div className="min-w-0 space-y-4">
+      {!canManage && (
+        <div
+          role="status"
+          className="rounded-xl border border-border bg-secondary/40 px-4 py-3 text-sm text-muted-foreground"
+        >
+          You have read-only access to portfolios. Decisions, funding and membership can only be
+          changed by a workspace owner or admin.
+        </div>
+      )}
+
       <Card>
         <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
@@ -233,14 +258,17 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <SharePortfolioDialog portfolioId={portfolio.id} portfolioName={portfolio.name} />
-            <ExportPortfolioDialog portfolio={portfolio} />
-            <DeletePortfolioButton portfolio={portfolio} store={store} />
+            {canManage && (
+              <SharePortfolioDialog portfolioId={portfolio.id} portfolioName={portfolio.name} />
+            )}
+            <ExportPortfolioDialog portfolio={portfolio} filteredEntries={visibleEntries} />
+            {canManage && <DeletePortfolioButton portfolio={portfolio} store={store} />}
           </div>
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <PortfolioMetrics entries={portfolio.entries} lastReviewedAt={portfolio.lastReviewedAt} />
+          <PortfolioMetrics entries={visibleEntries} lastReviewedAt={portfolio.lastReviewedAt} />
+
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Field label="Status">
