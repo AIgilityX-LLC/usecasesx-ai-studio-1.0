@@ -62,6 +62,9 @@ import {
 } from "@/components/portfolios/PortfolioAuditTrail";
 import { ExportPortfolioDialog } from "@/components/portfolios/ExportPortfolioDialog";
 import { SharePortfolioDialog } from "@/components/portfolios/SharePortfolioDialog";
+import { PortfolioMetrics } from "@/components/portfolios/PortfolioMetrics";
+import { PortfolioEntriesTable } from "@/components/portfolios/PortfolioEntriesTable";
+import { PortfolioReviewNotes } from "@/components/portfolios/PortfolioReviewNotes";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 export const Route = createFileRoute("/_app/portfoliox")({
