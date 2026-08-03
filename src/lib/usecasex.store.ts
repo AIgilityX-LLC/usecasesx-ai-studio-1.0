@@ -4,6 +4,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import type {
+  PortfolioEntry,
+  PortfolioVisibility,
+  ReviewCadence,
+} from "@/lib/portfolio-model";
+
 export type Priority = "Low" | "Medium" | "High" | "Strategic";
 
 export interface ScoreDimensions {
@@ -85,8 +91,16 @@ export interface Portfolio {
   objective?: string;
   targetDepartment?: string;
   targetQuarter?: string;
+  visibility: PortfolioVisibility;
+  reviewCadence?: ReviewCadence;
+  organizationUnitId?: string;
+  /** Reserved for future nested Enterprise portfolios; not surfaced in Pro. */
+  parentPortfolioId?: string;
   useCaseSlugs: string[];
+  /** Portfolio-specific decision records — one per member use case. */
+  entries: PortfolioEntry[];
   createdAt: string;
+  updatedAt?: string;
 }
 
 interface StoreShape {
