@@ -144,32 +144,37 @@ export function PortfolioEntriesTable({
     {
       key: "decision",
       header: "Decision",
-      cell: (row) => (
-        <Select
-          value={row.decision}
-          onValueChange={(v) =>
-            void store
-              .updatePortfolioEntry(portfolioId, row.useCaseId, {
-                decision: v as PortfolioItemDecision,
-              })
-              .catch(() => toast.error("Could not save the decision"))
-          }
-        >
-          <SelectTrigger
-            className="h-8 w-[10.5rem]"
-            aria-label={`Decision for ${row.useCaseTitle ?? row.useCaseId}`}
+      cell: (row) =>
+        canManage ? (
+          <Select
+            value={row.decision}
+            onValueChange={(v) =>
+              void store
+                .updatePortfolioEntry(portfolioId, row.useCaseId, {
+                  decision: v as PortfolioItemDecision,
+                })
+                .catch(() => toast.error("Could not save the decision"))
+            }
           >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {PORTFOLIO_ITEM_DECISIONS.map((d) => (
-              <SelectItem key={d} value={d}>
-                {PORTFOLIO_ITEM_DECISION_LABELS[d]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      ),
+            <SelectTrigger
+              className="h-8 w-[10.5rem]"
+              aria-label={`Decision for ${row.useCaseTitle ?? row.useCaseId}`}
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PORTFOLIO_ITEM_DECISIONS.map((d) => (
+                <SelectItem key={d} value={d}>
+                  {PORTFOLIO_ITEM_DECISION_LABELS[d]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <Badge variant="secondary" className="text-[11px]">
+            {PORTFOLIO_ITEM_DECISION_LABELS[row.decision]}
+          </Badge>
+        ),
     },
     {
       key: "period",
@@ -184,6 +189,26 @@ export function PortfolioEntriesTable({
           {FUNDING_STATE_LABELS[row.fundingState]}
         </Badge>
       ),
+    },
+    {
+      key: "studio",
+      header: "Studio",
+      cell: (row) =>
+        row.studioUseCaseId ? (
+          <Button variant="outline" size="sm" className="h-8" asChild>
+            <Link to="/studio/use-case/$id" params={{ id: row.studioUseCaseId }}>
+              Open in Studio
+            </Link>
+          </Button>
+        ) : row.useCaseSlug ? (
+          <Button variant="ghost" size="sm" className="h-8" asChild>
+            <Link to="/use-cases/$slug" params={{ slug: row.useCaseSlug }} hash="customize">
+              Design in Studio
+            </Link>
+          </Button>
+        ) : (
+          <span className="text-sm text-muted-foreground">—</span>
+        ),
     },
   ];
 
