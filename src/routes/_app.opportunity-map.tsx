@@ -178,8 +178,12 @@ function OpportunityMapPage() {
         <EmptyState
           title="No opportunities captured yet"
           description="The map plots real captured records only. Capture your first opportunity and classify it against an organization unit and a strategic value theme."
-          actionLabel="Capture an opportunity"
-          actionTo="/opportunities/new"
+          action={
+            <Button asChild size="sm">
+              <Link to="/opportunities/new">Capture an opportunity</Link>
+            </Button>
+          }
+
         />
       )}
 
