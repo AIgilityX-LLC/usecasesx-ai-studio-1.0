@@ -103,17 +103,36 @@ export const Route = createFileRoute("/_app/portfoliox")({
 
 function PortfoliosPage() {
   const store = useUseCaseXPro();
+  const authz = useAuthz();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // Client-side gate mirrors the server decision; RLS remains authoritative.
+  const canManage = authz.can("portfolio.manage");
+  const canView = authz.can("portfolio.view");
 
   const selected = useMemo(
     () => store.portfolios.find((p) => p.id === selectedId) ?? store.portfolios[0] ?? null,
     [store.portfolios, selectedId],
   );
 
-  if (store.isLoading) {
+  if (store.isLoading || authz.loading) {
     return (
       <div className="mx-auto w-full max-w-6xl space-y-6 px-4 py-8">
         <LoadingSkeleton />
+      </div>
+    );
+  }
+
+  if (!canView) {
+    return (
+      <div className="mx-auto w-full max-w-6xl px-4 py-8">
+        <EmptyState
+          title="You don't have access to portfolios"
+          description={
+            authz.explain("portfolio.view").reason ??
+            "Ask a workspace owner or admin to grant you portfolio access."
+          }
+        />
       </div>
     );
   }
@@ -136,16 +155,20 @@ function PortfoliosPage() {
         eyebrow="Prioritize"
         title="AI Opportunity Portfolios"
         description="Group prioritized use cases and record portfolio-level decisions. The same use case can sit in several portfolios — its own record and scores never change."
-        actions={<CreatePortfolioDialog onCreate={store.createPortfolio} />}
+        actions={canManage ? <CreatePortfolioDialog onCreate={store.createPortfolio} /> : undefined}
       />
 
       {store.portfolios.length === 0 ? (
         <EmptyState
           title="No portfolios yet"
-          description="Create a portfolio, then add shortlisted use cases from My Use Cases."
+          description={
+            canManage
+              ? "Create a portfolio, then add shortlisted use cases from My Use Cases."
+              : "No portfolios have been shared with you yet."
+          }
           action={
             <div className="flex flex-wrap justify-center gap-2">
-              <CreatePortfolioDialog onCreate={store.createPortfolio} />
+              {canManage && <CreatePortfolioDialog onCreate={store.createPortfolio} />}
               <Button variant="outline" asChild>
                 <Link to="/my-use-cases">Go to My Use Cases</Link>
               </Button>
