@@ -43,10 +43,13 @@ export function PortfolioEntriesTable({
   portfolioId,
   entries,
   store,
+  canManage = true,
 }: {
   portfolioId: string;
   entries: PortfolioEntry[];
   store: BulkStore;
+  /** When false the table is read-only: no inline edits, no bulk actions. */
+  canManage?: boolean;
 }) {
   const [selected, setSelected] = useState<string[]>([]);
   const [confirmRemove, setConfirmRemove] = useState(false);
