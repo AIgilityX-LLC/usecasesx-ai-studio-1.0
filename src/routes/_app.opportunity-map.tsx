@@ -146,11 +146,8 @@ function OpportunityMapPage() {
         : [...prev[key], value],
     }));
 
-  const totalValue = filtered.reduce(
-    (sum, record) => sum + (STATUS_META[record.status as never] ? 0 : 0),
-    0,
-  );
-  void totalValue;
+
+
 
   return (
     <div className="space-y-6 p-4 sm:p-6">
