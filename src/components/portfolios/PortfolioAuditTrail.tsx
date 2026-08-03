@@ -1,4 +1,13 @@
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -106,9 +115,51 @@ function EventList({ events }: { events: PortfolioAuditEvent[] }) {
   );
 }
 
+const CATEGORIES: Array<{
+  value: string;
+  label: string;
+  match: (e: PortfolioAuditEvent) => boolean;
+}> = [
+  { value: "all", label: "All activity", match: () => true },
+  {
+    value: "membership",
+    label: "Use cases added / removed",
+    match: (e) => e.eventType.endsWith(".added") || e.eventType.endsWith(".removed"),
+  },
+  {
+    value: "decisions",
+    label: "Decision changes",
+    match: (e) => e.eventType === "portfolio_item.updated",
+  },
+  {
+    value: "portfolio",
+    label: "Portfolio lifecycle",
+    match: (e) => e.entityType === "portfolio" && !e.eventType.startsWith("export"),
+  },
+  { value: "exports", label: "Exports & shares", match: (e) => e.eventType.startsWith("export") },
+];
+
+const RANGES: Array<{ value: string; label: string; days: number | null }> = [
+  { value: "all", label: "All time", days: null },
+  { value: "7", label: "Last 7 days", days: 7 },
+  { value: "30", label: "Last 30 days", days: 30 },
+  { value: "90", label: "Last 90 days", days: 90 },
+];
+
 /** Full append-only trail for a portfolio: lifecycle plus every membership change. */
 export function PortfolioAuditTrail({ portfolioId }: { portfolioId: string }) {
   const { data, isLoading, error } = usePortfolioAudit(portfolioId);
+  const [category, setCategory] = useState("all");
+  const [range, setRange] = useState("all");
+
+  const filtered = useMemo(() => {
+    const cat = CATEGORIES.find((c) => c.value === category) ?? CATEGORIES[0]!;
+    const days = RANGES.find((r) => r.value === range)?.days ?? null;
+    const cutoff = days == null ? null : Date.now() - days * 86_400_000;
+    return (data ?? []).filter(
+      (event) => cat.match(event) && (cutoff == null || new Date(event.at).getTime() >= cutoff),
+    );
+  }, [data, category, range]);
 
   if (isLoading) return <p className="text-sm text-muted-foreground">Loading audit trail…</p>;
   if (error)
@@ -125,7 +176,45 @@ export function PortfolioAuditTrail({ portfolioId }: { portfolioId: string }) {
       </p>
     );
 
-  return <EventList events={data} />;
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        <Select value={category} onValueChange={setCategory}>
+          <SelectTrigger className="h-8 w-[220px]" aria-label="Filter audit trail by activity">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {CATEGORIES.map((c) => (
+              <SelectItem key={c.value} value={c.value}>
+                {c.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={range} onValueChange={setRange}>
+          <SelectTrigger className="h-8 w-[160px]" aria-label="Filter audit trail by date">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {RANGES.map((r) => (
+              <SelectItem key={r.value} value={r.value}>
+                {r.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="self-center text-xs text-muted-foreground" aria-live="polite">
+          {filtered.length} of {data.length} events
+        </p>
+      </div>
+
+      {filtered.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No events match these filters.</p>
+      ) : (
+        <EventList events={filtered} />
+      )}
+    </div>
+  );
 }
 
 /** Decision history for a single use case inside one portfolio. */
