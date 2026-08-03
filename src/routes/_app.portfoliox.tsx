@@ -401,7 +401,7 @@ function PortfolioDetail({
             <>
               <PortfolioFilters
                 entries={portfolio.entries}
-                value={filters}
+                filters={filters}
                 onChange={setFilters}
                 resultCount={visibleEntries.length}
               />
