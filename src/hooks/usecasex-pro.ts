@@ -157,6 +157,14 @@ async function fetchProData(userId: string): Promise<ProData> {
         fundingState: (item.funding_state ?? "unfunded") as FundingState,
         nextAction: item.next_action ?? undefined,
         notes: item.notes ?? undefined,
+        reviewNotes: item.review_notes ?? undefined,
+        lastReviewedAt: item.last_reviewed_at ?? undefined,
+        status: item.use_cases?.status ?? undefined,
+        valuePotential: item.use_cases?.value_potential ?? undefined,
+        complexity: item.use_cases?.complexity ?? undefined,
+        riskLevel: item.use_cases?.risk_level ?? undefined,
+        timeToValue: item.use_cases?.time_to_value ?? undefined,
+        functionName: item.use_cases?.function_name ?? undefined,
         addedAt: item.added_at,
         updatedAt: item.updated_at ?? item.added_at,
       });
@@ -181,9 +189,12 @@ async function fetchProData(userId: string): Promise<ProData> {
       parentPortfolioId: p.parent_portfolio_id ?? undefined,
       useCaseSlugs: slugs,
       entries,
+      reviewNotes: p.review_notes ?? undefined,
+      lastReviewedAt: p.last_reviewed_at ?? undefined,
       createdAt: p.created_at,
       updatedAt: p.updated_at ?? p.created_at,
     });
+
   }
 
   return { saved, portfolios, slugToId };
