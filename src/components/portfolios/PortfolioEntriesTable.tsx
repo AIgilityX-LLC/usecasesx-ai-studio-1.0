@@ -78,25 +78,29 @@ export function PortfolioEntriesTable({
   };
 
   const columns: ResponsiveColumn<PortfolioEntry>[] = [
-    {
-      key: "select",
-      hideOnMobile: true,
-      header: (
-        <Checkbox
-          checked={allSelected}
-          aria-label="Select all use cases"
-          onCheckedChange={(v) => setSelected(v === true ? selectableIds : [])}
-        />
-      ),
-      cell: (row) => (
-        <Checkbox
-          checked={selected.includes(row.useCaseId)}
-          aria-label={`Select ${row.useCaseTitle ?? row.useCaseId}`}
-          onCheckedChange={() => toggle(row.useCaseId)}
-        />
-      ),
-      className: "w-10",
-    },
+    ...(canManage
+      ? [
+          {
+            key: "select",
+            hideOnMobile: true,
+            header: (
+              <Checkbox
+                checked={allSelected}
+                aria-label="Select all use cases"
+                onCheckedChange={(v) => setSelected(v === true ? selectableIds : [])}
+              />
+            ),
+            cell: (row: PortfolioEntry) => (
+              <Checkbox
+                checked={selected.includes(row.useCaseId)}
+                aria-label={`Select ${row.useCaseTitle ?? row.useCaseId}`}
+                onCheckedChange={() => toggle(row.useCaseId)}
+              />
+            ),
+            className: "w-10",
+          } satisfies ResponsiveColumn<PortfolioEntry>,
+        ]
+      : []),
     {
       key: "title",
       header: "Use case",
