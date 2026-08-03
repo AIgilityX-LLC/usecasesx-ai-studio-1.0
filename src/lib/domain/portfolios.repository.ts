@@ -42,15 +42,30 @@ export type PortfolioCreateInput = {
   organizationUnitId?: string | null;
 };
 
-export type PortfolioPatchInput = Partial<PortfolioCreateInput> & { status?: string };
+export type PortfolioPatchInput = Partial<PortfolioCreateInput> & {
+  status?: string;
+  reviewNotes?: string | null;
+  markReviewed?: boolean;
+};
 
 const PORTFOLIO_SELECT =
-  "id, name, objective, created_at, updated_at, portfolio_type, status, target_department, target_quarter, visibility, review_cadence, organization_unit_id, parent_portfolio_id, " +
-  "portfolio_items ( use_case_id, rank, decision, target_period, funding_state, next_action, notes, added_at, updated_at )";
+  "id, name, objective, created_at, updated_at, portfolio_type, status, target_department, target_quarter, visibility, review_cadence, organization_unit_id, parent_portfolio_id, review_notes, last_reviewed_at, " +
+  "portfolio_items ( use_case_id, rank, decision, target_period, funding_state, next_action, notes, review_notes, last_reviewed_at, added_at, updated_at )";
+
+type UseCaseMeta = {
+  slug: string;
+  title: string;
+  status?: string | null;
+  value_potential?: string | null;
+  complexity?: string | null;
+  risk_level?: string | null;
+  time_to_value?: string | null;
+  function_name?: string | null;
+};
 
 type PortfolioItemRow = {
   use_case_id: string;
-  use_cases?: { slug: string; title: string } | null;
+  use_cases?: UseCaseMeta | null;
 };
 
 type PortfolioRow = { portfolio_items?: PortfolioItemRow[] | null };
@@ -58,21 +73,41 @@ type PortfolioRow = { portfolio_items?: PortfolioItemRow[] | null };
 /**
  * `portfolio_items.use_case_id` intentionally carries no foreign key (the same
  * column can point at a repository entry or a workspace draft), so PostgREST
- * cannot embed the use case. We hydrate slug/title in a second read instead.
+ * cannot embed the use case. We hydrate the executive-summary fields in a
+ * second read instead. Rows the caller cannot see simply stay unhydrated.
  */
 async function attachUseCases(rows: PortfolioRow[]) {
   const ids = [
     ...new Set(rows.flatMap((row) => (row.portfolio_items ?? []).map((i) => i.use_case_id))),
   ];
   if (ids.length === 0) return rows;
-  const result = await supabase.from("use_cases").select("id, slug, title").in("id", ids);
-  const byId = new Map(
-    (unwrapResult(result, { allowNull: true }) ?? []).map((uc) => [uc.id, uc] as const),
-  );
+  const result = await supabase
+    .from("use_cases")
+    .select("id, slug, title, status, value_potential, complexity, risk_level, time_to_value")
+    .in("id", ids);
+  const useCases = unwrapResult(result, { allowNull: true }) ?? [];
+  const byId = new Map(useCases.map((uc) => [uc.id, uc] as const));
+
+  // Primary business function per use case (many-to-many join table).
+  const fnResult = await supabase
+    .from("use_case_business_functions")
+    .select("use_case_id, business_functions ( name )")
+    .in("use_case_id", ids);
+  const functionById = new Map<string, string>();
+  for (const row of (unwrapResult(fnResult, { allowNull: true }) ?? []) as {
+    use_case_id: string;
+    business_functions?: { name?: string | null } | null;
+  }[]) {
+    const name = row.business_functions?.name;
+    if (name && !functionById.has(row.use_case_id)) functionById.set(row.use_case_id, name);
+  }
+
   for (const row of rows) {
     for (const item of row.portfolio_items ?? []) {
-      const uc = byId.get(item.use_case_id);
-      item.use_cases = uc ? { slug: uc.slug, title: uc.title } : null;
+      const uc = byId.get(item.use_case_id) as UseCaseMeta | undefined;
+      item.use_cases = uc
+        ? { ...uc, function_name: functionById.get(item.use_case_id) ?? null }
+        : null;
     }
   }
   return rows;
@@ -88,6 +123,7 @@ export async function listPortfoliosForUser(userId: string | null) {
   const rows = unwrapResult(result, { allowNull: true }) ?? [];
   return attachUseCases(rows as PortfolioRow[]);
 }
+
 
 export async function createPortfolio(userId: string | null, input: PortfolioCreateInput) {
   const uid = requireUserId(userId);
