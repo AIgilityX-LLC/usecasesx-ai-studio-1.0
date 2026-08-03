@@ -3,9 +3,14 @@ import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-
 import { RequirePlan } from "@/components/RequirePlan";
-import { PageHeader, EmptyState, ErrorState, LoadingSkeleton, ConfirmDialog } from "@/components/ui-kit";
+import {
+  PageHeader,
+  EmptyState,
+  ErrorState,
+  LoadingSkeleton,
+  ConfirmDialog,
+} from "@/components/ui-kit";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -57,18 +62,13 @@ import {
 } from "@/components/portfolios/PortfolioAuditTrail";
 import { downloadPortfolio, type PortfolioExportFormat } from "@/lib/portfolio-export";
 import { AUDIT_EVENTS, recordAuditEvent } from "@/lib/telemetry";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 
 export const Route = createFileRoute("/_app/portfoliox")({
   head: () => ({
@@ -198,7 +198,6 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
             <ExportPortfolioMenu portfolio={portfolio} />
             <DeletePortfolioButton portfolio={portfolio} store={store} />
           </div>
-
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Field label="Status">
@@ -342,7 +341,6 @@ function ExportPortfolioMenu({ portfolio }: { portfolio: Portfolio }) {
   );
 }
 
-
 function DeletePortfolioButton({ portfolio, store }: { portfolio: Portfolio; store: Store }) {
   const [open, setOpen] = useState(false);
   return (
@@ -389,7 +387,6 @@ function EntryRow({
         void queryClient.invalidateQueries({ queryKey: ["portfolio", portfolioId, "audit"] });
       })
       .catch((e: unknown) => toast.error(e instanceof Error ? e.message : "Could not save"));
-
 
   return (
     <div className="rounded-xl border border-border p-3">
@@ -504,7 +501,6 @@ function EntryRow({
           Remove from portfolio
         </Button>
       </div>
-
     </div>
   );
 }

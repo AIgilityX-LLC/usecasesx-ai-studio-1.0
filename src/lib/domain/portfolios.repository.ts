@@ -89,7 +89,6 @@ export async function listPortfoliosForUser(userId: string | null) {
   return attachUseCases(rows as PortfolioRow[]);
 }
 
-
 export async function createPortfolio(userId: string | null, input: PortfolioCreateInput) {
   const uid = requireUserId(userId);
   const clean = parseInput(portfolioCreateSchema, input);

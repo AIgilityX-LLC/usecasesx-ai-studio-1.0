@@ -176,7 +176,6 @@ export async function listSavedForUser(userId: string | null) {
   return rows;
 }
 
-
 export async function listScoresForUser(userId: string | null) {
   const uid = requireUserId(userId);
   const result = await supabase
