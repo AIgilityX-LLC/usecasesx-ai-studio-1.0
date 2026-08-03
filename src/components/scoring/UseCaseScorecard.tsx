@@ -286,11 +286,9 @@ export function UseCaseScorecard({ id }: { id: string }) {
         res.result.incomplete ? "Score recorded and flagged as incomplete." : "Score recorded.",
       );
       // Only clear the local safety copy once the server confirmed the write.
-      try {
-        window.localStorage.removeItem(draftKey);
-      } catch {
-        /* ignore */
-      }
+      clearDraft(draftKey);
+      setPendingDraft(null);
+
       setNote("");
       setResponses(null);
       setEvidence(null);
