@@ -370,7 +370,7 @@ function EntryRow({
         </div>
         {entry.useCaseSlug && (
           <Button variant="ghost" size="sm" asChild>
-            <Link to="/repository/$slug" params={{ slug: entry.useCaseSlug }}>
+            <Link to="/use-cases/$slug" params={{ slug: entry.useCaseSlug }}>
               View use case
             </Link>
           </Button>
