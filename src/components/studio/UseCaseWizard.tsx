@@ -7,7 +7,17 @@
  * failed AI call never blocks completion.
  */
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { AutosaveStatus, DraftRecoveryBanner } from "@/components/ui-kit";
+import {
+  clearDraft,
+  hasConflict,
+  readDraft,
+  writeDraft,
+  type AutosaveState,
+  type LocalDraft,
+} from "@/lib/drafts";
+
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
