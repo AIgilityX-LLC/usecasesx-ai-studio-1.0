@@ -66,6 +66,8 @@ type UseCaseMeta = {
 type PortfolioItemRow = {
   use_case_id: string;
   use_cases?: UseCaseMeta | null;
+  /** Workspace Studio draft derived from this use case, when one exists. */
+  studio_use_case_id?: string | null;
 };
 
 type PortfolioRow = { portfolio_items?: PortfolioItemRow[] | null };
