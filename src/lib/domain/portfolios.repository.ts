@@ -316,13 +316,29 @@ export async function removeUseCaseFromPortfolio(
   portfolioId: string,
   useCaseId: string,
 ) {
+  return removeUseCasesFromPortfolio(userId, portfolioId, [useCaseId]);
+}
+
+/** Bulk membership removal. The use cases themselves are never deleted. */
+export async function removeUseCasesFromPortfolio(
+  userId: string | null,
+  portfolioId: string,
+  useCaseIds: string[],
+) {
   requireUserId(userId);
   const pid = parseInput(uuidSchema, portfolioId);
-  const ucid = parseInput(uuidSchema, useCaseId);
+  const ids = [...new Set(useCaseIds)].map((id) => parseInput(uuidSchema, id));
+  if (ids.length === 0) return;
   const result = await supabase
     .from("portfolio_items")
     .delete()
     .eq("portfolio_id", pid)
-    .eq("use_case_id", ucid);
+    .in("use_case_id", ids);
   if (result.error) throw normalizeError(result.error);
+  await recordProductEvent({
+    event: PRODUCT_EVENTS.portfolioItemRemoved,
+    entity: { type: "portfolio", id: pid },
+    properties: { count: ids.length },
+  });
 }
+
