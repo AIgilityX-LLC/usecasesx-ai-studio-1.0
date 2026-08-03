@@ -2,12 +2,28 @@
  * Portfolio repository — the only place that reads/writes `portfolios` and
  * `portfolio_items`. Ownership is asserted before every mutation; RLS enforces
  * the same rule server-side.
+ *
+ * Portfolio membership (`portfolio_items`) carries its own decision fields —
+ * rank, decision, target period, funding state, next action and notes. Those
+ * are portfolio-specific and never written back to the authoritative use case,
+ * so one use case can sit in many portfolios with different decisions.
+ *
+ * The schema also reserves `parent_portfolio_id`, `portfolio_type` and
+ * organization links for future nested Enterprise portfolios; the Pro surface
+ * deliberately does not expose them yet.
  */
 
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeError, unwrapResult } from "./errors";
 import { requireUserId } from "./ownership";
-import { parseInput, portfolioCreateSchema, portfolioPatchSchema, uuidSchema } from "./validation";
+import {
+  parseInput,
+  portfolioCreateSchema,
+  portfolioEntryPatchSchema,
+  portfolioPatchSchema,
+  uuidSchema,
+} from "./validation";
+import type { PortfolioEntryPatch } from "@/lib/portfolio-model";
 import {
   AUDIT_EVENTS,
   PRODUCT_EVENTS,
@@ -21,17 +37,22 @@ export type PortfolioCreateInput = {
   objective?: string;
   targetDepartment?: string;
   targetQuarter?: string;
+  visibility?: "private" | "workspace" | "organization";
+  reviewCadence?: "none" | "weekly" | "monthly" | "quarterly" | "biannual" | "annual";
+  organizationUnitId?: string | null;
 };
 
 export type PortfolioPatchInput = Partial<PortfolioCreateInput> & { status?: string };
+
+const PORTFOLIO_SELECT =
+  "id, name, objective, created_at, updated_at, portfolio_type, status, target_department, target_quarter, visibility, review_cadence, organization_unit_id, parent_portfolio_id, " +
+  "portfolio_items ( use_case_id, rank, decision, target_period, funding_state, next_action, notes, added_at, updated_at, use_cases ( slug, title ) )";
 
 export async function listPortfoliosForUser(userId: string | null) {
   const uid = requireUserId(userId);
   const result = await supabase
     .from("portfolios")
-    .select(
-      "id, name, objective, created_at, portfolio_type, status, target_department, target_quarter, portfolio_items ( use_case_id, use_cases ( slug ) )",
-    )
+    .select(PORTFOLIO_SELECT)
     .eq("user_id", uid)
     .order("created_at", { ascending: false });
   return unwrapResult(result, { allowNull: true }) ?? [];
@@ -50,6 +71,9 @@ export async function createPortfolio(userId: string | null, input: PortfolioCre
       objective: clean.objective ?? null,
       target_department: clean.targetDepartment ?? null,
       target_quarter: clean.targetQuarter ?? null,
+      visibility: clean.visibility ?? "workspace",
+      review_cadence: clean.reviewCadence ?? null,
+      organization_unit_id: clean.organizationUnitId ?? null,
     })
     .select("id")
     .maybeSingle();
@@ -66,6 +90,7 @@ export async function createPortfolio(userId: string | null, input: PortfolioCre
     properties: { portfolio_type: clean.type },
     requestId,
   });
+  return id;
 }
 
 /** Maps the domain patch onto database columns. Exported for unit tests. */
@@ -77,6 +102,9 @@ export function toPortfolioColumns(patch: PortfolioPatchInput) {
     status?: string;
     target_department?: string | null;
     target_quarter?: string | null;
+    visibility?: string;
+    review_cadence?: string | null;
+    organization_unit_id?: string | null;
   } = {};
   if (patch.name !== undefined) columns.name = patch.name;
   if (patch.objective !== undefined) columns.objective = patch.objective ?? null;
@@ -85,6 +113,29 @@ export function toPortfolioColumns(patch: PortfolioPatchInput) {
   if (patch.targetDepartment !== undefined)
     columns.target_department = patch.targetDepartment ?? null;
   if (patch.targetQuarter !== undefined) columns.target_quarter = patch.targetQuarter ?? null;
+  if (patch.visibility !== undefined) columns.visibility = patch.visibility;
+  if (patch.reviewCadence !== undefined) columns.review_cadence = patch.reviewCadence ?? null;
+  if (patch.organizationUnitId !== undefined)
+    columns.organization_unit_id = patch.organizationUnitId ?? null;
+  return columns;
+}
+
+/** Maps a portfolio-entry patch onto `portfolio_items` columns. Exported for unit tests. */
+export function toPortfolioEntryColumns(patch: PortfolioEntryPatch) {
+  const columns: {
+    rank?: number | null;
+    decision?: string;
+    target_period?: string | null;
+    funding_state?: string;
+    next_action?: string | null;
+    notes?: string | null;
+  } = {};
+  if (patch.rank !== undefined) columns.rank = patch.rank ?? null;
+  if (patch.decision !== undefined) columns.decision = patch.decision;
+  if (patch.targetPeriod !== undefined) columns.target_period = patch.targetPeriod || null;
+  if (patch.fundingState !== undefined) columns.funding_state = patch.fundingState;
+  if (patch.nextAction !== undefined) columns.next_action = patch.nextAction || null;
+  if (patch.notes !== undefined) columns.notes = patch.notes || null;
   return columns;
 }
 
@@ -124,12 +175,39 @@ export async function addUseCaseToPortfolio(
   portfolioId: string,
   useCaseId: string,
 ) {
-  requireUserId(userId);
+  const uid = requireUserId(userId);
   const pid = parseInput(uuidSchema, portfolioId);
   const ucid = parseInput(uuidSchema, useCaseId);
   const result = await supabase
     .from("portfolio_items")
-    .upsert({ portfolio_id: pid, use_case_id: ucid }, { onConflict: "portfolio_id,use_case_id" });
+    .upsert(
+      { portfolio_id: pid, use_case_id: ucid, added_by: uid },
+      { onConflict: "portfolio_id,use_case_id", ignoreDuplicates: true },
+    );
+  if (result.error) throw normalizeError(result.error);
+}
+
+/**
+ * Updates the portfolio-specific decision fields for one membership record.
+ * Source use-case fields and scores are never touched.
+ */
+export async function updatePortfolioEntry(
+  userId: string | null,
+  portfolioId: string,
+  useCaseId: string,
+  patch: PortfolioEntryPatch,
+) {
+  requireUserId(userId);
+  const pid = parseInput(uuidSchema, portfolioId);
+  const ucid = parseInput(uuidSchema, useCaseId);
+  const clean = parseInput(portfolioEntryPatchSchema, patch);
+  const columns = toPortfolioEntryColumns(clean);
+  if (Object.keys(columns).length === 0) return;
+  const result = await supabase
+    .from("portfolio_items")
+    .update(columns)
+    .eq("portfolio_id", pid)
+    .eq("use_case_id", ucid);
   if (result.error) throw normalizeError(result.error);
 }
 

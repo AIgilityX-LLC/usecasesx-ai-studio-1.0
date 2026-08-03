@@ -39,6 +39,17 @@ export const savedUseCasePatchSchema = z
 
 export const portfolioTypeSchema = z.string().trim().min(1).max(80);
 
+export const portfolioVisibilitySchema = z.enum(["private", "workspace", "organization"]);
+
+export const reviewCadenceSchema = z.enum([
+  "none",
+  "weekly",
+  "monthly",
+  "quarterly",
+  "biannual",
+  "annual",
+]);
+
 export const portfolioCreateSchema = z.object({
   name: z
     .string()
@@ -49,11 +60,32 @@ export const portfolioCreateSchema = z.object({
   objective: z.string().trim().max(1000).optional(),
   targetDepartment: z.string().trim().max(120).optional(),
   targetQuarter: z.string().trim().max(40).optional(),
+  visibility: portfolioVisibilitySchema.optional(),
+  reviewCadence: reviewCadenceSchema.optional(),
+  organizationUnitId: z.string().uuid().nullish(),
 });
 
 export const portfolioPatchSchema = portfolioCreateSchema
   .partial()
   .extend({ status: z.string().trim().min(1).max(40).optional() });
+
+/**
+ * Portfolio-specific decision fields. These live on the membership record and
+ * must never be mapped onto the use case itself.
+ */
+export const portfolioEntryPatchSchema = z
+  .object({
+    rank: z.number().int().min(0).max(9999).nullable().optional(),
+    decision: z
+      .enum(["under_review", "shortlisted", "approved", "deferred", "rejected", "delivered"])
+      .optional(),
+    targetPeriod: z.string().trim().max(40).nullish(),
+    fundingState: z.enum(["unfunded", "requested", "funded", "on_hold"]).optional(),
+    nextAction: z.string().trim().max(500).nullish(),
+    notes: z.string().trim().max(2000).nullish(),
+  })
+  .refine((v) => Object.values(v).some((x) => x !== undefined), { message: "Nothing to update" });
+
 
 export const reportRequestSchema = z.object({
   title: z.string().trim().min(1, { message: "Report title is required" }).max(160),
