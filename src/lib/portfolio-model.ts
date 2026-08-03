@@ -88,6 +88,12 @@ export interface PortfolioEntryMeta {
   timeToValue?: string;
   functionName?: string;
   ownerName?: string;
+  /**
+   * Id of the workspace Studio draft derived from this use case, when one
+   * exists (`ai_use_cases.source_use_case_id`). Lets the portfolio hand off
+   * into Design without guessing the id.
+   */
+  studioUseCaseId?: string;
 }
 
 /** One use case's membership of one portfolio. The same use case may hold many. */

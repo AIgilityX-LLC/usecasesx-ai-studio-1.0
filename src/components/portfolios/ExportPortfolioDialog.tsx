@@ -38,20 +38,33 @@ const FORMATS: Array<{ value: PortfolioExportFormat; label: string }> = [
   { value: "json", label: "JSON (data)" },
 ];
 
-export function ExportPortfolioDialog({ portfolio }: { portfolio: Portfolio }) {
+export function ExportPortfolioDialog({
+  portfolio,
+  filteredEntries,
+}: {
+  portfolio: Portfolio;
+  /** Currently visible entries; enables the "filtered only" export option. */
+  filteredEntries?: Portfolio["entries"];
+}) {
   const [open, setOpen] = useState(false);
   const [format, setFormat] = useState<PortfolioExportFormat>("board-pack");
   const [columns, setColumns] = useState<PortfolioExportColumnKey[]>(
     DEFAULT_PORTFOLIO_EXPORT_COLUMNS,
   );
   const [decisions, setDecisions] = useState<string[]>([]);
+  const hasFilter = !!filteredEntries && filteredEntries.length !== portfolio.entries.length;
+  const [filteredOnly, setFilteredOnly] = useState(true);
 
   const toggle = <T extends string>(list: T[], value: T, set: (next: T[]) => void) =>
     set(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
 
   const run = () => {
     try {
-      const fileName = downloadPortfolio(portfolio, format, { columns, decisions });
+      const scoped =
+        hasFilter && filteredOnly && filteredEntries
+          ? { ...portfolio, entries: filteredEntries }
+          : portfolio;
+      const fileName = downloadPortfolio(scoped, format, { columns, decisions });
       void recordAuditEvent({
         event: AUDIT_EVENTS.exportGenerated,
         entity: { type: "portfolio", id: portfolio.id },
@@ -60,7 +73,8 @@ export function ExportPortfolioDialog({ portfolio }: { portfolio: Portfolio }) {
           file_name: fileName,
           columns,
           decision_filter: decisions,
-          entry_count: portfolio.entries.length,
+          filtered_only: hasFilter && filteredOnly,
+          entry_count: scoped.entries.length,
         },
       });
       toast.success(`Exported ${fileName}`);
@@ -104,6 +118,24 @@ export function ExportPortfolioDialog({ portfolio }: { portfolio: Portfolio }) {
               </SelectContent>
             </Select>
           </div>
+
+          {hasFilter && (
+            <label className="flex items-start gap-2 rounded-lg border border-border p-3 text-sm">
+              <Checkbox
+                checked={filteredOnly}
+                onCheckedChange={(v) => setFilteredOnly(v === true)}
+                aria-label="Export only the filtered entries"
+              />
+              <span>
+                Export only the {filteredEntries?.length} filtered entries
+                <span className="block text-xs text-muted-foreground">
+                  Unchecked exports all {portfolio.entries.length} entries in this portfolio.
+                </span>
+              </span>
+            </label>
+          )}
+
+
 
           <fieldset className="space-y-2">
             <legend className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">

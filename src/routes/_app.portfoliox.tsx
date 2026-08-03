@@ -65,6 +65,15 @@ import { SharePortfolioDialog } from "@/components/portfolios/SharePortfolioDial
 import { PortfolioMetrics } from "@/components/portfolios/PortfolioMetrics";
 import { PortfolioEntriesTable } from "@/components/portfolios/PortfolioEntriesTable";
 import { PortfolioReviewNotes } from "@/components/portfolios/PortfolioReviewNotes";
+import { PortfolioCharts } from "@/components/portfolios/PortfolioCharts";
+import { PortfolioFilters } from "@/components/portfolios/PortfolioFilters";
+import {
+  EMPTY_PORTFOLIO_FILTERS,
+  applyPortfolioFilters,
+  countActiveFilters,
+  type PortfolioFilterState,
+} from "@/lib/portfolio-filters";
+import { useAuthz } from "@/hooks/useAuthz";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 export const Route = createFileRoute("/_app/portfoliox")({
@@ -94,17 +103,36 @@ export const Route = createFileRoute("/_app/portfoliox")({
 
 function PortfoliosPage() {
   const store = useUseCaseXPro();
+  const authz = useAuthz();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // Client-side gate mirrors the server decision; RLS remains authoritative.
+  const canManage = authz.can("portfolio.manage");
+  const canView = authz.can("portfolio.view");
 
   const selected = useMemo(
     () => store.portfolios.find((p) => p.id === selectedId) ?? store.portfolios[0] ?? null,
     [store.portfolios, selectedId],
   );
 
-  if (store.isLoading) {
+  if (store.isLoading || authz.loading) {
     return (
       <div className="mx-auto w-full max-w-6xl space-y-6 px-4 py-8">
         <LoadingSkeleton />
+      </div>
+    );
+  }
+
+  if (!canView) {
+    return (
+      <div className="mx-auto w-full max-w-6xl px-4 py-8">
+        <EmptyState
+          title="You don't have access to portfolios"
+          description={
+            authz.explain("portfolio.view").reason ??
+            "Ask a workspace owner or admin to grant you portfolio access."
+          }
+        />
       </div>
     );
   }
@@ -127,16 +155,20 @@ function PortfoliosPage() {
         eyebrow="Prioritize"
         title="AI Opportunity Portfolios"
         description="Group prioritized use cases and record portfolio-level decisions. The same use case can sit in several portfolios — its own record and scores never change."
-        actions={<CreatePortfolioDialog onCreate={store.createPortfolio} />}
+        actions={canManage ? <CreatePortfolioDialog onCreate={store.createPortfolio} /> : undefined}
       />
 
       {store.portfolios.length === 0 ? (
         <EmptyState
           title="No portfolios yet"
-          description="Create a portfolio, then add shortlisted use cases from My Use Cases."
+          description={
+            canManage
+              ? "Create a portfolio, then add shortlisted use cases from My Use Cases."
+              : "No portfolios have been shared with you yet."
+          }
           action={
             <div className="flex flex-wrap justify-center gap-2">
-              <CreatePortfolioDialog onCreate={store.createPortfolio} />
+              {canManage && <CreatePortfolioDialog onCreate={store.createPortfolio} />}
               <Button variant="outline" asChild>
                 <Link to="/my-use-cases">Go to My Use Cases</Link>
               </Button>
@@ -171,7 +203,14 @@ function PortfoliosPage() {
             ))}
           </nav>
 
-          {selected && <PortfolioDetail key={selected.id} portfolio={selected} store={store} />}
+          {selected && (
+            <PortfolioDetail
+              key={selected.id}
+              portfolio={selected}
+              store={store}
+              canManage={canManage}
+            />
+          )}
         </div>
       )}
     </div>
@@ -180,11 +219,36 @@ function PortfoliosPage() {
 
 type Store = ReturnType<typeof useUseCaseXPro>;
 
-function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: Store }) {
+function PortfolioDetail({
+  portfolio,
+  store,
+  canManage,
+}: {
+  portfolio: Portfolio;
+  store: Store;
+  canManage: boolean;
+}) {
   const [view, setView] = useState<"table" | "cards">("table");
+  const [filters, setFilters] = useState<PortfolioFilterState>(EMPTY_PORTFOLIO_FILTERS);
+
+  const visibleEntries = useMemo(
+    () => applyPortfolioFilters(portfolio.entries, filters),
+    [portfolio.entries, filters],
+  );
+  const isFiltered = countActiveFilters(filters) > 0;
 
   return (
     <div className="min-w-0 space-y-4">
+      {!canManage && (
+        <div
+          role="status"
+          className="rounded-xl border border-border bg-secondary/40 px-4 py-3 text-sm text-muted-foreground"
+        >
+          You have read-only access to portfolios. Decisions, funding and membership can only be
+          changed by a workspace owner or admin.
+        </div>
+      )}
+
       <Card>
         <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
@@ -194,19 +258,23 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <SharePortfolioDialog portfolioId={portfolio.id} portfolioName={portfolio.name} />
-            <ExportPortfolioDialog portfolio={portfolio} />
-            <DeletePortfolioButton portfolio={portfolio} store={store} />
+            {canManage && (
+              <SharePortfolioDialog portfolioId={portfolio.id} portfolioName={portfolio.name} />
+            )}
+            <ExportPortfolioDialog portfolio={portfolio} filteredEntries={visibleEntries} />
+            {canManage && <DeletePortfolioButton portfolio={portfolio} store={store} />}
           </div>
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <PortfolioMetrics entries={portfolio.entries} lastReviewedAt={portfolio.lastReviewedAt} />
+          <PortfolioMetrics entries={visibleEntries} lastReviewedAt={portfolio.lastReviewedAt} />
+
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Field label="Status">
               <Select
                 value={portfolio.status}
+                disabled={!canManage}
                 onValueChange={(v) =>
                   void store.updatePortfolio(portfolio.id, { status: v as PortfolioStatus })
                 }
@@ -227,6 +295,7 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
             <Field label="Visibility">
               <Select
                 value={portfolio.visibility}
+                disabled={!canManage}
                 onValueChange={(v) =>
                   void store.updatePortfolio(portfolio.id, { visibility: v as PortfolioVisibility })
                 }
@@ -247,6 +316,7 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
             <Field label="Review cadence">
               <Select
                 value={portfolio.reviewCadence ?? "none"}
+                disabled={!canManage}
                 onValueChange={(v) =>
                   void store.updatePortfolio(portfolio.id, { reviewCadence: v as ReviewCadence })
                 }
@@ -266,6 +336,21 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
           </div>
         </CardContent>
       </Card>
+
+      {portfolio.entries.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Portfolio analytics</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Decision mix, funding and delivery shape across the {visibleEntries.length} entries
+              currently in view.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <PortfolioCharts entries={visibleEntries} />
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
@@ -312,23 +397,46 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
                 </Button>
               }
             />
-          ) : view === "table" ? (
-            <PortfolioEntriesTable
-              portfolioId={portfolio.id}
-              entries={portfolio.entries}
-              store={store}
-            />
           ) : (
-            portfolio.entries.map((entry) => (
-              <EntryRow
-                key={entry.useCaseId}
-                portfolioId={portfolio.id}
-                entry={entry}
-                store={store}
+            <>
+              <PortfolioFilters
+                entries={portfolio.entries}
+                filters={filters}
+                onChange={setFilters}
+                resultCount={visibleEntries.length}
               />
-            ))
+
+              {visibleEntries.length === 0 ? (
+                <EmptyState
+                  title="No entries match these filters"
+                  description="Clear or widen the filters to see portfolio entries again."
+                  action={
+                    <Button variant="outline" onClick={() => setFilters(EMPTY_PORTFOLIO_FILTERS)}>
+                      Clear filters
+                    </Button>
+                  }
+                />
+              ) : view === "table" ? (
+                <PortfolioEntriesTable
+                  portfolioId={portfolio.id}
+                  entries={visibleEntries}
+                  store={store}
+                  canManage={canManage}
+                />
+              ) : (
+                visibleEntries.map((entry) => (
+                  <EntryRow
+                    key={entry.useCaseId}
+                    portfolioId={portfolio.id}
+                    entry={entry}
+                    store={store}
+                  />
+                ))
+              )}
+            </>
           )}
         </CardContent>
+
       </Card>
 
       <Card>
