@@ -104,12 +104,30 @@ async function attachUseCases(rows: PortfolioRow[]) {
     if (name && !functionById.has(row.use_case_id)) functionById.set(row.use_case_id, name);
   }
 
+  // Studio drafts derived from these repository entries. Read-only lineage —
+  // RLS keeps drafts from other workspaces out of the result.
+  const studioResult = await supabase
+    .from("ai_use_cases")
+    .select("id, source_use_case_id, updated_at")
+    .in("source_use_case_id", ids)
+    .order("updated_at", { ascending: false });
+  const studioBySource = new Map<string, string>();
+  for (const row of (unwrapResult(studioResult, { allowNull: true }) ?? []) as {
+    id: string;
+    source_use_case_id: string | null;
+  }[]) {
+    if (row.source_use_case_id && !studioBySource.has(row.source_use_case_id)) {
+      studioBySource.set(row.source_use_case_id, row.id);
+    }
+  }
+
   for (const row of rows) {
     for (const item of row.portfolio_items ?? []) {
       const uc = byId.get(item.use_case_id) as UseCaseMeta | undefined;
       item.use_cases = uc
         ? { ...uc, function_name: functionById.get(item.use_case_id) ?? null }
         : null;
+      item.studio_use_case_id = studioBySource.get(item.use_case_id) ?? null;
     }
   }
   return rows;
