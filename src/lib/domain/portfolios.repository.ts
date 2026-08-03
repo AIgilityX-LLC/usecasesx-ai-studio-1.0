@@ -46,7 +46,37 @@ export type PortfolioPatchInput = Partial<PortfolioCreateInput> & { status?: str
 
 const PORTFOLIO_SELECT =
   "id, name, objective, created_at, updated_at, portfolio_type, status, target_department, target_quarter, visibility, review_cadence, organization_unit_id, parent_portfolio_id, " +
-  "portfolio_items ( use_case_id, rank, decision, target_period, funding_state, next_action, notes, added_at, updated_at, use_cases ( slug, title ) )";
+  "portfolio_items ( use_case_id, rank, decision, target_period, funding_state, next_action, notes, added_at, updated_at )";
+
+type PortfolioItemRow = {
+  use_case_id: string;
+  use_cases?: { slug: string; title: string } | null;
+};
+
+type PortfolioRow = { portfolio_items?: PortfolioItemRow[] | null };
+
+/**
+ * `portfolio_items.use_case_id` intentionally carries no foreign key (the same
+ * column can point at a repository entry or a workspace draft), so PostgREST
+ * cannot embed the use case. We hydrate slug/title in a second read instead.
+ */
+async function attachUseCases(rows: PortfolioRow[]) {
+  const ids = [
+    ...new Set(rows.flatMap((row) => (row.portfolio_items ?? []).map((i) => i.use_case_id))),
+  ];
+  if (ids.length === 0) return rows;
+  const result = await supabase.from("use_cases").select("id, slug, title").in("id", ids);
+  const byId = new Map(
+    (unwrapResult(result, { allowNull: true }) ?? []).map((uc) => [uc.id, uc] as const),
+  );
+  for (const row of rows) {
+    for (const item of row.portfolio_items ?? []) {
+      const uc = byId.get(item.use_case_id);
+      item.use_cases = uc ? { slug: uc.slug, title: uc.title } : null;
+    }
+  }
+  return rows;
+}
 
 export async function listPortfoliosForUser(userId: string | null) {
   const uid = requireUserId(userId);
@@ -55,7 +85,8 @@ export async function listPortfoliosForUser(userId: string | null) {
     .select(PORTFOLIO_SELECT)
     .eq("user_id", uid)
     .order("created_at", { ascending: false });
-  return unwrapResult(result, { allowNull: true }) ?? [];
+  const rows = unwrapResult(result, { allowNull: true }) ?? [];
+  return attachUseCases(rows as PortfolioRow[]);
 }
 
 export async function createPortfolio(userId: string | null, input: PortfolioCreateInput) {

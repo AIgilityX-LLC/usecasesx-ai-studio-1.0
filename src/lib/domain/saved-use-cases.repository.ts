@@ -145,15 +145,35 @@ export function parseScore(score: unknown) {
   return parseInput(scoreDimensionsSchema, score);
 }
 
-/** Raw personal workspace read used by the Pro hook. */
+/**
+ * Raw personal workspace read used by the Pro hook.
+ *
+ * `saved_use_cases.use_case_id` has no foreign key (it can reference either the
+ * global catalogue or a workspace draft), so the slug is hydrated separately
+ * rather than embedded by PostgREST.
+ */
 export async function listSavedForUser(userId: string | null) {
   const uid = requireUserId(userId);
   const result = await supabase
     .from("saved_use_cases")
-    .select("use_case_id, priority, note, saved_at, use_cases ( slug )")
+    .select("use_case_id, priority, note, saved_at")
     .eq("user_id", uid)
     .order("saved_at", { ascending: false });
-  return unwrapResult(result, { allowNull: true }) ?? [];
+  const rows = (unwrapResult(result, { allowNull: true }) ?? []) as Array<{
+    use_case_id: string;
+    use_cases?: { slug: string } | null;
+  }>;
+  const ids = [...new Set(rows.map((row) => row.use_case_id))];
+  if (ids.length === 0) return rows;
+  const slugs = await supabase.from("use_cases").select("id, slug").in("id", ids);
+  const byId = new Map(
+    (unwrapResult(slugs, { allowNull: true }) ?? []).map((uc) => [uc.id, uc.slug] as const),
+  );
+  for (const row of rows) {
+    const slug = byId.get(row.use_case_id);
+    row.use_cases = slug ? { slug } : null;
+  }
+  return rows;
 }
 
 export async function listScoresForUser(userId: string | null) {
