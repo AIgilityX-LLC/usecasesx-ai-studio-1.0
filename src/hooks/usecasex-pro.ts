@@ -438,18 +438,24 @@ export function useUseCaseXPro() {
       }) => createPortfolioM.mutate(input),
       renamePortfolio: (id: string, name: string) =>
         updatePortfolioM.mutate({ id, patch: { name } }),
-      updatePortfolio: (id: string, patch: Partial<Portfolio>) =>
-        updatePortfolioM.mutate({ id, patch }),
+      updatePortfolio: (id: string, patch: Partial<Portfolio> & { markReviewed?: boolean }) =>
+        updatePortfolioM.mutateAsync({ id, patch }),
       deletePortfolio: (id: string) => deletePortfolioM.mutate(id),
       addToPortfolio: (portfolioId: string, slug: string) =>
         addToPortfolioM.mutate({ portfolioId, slug }),
+      addUseCasesToPortfolio: (portfolioId: string, useCaseIds: string[]) =>
+        addManyToPortfolioM.mutateAsync({ portfolioId, useCaseIds }),
+      removeUseCasesFromPortfolio: (portfolioId: string, useCaseIds: string[]) =>
+        removeManyFromPortfolioM.mutateAsync({ portfolioId, useCaseIds }),
       removeFromPortfolio: (portfolioId: string, slug: string) =>
         removeFromPortfolioM.mutate({ portfolioId, slug }),
       /** Portfolio-specific decision fields — never touches the use case. */
       updatePortfolioEntry: (portfolioId: string, useCaseId: string, patch: PortfolioEntryPatch) =>
         updateEntryM.mutateAsync({ portfolioId, useCaseId, patch }),
       isSavingEntry: updateEntryM.isPending,
+      isBulkUpdating: addManyToPortfolioM.isPending || removeManyFromPortfolioM.isPending,
     }),
+
     [
       data,
       userId,
