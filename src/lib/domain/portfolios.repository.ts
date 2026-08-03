@@ -172,6 +172,8 @@ export function toPortfolioColumns(patch: PortfolioPatchInput) {
     visibility?: string;
     review_cadence?: string | null;
     organization_unit_id?: string | null;
+    review_notes?: string | null;
+    last_reviewed_at?: string;
   } = {};
   if (patch.name !== undefined) columns.name = patch.name;
   if (patch.objective !== undefined) columns.objective = patch.objective ?? null;
@@ -184,6 +186,8 @@ export function toPortfolioColumns(patch: PortfolioPatchInput) {
   if (patch.reviewCadence !== undefined) columns.review_cadence = patch.reviewCadence ?? null;
   if (patch.organizationUnitId !== undefined)
     columns.organization_unit_id = patch.organizationUnitId ?? null;
+  if (patch.reviewNotes !== undefined) columns.review_notes = patch.reviewNotes || null;
+  if (patch.markReviewed) columns.last_reviewed_at = new Date().toISOString();
   return columns;
 }
 
@@ -196,6 +200,8 @@ export function toPortfolioEntryColumns(patch: PortfolioEntryPatch) {
     funding_state?: string;
     next_action?: string | null;
     notes?: string | null;
+    review_notes?: string | null;
+    last_reviewed_at?: string;
   } = {};
   if (patch.rank !== undefined) columns.rank = patch.rank ?? null;
   if (patch.decision !== undefined) columns.decision = patch.decision;
@@ -203,8 +209,11 @@ export function toPortfolioEntryColumns(patch: PortfolioEntryPatch) {
   if (patch.fundingState !== undefined) columns.funding_state = patch.fundingState;
   if (patch.nextAction !== undefined) columns.next_action = patch.nextAction || null;
   if (patch.notes !== undefined) columns.notes = patch.notes || null;
+  if (patch.reviewNotes !== undefined) columns.review_notes = patch.reviewNotes || null;
+  if (patch.markReviewed) columns.last_reviewed_at = new Date().toISOString();
   return columns;
 }
+
 
 export async function updatePortfolio(
   userId: string | null,
