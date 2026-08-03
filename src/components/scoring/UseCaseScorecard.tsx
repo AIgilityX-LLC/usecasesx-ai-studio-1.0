@@ -104,42 +104,45 @@ export function UseCaseScorecard({ id }: { id: string }) {
   /**
    * Session-expiry safety net. Answers are kept on this device until the
    * server confirms the save, so an expired token can never look like success
-   * and nothing is lost across a re-authentication.
+   * and nothing is lost across a re-authentication. Recovery is explicit: a
+   * cached draft is offered, never applied behind the user's back.
    */
   const draftKey = `usecasex.scorecard.draft.${id}`;
+  const [pendingDraft, setPendingDraft] = useState<LocalDraft<ScorecardLocalDraft> | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined" || recovered) return;
+    if (recovered) return;
     setRecovered(true);
-    try {
-      const raw = window.localStorage.getItem(draftKey);
-      if (!raw) return;
-      const saved = JSON.parse(raw) as {
-        responses?: Responses;
-        evidence?: Record<string, string>;
-        note?: string;
-      };
-      if (saved.responses) setResponses(saved.responses);
-      if (saved.evidence) setEvidence(saved.evidence);
-      if (saved.note) setNote(saved.note);
-      toast.info("Recovered unsaved scorecard answers from this device.");
-    } catch {
-      /* corrupt draft — ignore */
-    }
+    const stored = readDraft<ScorecardLocalDraft>(draftKey);
+    if (stored?.data?.responses) setPendingDraft(stored);
   }, [draftKey, recovered]);
 
+  const draftConflict = hasConflict(pendingDraft, latest?.createdAt ?? null);
+
+  const restoreScorecardDraft = useCallback(() => {
+    if (!pendingDraft) return;
+    setResponses(pendingDraft.data.responses ?? null);
+    setEvidence(pendingDraft.data.evidence ?? null);
+    setNote(pendingDraft.data.note ?? "");
+    setPendingDraft(null);
+    toast.success("Scorecard answers restored");
+  }, [pendingDraft]);
+
+  const discardScorecardDraft = useCallback(() => {
+    clearDraft(draftKey);
+    setPendingDraft(null);
+    toast.success("Device copy discarded");
+  }, [draftKey]);
+
   useEffect(() => {
-    if (typeof window === "undefined") return;
     if (responses === null && evidence === null && note.trim() === "") return;
-    try {
-      window.localStorage.setItem(
-        draftKey,
-        JSON.stringify({ responses: current, evidence: currentEvidence, note }),
-      );
-    } catch {
-      /* storage full — the server save is still the source of truth */
-    }
-  }, [draftKey, responses, evidence, note, current, currentEvidence]);
+    writeDraft<ScorecardLocalDraft>(
+      draftKey,
+      { responses: current, evidence: currentEvidence, note },
+      latest?.createdAt ?? null,
+    );
+  }, [draftKey, responses, evidence, note, current, currentEvidence, latest]);
+
 
   /**
    * Comparison always runs baseline (the selected older result) → latest, so
