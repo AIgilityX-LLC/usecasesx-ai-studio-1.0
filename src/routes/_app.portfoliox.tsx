@@ -379,11 +379,17 @@ function EntryRow({
   const [rank, setRank] = useState(entry.rank == null ? "" : String(entry.rank));
   const [targetPeriod, setTargetPeriod] = useState(entry.targetPeriod ?? "");
   const [nextAction, setNextAction] = useState(entry.nextAction ?? "");
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const save = (patch: Parameters<Store["updatePortfolioEntry"]>[2]) =>
     store
       .updatePortfolioEntry(portfolioId, entry.useCaseId, patch)
+      .then(() => {
+        void queryClient.invalidateQueries({ queryKey: ["portfolio", portfolioId, "audit"] });
+      })
       .catch((e: unknown) => toast.error(e instanceof Error ? e.message : "Could not save"));
+
 
   return (
     <div className="rounded-xl border border-border p-3">
