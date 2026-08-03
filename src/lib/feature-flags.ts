@@ -35,3 +35,31 @@ export const CLIENT_CAPABILITY_FLAGS: CapabilityFlags = mergeCapabilityFlags({
   sso: optional(import.meta.env.VITE_CAPABILITY_SSO),
   fullAudit: optional(import.meta.env.VITE_CAPABILITY_FULL_AUDIT),
 });
+
+/**
+ * Opportunity Map overlays that are designed into the model but deliberately
+ * NOT shipped in Pro Founding Access. Surfaces list them as "not live" so no
+ * UI can imply planned Enterprise capability is available today.
+ */
+export const RESERVED_MAP_OVERLAYS: { key: string; label: string; description: string }[] = [
+  {
+    key: "multiEntity",
+    label: "Group-of-companies roll-up",
+    description: "Consolidate the map across legal entities in a group structure.",
+  },
+  {
+    key: "geographic",
+    label: "Geographic and market overlay",
+    description: "Plot concentration by country and market alongside value themes.",
+  },
+  {
+    key: "capabilityGap",
+    label: "Capability and data-readiness overlay",
+    description: "Shade cells by assessed readiness rather than captured demand.",
+  },
+  {
+    key: "dependency",
+    label: "Dependency and sequencing overlay",
+    description: "Show delivery dependencies between clusters for roadmap sequencing.",
+  },
+];

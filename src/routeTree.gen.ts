@@ -37,6 +37,7 @@ import { Route as AppInsightsRouteImport } from './routes/_app.insights'
 import { Route as AppModuleAnalyticsRouteImport } from './routes/_app.module-analytics'
 import { Route as AppMyUseCasesRouteImport } from './routes/_app.my-use-cases'
 import { Route as AppOnboardingRouteImport } from './routes/_app.onboarding'
+import { Route as AppOpportunityMapRouteImport } from './routes/_app.opportunity-map'
 import { Route as AppPatternsRouteImport } from './routes/_app.patterns'
 import { Route as AppPortfolioxRouteImport } from './routes/_app.portfoliox'
 import { Route as AppPricingRouteImport } from './routes/_app.pricing'
@@ -219,6 +220,11 @@ const AppMyUseCasesRoute = AppMyUseCasesRouteImport.update({
 const AppOnboardingRoute = AppOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOpportunityMapRoute = AppOpportunityMapRouteImport.update({
+  id: '/opportunity-map',
+  path: '/opportunity-map',
   getParentRoute: () => AppRoute,
 } as any)
 const AppPatternsRoute = AppPatternsRouteImport.update({
@@ -482,6 +488,7 @@ export interface FileRoutesByFullPath {
   '/module-analytics': typeof AppModuleAnalyticsRoute
   '/my-use-cases': typeof AppMyUseCasesRoute
   '/onboarding': typeof AppOnboardingRoute
+  '/opportunity-map': typeof AppOpportunityMapRoute
   '/patterns': typeof AppPatternsRoute
   '/portfoliox': typeof AppPortfolioxRoute
   '/pricing': typeof AppPricingRoute
@@ -553,6 +560,7 @@ export interface FileRoutesByTo {
   '/module-analytics': typeof AppModuleAnalyticsRoute
   '/my-use-cases': typeof AppMyUseCasesRoute
   '/onboarding': typeof AppOnboardingRoute
+  '/opportunity-map': typeof AppOpportunityMapRoute
   '/patterns': typeof AppPatternsRoute
   '/portfoliox': typeof AppPortfolioxRoute
   '/pricing': typeof AppPricingRoute
@@ -628,6 +636,7 @@ export interface FileRoutesById {
   '/_app/module-analytics': typeof AppModuleAnalyticsRoute
   '/_app/my-use-cases': typeof AppMyUseCasesRoute
   '/_app/onboarding': typeof AppOnboardingRoute
+  '/_app/opportunity-map': typeof AppOpportunityMapRoute
   '/_app/patterns': typeof AppPatternsRoute
   '/_app/portfoliox': typeof AppPortfolioxRoute
   '/_app/pricing': typeof AppPricingRoute
@@ -703,6 +712,7 @@ export interface FileRouteTypes {
     | '/module-analytics'
     | '/my-use-cases'
     | '/onboarding'
+    | '/opportunity-map'
     | '/patterns'
     | '/portfoliox'
     | '/pricing'
@@ -774,6 +784,7 @@ export interface FileRouteTypes {
     | '/module-analytics'
     | '/my-use-cases'
     | '/onboarding'
+    | '/opportunity-map'
     | '/patterns'
     | '/portfoliox'
     | '/pricing'
@@ -848,6 +859,7 @@ export interface FileRouteTypes {
     | '/_app/module-analytics'
     | '/_app/my-use-cases'
     | '/_app/onboarding'
+    | '/_app/opportunity-map'
     | '/_app/patterns'
     | '/_app/portfoliox'
     | '/_app/pricing'
@@ -1103,6 +1115,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof AppOnboardingRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/opportunity-map': {
+      id: '/_app/opportunity-map'
+      path: '/opportunity-map'
+      fullPath: '/opportunity-map'
+      preLoaderRoute: typeof AppOpportunityMapRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/patterns': {
@@ -1506,6 +1525,7 @@ interface AppRouteChildren {
   AppModuleAnalyticsRoute: typeof AppModuleAnalyticsRoute
   AppMyUseCasesRoute: typeof AppMyUseCasesRoute
   AppOnboardingRoute: typeof AppOnboardingRoute
+  AppOpportunityMapRoute: typeof AppOpportunityMapRoute
   AppPatternsRoute: typeof AppPatternsRoute
   AppPortfolioxRoute: typeof AppPortfolioxRoute
   AppPricingRoute: typeof AppPricingRoute
@@ -1552,6 +1572,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppModuleAnalyticsRoute: AppModuleAnalyticsRoute,
   AppMyUseCasesRoute: AppMyUseCasesRoute,
   AppOnboardingRoute: AppOnboardingRoute,
+  AppOpportunityMapRoute: AppOpportunityMapRoute,
   AppPatternsRoute: AppPatternsRoute,
   AppPortfolioxRoute: AppPortfolioxRoute,
   AppPricingRoute: AppPricingRoute,
