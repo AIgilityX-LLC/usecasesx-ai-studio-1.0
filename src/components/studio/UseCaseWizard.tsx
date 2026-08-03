@@ -351,6 +351,18 @@ export function UseCaseWizard({ id }: { id: string }) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
+      {pendingDraft ? (
+        <div className="lg:col-span-2">
+          <DraftRecoveryBanner
+            label="Unsaved wizard answers"
+            savedAt={pendingDraft.savedAt}
+            conflict={draftConflict}
+            serverUpdatedAt={record?.updatedAt ?? null}
+            onRestore={restoreWizardDraft}
+            onDiscard={discardWizardDraft}
+          />
+        </div>
+      ) : null}
       {/* -------------------------------------------------------- step rail */}
       <nav aria-label="Wizard steps" className="space-y-3">
         <div>
@@ -359,7 +371,9 @@ export function UseCaseWizard({ id }: { id: string }) {
             <span aria-live="polite">{percent}%</span>
           </div>
           <Progress value={percent} className="mt-2" aria-label="Overall completion" />
+          <AutosaveStatus state={autosaveState} savedAt={lastSavedAt} className="mt-2" />
         </div>
+
         <ol className="space-y-1">
           {WIZARD_STEPS.map((s, i) => {
             const done = isStepComplete(wizardState, s.id);
