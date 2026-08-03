@@ -312,6 +312,17 @@ export function UseCaseScorecard({ id }: { id: string }) {
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
       <div className="space-y-4">
+        {pendingDraft ? (
+          <DraftRecoveryBanner
+            label="Unsaved scorecard answers"
+            savedAt={pendingDraft.savedAt}
+            conflict={draftConflict}
+            serverUpdatedAt={latest?.createdAt ?? null}
+            onRestore={restoreScorecardDraft}
+            onDiscard={discardScorecardDraft}
+          />
+        ) : null}
+
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">{definition.name}</CardTitle>
