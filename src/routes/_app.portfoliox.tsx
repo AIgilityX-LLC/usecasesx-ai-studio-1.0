@@ -334,9 +334,23 @@ function PortfolioDetail({
               </Select>
             </Field>
           </div>
-
         </CardContent>
       </Card>
+
+      {portfolio.entries.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Portfolio analytics</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Decision mix, funding and delivery shape across the {visibleEntries.length} entries
+              currently in view.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <PortfolioCharts entries={visibleEntries} />
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
@@ -383,23 +397,46 @@ function PortfolioDetail({
                 </Button>
               }
             />
-          ) : view === "table" ? (
-            <PortfolioEntriesTable
-              portfolioId={portfolio.id}
-              entries={portfolio.entries}
-              store={store}
-            />
           ) : (
-            portfolio.entries.map((entry) => (
-              <EntryRow
-                key={entry.useCaseId}
-                portfolioId={portfolio.id}
-                entry={entry}
-                store={store}
+            <>
+              <PortfolioFilters
+                entries={portfolio.entries}
+                value={filters}
+                onChange={setFilters}
+                resultCount={visibleEntries.length}
               />
-            ))
+
+              {visibleEntries.length === 0 ? (
+                <EmptyState
+                  title="No entries match these filters"
+                  description="Clear or widen the filters to see portfolio entries again."
+                  action={
+                    <Button variant="outline" onClick={() => setFilters(EMPTY_PORTFOLIO_FILTERS)}>
+                      Clear filters
+                    </Button>
+                  }
+                />
+              ) : view === "table" ? (
+                <PortfolioEntriesTable
+                  portfolioId={portfolio.id}
+                  entries={visibleEntries}
+                  store={store}
+                  canManage={canManage}
+                />
+              ) : (
+                visibleEntries.map((entry) => (
+                  <EntryRow
+                    key={entry.useCaseId}
+                    portfolioId={portfolio.id}
+                    entry={entry}
+                    store={store}
+                  />
+                ))
+              )}
+            </>
           )}
         </CardContent>
+
       </Card>
 
       <Card>
