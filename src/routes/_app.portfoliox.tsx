@@ -481,6 +481,17 @@ function EntryRow({
         </Field>
       </div>
 
+      <Collapsible open={historyOpen} onOpenChange={setHistoryOpen} className="mt-3">
+        <CollapsibleTrigger asChild>
+          <Button variant="ghost" size="sm">
+            {historyOpen ? "Hide decision history" : "Decision history"}
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="mt-2 rounded-lg border border-border bg-secondary/30 p-3">
+          <EntryDecisionHistory portfolioId={portfolioId} useCaseId={entry.useCaseId} />
+        </CollapsibleContent>
+      </Collapsible>
+
       <div className="mt-3 flex justify-end">
         <Button
           variant="ghost"
@@ -493,6 +504,7 @@ function EntryRow({
           Remove from portfolio
         </Button>
       </div>
+
     </div>
   );
 }
