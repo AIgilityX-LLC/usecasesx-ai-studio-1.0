@@ -94,9 +94,11 @@ export interface PortfolioEntry {
   updatedAt: string;
 }
 
-export type PortfolioEntryPatch = Partial<
-  Pick<
-    PortfolioEntry,
-    "rank" | "decision" | "targetPeriod" | "fundingState" | "nextAction" | "notes"
-  >
->;
+export type PortfolioEntryPatch = {
+  rank?: number | null;
+  decision?: PortfolioItemDecision;
+  targetPeriod?: string | null;
+  fundingState?: FundingState;
+  nextAction?: string | null;
+  notes?: string | null;
+};
