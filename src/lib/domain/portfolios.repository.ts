@@ -251,16 +251,32 @@ export async function addUseCaseToPortfolio(
   portfolioId: string,
   useCaseId: string,
 ) {
+  return addUseCasesToPortfolio(userId, portfolioId, [useCaseId]);
+}
+
+/**
+ * Bulk membership add. `ignoreDuplicates` on the composite key means a use case
+ * already in the portfolio is skipped rather than duplicated.
+ */
+export async function addUseCasesToPortfolio(
+  userId: string | null,
+  portfolioId: string,
+  useCaseIds: string[],
+) {
   const uid = requireUserId(userId);
   const pid = parseInput(uuidSchema, portfolioId);
-  const ucid = parseInput(uuidSchema, useCaseId);
-  const result = await supabase
-    .from("portfolio_items")
-    .upsert(
-      { portfolio_id: pid, use_case_id: ucid, added_by: uid },
-      { onConflict: "portfolio_id,use_case_id", ignoreDuplicates: true },
-    );
+  const ids = [...new Set(useCaseIds)].map((id) => parseInput(uuidSchema, id));
+  if (ids.length === 0) return;
+  const result = await supabase.from("portfolio_items").upsert(
+    ids.map((ucid) => ({ portfolio_id: pid, use_case_id: ucid, added_by: uid })),
+    { onConflict: "portfolio_id,use_case_id", ignoreDuplicates: true },
+  );
   if (result.error) throw normalizeError(result.error);
+  await recordProductEvent({
+    event: PRODUCT_EVENTS.portfolioItemAdded,
+    entity: { type: "portfolio", id: pid },
+    properties: { count: ids.length },
+  });
 }
 
 /**
@@ -285,7 +301,15 @@ export async function updatePortfolioEntry(
     .eq("portfolio_id", pid)
     .eq("use_case_id", ucid);
   if (result.error) throw normalizeError(result.error);
+  await recordProductEvent({
+    event: columns.last_reviewed_at
+      ? PRODUCT_EVENTS.portfolioReviewed
+      : PRODUCT_EVENTS.portfolioItemChanged,
+    entity: { type: "portfolio", id: pid },
+    properties: { use_case_id: ucid, fields: Object.keys(columns) },
+  });
 }
+
 
 export async function removeUseCaseFromPortfolio(
   userId: string | null,
