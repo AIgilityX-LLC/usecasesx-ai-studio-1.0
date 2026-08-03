@@ -24,14 +24,20 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ConfirmDialog, useUnsavedChanges } from "@/components/ui-kit";
+import {
+  AutosaveStatus,
+  ConfirmDialog,
+  DraftRecoveryBanner,
+  useUnsavedChanges,
+} from "@/components/ui-kit";
+import { describeSavedAt, hasConflict, type AutosaveState } from "@/lib/drafts";
 import {
   clearLocalDraft,
   completionOf,
-  describeSavedAt,
   emptyDraft,
   isConvertible,
   OPPORTUNITY_SOURCES,
+  opportunityDraftKey,
   readLocalDraft,
   SOURCE_LABELS,
   URGENCIES,
@@ -64,11 +70,14 @@ export function OpportunityForm({
   opportunityId,
   initial,
   sourceUseCaseId,
+  serverUpdatedAt,
   onSaved,
 }: {
   opportunityId?: string | null;
   initial?: OpportunityDraft;
   sourceUseCaseId?: string | null;
+  /** `updated_at` of the saved record, used to detect draft conflicts. */
+  serverUpdatedAt?: string | null;
   onSaved?: (id: string) => void;
 }) {
   const navigate = useNavigate();
@@ -84,6 +93,7 @@ export function OpportunityForm({
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+  const [saveFailed, setSaveFailed] = useState(false);
   const [duplicates, setDuplicates] = useState<{
     opportunities: SavedRow[];
     repository: { slug: string; title: string }[];
@@ -97,6 +107,7 @@ export function OpportunityForm({
 
   const completion = useMemo(() => completionOf(draft), [draft]);
   const canSave = draft.title.trim().length >= 3;
+  const draftKey = opportunityDraftKey(id);
 
   useUnsavedChanges(dirty && !saving);
 
@@ -104,27 +115,29 @@ export function OpportunityForm({
     <K extends keyof OpportunityDraft>(key: K, value: OpportunityDraft[K]) => {
       setDraft((prev) => ({ ...prev, [key]: value }));
       setDirty(true);
+      setSaveFailed(false);
     },
     [],
   );
 
-  /* --- local draft survives a refresh before the first server save --------- */
+  /* --- local draft survives a refresh, an expired session or a crash ------- */
   const [recovered, setRecovered] = useState<StoredLocalDraft | null>(null);
   const [restoredAt, setRestoredAt] = useState<string | null>(null);
 
   useEffect(() => {
-    // An existing opportunity, or a prefilled draft (e.g. captured from a
-    // repository entry), takes precedence over anything cached locally.
-    if (opportunityId || (initial && initial.title.trim().length > 0)) return;
-    const stored = readLocalDraft();
-    if (stored && stored.draft.title.trim().length > 0) setRecovered(stored);
+    // A prefilled draft (e.g. captured from a repository entry) wins over cache.
+    if (!opportunityId && initial && initial.title.trim().length > 0) return;
+    const stored = readLocalDraft(draftKey);
+    if (stored && stored.data.title.trim().length > 0) setRecovered(stored);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /** The saved record moved on after this device wrote its copy. */
+  const conflict = hasConflict(recovered, serverUpdatedAt);
 
   const restoreDraft = useCallback(() => {
     if (!recovered) return;
-    setDraft(recovered.draft);
+    setDraft(recovered.data);
     setDirty(true);
     setRestoredAt(recovered.savedAt);
     setRecovered(null);
@@ -132,15 +145,15 @@ export function OpportunityForm({
   }, [recovered]);
 
   const discardDraft = useCallback(() => {
-    clearLocalDraft();
+    clearLocalDraft(draftKey);
     setRecovered(null);
-    toast.success("Saved draft discarded");
-  }, []);
+    toast.success(conflict ? "Keeping the saved version" : "Saved draft discarded");
+  }, [conflict, draftKey]);
 
   useEffect(() => {
-    if (id || !dirty) return;
-    writeLocalDraft(draft);
-  }, [draft, dirty, id]);
+    if (!dirty) return;
+    writeLocalDraft(draft, draftKey, serverUpdatedAt ?? null);
+  }, [draft, dirty, draftKey, serverUpdatedAt]);
 
   /* --- explicit + autosave ------------------------------------------------ */
   const persist = useCallback(
@@ -168,14 +181,16 @@ export function OpportunityForm({
         });
         setId(row.id);
         setDirty(false);
-        setLastSavedAt(new Date().toLocaleTimeString());
-        clearLocalDraft();
+        setSaveFailed(false);
+        setLastSavedAt(new Date().toISOString());
+        clearLocalDraft(draftKey);
+        clearLocalDraft(opportunityDraftKey(row.id));
         setRestoredAt(null);
-
         if (!silent) toast.success("Opportunity saved");
         onSaved?.(row.id);
         return row.id;
       } catch (error) {
+        setSaveFailed(true);
         if (isUnauthorizedError(error)) {
           toast.error(SIGN_IN_TO_SAVE, {
             action: {
@@ -193,8 +208,20 @@ export function OpportunityForm({
         setSaving(false);
       }
     },
-    [canSave, draft, id, onSaved, save, signedOut, sourceUseCaseId],
+    [canSave, draft, draftKey, id, onSaved, save, signedOut, sourceUseCaseId],
   );
+
+  const autosaveState: AutosaveState = saving
+    ? "saving"
+    : saveFailed
+      ? "error"
+      : signedOut && dirty
+        ? "local"
+        : dirty
+          ? "unsaved"
+          : lastSavedAt
+            ? "saved"
+            : "idle";
 
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
@@ -296,27 +323,16 @@ export function OpportunityForm({
           </div>
         ) : null}
         {recovered ? (
-          <div
-            role="status"
-            className="flex flex-col gap-3 rounded-lg border border-border bg-muted/40 p-4 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div className="min-w-0">
-              <p className="text-sm font-medium">Unsaved draft found on this device</p>
-              <p className="truncate text-sm text-muted-foreground">
-                “{recovered.draft.title.trim() || "Untitled problem"}” ·{" "}
-                {recovered.savedAt ? describeSavedAt(recovered.savedAt) : "saved earlier"}
-              </p>
-            </div>
-            <div className="flex shrink-0 gap-2">
-              <Button size="sm" onClick={restoreDraft}>
-                Restore draft
-              </Button>
-              <Button size="sm" variant="ghost" onClick={discardDraft}>
-                Discard
-              </Button>
-            </div>
-          </div>
+          <DraftRecoveryBanner
+            label={recovered.data.title.trim() || "Untitled problem"}
+            savedAt={recovered.savedAt}
+            conflict={conflict}
+            serverUpdatedAt={serverUpdatedAt}
+            onRestore={restoreDraft}
+            onDiscard={discardDraft}
+          />
         ) : null}
+
         {restoredAt && dirty ? (
           <p role="status" className="text-xs text-muted-foreground">
             Restored from your local draft ({describeSavedAt(restoredAt)}).{" "}
@@ -602,15 +618,13 @@ export function OpportunityForm({
           >
             Cancel
           </Button>
-          <span className="text-xs text-muted-foreground" aria-live="polite">
-            {saving
-              ? "Saving…"
-              : signedOut
-                ? "Draft kept on this device — sign in to save it to your workspace"
-                : lastSavedAt
-                  ? `Autosaved at ${lastSavedAt}`
-                  : "Autosaves once the problem has a name"}
-          </span>
+          {autosaveState === "idle" ? (
+            <span className="text-xs text-muted-foreground">
+              Autosaves once the problem has a name
+            </span>
+          ) : (
+            <AutosaveStatus state={autosaveState} savedAt={lastSavedAt} />
+          )}
         </div>
       </div>
 

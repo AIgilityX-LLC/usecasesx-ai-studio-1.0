@@ -7,7 +7,17 @@
  * failed AI call never blocks completion.
  */
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { AutosaveStatus, DraftRecoveryBanner } from "@/components/ui-kit";
+import {
+  clearDraft,
+  hasConflict,
+  readDraft,
+  writeDraft,
+  type AutosaveState,
+  type LocalDraft,
+} from "@/lib/drafts";
+
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -85,6 +95,9 @@ export function UseCaseWizard({ id }: { id: string }) {
   const [provenance, setProvenance] = useState<string | null>(null);
   const [visibility, setVisibility] = useState<UseCaseVisibility | null>(null);
   const [completedVersion, setCompletedVersion] = useState<number | null>(null);
+  const [dirty, setDirty] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
   const record = query.data;
   const wizardState: WizardState = state ?? record?.wizardState ?? {};
@@ -103,6 +116,39 @@ export function UseCaseWizard({ id }: { id: string }) {
     setVisibility((record.visibility as UseCaseVisibility) ?? "workspace");
   }
 
+  /* --- device-local safety copy of in-progress answers -------------------- */
+  const draftKey = `usecasex.wizard.draft.${id}`;
+  const [pendingDraft, setPendingDraft] = useState<LocalDraft<WizardState> | null>(null);
+  const [checkedDraft, setCheckedDraft] = useState(false);
+
+  useEffect(() => {
+    if (checkedDraft || !record) return;
+    setCheckedDraft(true);
+    const stored = readDraft<WizardState>(draftKey);
+    if (stored && Object.keys(stored.data ?? {}).length > 0) setPendingDraft(stored);
+  }, [checkedDraft, draftKey, record]);
+
+  const draftConflict = hasConflict(pendingDraft, record?.updatedAt ?? null);
+
+  const restoreWizardDraft = useCallback(() => {
+    if (!pendingDraft) return;
+    setState(pendingDraft.data);
+    setDirty(true);
+    setPendingDraft(null);
+    toast.success("Draft answers restored");
+  }, [pendingDraft]);
+
+  const discardWizardDraft = useCallback(() => {
+    clearDraft(draftKey);
+    setPendingDraft(null);
+    toast.success(draftConflict ? "Keeping the saved version" : "Device copy discarded");
+  }, [draftConflict, draftKey]);
+
+  useEffect(() => {
+    if (!dirty || !state) return;
+    writeDraft<WizardState>(draftKey, state, record?.updatedAt ?? null);
+  }, [dirty, draftKey, record, state]);
+
   const setValue = useCallback(
     (key: string, value: FieldValue) => {
       setState((prev) => {
@@ -111,6 +157,8 @@ export function UseCaseWizard({ id }: { id: string }) {
         base[step.id] = { ...current, [key]: value };
         return base;
       });
+      setDirty(true);
+      setSaveFailed(false);
     },
     [step.id],
   );
@@ -127,17 +175,32 @@ export function UseCaseWizard({ id }: { id: string }) {
             nextStep: nextStepId,
           },
         });
+        setDirty(false);
+        setSaveFailed(false);
+        setLastSavedAt(new Date().toISOString());
+        clearDraft(draftKey);
         return true;
       } catch (e) {
         console.error(e);
+        setSaveFailed(true);
         toast.error("We could not save this step. Your answers are still on screen — try again.");
         return false;
       } finally {
         setSaving(false);
       }
     },
-    [id, saveStep, step.id, wizardState],
+    [draftKey, id, saveStep, step.id, wizardState],
   );
+
+  const autosaveState: AutosaveState = saving
+    ? "saving"
+    : saveFailed
+      ? "error"
+      : dirty
+        ? "unsaved"
+        : lastSavedAt
+          ? "saved"
+          : "idle";
 
   async function goTo(index: number) {
     if (index === stepIndex) return;
@@ -287,6 +350,18 @@ export function UseCaseWizard({ id }: { id: string }) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
+      {pendingDraft ? (
+        <div className="lg:col-span-2">
+          <DraftRecoveryBanner
+            label="Unsaved wizard answers"
+            savedAt={pendingDraft.savedAt}
+            conflict={draftConflict}
+            serverUpdatedAt={record?.updatedAt ?? null}
+            onRestore={restoreWizardDraft}
+            onDiscard={discardWizardDraft}
+          />
+        </div>
+      ) : null}
       {/* -------------------------------------------------------- step rail */}
       <nav aria-label="Wizard steps" className="space-y-3">
         <div>
@@ -295,7 +370,9 @@ export function UseCaseWizard({ id }: { id: string }) {
             <span aria-live="polite">{percent}%</span>
           </div>
           <Progress value={percent} className="mt-2" aria-label="Overall completion" />
+          <AutosaveStatus state={autosaveState} savedAt={lastSavedAt} className="mt-2" />
         </div>
+
         <ol className="space-y-1">
           {WIZARD_STEPS.map((s, i) => {
             const done = isStepComplete(wizardState, s.id);

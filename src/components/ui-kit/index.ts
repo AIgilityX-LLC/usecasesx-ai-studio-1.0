@@ -11,6 +11,9 @@ export { ErrorState } from "./ErrorState";
 export { StatusChip, type StatusTone } from "./StatusChip";
 export { ConfirmDialog } from "./ConfirmDialog";
 export { useUnsavedChanges } from "./useUnsavedChanges";
+export { AutosaveStatus } from "./AutosaveStatus";
+export { DraftRecoveryBanner } from "./DraftRecoveryBanner";
+
 export { ResponsiveTable, type ResponsiveColumn } from "./ResponsiveTable";
 export { EmptyState } from "../EmptyState";
 export { LoadingSkeleton, CardSkeleton } from "../LoadingSkeleton";

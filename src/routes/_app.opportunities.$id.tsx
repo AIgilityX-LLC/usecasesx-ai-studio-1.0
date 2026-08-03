@@ -164,7 +164,12 @@ function OpportunityDetailPage() {
         }
       />
 
-      <OpportunityForm opportunityId={opp.id} initial={opp} onSaved={() => void query.refetch()} />
+      <OpportunityForm
+        opportunityId={opp.id}
+        initial={opp}
+        serverUpdatedAt={opp.updatedAt ?? null}
+        onSaved={() => void query.refetch()}
+      />
 
       <ConfirmDialog
         open={deleteOpen}
