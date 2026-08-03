@@ -325,27 +325,16 @@ export function OpportunityForm({
           </div>
         ) : null}
         {recovered ? (
-          <div
-            role="status"
-            className="flex flex-col gap-3 rounded-lg border border-border bg-muted/40 p-4 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div className="min-w-0">
-              <p className="text-sm font-medium">Unsaved draft found on this device</p>
-              <p className="truncate text-sm text-muted-foreground">
-                “{recovered.draft.title.trim() || "Untitled problem"}” ·{" "}
-                {recovered.savedAt ? describeSavedAt(recovered.savedAt) : "saved earlier"}
-              </p>
-            </div>
-            <div className="flex shrink-0 gap-2">
-              <Button size="sm" onClick={restoreDraft}>
-                Restore draft
-              </Button>
-              <Button size="sm" variant="ghost" onClick={discardDraft}>
-                Discard
-              </Button>
-            </div>
-          </div>
+          <DraftRecoveryBanner
+            label={recovered.data.title.trim() || "Untitled problem"}
+            savedAt={recovered.savedAt}
+            conflict={conflict}
+            serverUpdatedAt={serverUpdatedAt}
+            onRestore={restoreDraft}
+            onDiscard={discardDraft}
+          />
         ) : null}
+
         {restoredAt && dirty ? (
           <p role="status" className="text-xs text-muted-foreground">
             Restored from your local draft ({describeSavedAt(restoredAt)}).{" "}
