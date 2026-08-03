@@ -113,11 +113,14 @@ export function OpportunityForm({
   const [restoredAt, setRestoredAt] = useState<string | null>(null);
 
   useEffect(() => {
-    if (opportunityId || initial) return;
+    // An existing opportunity, or a prefilled draft (e.g. captured from a
+    // repository entry), takes precedence over anything cached locally.
+    if (opportunityId || (initial && initial.title.trim().length > 0)) return;
     const stored = readLocalDraft();
     if (stored && stored.draft.title.trim().length > 0) setRecovered(stored);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   const restoreDraft = useCallback(() => {
     if (!recovered) return;
