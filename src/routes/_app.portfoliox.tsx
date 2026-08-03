@@ -274,6 +274,7 @@ function PortfolioDetail({
             <Field label="Status">
               <Select
                 value={portfolio.status}
+                disabled={!canManage}
                 onValueChange={(v) =>
                   void store.updatePortfolio(portfolio.id, { status: v as PortfolioStatus })
                 }
@@ -294,6 +295,7 @@ function PortfolioDetail({
             <Field label="Visibility">
               <Select
                 value={portfolio.visibility}
+                disabled={!canManage}
                 onValueChange={(v) =>
                   void store.updatePortfolio(portfolio.id, { visibility: v as PortfolioVisibility })
                 }
@@ -314,6 +316,7 @@ function PortfolioDetail({
             <Field label="Review cadence">
               <Select
                 value={portfolio.reviewCadence ?? "none"}
+                disabled={!canManage}
                 onValueChange={(v) =>
                   void store.updatePortfolio(portfolio.id, { reviewCadence: v as ReviewCadence })
                 }
@@ -331,6 +334,7 @@ function PortfolioDetail({
               </Select>
             </Field>
           </div>
+
         </CardContent>
       </Card>
 
