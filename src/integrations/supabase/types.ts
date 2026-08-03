@@ -1460,10 +1460,13 @@ export type Database = {
           created_at: string
           decision: string
           funding_state: string
+          last_reviewed_at: string | null
           next_action: string | null
           notes: string | null
           portfolio_id: string
           rank: number | null
+          review_notes: string | null
+          reviewed_by: string | null
           target_period: string | null
           updated_at: string
           use_case_id: string
@@ -1474,10 +1477,13 @@ export type Database = {
           created_at?: string
           decision?: string
           funding_state?: string
+          last_reviewed_at?: string | null
           next_action?: string | null
           notes?: string | null
           portfolio_id: string
           rank?: number | null
+          review_notes?: string | null
+          reviewed_by?: string | null
           target_period?: string | null
           updated_at?: string
           use_case_id: string
@@ -1488,10 +1494,13 @@ export type Database = {
           created_at?: string
           decision?: string
           funding_state?: string
+          last_reviewed_at?: string | null
           next_action?: string | null
           notes?: string | null
           portfolio_id?: string
           rank?: number | null
+          review_notes?: string | null
+          reviewed_by?: string | null
           target_period?: string | null
           updated_at?: string
           use_case_id?: string
@@ -1554,6 +1563,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          last_reviewed_at: string | null
           name: string
           objective: string | null
           organization_id: string | null
@@ -1561,6 +1571,7 @@ export type Database = {
           parent_portfolio_id: string | null
           portfolio_type: string
           review_cadence: string | null
+          review_notes: string | null
           status: string
           target_department: string | null
           target_quarter: string | null
@@ -1572,6 +1583,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          last_reviewed_at?: string | null
           name: string
           objective?: string | null
           organization_id?: string | null
@@ -1579,6 +1591,7 @@ export type Database = {
           parent_portfolio_id?: string | null
           portfolio_type?: string
           review_cadence?: string | null
+          review_notes?: string | null
           status?: string
           target_department?: string | null
           target_quarter?: string | null
@@ -1590,6 +1603,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          last_reviewed_at?: string | null
           name?: string
           objective?: string | null
           organization_id?: string | null
@@ -1597,6 +1611,7 @@ export type Database = {
           parent_portfolio_id?: string | null
           portfolio_type?: string
           review_cadence?: string | null
+          review_notes?: string | null
           status?: string
           target_department?: string | null
           target_quarter?: string | null
