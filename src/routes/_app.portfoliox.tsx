@@ -51,6 +51,24 @@ import {
   type PortfolioVisibility,
   type ReviewCadence,
 } from "@/lib/portfolio-model";
+import {
+  EntryDecisionHistory,
+  PortfolioAuditTrail,
+} from "@/components/portfolios/PortfolioAuditTrail";
+import { downloadPortfolio, type PortfolioExportFormat } from "@/lib/portfolio-export";
+import { AUDIT_EVENTS, recordAuditEvent } from "@/lib/telemetry";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 
 export const Route = createFileRoute("/_app/portfoliox")({
   head: () => ({
