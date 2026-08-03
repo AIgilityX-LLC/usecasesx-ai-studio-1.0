@@ -40,6 +40,7 @@ import {
   ErrorState,
   StatusChip,
 } from "@/components/ui-kit";
+import { DraftRecoveryBanner } from "@/components/ui-kit";
 import { PriorityScore } from "@/components/scoring/PriorityScore";
 import { ScoreCompare } from "@/components/scoring/ScoreCompare";
 import { ScoreExplanation } from "@/components/scoring/ScoreExplanation";
@@ -49,6 +50,7 @@ import {
   suggestScoreEvidenceFn,
 } from "@/lib/scoring.functions";
 import { calculateScore, type Responses, type ScoreResult } from "@/lib/scoring/model";
+import { clearDraft, hasConflict, readDraft, writeDraft, type LocalDraft } from "@/lib/drafts";
 import { isUnauthorizedError, signInHref, SIGN_IN_TO_SAVE } from "@/lib/auth-errors";
 
 type EvidenceSuggestion = {
@@ -56,6 +58,14 @@ type EvidenceSuggestion = {
   draftJustification: string;
   confidence: "low" | "medium" | "high";
 };
+
+/** What a scorecard keeps on the device between edits. */
+type ScorecardLocalDraft = {
+  responses: Responses | null;
+  evidence: Record<string, string> | null;
+  note: string;
+};
+
 
 export function UseCaseScorecard({ id }: { id: string }) {
   const record = useServerFn(recordScoreFn);
