@@ -168,6 +168,7 @@ async function fetchProData(userId: string): Promise<ProData> {
         riskLevel: item.use_cases?.risk_level ?? undefined,
         timeToValue: item.use_cases?.time_to_value ?? undefined,
         functionName: item.use_cases?.function_name ?? undefined,
+        studioUseCaseId: item.studio_use_case_id ?? undefined,
         addedAt: item.added_at,
         updatedAt: item.updated_at ?? item.added_at,
       });
