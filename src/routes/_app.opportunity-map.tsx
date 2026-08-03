@@ -20,7 +20,13 @@ import {
 } from "@/lib/opportunity-map";
 import { OPPORTUNITY_STATUSES, STATUS_META, URGENCIES, URGENCY_LABELS } from "@/lib/opportunities";
 import { OpportunityMapGrid } from "@/components/opportunities/OpportunityMapGrid";
-import { PageHeader, ErrorState, EmptyState, LoadingSkeleton, StatusChip } from "@/components/ui-kit";
+import {
+  PageHeader,
+  ErrorState,
+  EmptyState,
+  LoadingSkeleton,
+  StatusChip,
+} from "@/components/ui-kit";
 import { RESERVED_MAP_OVERLAYS } from "@/lib/feature-flags";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,7 +61,13 @@ export const Route = createFileRoute("/_app/opportunity-map")({
   ),
 });
 
-type FilterKey = "orgUnitIds" | "businessFunctions" | "themeIds" | "statuses" | "urgencies" | "owners";
+type FilterKey =
+  | "orgUnitIds"
+  | "businessFunctions"
+  | "themeIds"
+  | "statuses"
+  | "urgencies"
+  | "owners";
 
 function FilterGroup({
   label,
@@ -113,20 +125,23 @@ function OpportunityMapPage() {
   const readiness = useMemo(() => assessReadiness(records, axis), [records, axis]);
 
   const options = useMemo(() => {
-    const unique = (
-      pairs: [string, string][],
-    ): { key: string; label: string }[] => {
+    const unique = (pairs: [string, string][]): { key: string; label: string }[] => {
       const map = new Map(pairs);
       return [...map.entries()]
         .map(([key, label]) => ({ key, label }))
-        .sort((a, b) => (a.key === UNASSIGNED ? 1 : b.key === UNASSIGNED ? -1 : a.label.localeCompare(b.label)));
+        .sort((a, b) =>
+          a.key === UNASSIGNED ? 1 : b.key === UNASSIGNED ? -1 : a.label.localeCompare(b.label),
+        );
     };
     return {
       orgUnits: unique(
         records.map((r) => [r.orgUnitId ?? UNASSIGNED, r.orgUnitName || UNASSIGNED_LABEL]),
       ),
       functions: unique(
-        records.map((r) => [r.businessFunction || UNASSIGNED, r.businessFunction || UNASSIGNED_LABEL]),
+        records.map((r) => [
+          r.businessFunction || UNASSIGNED,
+          r.businessFunction || UNASSIGNED_LABEL,
+        ]),
       ),
       themes: unique(
         records.map((r) => [
@@ -145,9 +160,6 @@ function OpportunityMapPage() {
         ? prev[key].filter((v) => v !== value)
         : [...prev[key], value],
     }));
-
-
-
 
   return (
     <div className="space-y-6 p-4 sm:p-6">
@@ -180,7 +192,6 @@ function OpportunityMapPage() {
               <Link to="/opportunities/new">Capture an opportunity</Link>
             </Button>
           }
-
         />
       )}
 
@@ -251,7 +262,10 @@ function OpportunityMapPage() {
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2 md:col-span-2">
-                <label htmlFor="map-search" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <label
+                  htmlFor="map-search"
+                  className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                >
                   Search titles
                 </label>
                 <Input
@@ -336,7 +350,6 @@ function OpportunityMapPage() {
                     {INTENSITY_BAND_LABELS[band]}
                   </StatusChip>
                 ))}
-
               </div>
 
               <p className="flex gap-2 rounded-md bg-muted/40 p-3 text-xs text-muted-foreground">

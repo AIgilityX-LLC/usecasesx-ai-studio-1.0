@@ -44,7 +44,12 @@ describe("opportunity map model", () => {
       [
         record({ status: "converted", urgency: "now", convertedUseCaseId: "uc-1" }),
         record({ status: "signal", urgency: "later" }),
-        record({ orgUnitId: null, orgUnitName: null, strategicThemeId: null, strategicThemeName: null }),
+        record({
+          orgUnitId: null,
+          orgUnitName: null,
+          strategicThemeId: null,
+          strategicThemeName: null,
+        }),
       ],
       "orgUnit",
     );

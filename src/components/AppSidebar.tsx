@@ -25,7 +25,6 @@ import {
   Grid2x2,
   Calculator,
   Wand2,
-  Map,
   Lightbulb,
   UserCog,
   ShieldCheck,

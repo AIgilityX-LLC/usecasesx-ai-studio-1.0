@@ -23,7 +23,11 @@ export type OpportunityMapData = {
 
 export async function loadOpportunityMap(supabase: Db): Promise<OpportunityMapData> {
   const [rowsResult, unitsResult, themesResult] = await Promise.all([
-    supabase.from("opportunities").select(SELECT).order("updated_at", { ascending: false }).limit(1000),
+    supabase
+      .from("opportunities")
+      .select(SELECT)
+      .order("updated_at", { ascending: false })
+      .limit(1000),
     supabase.from("organization_units").select("id", { count: "exact", head: true }),
     supabase.from("taxonomy_strategic_themes").select("id", { count: "exact", head: true }),
   ]);
