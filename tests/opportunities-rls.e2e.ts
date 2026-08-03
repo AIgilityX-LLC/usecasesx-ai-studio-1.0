@@ -37,7 +37,8 @@ async function capture(user: Awaited<ReturnType<typeof signIn>>, label: string) 
     .insert({
       title: `${marker} ${label}`,
       workspace_id: workspaceId as string,
-      user_id: user.userId,
+      created_by: user.userId,
+
       status: "signal",
     })
     .select("id")
