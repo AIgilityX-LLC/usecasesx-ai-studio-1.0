@@ -174,20 +174,7 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
               <p className="mt-1 text-sm text-muted-foreground">{portfolio.objective}</p>
             )}
           </div>
-          <ConfirmDialog
-            title="Delete this portfolio?"
-            description="The portfolio and its decision records are removed. The use cases themselves are not affected."
-            confirmLabel="Delete portfolio"
-            onConfirm={() => {
-              store.deletePortfolio(portfolio.id);
-              toast.success("Portfolio deleted");
-            }}
-            trigger={
-              <Button variant="outline" size="sm">
-                Delete
-              </Button>
-            }
-          />
+          <DeletePortfolioButton portfolio={portfolio} store={store} />
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Field label="Status">
@@ -284,6 +271,30 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function DeletePortfolioButton({ portfolio, store }: { portfolio: Portfolio; store: Store }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+        Delete
+      </Button>
+      <ConfirmDialog
+        open={open}
+        onOpenChange={setOpen}
+        destructive
+        title="Delete this portfolio?"
+        description="The portfolio and its decision records are removed. The use cases themselves are not affected."
+        confirmLabel="Delete portfolio"
+        onConfirm={() => {
+          store.deletePortfolio(portfolio.id);
+          setOpen(false);
+          toast.success("Portfolio deleted");
+        }}
+      />
+    </>
   );
 }
 
