@@ -167,7 +167,9 @@ export function OpportunityForm({
         setId(row.id);
         setDirty(false);
         setLastSavedAt(new Date().toLocaleTimeString());
-        window.localStorage.removeItem(LOCAL_DRAFT_KEY);
+        clearLocalDraft();
+        setRestoredAt(null);
+
         if (!silent) toast.success("Opportunity saved");
         onSaved?.(row.id);
         return row.id;
