@@ -4,7 +4,10 @@ import { SiteShell } from "@/components/SiteShell";
 import { PageHero } from "@/components/usecasex/PageHero";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { getSharedPortfolio } from "@/lib/portfolio-share.functions";
+import {
+  getSharedPortfolio,
+  type SharedPortfolioEntry,
+} from "@/lib/portfolio-share.functions";
 import {
   FUNDING_STATE_LABELS,
   PORTFOLIO_ITEM_DECISION_LABELS,
@@ -88,7 +91,7 @@ function SharedPortfolioPage() {
             <p className="text-sm text-muted-foreground">This portfolio has no use cases yet.</p>
           ) : (
             <ol className="space-y-3">
-              {portfolio.entries.map((entry, index) => (
+              {portfolio.entries.map((entry: SharedPortfolioEntry, index: number) => (
                 <li key={`${entry.useCaseSlug ?? "entry"}-${index}`}>
                   <Card>
                     <CardContent className="py-5">
