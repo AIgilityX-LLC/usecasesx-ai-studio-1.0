@@ -26,13 +26,16 @@ import {
 } from "@/lib/domain/saved-use-cases.repository";
 import {
   addUseCaseToPortfolio,
+  addUseCasesToPortfolio,
   createPortfolio,
   deletePortfolio,
   listPortfoliosForUser,
   removeUseCaseFromPortfolio,
+  removeUseCasesFromPortfolio,
   updatePortfolio,
   updatePortfolioEntry,
 } from "@/lib/domain/portfolios.repository";
+
 import type {
   FundingState,
   PortfolioEntry,
