@@ -31,7 +31,16 @@ import {
   listPortfoliosForUser,
   removeUseCaseFromPortfolio,
   updatePortfolio,
+  updatePortfolioEntry,
 } from "@/lib/domain/portfolios.repository";
+import type {
+  FundingState,
+  PortfolioEntry,
+  PortfolioEntryPatch,
+  PortfolioItemDecision,
+  PortfolioVisibility,
+  ReviewCadence,
+} from "@/lib/portfolio-model";
 import { DomainError } from "@/lib/domain/errors";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
@@ -131,13 +140,33 @@ async function fetchProData(userId: string): Promise<ProData> {
   const portfolios: Portfolio[] = [];
   for (const p of (portRes.data ?? []) as any[]) {
     const slugs: string[] = [];
+    const entries: PortfolioEntry[] = [];
     for (const item of (p.portfolio_items ?? []) as any[]) {
       const slug = item.use_cases?.slug as string | undefined;
       if (slug) {
         slugs.push(slug);
         slugToId[slug] = item.use_case_id;
       }
+      entries.push({
+        useCaseId: item.use_case_id,
+        useCaseSlug: slug,
+        useCaseTitle: (item.use_cases?.title as string | undefined) ?? slug,
+        rank: item.rank ?? null,
+        decision: (item.decision ?? "under_review") as PortfolioItemDecision,
+        targetPeriod: item.target_period ?? undefined,
+        fundingState: (item.funding_state ?? "unfunded") as FundingState,
+        nextAction: item.next_action ?? undefined,
+        notes: item.notes ?? undefined,
+        addedAt: item.added_at,
+        updatedAt: item.updated_at ?? item.added_at,
+      });
     }
+    entries.sort((a, b) => {
+      const ar = a.rank ?? Number.MAX_SAFE_INTEGER;
+      const br = b.rank ?? Number.MAX_SAFE_INTEGER;
+      if (ar !== br) return ar - br;
+      return (a.useCaseTitle ?? "").localeCompare(b.useCaseTitle ?? "");
+    });
     portfolios.push({
       id: p.id,
       name: p.name,
@@ -146,8 +175,14 @@ async function fetchProData(userId: string): Promise<ProData> {
       objective: p.objective ?? undefined,
       targetDepartment: p.target_department ?? undefined,
       targetQuarter: p.target_quarter ?? undefined,
+      visibility: (p.visibility ?? "workspace") as PortfolioVisibility,
+      reviewCadence: (p.review_cadence ?? undefined) as ReviewCadence | undefined,
+      organizationUnitId: p.organization_unit_id ?? undefined,
+      parentPortfolioId: p.parent_portfolio_id ?? undefined,
       useCaseSlugs: slugs,
+      entries,
       createdAt: p.created_at,
+      updatedAt: p.updated_at ?? p.created_at,
     });
   }
 
@@ -251,6 +286,8 @@ export function useUseCaseXPro() {
       objective?: string;
       targetDepartment?: string;
       targetQuarter?: string;
+      visibility?: PortfolioVisibility;
+      reviewCadence?: ReviewCadence;
     }) => {
       const uid = requireUser();
       await createPortfolio(uid, input);
@@ -268,6 +305,8 @@ export function useUseCaseXPro() {
         status: patch.status,
         targetDepartment: patch.targetDepartment,
         targetQuarter: patch.targetQuarter,
+        visibility: patch.visibility,
+        reviewCadence: patch.reviewCadence,
       });
     },
     onSuccess: invalidate,
@@ -301,6 +340,22 @@ export function useUseCaseXPro() {
     onSuccess: invalidate,
   });
 
+  const updateEntryM = useMutation({
+    mutationFn: async ({
+      portfolioId,
+      useCaseId,
+      patch,
+    }: {
+      portfolioId: string;
+      useCaseId: string;
+      patch: PortfolioEntryPatch;
+    }) => {
+      const uid = requireUser();
+      await updatePortfolioEntry(uid, portfolioId, useCaseId, patch);
+    },
+    onSuccess: invalidate,
+  });
+
   return useMemo(
     () => ({
       // Data
@@ -326,6 +381,8 @@ export function useUseCaseXPro() {
         objective?: string;
         targetDepartment?: string;
         targetQuarter?: string;
+        visibility?: PortfolioVisibility;
+        reviewCadence?: ReviewCadence;
       }) => createPortfolioM.mutate(input),
       renamePortfolio: (id: string, name: string) =>
         updatePortfolioM.mutate({ id, patch: { name } }),
@@ -336,6 +393,10 @@ export function useUseCaseXPro() {
         addToPortfolioM.mutate({ portfolioId, slug }),
       removeFromPortfolio: (portfolioId: string, slug: string) =>
         removeFromPortfolioM.mutate({ portfolioId, slug }),
+      /** Portfolio-specific decision fields — never touches the use case. */
+      updatePortfolioEntry: (portfolioId: string, useCaseId: string, patch: PortfolioEntryPatch) =>
+        updateEntryM.mutateAsync({ portfolioId, useCaseId, patch }),
+      isSavingEntry: updateEntryM.isPending,
     }),
     [
       data,
@@ -352,6 +413,7 @@ export function useUseCaseXPro() {
       deletePortfolioM,
       addToPortfolioM,
       removeFromPortfolioM,
+      updateEntryM,
     ],
   );
 }
