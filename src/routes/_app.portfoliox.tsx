@@ -65,6 +65,15 @@ import { SharePortfolioDialog } from "@/components/portfolios/SharePortfolioDial
 import { PortfolioMetrics } from "@/components/portfolios/PortfolioMetrics";
 import { PortfolioEntriesTable } from "@/components/portfolios/PortfolioEntriesTable";
 import { PortfolioReviewNotes } from "@/components/portfolios/PortfolioReviewNotes";
+import { PortfolioCharts } from "@/components/portfolios/PortfolioCharts";
+import { PortfolioFilters } from "@/components/portfolios/PortfolioFilters";
+import {
+  EMPTY_PORTFOLIO_FILTERS,
+  applyPortfolioFilters,
+  countActiveFilters,
+  type PortfolioFilterState,
+} from "@/lib/portfolio-filters";
+import { useAuthz } from "@/hooks/useAuthz";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 export const Route = createFileRoute("/_app/portfoliox")({
