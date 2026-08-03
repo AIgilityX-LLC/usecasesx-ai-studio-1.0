@@ -60,15 +60,10 @@ import {
   EntryDecisionHistory,
   PortfolioAuditTrail,
 } from "@/components/portfolios/PortfolioAuditTrail";
-import { downloadPortfolio, type PortfolioExportFormat } from "@/lib/portfolio-export";
-import { AUDIT_EVENTS, recordAuditEvent } from "@/lib/telemetry";
+import { ExportPortfolioDialog } from "@/components/portfolios/ExportPortfolioDialog";
+import { SharePortfolioDialog } from "@/components/portfolios/SharePortfolioDialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 
 export const Route = createFileRoute("/_app/portfoliox")({
   head: () => ({
@@ -195,10 +190,12 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <ExportPortfolioMenu portfolio={portfolio} />
+            <SharePortfolioDialog portfolioId={portfolio.id} portfolioName={portfolio.name} />
+            <ExportPortfolioDialog portfolio={portfolio} />
             <DeletePortfolioButton portfolio={portfolio} store={store} />
           </div>
         </CardHeader>
+
         <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Field label="Status">
             <Select
@@ -310,36 +307,8 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
   );
 }
 
-function ExportPortfolioMenu({ portfolio }: { portfolio: Portfolio }) {
-  const handle = (format: PortfolioExportFormat) => {
-    try {
-      const fileName = downloadPortfolio(portfolio, format);
-      void recordAuditEvent({
-        event: AUDIT_EVENTS.exportGenerated,
-        entity: { type: "portfolio", id: portfolio.id },
-        next: { format, file_name: fileName, entry_count: portfolio.entries.length },
-      });
-      toast.success(`Exported ${fileName}`);
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Export failed");
-    }
-  };
 
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" disabled={portfolio.entries.length === 0}>
-          Export
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onSelect={() => handle("csv")}>CSV (spreadsheet)</DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => handle("pdf")}>PDF (review pack)</DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => handle("json")}>JSON (data)</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
+
 
 function DeletePortfolioButton({ portfolio, store }: { portfolio: Portfolio; store: Store }) {
   const [open, setOpen] = useState(false);
