@@ -110,9 +110,7 @@ export function PortfolioEntriesTable({
           ) : (
             <span className="font-medium text-foreground">{row.useCaseTitle ?? "Untitled"}</span>
           )}
-          {row.functionName && (
-            <p className="text-xs text-muted-foreground">{row.functionName}</p>
-          )}
+          {row.functionName && <p className="text-xs text-muted-foreground">{row.functionName}</p>}
         </div>
       ),
     },
@@ -120,7 +118,9 @@ export function PortfolioEntriesTable({
       key: "rank",
       header: "Rank",
       cell: (row) => (
-        <span className="tabular-nums text-sm">{row.rank ?? <span className="text-muted-foreground">—</span>}</span>
+        <span className="tabular-nums text-sm">
+          {row.rank ?? <span className="text-muted-foreground">—</span>}
+        </span>
       ),
       className: "w-16",
     },
@@ -184,10 +184,11 @@ export function PortfolioEntriesTable({
     <div className="space-y-3">
       {selected.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-secondary/40 p-2">
-          <span className="text-sm text-muted-foreground">
-            {selected.length} selected
-          </span>
-          <Select value={bulkDecision} onValueChange={(v) => setBulkDecision(v as PortfolioItemDecision)}>
+          <span className="text-sm text-muted-foreground">{selected.length} selected</span>
+          <Select
+            value={bulkDecision}
+            onValueChange={(v) => setBulkDecision(v as PortfolioItemDecision)}
+          >
             <SelectTrigger className="h-8 w-[11rem]" aria-label="Bulk decision">
               <SelectValue placeholder="Set decision…" />
             </SelectTrigger>

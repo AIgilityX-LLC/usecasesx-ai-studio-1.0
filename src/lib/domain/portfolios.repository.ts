@@ -124,7 +124,6 @@ export async function listPortfoliosForUser(userId: string | null) {
   return attachUseCases(rows as PortfolioRow[]);
 }
 
-
 export async function createPortfolio(userId: string | null, input: PortfolioCreateInput) {
   const uid = requireUserId(userId);
   const clean = parseInput(portfolioCreateSchema, input);
@@ -213,7 +212,6 @@ export function toPortfolioEntryColumns(patch: PortfolioEntryPatch) {
   if (patch.markReviewed) columns.last_reviewed_at = new Date().toISOString();
   return columns;
 }
-
 
 export async function updatePortfolio(
   userId: string | null,
@@ -310,7 +308,6 @@ export async function updatePortfolioEntry(
   });
 }
 
-
 export async function removeUseCaseFromPortfolio(
   userId: string | null,
   portfolioId: string,
@@ -341,4 +338,3 @@ export async function removeUseCasesFromPortfolio(
     properties: { count: ids.length },
   });
 }
-

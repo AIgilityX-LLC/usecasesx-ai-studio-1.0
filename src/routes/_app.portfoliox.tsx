@@ -201,10 +201,7 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <PortfolioMetrics
-            entries={portfolio.entries}
-            lastReviewedAt={portfolio.lastReviewedAt}
-          />
+          <PortfolioMetrics entries={portfolio.entries} lastReviewedAt={portfolio.lastReviewedAt} />
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Field label="Status">
@@ -365,7 +362,6 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
     </div>
   );
 }
-
 
 function DeletePortfolioButton({ portfolio, store }: { portfolio: Portfolio; store: Store }) {
   const [open, setOpen] = useState(false);

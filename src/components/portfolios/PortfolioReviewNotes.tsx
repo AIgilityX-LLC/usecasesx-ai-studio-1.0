@@ -57,12 +57,7 @@ export function PortfolioReviewNotes({
         <Button size="sm" disabled={saving || !dirty} onClick={() => void save(false)}>
           Save notes
         </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          disabled={saving}
-          onClick={() => void save(true)}
-        >
+        <Button size="sm" variant="outline" disabled={saving} onClick={() => void save(true)}>
           Mark reviewed today
         </Button>
         <span className="text-xs text-muted-foreground">

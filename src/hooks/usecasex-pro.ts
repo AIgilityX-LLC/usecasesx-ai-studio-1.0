@@ -197,7 +197,6 @@ async function fetchProData(userId: string): Promise<ProData> {
       createdAt: p.created_at,
       updatedAt: p.updated_at ?? p.created_at,
     });
-
   }
 
   return { saved, portfolios, slugToId };
@@ -391,7 +390,6 @@ export function useUseCaseXPro() {
     onSuccess: invalidate,
   });
 
-
   const updateEntryM = useMutation({
     mutationFn: async ({
       portfolioId,
@@ -474,7 +472,6 @@ export function useUseCaseXPro() {
       addManyToPortfolioM,
       removeManyFromPortfolioM,
       updateEntryM,
-
     ],
   );
 }

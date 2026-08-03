@@ -118,4 +118,3 @@ export type PortfolioEntryPatch = {
   /** Set true to stamp the review date server-side on save. */
   markReviewed?: boolean;
 };
-
