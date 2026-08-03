@@ -64,7 +64,6 @@ import { ExportPortfolioDialog } from "@/components/portfolios/ExportPortfolioDi
 import { SharePortfolioDialog } from "@/components/portfolios/SharePortfolioDialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
-
 export const Route = createFileRoute("/_app/portfoliox")({
   head: () => ({
     meta: [
@@ -306,9 +305,6 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
     </div>
   );
 }
-
-
-
 
 function DeletePortfolioButton({ portfolio, store }: { portfolio: Portfolio; store: Store }) {
   const [open, setOpen] = useState(false);

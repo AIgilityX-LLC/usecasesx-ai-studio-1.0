@@ -4,10 +4,7 @@ import { SiteShell } from "@/components/SiteShell";
 import { PageHero } from "@/components/usecasex/PageHero";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  getSharedPortfolio,
-  type SharedPortfolioEntry,
-} from "@/lib/portfolio-share.functions";
+import { getSharedPortfolio, type SharedPortfolioEntry } from "@/lib/portfolio-share.functions";
 import {
   FUNDING_STATE_LABELS,
   PORTFOLIO_ITEM_DECISION_LABELS,

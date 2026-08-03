@@ -27,10 +27,7 @@ import {
   type PortfolioExportColumnKey,
   type PortfolioExportFormat,
 } from "@/lib/portfolio-export";
-import {
-  PORTFOLIO_ITEM_DECISIONS,
-  PORTFOLIO_ITEM_DECISION_LABELS,
-} from "@/lib/portfolio-model";
+import { PORTFOLIO_ITEM_DECISIONS, PORTFOLIO_ITEM_DECISION_LABELS } from "@/lib/portfolio-model";
 import { AUDIT_EVENTS, recordAuditEvent } from "@/lib/telemetry";
 import type { Portfolio } from "@/lib/usecasex.store";
 

@@ -166,7 +166,12 @@ export function SharePortfolioDialog({
                   </p>
                 </div>
                 <div className="flex gap-1.5">
-                  <Button size="sm" variant="ghost" disabled={!live} onClick={() => copy(share.token)}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    disabled={!live}
+                    onClick={() => copy(share.token)}
+                  >
                     Copy link
                   </Button>
                   <Button

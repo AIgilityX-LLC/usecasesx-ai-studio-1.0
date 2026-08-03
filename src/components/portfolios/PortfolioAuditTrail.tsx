@@ -115,26 +115,29 @@ function EventList({ events }: { events: PortfolioAuditEvent[] }) {
   );
 }
 
-const CATEGORIES: Array<{ value: string; label: string; match: (e: PortfolioAuditEvent) => boolean }> =
-  [
-    { value: "all", label: "All activity", match: () => true },
-    {
-      value: "membership",
-      label: "Use cases added / removed",
-      match: (e) => e.eventType.endsWith(".added") || e.eventType.endsWith(".removed"),
-    },
-    {
-      value: "decisions",
-      label: "Decision changes",
-      match: (e) => e.eventType === "portfolio_item.updated",
-    },
-    {
-      value: "portfolio",
-      label: "Portfolio lifecycle",
-      match: (e) => e.entityType === "portfolio" && !e.eventType.startsWith("export"),
-    },
-    { value: "exports", label: "Exports & shares", match: (e) => e.eventType.startsWith("export") },
-  ];
+const CATEGORIES: Array<{
+  value: string;
+  label: string;
+  match: (e: PortfolioAuditEvent) => boolean;
+}> = [
+  { value: "all", label: "All activity", match: () => true },
+  {
+    value: "membership",
+    label: "Use cases added / removed",
+    match: (e) => e.eventType.endsWith(".added") || e.eventType.endsWith(".removed"),
+  },
+  {
+    value: "decisions",
+    label: "Decision changes",
+    match: (e) => e.eventType === "portfolio_item.updated",
+  },
+  {
+    value: "portfolio",
+    label: "Portfolio lifecycle",
+    match: (e) => e.entityType === "portfolio" && !e.eventType.startsWith("export"),
+  },
+  { value: "exports", label: "Exports & shares", match: (e) => e.eventType.startsWith("export") },
+];
 
 const RANGES: Array<{ value: string; label: string; days: number | null }> = [
   { value: "all", label: "All time", days: null },
@@ -154,8 +157,7 @@ export function PortfolioAuditTrail({ portfolioId }: { portfolioId: string }) {
     const days = RANGES.find((r) => r.value === range)?.days ?? null;
     const cutoff = days == null ? null : Date.now() - days * 86_400_000;
     return (data ?? []).filter(
-      (event) =>
-        cat.match(event) && (cutoff == null || new Date(event.at).getTime() >= cutoff),
+      (event) => cat.match(event) && (cutoff == null || new Date(event.at).getTime() >= cutoff),
     );
   }, [data, category, range]);
 
@@ -214,7 +216,6 @@ export function PortfolioAuditTrail({ portfolioId }: { portfolioId: string }) {
     </div>
   );
 }
-
 
 /** Decision history for a single use case inside one portfolio. */
 export function EntryDecisionHistory({

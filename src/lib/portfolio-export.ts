@@ -177,7 +177,11 @@ export function portfolioToExportDoc(
     title: portfolio.name,
     subtitle: portfolio.objective ?? "AI opportunity portfolio",
     sections: [
-      { heading: "Portfolio summary", kind: "text", body: portfolioSummaryLines(portfolio).join("\n") },
+      {
+        heading: "Portfolio summary",
+        kind: "text",
+        body: portfolioSummaryLines(portfolio).join("\n"),
+      },
       {
         heading: "Portfolio decisions",
         kind: "table",
