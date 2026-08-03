@@ -226,6 +226,65 @@ export function isConvertible(draft: OpportunityDraft): boolean {
 /** Pre-save drafts survive a refresh even before the first server autosave. */
 export const LOCAL_DRAFT_KEY = "usecasex.opportunity.draft.v1";
 
+export type StoredLocalDraft = { draft: OpportunityDraft; savedAt: string };
+
+/**
+ * Reads the locally stored draft. Tolerates the older shape (a bare draft
+ * object) so a draft captured before this change is still recoverable.
+ */
+export function readLocalDraft(): StoredLocalDraft | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(LOCAL_DRAFT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<StoredLocalDraft> & Partial<OpportunityDraft>;
+    const draft = (parsed.draft ?? parsed) as OpportunityDraft;
+    if (!draft || typeof draft.title !== "string") return null;
+    return { draft: { ...emptyDraft(), ...draft }, savedAt: parsed.savedAt ?? "" };
+  } catch {
+    return null;
+  }
+}
+
+export function writeLocalDraft(draft: OpportunityDraft): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(
+      LOCAL_DRAFT_KEY,
+      JSON.stringify({ draft, savedAt: new Date().toISOString() } satisfies StoredLocalDraft),
+    );
+  } catch {
+    /* storage may be unavailable */
+  }
+}
+
+export function clearLocalDraft(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(LOCAL_DRAFT_KEY);
+  } catch {
+    /* storage may be unavailable */
+  }
+}
+
+/** "just now" / "12 minutes ago" / "3 Aug, 09:14" for recovery banners. */
+export function describeSavedAt(iso: string): string {
+  const t = Date.parse(iso);
+  if (!Number.isFinite(t)) return "earlier";
+  const mins = Math.round((Date.now() - t) / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins} minute${mins === 1 ? "" : "s"} ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+  return new Date(t).toLocaleString(undefined, {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+
 /* ------------------------------------------------------------ dedup hint */
 
 const STOP_WORDS = new Set([
