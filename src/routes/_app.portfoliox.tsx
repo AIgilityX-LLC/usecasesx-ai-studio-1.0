@@ -178,6 +178,8 @@ function PortfoliosPage() {
 type Store = ReturnType<typeof useUseCaseXPro>;
 
 function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: Store }) {
+  const [view, setView] = useState<"table" | "cards">("table");
+
   return (
     <div className="min-w-0 space-y-4">
       <Card>
@@ -195,76 +197,109 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
           </div>
         </CardHeader>
 
-        <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Field label="Status">
-            <Select
-              value={portfolio.status}
-              onValueChange={(v) =>
-                store.updatePortfolio(portfolio.id, { status: v as PortfolioStatus })
-              }
-            >
-              <SelectTrigger aria-label="Portfolio status">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PORTFOLIO_STATUSES.map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {s}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
+        <CardContent className="space-y-6">
+          <PortfolioMetrics
+            entries={portfolio.entries}
+            lastReviewedAt={portfolio.lastReviewedAt}
+          />
 
-          <Field label="Visibility">
-            <Select
-              value={portfolio.visibility}
-              onValueChange={(v) =>
-                store.updatePortfolio(portfolio.id, { visibility: v as PortfolioVisibility })
-              }
-            >
-              <SelectTrigger aria-label="Portfolio visibility">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PORTFOLIO_VISIBILITIES.map((v) => (
-                  <SelectItem key={v} value={v}>
-                    {PORTFOLIO_VISIBILITY_LABELS[v]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Field label="Status">
+              <Select
+                value={portfolio.status}
+                onValueChange={(v) =>
+                  void store.updatePortfolio(portfolio.id, { status: v as PortfolioStatus })
+                }
+              >
+                <SelectTrigger aria-label="Portfolio status">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PORTFOLIO_STATUSES.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
 
-          <Field label="Review cadence">
-            <Select
-              value={portfolio.reviewCadence ?? "none"}
-              onValueChange={(v) =>
-                store.updatePortfolio(portfolio.id, { reviewCadence: v as ReviewCadence })
-              }
-            >
-              <SelectTrigger aria-label="Review cadence">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {REVIEW_CADENCES.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {REVIEW_CADENCE_LABELS[c]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
+            <Field label="Visibility">
+              <Select
+                value={portfolio.visibility}
+                onValueChange={(v) =>
+                  void store.updatePortfolio(portfolio.id, { visibility: v as PortfolioVisibility })
+                }
+              >
+                <SelectTrigger aria-label="Portfolio visibility">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PORTFOLIO_VISIBILITIES.map((v) => (
+                    <SelectItem key={v} value={v}>
+                      {PORTFOLIO_VISIBILITY_LABELS[v]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+
+            <Field label="Review cadence">
+              <Select
+                value={portfolio.reviewCadence ?? "none"}
+                onValueChange={(v) =>
+                  void store.updatePortfolio(portfolio.id, { reviewCadence: v as ReviewCadence })
+                }
+              >
+                <SelectTrigger aria-label="Review cadence">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {REVIEW_CADENCES.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {REVIEW_CADENCE_LABELS[c]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          </div>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Portfolio entries</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Rank, decision, target period and funding are recorded per portfolio. They never
-            overwrite the use case or its scores.
-          </p>
+        <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
+            <CardTitle className="text-base">Portfolio entries</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Rank, decision, target period and funding are recorded per portfolio. They never
+              overwrite the use case or its scores.
+            </p>
+          </div>
+          {portfolio.entries.length > 0 && (
+            <div
+              role="group"
+              aria-label="Entry view"
+              className="flex items-center gap-1 rounded-lg border border-border p-1"
+            >
+              <Button
+                size="sm"
+                variant={view === "table" ? "secondary" : "ghost"}
+                aria-pressed={view === "table"}
+                onClick={() => setView("table")}
+              >
+                Table
+              </Button>
+              <Button
+                size="sm"
+                variant={view === "cards" ? "secondary" : "ghost"}
+                aria-pressed={view === "cards"}
+                onClick={() => setView("cards")}
+              >
+                Cards
+              </Button>
+            </div>
+          )}
         </CardHeader>
         <CardContent className="space-y-3">
           {portfolio.entries.length === 0 ? (
@@ -277,6 +312,12 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
                 </Button>
               }
             />
+          ) : view === "table" ? (
+            <PortfolioEntriesTable
+              portfolioId={portfolio.id}
+              entries={portfolio.entries}
+              store={store}
+            />
           ) : (
             portfolio.entries.map((entry) => (
               <EntryRow
@@ -287,6 +328,22 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
               />
             ))
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Review notes</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Executive summary for the next portfolio review. Kept separate from per-use-case notes.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <PortfolioReviewNotes
+            notes={portfolio.reviewNotes}
+            lastReviewedAt={portfolio.lastReviewedAt}
+            onSave={(patch) => store.updatePortfolio(portfolio.id, patch)}
+          />
         </CardContent>
       </Card>
 
@@ -305,6 +362,7 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
     </div>
   );
 }
+
 
 function DeletePortfolioButton({ portfolio, store }: { portfolio: Portfolio; store: Store }) {
   const [open, setOpen] = useState(false);
