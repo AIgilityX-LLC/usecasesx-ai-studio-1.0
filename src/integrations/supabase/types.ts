@@ -1456,17 +1456,44 @@ export type Database = {
       portfolio_items: {
         Row: {
           added_at: string
+          added_by: string | null
+          created_at: string
+          decision: string
+          funding_state: string
+          next_action: string | null
+          notes: string | null
           portfolio_id: string
+          rank: number | null
+          target_period: string | null
+          updated_at: string
           use_case_id: string
         }
         Insert: {
           added_at?: string
+          added_by?: string | null
+          created_at?: string
+          decision?: string
+          funding_state?: string
+          next_action?: string | null
+          notes?: string | null
           portfolio_id: string
+          rank?: number | null
+          target_period?: string | null
+          updated_at?: string
           use_case_id: string
         }
         Update: {
           added_at?: string
+          added_by?: string | null
+          created_at?: string
+          decision?: string
+          funding_state?: string
+          next_action?: string | null
+          notes?: string | null
           portfolio_id?: string
+          rank?: number | null
+          target_period?: string | null
+          updated_at?: string
           use_case_id?: string
         }
         Relationships: [
@@ -1486,12 +1513,16 @@ export type Database = {
           name: string
           objective: string | null
           organization_id: string | null
+          organization_unit_id: string | null
+          parent_portfolio_id: string | null
           portfolio_type: string
+          review_cadence: string | null
           status: string
           target_department: string | null
           target_quarter: string | null
           updated_at: string
           user_id: string
+          visibility: string
           workspace_id: string | null
         }
         Insert: {
@@ -1500,12 +1531,16 @@ export type Database = {
           name: string
           objective?: string | null
           organization_id?: string | null
+          organization_unit_id?: string | null
+          parent_portfolio_id?: string | null
           portfolio_type?: string
+          review_cadence?: string | null
           status?: string
           target_department?: string | null
           target_quarter?: string | null
           updated_at?: string
           user_id: string
+          visibility?: string
           workspace_id?: string | null
         }
         Update: {
@@ -1514,15 +1549,34 @@ export type Database = {
           name?: string
           objective?: string | null
           organization_id?: string | null
+          organization_unit_id?: string | null
+          parent_portfolio_id?: string | null
           portfolio_type?: string
+          review_cadence?: string | null
           status?: string
           target_department?: string | null
           target_quarter?: string | null
           updated_at?: string
           user_id?: string
+          visibility?: string
           workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "portfolios_organization_unit_id_fkey"
+            columns: ["organization_unit_id"]
+            isOneToOne: false
+            referencedRelation: "organization_units"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portfolios_parent_portfolio_id_fkey"
+            columns: ["parent_portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_events: {
         Row: {
@@ -3336,6 +3390,14 @@ export type Database = {
         Returns: boolean
       }
       org_role: { Args: { _org_id: string; _user_id: string }; Returns: string }
+      portfolio_is_readable: {
+        Args: { _portfolio_id: string; _user_id: string }
+        Returns: boolean
+      }
+      portfolio_is_writable: {
+        Args: { _portfolio_id: string; _user_id: string }
+        Returns: boolean
+      }
       user_can_access_use_case: {
         Args: { _use_case_id: string; _user_id: string }
         Returns: boolean
