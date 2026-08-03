@@ -194,7 +194,11 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
               <p className="mt-1 text-sm text-muted-foreground">{portfolio.objective}</p>
             )}
           </div>
-          <DeletePortfolioButton portfolio={portfolio} store={store} />
+          <div className="flex flex-wrap items-center gap-2">
+            <ExportPortfolioMenu portfolio={portfolio} />
+            <DeletePortfolioButton portfolio={portfolio} store={store} />
+          </div>
+
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Field label="Status">
