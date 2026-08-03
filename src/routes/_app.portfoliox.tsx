@@ -294,9 +294,54 @@ function PortfolioDetail({ portfolio, store }: { portfolio: Portfolio; store: St
           )}
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Audit trail</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Append-only record of portfolio and decision changes. Entries can never be edited or
+            removed.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <PortfolioAuditTrail portfolioId={portfolio.id} />
+        </CardContent>
+      </Card>
     </div>
   );
 }
+
+function ExportPortfolioMenu({ portfolio }: { portfolio: Portfolio }) {
+  const handle = (format: PortfolioExportFormat) => {
+    try {
+      const fileName = downloadPortfolio(portfolio, format);
+      void recordAuditEvent({
+        event: AUDIT_EVENTS.exportGenerated,
+        entity: { type: "portfolio", id: portfolio.id },
+        next: { format, file_name: fileName, entry_count: portfolio.entries.length },
+      });
+      toast.success(`Exported ${fileName}`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Export failed");
+    }
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm" disabled={portfolio.entries.length === 0}>
+          Export
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onSelect={() => handle("csv")}>CSV (spreadsheet)</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => handle("pdf")}>PDF (review pack)</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => handle("json")}>JSON (data)</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 
 function DeletePortfolioButton({ portfolio, store }: { portfolio: Portfolio; store: Store }) {
   const [open, setOpen] = useState(false);
