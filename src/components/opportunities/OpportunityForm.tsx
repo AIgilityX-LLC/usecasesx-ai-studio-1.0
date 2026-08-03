@@ -139,7 +139,6 @@ export function OpportunityForm({
     writeLocalDraft(draft);
   }, [draft, dirty, id]);
 
-
   /* --- explicit + autosave ------------------------------------------------ */
   const persist = useCallback(
     async (silent: boolean) => {
@@ -322,7 +321,6 @@ export function OpportunityForm({
           </p>
         ) : null}
         {/* Essentials — the only required framing */}
-
 
         <Card>
           <CardHeader>
