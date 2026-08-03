@@ -104,25 +104,36 @@ export function OpportunityForm({
   );
 
   /* --- local draft survives a refresh before the first server save --------- */
+  const [recovered, setRecovered] = useState<StoredLocalDraft | null>(null);
+  const [restoredAt, setRestoredAt] = useState<string | null>(null);
+
   useEffect(() => {
     if (opportunityId || initial) return;
-    try {
-      const raw = window.localStorage.getItem(LOCAL_DRAFT_KEY);
-      if (raw) setDraft({ ...emptyDraft(), ...JSON.parse(raw) });
-    } catch {
-      /* ignore unreadable drafts */
-    }
+    const stored = readLocalDraft();
+    if (stored && stored.draft.title.trim().length > 0) setRecovered(stored);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const restoreDraft = useCallback(() => {
+    if (!recovered) return;
+    setDraft(recovered.draft);
+    setDirty(true);
+    setRestoredAt(recovered.savedAt);
+    setRecovered(null);
+    toast.success("Draft restored");
+  }, [recovered]);
+
+  const discardDraft = useCallback(() => {
+    clearLocalDraft();
+    setRecovered(null);
+    toast.success("Saved draft discarded");
   }, []);
 
   useEffect(() => {
     if (id || !dirty) return;
-    try {
-      window.localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(draft));
-    } catch {
-      /* storage may be unavailable */
-    }
+    writeLocalDraft(draft);
   }, [draft, dirty, id]);
+
 
   /* --- explicit + autosave ------------------------------------------------ */
   const persist = useCallback(
