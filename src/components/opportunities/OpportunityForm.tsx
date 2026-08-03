@@ -24,14 +24,20 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ConfirmDialog, useUnsavedChanges } from "@/components/ui-kit";
+import {
+  AutosaveStatus,
+  ConfirmDialog,
+  DraftRecoveryBanner,
+  useUnsavedChanges,
+} from "@/components/ui-kit";
+import { describeSavedAt, hasConflict, type AutosaveState } from "@/lib/drafts";
 import {
   clearLocalDraft,
   completionOf,
-  describeSavedAt,
   emptyDraft,
   isConvertible,
   OPPORTUNITY_SOURCES,
+  opportunityDraftKey,
   readLocalDraft,
   SOURCE_LABELS,
   URGENCIES,
@@ -41,6 +47,7 @@ import {
   type OpportunitySource,
   type StoredLocalDraft,
 } from "@/lib/opportunities";
+
 
 import {
   findSimilarOpportunitiesFn,
