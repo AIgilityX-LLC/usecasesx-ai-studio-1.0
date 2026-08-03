@@ -202,7 +202,6 @@ export function UseCaseWizard({ id }: { id: string }) {
           ? "saved"
           : "idle";
 
-
   async function goTo(index: number) {
     if (index === stepIndex) return;
     const target = WIZARD_STEPS[index];

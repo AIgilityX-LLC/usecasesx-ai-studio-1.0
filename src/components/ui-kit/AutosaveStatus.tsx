@@ -23,7 +23,11 @@ export function AutosaveStatus({
 
   if (state === "saving") {
     return (
-      <span role="status" aria-live="polite" className={cn(base, "text-muted-foreground", className)}>
+      <span
+        role="status"
+        aria-live="polite"
+        className={cn(base, "text-muted-foreground", className)}
+      >
         <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
         Saving…
       </span>
@@ -32,7 +36,11 @@ export function AutosaveStatus({
 
   if (state === "saved") {
     return (
-      <span role="status" aria-live="polite" className={cn(base, "text-muted-foreground", className)}>
+      <span
+        role="status"
+        aria-live="polite"
+        className={cn(base, "text-muted-foreground", className)}
+      >
         <Check className="h-3.5 w-3.5 text-primary" aria-hidden />
         Saved {savedAt ? describeSavedAt(savedAt) : ""}
       </span>
@@ -41,7 +49,11 @@ export function AutosaveStatus({
 
   if (state === "local") {
     return (
-      <span role="status" aria-live="polite" className={cn(base, "text-muted-foreground", className)}>
+      <span
+        role="status"
+        aria-live="polite"
+        className={cn(base, "text-muted-foreground", className)}
+      >
         <CloudOff className="h-3.5 w-3.5" aria-hidden />
         Kept on this device only
       </span>

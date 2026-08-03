@@ -29,7 +29,10 @@ const ROLES = ["super_admin", "admin"];
 
 const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
 
-const { data: listed, error: listErr } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
+const { data: listed, error: listErr } = await admin.auth.admin.listUsers({
+  page: 1,
+  perPage: 200,
+});
 if (listErr) throw listErr;
 
 const existing = listed.users.find((u) => u.email?.toLowerCase() === email);
@@ -47,7 +50,10 @@ if (!userId) {
   userId = data.user.id;
   created = true;
 } else {
-  const { error } = await admin.auth.admin.updateUserById(userId, { password, email_confirm: true });
+  const { error } = await admin.auth.admin.updateUserById(userId, {
+    password,
+    email_confirm: true,
+  });
   if (error) throw error;
 }
 

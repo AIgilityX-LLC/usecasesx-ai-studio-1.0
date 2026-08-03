@@ -23,7 +23,6 @@
     "seed:refresh": "bun run scripts/seed/refresh-baseline.mjs",
     "seed:demo-accounts": "bun run scripts/seed/demo-accounts.mjs",
     "seed:superadmin": "bun run scripts/seed/create-superadmin.mjs",
-
     "seed:baseline": "python3 scripts/seed/emit_baseline.py 2 > /tmp/seed-baseline.sql && psql -v ON_ERROR_STOP=1 -q -f /tmp/seed-baseline.sql",
     "check:nav-integrity": "node scripts/check-nav-integrity.mjs",
     "check:compare": "node scripts/check-compare-analytics.mjs",

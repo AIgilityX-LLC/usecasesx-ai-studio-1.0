@@ -66,7 +66,6 @@ type ScorecardLocalDraft = {
   note: string;
 };
 
-
 export function UseCaseScorecard({ id }: { id: string }) {
   const record = useServerFn(recordScoreFn);
   const suggestEvidence = useServerFn(suggestScoreEvidenceFn);
@@ -152,7 +151,6 @@ export function UseCaseScorecard({ id }: { id: string }) {
       latest?.createdAt ?? null,
     );
   }, [draftKey, responses, evidence, note, current, currentEvidence, latest]);
-
 
   /**
    * Comparison always runs baseline (the selected older result) → latest, so

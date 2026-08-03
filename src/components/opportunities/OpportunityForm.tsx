@@ -48,7 +48,6 @@ import {
   type StoredLocalDraft,
 } from "@/lib/opportunities";
 
-
 import {
   findSimilarOpportunitiesFn,
   recordOpportunityAssistFn,
@@ -223,7 +222,6 @@ export function OpportunityForm({
           : lastSavedAt
             ? "saved"
             : "idle";
-
 
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
@@ -627,7 +625,6 @@ export function OpportunityForm({
           ) : (
             <AutosaveStatus state={autosaveState} savedAt={lastSavedAt} />
           )}
-
         </div>
       </div>
 

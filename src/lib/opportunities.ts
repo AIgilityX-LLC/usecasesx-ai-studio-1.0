@@ -11,7 +11,6 @@
 import { z } from "zod";
 import { clearDraft, readDraft, writeDraft, type LocalDraft } from "./drafts";
 
-
 /* ------------------------------------------------------------- lifecycle */
 
 export const OPPORTUNITY_STATUSES = [
@@ -253,7 +252,6 @@ export function writeLocalDraft(
 export function clearLocalDraft(key: string = LOCAL_DRAFT_KEY): void {
   clearDraft(key);
 }
-
 
 /* ------------------------------------------------------------ dedup hint */
 

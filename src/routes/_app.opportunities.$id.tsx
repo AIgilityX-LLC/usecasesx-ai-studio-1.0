@@ -171,7 +171,6 @@ function OpportunityDetailPage() {
         onSaved={() => void query.refetch()}
       />
 
-
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
