@@ -310,7 +310,13 @@ export function useUseCaseXPro() {
   });
 
   const updatePortfolioM = useMutation({
-    mutationFn: async ({ id, patch }: { id: string; patch: Partial<Portfolio> }) => {
+    mutationFn: async ({
+      id,
+      patch,
+    }: {
+      id: string;
+      patch: Partial<Portfolio> & { markReviewed?: boolean };
+    }) => {
       const uid = requireUser();
       await updatePortfolio(uid, id, {
         name: patch.name,
@@ -321,6 +327,8 @@ export function useUseCaseXPro() {
         targetQuarter: patch.targetQuarter,
         visibility: patch.visibility,
         reviewCadence: patch.reviewCadence,
+        reviewNotes: patch.reviewNotes,
+        markReviewed: patch.markReviewed,
       });
     },
     onSuccess: invalidate,
@@ -344,6 +352,35 @@ export function useUseCaseXPro() {
     onSuccess: invalidate,
   });
 
+  /** Bulk add by use case id — duplicates are skipped by the composite key. */
+  const addManyToPortfolioM = useMutation({
+    mutationFn: async ({
+      portfolioId,
+      useCaseIds,
+    }: {
+      portfolioId: string;
+      useCaseIds: string[];
+    }) => {
+      requireUser();
+      await addUseCasesToPortfolio(userId, portfolioId, useCaseIds);
+    },
+    onSuccess: invalidate,
+  });
+
+  const removeManyFromPortfolioM = useMutation({
+    mutationFn: async ({
+      portfolioId,
+      useCaseIds,
+    }: {
+      portfolioId: string;
+      useCaseIds: string[];
+    }) => {
+      requireUser();
+      await removeUseCasesFromPortfolio(userId, portfolioId, useCaseIds);
+    },
+    onSuccess: invalidate,
+  });
+
   const removeFromPortfolioM = useMutation({
     mutationFn: async ({ portfolioId, slug }: { portfolioId: string; slug: string }) => {
       requireUser();
@@ -353,6 +390,7 @@ export function useUseCaseXPro() {
     },
     onSuccess: invalidate,
   });
+
 
   const updateEntryM = useMutation({
     mutationFn: async ({
