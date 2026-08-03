@@ -41,7 +41,10 @@ export interface PortfolioExportColumnDef {
   label: string;
   /** Relative width hint used by the board-pack table layout. */
   weight: number;
+  /** Human-facing text used by CSV and PDF. */
   value: (entry: PortfolioEntry) => string;
+  /** Raw stored value used by the JSON export. */
+  raw?: (entry: PortfolioEntry) => unknown;
 }
 
 export const PORTFOLIO_EXPORT_COLUMN_DEFS: PortfolioExportColumnDef[] = [
@@ -53,6 +56,7 @@ export const PORTFOLIO_EXPORT_COLUMN_DEFS: PortfolioExportColumnDef[] = [
     label: "Decision",
     weight: 1,
     value: (e) => PORTFOLIO_ITEM_DECISION_LABELS[e.decision] ?? e.decision,
+    raw: (e) => e.decision,
   },
   { key: "targetPeriod", label: "Target period", weight: 1, value: (e) => e.targetPeriod ?? "" },
   {
@@ -60,6 +64,7 @@ export const PORTFOLIO_EXPORT_COLUMN_DEFS: PortfolioExportColumnDef[] = [
     label: "Funding",
     weight: 1,
     value: (e) => FUNDING_STATE_LABELS[e.fundingState] ?? e.fundingState,
+    raw: (e) => e.fundingState,
   },
   { key: "nextAction", label: "Next action", weight: 1.8, value: (e) => e.nextAction ?? "" },
   { key: "notes", label: "Notes", weight: 1.8, value: (e) => e.notes ?? "" },
@@ -140,7 +145,9 @@ export function portfolioToJson(portfolio: Portfolio, options?: PortfolioExportO
         updatedAt: portfolio.updatedAt ?? null,
       },
       entries: resolveEntries(portfolio, options).map((entry) =>
-        Object.fromEntries(columns.map((c) => [c.key, c.value(entry) || null])),
+        Object.fromEntries(
+          columns.map((c) => [c.key, c.raw ? c.raw(entry) : c.value(entry) || null]),
+        ),
       ),
     },
     null,
