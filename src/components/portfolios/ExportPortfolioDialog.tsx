@@ -119,6 +119,24 @@ export function ExportPortfolioDialog({
             </Select>
           </div>
 
+          {hasFilter && (
+            <label className="flex items-start gap-2 rounded-lg border border-border p-3 text-sm">
+              <Checkbox
+                checked={filteredOnly}
+                onCheckedChange={(v) => setFilteredOnly(v === true)}
+                aria-label="Export only the filtered entries"
+              />
+              <span>
+                Export only the {filteredEntries?.length} filtered entries
+                <span className="block text-xs text-muted-foreground">
+                  Unchecked exports all {portfolio.entries.length} entries in this portfolio.
+                </span>
+              </span>
+            </label>
+          )}
+
+
+
           <fieldset className="space-y-2">
             <legend className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Fields
