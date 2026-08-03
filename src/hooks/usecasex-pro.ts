@@ -471,7 +471,10 @@ export function useUseCaseXPro() {
       deletePortfolioM,
       addToPortfolioM,
       removeFromPortfolioM,
+      addManyToPortfolioM,
+      removeManyFromPortfolioM,
       updateEntryM,
+
     ],
   );
 }
