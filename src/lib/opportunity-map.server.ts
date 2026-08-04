@@ -18,19 +18,25 @@ const SELECT = `id, title, status, urgency, owner_name, org_unit_id, business_fu
 export type OpportunityMapData = {
   records: MapRecord[];
   /** Counts used only for honest setup guidance in the empty state. */
-  setup: { orgUnits: number; strategicThemes: number };
+  setup: { orgUnits: number; strategicThemes: number; valueThemes: number; processes: number };
 };
 
 export async function loadOpportunityMap(supabase: Db): Promise<OpportunityMapData> {
-  const [rowsResult, unitsResult, themesResult] = await Promise.all([
+  const countOf = (table: string) =>
+    supabase.from(table).select("id", { count: "exact", head: true });
+
+  const [rowsResult, unitsResult, themesResult, valueResult, processResult] = await Promise.all([
     supabase
       .from("opportunities")
       .select(SELECT)
       .order("updated_at", { ascending: false })
       .limit(1000),
-    supabase.from("organization_units").select("id", { count: "exact", head: true }),
-    supabase.from("taxonomy_strategic_themes").select("id", { count: "exact", head: true }),
+    countOf("organization_units"),
+    countOf("taxonomy_strategic_themes"),
+    countOf("taxonomy_value_themes"),
+    countOf("taxonomy_processes"),
   ]);
+
 
   if (rowsResult.error) throw new Error(rowsResult.error.message);
 
