@@ -194,7 +194,7 @@ function OrganizationSetupPage() {
           processes: data?.taxonomy?.taxonomy_processes?.length ?? 0,
           opportunities: mapQuery.data?.records.length ?? 0,
           classifiedOpportunities: (mapQuery.data?.records ?? []).filter(
-            (r) => (r.orgUnitId || r.businessFunction.trim()) && r.strategicThemeId,
+            (r: MapRecord) => (r.orgUnitId || r.businessFunction.trim()) && r.strategicThemeId,
           ).length,
         }}
       />
