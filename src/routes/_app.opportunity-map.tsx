@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Map as MapIcon, Table2, Info } from "lucide-react";
+import { Map as MapIcon, Table2, Info, Download } from "lucide-react";
+import { toast } from "sonner";
 import { getOpportunityMapFn } from "@/lib/opportunity-map.functions";
 import {
   activeFilterCount,
@@ -18,8 +19,10 @@ import {
   type MapFilters,
   type RowAxis,
 } from "@/lib/opportunity-map";
+import { downloadOpportunityMap, type MapExportFormat } from "@/lib/opportunity-map-export";
 import { OPPORTUNITY_STATUSES, STATUS_META, URGENCIES, URGENCY_LABELS } from "@/lib/opportunities";
 import { OpportunityMapGrid } from "@/components/opportunities/OpportunityMapGrid";
+import { TaxonomySetupChecklist } from "@/components/opportunities/TaxonomySetupChecklist";
 import {
   PageHeader,
   ErrorState,
@@ -33,6 +36,14 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Route = createFileRoute("/_app/opportunity-map")({
   head: () => ({
@@ -161,15 +172,62 @@ function OpportunityMapPage() {
         : [...prev[key], value],
     }));
 
+  const setupCounts = useMemo(() => {
+    const setup = query.data?.setup;
+    const classified = records.filter(
+      (r) => (r.orgUnitId || r.businessFunction.trim()) && r.strategicThemeId,
+    ).length;
+    return {
+      orgUnits: setup?.orgUnits ?? 0,
+      strategicThemes: setup?.strategicThemes ?? 0,
+      valueThemes: setup?.valueThemes ?? 0,
+      processes: setup?.processes ?? 0,
+      opportunities: records.length,
+      classifiedOpportunities: classified,
+    };
+  }, [query.data, records]);
+
+  const exportMap = (format: MapExportFormat) => {
+    try {
+      downloadOpportunityMap(filtered, axis, format);
+      toast.success("Export ready", { description: `${filtered.length} records in view.` });
+    } catch (error) {
+      toast.error("Export failed", { description: (error as Error).message });
+    }
+  };
+
   return (
     <div className="space-y-6 p-4 sm:p-6">
       <PageHeader
         title="AI Opportunity Map"
         description="Where captured opportunities concentrate across your organization and the strategic value themes they serve."
         actions={
-          <Button asChild variant="outline" size="sm">
-            <Link to="/opportunities">Manage opportunities</Link>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" disabled={filtered.length === 0}>
+                  <Download className="mr-1.5 size-4" aria-hidden />
+                  Export map
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuLabel>Exports the {filtered.length} records in view</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => exportMap("matrix-csv")}>
+                  Grid CSV — {ROW_AXIS_LABELS[axis].toLowerCase()} × value theme
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => exportMap("records-csv")}>
+                  Records CSV — one row per opportunity
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => exportMap("json")}>
+                  JSON — cells, records and methodology
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/opportunities">Manage opportunities</Link>
+            </Button>
+          </div>
         }
       />
 
@@ -184,40 +242,46 @@ function OpportunityMapPage() {
       )}
 
       {query.isSuccess && !readiness.hasRecords && (
-        <EmptyState
-          title="No opportunities captured yet"
-          description="The map plots real captured records only. Capture your first opportunity and classify it against an organization unit and a strategic value theme."
-          action={
-            <Button asChild size="sm">
-              <Link to="/opportunities/new">Capture an opportunity</Link>
-            </Button>
-          }
-        />
+        <>
+          <EmptyState
+            title="No opportunities captured yet"
+            description="The map plots real captured records only. Capture your first opportunity and classify it against an organization unit and a strategic value theme."
+            action={
+              <Button asChild size="sm">
+                <Link to="/opportunities/new">Capture an opportunity</Link>
+              </Button>
+            }
+          />
+          <TaxonomySetupChecklist counts={setupCounts} />
+        </>
       )}
 
       {query.isSuccess && readiness.hasRecords && !readiness.ready && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Classification needed</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm text-muted-foreground">
-            <p>
-              {records.length} opportunit{records.length === 1 ? "y is" : "ies are"} captured, but
-              the map needs both an organizational dimension and a strategic value theme on at least
-              some of them. Currently classified: {readiness.classifiedRows}{" "}
-              {ROW_AXIS_LABELS[axis].toLowerCase()} value(s), {readiness.classifiedColumns} value
-              theme(s).
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Button asChild size="sm" variant="outline">
-                <Link to="/account/organization">Set up organization &amp; taxonomy</Link>
-              </Button>
-              <Button asChild size="sm" variant="outline">
-                <Link to="/opportunities">Classify opportunities</Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Classification needed</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm text-muted-foreground">
+              <p>
+                {records.length} opportunit{records.length === 1 ? "y is" : "ies are"} captured, but
+                the map needs both an organizational dimension and a strategic value theme on at
+                least some of them. Currently classified: {readiness.classifiedRows}{" "}
+                {ROW_AXIS_LABELS[axis].toLowerCase()} value(s), {readiness.classifiedColumns} value
+                theme(s).
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button asChild size="sm" variant="outline">
+                  <Link to="/account/organization">Set up organization &amp; taxonomy</Link>
+                </Button>
+                <Button asChild size="sm" variant="outline">
+                  <Link to="/opportunities">Classify opportunities</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+          <TaxonomySetupChecklist counts={setupCounts} />
+        </>
       )}
 
       {query.isSuccess && readiness.hasRecords && (

@@ -23,6 +23,9 @@ import {
   createPrivateTaxonomyEntryFn,
   deletePrivateTaxonomyEntryFn,
 } from "@/lib/organization.functions";
+import { getOpportunityMapFn } from "@/lib/opportunity-map.functions";
+import { TaxonomySetupChecklist } from "@/components/opportunities/TaxonomySetupChecklist";
+import type { MapRecord } from "@/lib/opportunity-map";
 
 export const Route = createFileRoute("/_app/account/organization")({
   head: () => ({
@@ -81,6 +84,13 @@ function OrganizationSetupPage() {
   const query = useQuery({
     queryKey: ["organization-setup"],
     queryFn: () => fetchSetup(),
+  });
+
+  const fetchMap = useServerFn(getOpportunityMapFn);
+  const mapQuery = useQuery({
+    queryKey: ["opportunity-map"],
+    queryFn: () => fetchMap(),
+    staleTime: 60_000,
   });
 
   const [unitName, setUnitName] = useState("");
@@ -172,6 +182,19 @@ function OrganizationSetupPage() {
           </p>
         )}
       </header>
+
+      <TaxonomySetupChecklist
+        counts={{
+          orgUnits: units.length,
+          strategicThemes: data?.taxonomy?.taxonomy_strategic_themes?.length ?? 0,
+          valueThemes: data?.taxonomy?.taxonomy_value_themes?.length ?? 0,
+          processes: data?.taxonomy?.taxonomy_processes?.length ?? 0,
+          opportunities: mapQuery.data?.records.length ?? 0,
+          classifiedOpportunities: (mapQuery.data?.records ?? []).filter(
+            (r: MapRecord) => (r.orgUnitId || r.businessFunction.trim()) && r.strategicThemeId,
+          ).length,
+        }}
+      />
 
       <Card>
         <CardHeader>
