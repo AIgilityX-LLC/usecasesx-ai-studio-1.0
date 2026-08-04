@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Map as MapIcon, Table2, Info } from "lucide-react";
+import { Map as MapIcon, Table2, Info, Download } from "lucide-react";
+import { toast } from "sonner";
 import { getOpportunityMapFn } from "@/lib/opportunity-map.functions";
 import {
   activeFilterCount,
@@ -18,8 +19,10 @@ import {
   type MapFilters,
   type RowAxis,
 } from "@/lib/opportunity-map";
+import { downloadOpportunityMap, type MapExportFormat } from "@/lib/opportunity-map-export";
 import { OPPORTUNITY_STATUSES, STATUS_META, URGENCIES, URGENCY_LABELS } from "@/lib/opportunities";
 import { OpportunityMapGrid } from "@/components/opportunities/OpportunityMapGrid";
+import { TaxonomySetupChecklist } from "@/components/opportunities/TaxonomySetupChecklist";
 import {
   PageHeader,
   ErrorState,
@@ -33,6 +36,15 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 
 export const Route = createFileRoute("/_app/opportunity-map")({
   head: () => ({
