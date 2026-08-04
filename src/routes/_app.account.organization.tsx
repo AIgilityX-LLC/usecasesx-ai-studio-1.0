@@ -27,7 +27,6 @@ import { getOpportunityMapFn } from "@/lib/opportunity-map.functions";
 import { TaxonomySetupChecklist } from "@/components/opportunities/TaxonomySetupChecklist";
 import type { MapRecord } from "@/lib/opportunity-map";
 
-
 export const Route = createFileRoute("/_app/account/organization")({
   head: () => ({
     meta: [
@@ -93,8 +92,6 @@ function OrganizationSetupPage() {
     queryFn: () => fetchMap(),
     staleTime: 60_000,
   });
-
-
 
   const [unitName, setUnitName] = useState("");
   const [unitType, setUnitType] = useState<string>("department");
@@ -198,7 +195,6 @@ function OrganizationSetupPage() {
           ).length,
         }}
       />
-
 
       <Card>
         <CardHeader>

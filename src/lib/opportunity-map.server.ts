@@ -37,7 +37,6 @@ export async function loadOpportunityMap(supabase: Db): Promise<OpportunityMapDa
     countOf("taxonomy_processes"),
   ]);
 
-
   if (rowsResult.error) throw new Error(rowsResult.error.message);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,6 +63,5 @@ export async function loadOpportunityMap(supabase: Db): Promise<OpportunityMapDa
       valueThemes: valueResult.count ?? 0,
       processes: processResult.count ?? 0,
     },
-
   };
 }
