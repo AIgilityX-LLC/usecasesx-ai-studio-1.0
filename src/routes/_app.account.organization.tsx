@@ -83,6 +83,15 @@ function OrganizationSetupPage() {
     queryFn: () => fetchSetup(),
   });
 
+  const fetchMap = useServerFn(getOpportunityMapFn);
+  const mapQuery = useQuery({
+    queryKey: ["opportunity-map"],
+    queryFn: () => fetchMap(),
+    staleTime: 60_000,
+  });
+
+
+
   const [unitName, setUnitName] = useState("");
   const [unitType, setUnitType] = useState<string>("department");
   const [parentId, setParentId] = useState<string>("none");
