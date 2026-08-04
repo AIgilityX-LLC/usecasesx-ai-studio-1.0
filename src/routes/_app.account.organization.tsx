@@ -23,6 +23,10 @@ import {
   createPrivateTaxonomyEntryFn,
   deletePrivateTaxonomyEntryFn,
 } from "@/lib/organization.functions";
+import { getOpportunityMapFn } from "@/lib/opportunity-map.functions";
+import { TaxonomySetupChecklist } from "@/components/opportunities/TaxonomySetupChecklist";
+import type { MapRecord } from "@/lib/opportunity-map";
+
 
 export const Route = createFileRoute("/_app/account/organization")({
   head: () => ({
