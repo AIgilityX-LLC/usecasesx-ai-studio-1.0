@@ -61,6 +61,9 @@ export async function loadOpportunityMap(supabase: Db): Promise<OpportunityMapDa
     setup: {
       orgUnits: unitsResult.count ?? 0,
       strategicThemes: themesResult.count ?? 0,
+      valueThemes: valueResult.count ?? 0,
+      processes: processResult.count ?? 0,
     },
+
   };
 }
