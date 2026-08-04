@@ -173,6 +173,20 @@ function OrganizationSetupPage() {
         )}
       </header>
 
+      <TaxonomySetupChecklist
+        counts={{
+          orgUnits: units.length,
+          strategicThemes: data?.taxonomy?.taxonomy_strategic_themes?.length ?? 0,
+          valueThemes: data?.taxonomy?.taxonomy_value_themes?.length ?? 0,
+          processes: data?.taxonomy?.taxonomy_processes?.length ?? 0,
+          opportunities: mapQuery.data?.records.length ?? 0,
+          classifiedOpportunities: (mapQuery.data?.records ?? []).filter(
+            (r) => (r.orgUnitId || r.businessFunction.trim()) && r.strategicThemeId,
+          ).length,
+        }}
+      />
+
+
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Organization units</CardTitle>
