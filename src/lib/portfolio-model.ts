@@ -97,7 +97,7 @@ export interface PortfolioEntryMeta {
 }
 
 /** One use case's membership of one portfolio. The same use case may hold many. */
-export interface PortfolioEntry extends PortfolioEntryMeta {
+export interface PortfolioEntry extends PortfolioEntryMeta, PortfolioEntryRoadmap {
   useCaseId: string;
   useCaseSlug?: string;
   useCaseTitle?: string;
@@ -123,4 +123,51 @@ export type PortfolioEntryPatch = {
   reviewNotes?: string | null;
   /** Set true to stamp the review date server-side on save. */
   markReviewed?: boolean;
+} & PortfolioRoadmapPatch;
+
+/* ----------------------------------------------------------- delivery roadmap */
+
+/**
+ * Delivery sequencing lane. UseCasesX records *investment intent* — which
+ * quarter/wave a use case belongs to, who owns it and what happens next.
+ * Detailed tasks, sprints and resource plans stay in the PPM tool.
+ */
+export type DeliveryStage = "now" | "next" | "later" | "unscheduled";
+
+export const DELIVERY_STAGES: DeliveryStage[] = ["now", "next", "later", "unscheduled"];
+
+export const DELIVERY_STAGE_LABELS: Record<DeliveryStage, string> = {
+  now: "Now",
+  next: "Next",
+  later: "Later",
+  unscheduled: "Unscheduled",
+};
+
+export const DELIVERY_STAGE_DESCRIPTIONS: Record<DeliveryStage, string> = {
+  now: "In delivery or starting this period",
+  next: "Committed for the following period",
+  later: "Intent agreed, not yet scheduled",
+  unscheduled: "No delivery intent recorded yet",
+};
+
+/** Roadmap fields carried on the portfolio membership record. */
+export interface PortfolioEntryRoadmap {
+  deliveryStage: DeliveryStage;
+  plannedStartDate?: string;
+  plannedEndDate?: string;
+  milestone?: string;
+  deliveryOwner?: string;
+  /** Other use case ids in the same portfolio this entry depends on. */
+  dependsOn: string[];
+  blockedReason?: string;
+}
+
+export type PortfolioRoadmapPatch = {
+  deliveryStage?: DeliveryStage;
+  plannedStartDate?: string | null;
+  plannedEndDate?: string | null;
+  milestone?: string | null;
+  deliveryOwner?: string | null;
+  dependsOn?: string[];
+  blockedReason?: string | null;
 };
