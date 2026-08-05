@@ -79,9 +79,7 @@ function ItemCard({
           {item.entry.plannedStartDate ?? "—"} → {item.entry.plannedEndDate ?? "—"}
         </p>
       )}
-      {item.entry.nextAction && (
-        <p className="mt-2 text-sm">Next: {item.entry.nextAction}</p>
-      )}
+      {item.entry.nextAction && <p className="mt-2 text-sm">Next: {item.entry.nextAction}</p>}
       {item.dependencies.length > 0 && (
         <p className="mt-2 text-xs text-muted-foreground">
           Depends on: {item.dependencies.map((d) => d.title).join(", ")}

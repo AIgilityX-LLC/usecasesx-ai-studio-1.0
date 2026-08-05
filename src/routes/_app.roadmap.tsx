@@ -127,10 +127,7 @@ function RoadmapSurface() {
               <label htmlFor="roadmap-portfolio" className="text-sm font-medium">
                 Portfolio
               </label>
-              <Select
-                value={active?.id ?? ""}
-                onValueChange={(v) => setPortfolioId(v)}
-              >
+              <Select value={active?.id ?? ""} onValueChange={(v) => setPortfolioId(v)}>
                 <SelectTrigger id="roadmap-portfolio" className="mt-1">
                   <SelectValue placeholder="Select a portfolio" />
                 </SelectTrigger>
