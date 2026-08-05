@@ -1457,12 +1457,19 @@ export type Database = {
         Row: {
           added_at: string
           added_by: string | null
+          blocked_reason: string | null
           created_at: string
           decision: string
+          delivery_owner: string | null
+          delivery_stage: string
+          depends_on: string[]
           funding_state: string
           last_reviewed_at: string | null
+          milestone: string | null
           next_action: string | null
           notes: string | null
+          planned_end_date: string | null
+          planned_start_date: string | null
           portfolio_id: string
           rank: number | null
           review_notes: string | null
@@ -1474,12 +1481,19 @@ export type Database = {
         Insert: {
           added_at?: string
           added_by?: string | null
+          blocked_reason?: string | null
           created_at?: string
           decision?: string
+          delivery_owner?: string | null
+          delivery_stage?: string
+          depends_on?: string[]
           funding_state?: string
           last_reviewed_at?: string | null
+          milestone?: string | null
           next_action?: string | null
           notes?: string | null
+          planned_end_date?: string | null
+          planned_start_date?: string | null
           portfolio_id: string
           rank?: number | null
           review_notes?: string | null
@@ -1491,12 +1505,19 @@ export type Database = {
         Update: {
           added_at?: string
           added_by?: string | null
+          blocked_reason?: string | null
           created_at?: string
           decision?: string
+          delivery_owner?: string | null
+          delivery_stage?: string
+          depends_on?: string[]
           funding_state?: string
           last_reviewed_at?: string | null
+          milestone?: string | null
           next_action?: string | null
           notes?: string | null
+          planned_end_date?: string | null
+          planned_start_date?: string | null
           portfolio_id?: string
           rank?: number | null
           review_notes?: string | null
