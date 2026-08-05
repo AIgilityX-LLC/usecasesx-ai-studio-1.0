@@ -59,7 +59,7 @@ export const Route = createFileRoute("/_app/roadmap")({
 
 function RoadmapRoute() {
   return (
-    <RequirePlan plan="pro">
+    <RequirePlan min="pro" feature="RoadmapX™ delivery sequencing">
       <RoadmapSurface />
     </RequirePlan>
   );
