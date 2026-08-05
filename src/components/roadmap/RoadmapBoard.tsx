@@ -19,6 +19,7 @@ import {
 import {
   ROADMAP_FLAG_LABELS,
   adjacentStage,
+  type RoadmapFlag,
   type RoadmapItem,
   type RoadmapLane,
 } from "@/lib/roadmap";
@@ -36,7 +37,7 @@ function ItemCard({
 }) {
   const prev = adjacentStage(item.stage, -1);
   const next = adjacentStage(item.stage, 1);
-  const attention = item.flags.filter((f) => f === "overdue" || f === "blocked");
+  const isAttention = (f: RoadmapFlag) => f === "overdue" || f === "blocked";
 
   return (
     <li className="rounded-lg border bg-card p-3">
@@ -92,10 +93,10 @@ function ItemCard({
           {item.flags.map((flag) => (
             <li key={flag}>
               <Badge
-                variant={attention.includes(flag) ? "destructive" : "secondary"}
+                variant={isAttention(flag) ? "destructive" : "secondary"}
                 className="gap-1 text-[11px]"
               >
-                {attention.includes(flag) && <AlertTriangle className="h-3 w-3" />}
+                {isAttention(flag) && <AlertTriangle className="h-3 w-3" />}
                 {ROADMAP_FLAG_LABELS[flag]}
               </Badge>
             </li>
