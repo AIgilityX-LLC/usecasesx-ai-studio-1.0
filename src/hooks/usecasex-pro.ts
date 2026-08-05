@@ -37,6 +37,7 @@ import {
 } from "@/lib/domain/portfolios.repository";
 
 import type {
+  DeliveryStage,
   FundingState,
   PortfolioEntry,
   PortfolioEntryPatch,
@@ -159,6 +160,13 @@ async function fetchProData(userId: string): Promise<ProData> {
         targetPeriod: item.target_period ?? undefined,
         fundingState: (item.funding_state ?? "unfunded") as FundingState,
         nextAction: item.next_action ?? undefined,
+        deliveryStage: (item.delivery_stage ?? "unscheduled") as DeliveryStage,
+        plannedStartDate: item.planned_start_date ?? undefined,
+        plannedEndDate: item.planned_end_date ?? undefined,
+        milestone: item.milestone ?? undefined,
+        deliveryOwner: item.delivery_owner ?? undefined,
+        dependsOn: (item.depends_on ?? []) as string[],
+        blockedReason: item.blocked_reason ?? undefined,
         notes: item.notes ?? undefined,
         reviewNotes: item.review_notes ?? undefined,
         lastReviewedAt: item.last_reviewed_at ?? undefined,

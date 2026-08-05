@@ -50,7 +50,7 @@ export type PortfolioPatchInput = Partial<PortfolioCreateInput> & {
 
 const PORTFOLIO_SELECT =
   "id, name, objective, created_at, updated_at, portfolio_type, status, target_department, target_quarter, visibility, review_cadence, organization_unit_id, parent_portfolio_id, review_notes, last_reviewed_at, " +
-  "portfolio_items ( use_case_id, rank, decision, target_period, funding_state, next_action, notes, review_notes, last_reviewed_at, added_at, updated_at )";
+  "portfolio_items ( use_case_id, rank, decision, target_period, funding_state, next_action, notes, review_notes, last_reviewed_at, added_at, updated_at, delivery_stage, planned_start_date, planned_end_date, milestone, delivery_owner, depends_on, blocked_reason )";
 
 type UseCaseMeta = {
   slug: string;
@@ -221,6 +221,13 @@ export function toPortfolioEntryColumns(patch: PortfolioEntryPatch) {
     notes?: string | null;
     review_notes?: string | null;
     last_reviewed_at?: string;
+    delivery_stage?: string;
+    planned_start_date?: string | null;
+    planned_end_date?: string | null;
+    milestone?: string | null;
+    delivery_owner?: string | null;
+    depends_on?: string[];
+    blocked_reason?: string | null;
   } = {};
   if (patch.rank !== undefined) columns.rank = patch.rank ?? null;
   if (patch.decision !== undefined) columns.decision = patch.decision;
@@ -230,6 +237,14 @@ export function toPortfolioEntryColumns(patch: PortfolioEntryPatch) {
   if (patch.notes !== undefined) columns.notes = patch.notes || null;
   if (patch.reviewNotes !== undefined) columns.review_notes = patch.reviewNotes || null;
   if (patch.markReviewed) columns.last_reviewed_at = new Date().toISOString();
+  if (patch.deliveryStage !== undefined) columns.delivery_stage = patch.deliveryStage;
+  if (patch.plannedStartDate !== undefined)
+    columns.planned_start_date = patch.plannedStartDate || null;
+  if (patch.plannedEndDate !== undefined) columns.planned_end_date = patch.plannedEndDate || null;
+  if (patch.milestone !== undefined) columns.milestone = patch.milestone || null;
+  if (patch.deliveryOwner !== undefined) columns.delivery_owner = patch.deliveryOwner || null;
+  if (patch.dependsOn !== undefined) columns.depends_on = patch.dependsOn;
+  if (patch.blockedReason !== undefined) columns.blocked_reason = patch.blockedReason || null;
   return columns;
 }
 

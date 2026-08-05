@@ -89,6 +89,13 @@ export const portfolioEntryPatchSchema = z
     notes: z.string().trim().max(2000).nullish(),
     reviewNotes: z.string().trim().max(4000).nullish(),
     markReviewed: z.boolean().optional(),
+    deliveryStage: z.enum(["now", "next", "later", "unscheduled"]).optional(),
+    plannedStartDate: z.string().trim().max(40).nullish(),
+    plannedEndDate: z.string().trim().max(40).nullish(),
+    milestone: z.string().trim().max(200).nullish(),
+    deliveryOwner: z.string().trim().max(160).nullish(),
+    dependsOn: z.array(uuidSchema).max(50).optional(),
+    blockedReason: z.string().trim().max(500).nullish(),
   })
   .refine((v) => Object.values(v).some((x) => x !== undefined), { message: "Nothing to update" });
 
