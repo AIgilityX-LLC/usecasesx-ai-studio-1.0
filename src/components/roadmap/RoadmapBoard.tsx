@@ -160,13 +160,11 @@ function ItemCard({
 export function RoadmapBoard({
   lanes,
   canManage,
-  portfolioId,
   onMove,
   onEdit,
 }: {
   lanes: RoadmapLane[];
   canManage: boolean;
-  portfolioId: string;
   onMove: (item: RoadmapItem, stage: DeliveryStage) => void;
   onEdit: (item: RoadmapItem) => void;
 }) {
