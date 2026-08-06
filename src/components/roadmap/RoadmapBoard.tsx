@@ -109,7 +109,6 @@ function ItemCard({
           <Link
             to="/studio/use-case/$id"
             params={{ id: item.useCaseId }}
-            search={{ from: "roadmap", stage: item.stage, portfolioId }}
             aria-label={`Open ${item.title} in the AI Use Case Studio`}
           >
             <Wrench className="mr-1 h-3.5 w-3.5" />
@@ -120,7 +119,6 @@ function ItemCard({
           <Link
             to="/studio/use-case/$id/advisorx"
             params={{ id: item.useCaseId }}
-            search={{ from: "roadmap", stage: item.stage, portfolioId }}
             aria-label={`Open AdvisorX guidance for ${item.title}`}
           >
             <Compass className="mr-1 h-3.5 w-3.5" />
