@@ -6,7 +6,7 @@
  */
 
 import { Link } from "@tanstack/react-router";
-import { AlertTriangle, ArrowLeft, ArrowRight, Pencil } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, Compass, Pencil, Wrench } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,11 +27,13 @@ import {
 function ItemCard({
   item,
   canManage,
+  portfolioId,
   onMove,
   onEdit,
 }: {
   item: RoadmapItem;
   canManage: boolean;
+  portfolioId: string;
   onMove: (item: RoadmapItem, stage: DeliveryStage) => void;
   onEdit: (item: RoadmapItem) => void;
 }) {
@@ -102,6 +104,31 @@ function ItemCard({
         </ul>
       )}
 
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button size="sm" variant="secondary" asChild>
+          <Link
+            to="/studio/use-case/$id"
+            params={{ id: item.useCaseId }}
+            search={{ from: "roadmap", stage: item.stage, portfolioId }}
+            aria-label={`Open ${item.title} in the AI Use Case Studio`}
+          >
+            <Wrench className="mr-1 h-3.5 w-3.5" />
+            Studio
+          </Link>
+        </Button>
+        <Button size="sm" variant="ghost" asChild>
+          <Link
+            to="/studio/use-case/$id/advisorx"
+            params={{ id: item.useCaseId }}
+            search={{ from: "roadmap", stage: item.stage, portfolioId }}
+            aria-label={`Open AdvisorX guidance for ${item.title}`}
+          >
+            <Compass className="mr-1 h-3.5 w-3.5" />
+            Advisory
+          </Link>
+        </Button>
+      </div>
+
       {canManage && (
         <div className="mt-3 flex gap-2">
           <Button
@@ -137,11 +164,13 @@ function ItemCard({
 export function RoadmapBoard({
   lanes,
   canManage,
+  portfolioId,
   onMove,
   onEdit,
 }: {
   lanes: RoadmapLane[];
   canManage: boolean;
+  portfolioId: string;
   onMove: (item: RoadmapItem, stage: DeliveryStage) => void;
   onEdit: (item: RoadmapItem) => void;
 }) {
@@ -168,6 +197,7 @@ export function RoadmapBoard({
                     key={item.useCaseId}
                     item={item}
                     canManage={canManage}
+                    portfolioId={portfolioId}
                     onMove={onMove}
                     onEdit={onEdit}
                   />
