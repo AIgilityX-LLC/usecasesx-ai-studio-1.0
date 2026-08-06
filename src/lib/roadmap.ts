@@ -226,3 +226,131 @@ export function toRoadmapRows(items: RoadmapItem[]) {
     flags: item.flags.map((f) => ROADMAP_FLAG_LABELS[f]).join("; "),
   }));
 }
+
+/* -------------------------------------------------------------------------
+ * Dependency cycle validation
+ * ---------------------------------------------------------------------- */
+
+export interface DependencyCycle {
+  /** Use case ids forming the cycle, starting and ending at the same id. */
+  path: string[];
+  /** Human-readable titles for the same path. */
+  titles: string[];
+}
+
+/**
+ * Detects whether setting `dependsOn` on `sourceId` would create a cycle.
+ * Returns the offending path, or `null` when the graph stays acyclic.
+ */
+export function findDependencyCycle(
+  entries: PortfolioEntry[],
+  sourceId: string,
+  dependsOn: string[],
+): DependencyCycle | null {
+  const byId = new Map(entries.map((e) => [e.useCaseId, e] as const));
+  const edges = new Map<string, string[]>();
+  for (const entry of entries) {
+    edges.set(
+      entry.useCaseId,
+      entry.useCaseId === sourceId ? [...dependsOn] : [...(entry.dependsOn ?? [])],
+    );
+  }
+  edges.set(sourceId, [...dependsOn]);
+
+  const stack: string[] = [];
+  const inStack = new Set<string>();
+  const visited = new Set<string>();
+
+  const walk = (id: string): string[] | null => {
+    if (inStack.has(id)) return [...stack.slice(stack.indexOf(id)), id];
+    if (visited.has(id)) return null;
+    visited.add(id);
+    inStack.add(id);
+    stack.push(id);
+    for (const next of edges.get(id) ?? []) {
+      if (next === id) return [id, id];
+      const found = walk(next);
+      if (found) return found;
+    }
+    stack.pop();
+    inStack.delete(id);
+    return null;
+  };
+
+  const path = walk(sourceId);
+  if (!path) return null;
+  return {
+    path,
+    titles: path.map((id) => {
+      const entry = byId.get(id);
+      return entry ? titleOf(entry) : id;
+    }),
+  };
+}
+
+export function describeCycle(cycle: DependencyCycle): string {
+  return cycle.titles.join(" → ");
+}
+
+/* -------------------------------------------------------------------------
+ * Analytics
+ * ---------------------------------------------------------------------- */
+
+export interface RoadmapPeriodStats {
+  period: string;
+  label: string;
+  total: number;
+  byStage: Record<DeliveryStage, number>;
+  overdue: number;
+  withNextAction: number;
+  /** 0–100, share of items that record a next action. */
+  nextActionCompleteness: number;
+}
+
+export interface RoadmapAnalytics extends RoadmapSummary {
+  withNextAction: number;
+  nextActionCompleteness: number;
+  periods: RoadmapPeriodStats[];
+}
+
+function completeness(withNextAction: number, total: number) {
+  return total === 0 ? 0 : Math.round((withNextAction / total) * 100);
+}
+
+/** Counts and per-quarter trend for the items currently in view. */
+export function analyzeRoadmap(items: RoadmapItem[]): RoadmapAnalytics {
+  const summary = summarizeRoadmap(items);
+  const withNextAction = items.filter((i) => !i.flags.includes("missing_next_action")).length;
+
+  const periods = groupByPeriod(items).map((group) => {
+    const byStage = { now: 0, next: 0, later: 0, unscheduled: 0 } as Record<DeliveryStage, number>;
+    let overdue = 0;
+    let periodNextAction = 0;
+    for (const item of group.items) {
+      byStage[item.stage] += 1;
+      if (item.flags.includes("overdue")) overdue += 1;
+      if (!item.flags.includes("missing_next_action")) periodNextAction += 1;
+    }
+    return {
+      period: group.period,
+      label: group.label,
+      total: group.items.length,
+      byStage,
+      overdue,
+      withNextAction: periodNextAction,
+      nextActionCompleteness: completeness(periodNextAction, group.items.length),
+    };
+  });
+
+  return {
+    ...summary,
+    withNextAction,
+    nextActionCompleteness: completeness(withNextAction, items.length),
+    periods,
+  };
+}
+
+/** Distinct target periods present in the items, unscheduled bucket last. */
+export function listPeriods(items: RoadmapItem[]): string[] {
+  return groupByPeriod(items).map((g) => g.period);
+}
