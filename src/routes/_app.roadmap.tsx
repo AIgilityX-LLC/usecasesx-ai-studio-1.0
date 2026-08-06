@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Info } from "lucide-react";
+import { Download, Info } from "lucide-react";
 
 import { RequirePlan } from "@/components/RequirePlan";
 import { PageHeader, EmptyState, ErrorState, LoadingSkeleton } from "@/components/ui-kit";
@@ -9,6 +9,13 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
@@ -26,12 +33,17 @@ import {
 } from "@/lib/portfolio-model";
 import {
   ROADMAP_BOUNDARY_NOTE,
+  UNSCHEDULED_PERIOD,
+  analyzeRoadmap,
   buildRoadmapItems,
   groupByPeriod,
   groupByStage,
+  listPeriods,
   summarizeRoadmap,
   type RoadmapItem,
 } from "@/lib/roadmap";
+import { downloadRoadmap, type RoadmapExportFormat } from "@/lib/roadmap-export";
+import { RoadmapAnalyticsPanel } from "@/components/roadmap/RoadmapAnalyticsPanel";
 import { RoadmapBoard } from "@/components/roadmap/RoadmapBoard";
 import { RoadmapItemDialog } from "@/components/roadmap/RoadmapItemDialog";
 
@@ -65,6 +77,8 @@ function RoadmapRoute() {
   );
 }
 
+const ALL_PERIODS = "__all__";
+
 function RoadmapSurface() {
   const store = useUseCaseXPro();
   const authz = useAuthz();
@@ -72,6 +86,7 @@ function RoadmapSurface() {
 
   const [portfolioId, setPortfolioId] = useState<string | null>(null);
   const [editing, setEditing] = useState<PortfolioEntry | null>(null);
+  const [period, setPeriod] = useState<string>(ALL_PERIODS);
 
   const portfolios = store.portfolios;
   const active = useMemo(
@@ -79,10 +94,38 @@ function RoadmapSurface() {
     [portfolios, portfolioId],
   );
 
-  const items = useMemo(() => buildRoadmapItems(active?.entries ?? []), [active]);
+  const allItems = useMemo(() => buildRoadmapItems(active?.entries ?? []), [active]);
+  const periodOptions = useMemo(() => listPeriods(allItems), [allItems]);
+  const items = useMemo(
+    () =>
+      period === ALL_PERIODS
+        ? allItems
+        : allItems.filter((i) => (i.period ?? UNSCHEDULED_PERIOD) === period),
+    [allItems, period],
+  );
   const lanes = useMemo(() => groupByStage(items), [items]);
   const periods = useMemo(() => groupByPeriod(items), [items]);
   const summary = useMemo(() => summarizeRoadmap(items), [items]);
+  const analytics = useMemo(() => analyzeRoadmap(items), [items]);
+
+  const scopeLabel =
+    period === ALL_PERIODS
+      ? "All quarters"
+      : period === UNSCHEDULED_PERIOD
+        ? "No target period"
+        : period;
+
+  const exportRoadmap = (format: RoadmapExportFormat) => {
+    if (items.length === 0) {
+      toast.error("Nothing to export in the current view");
+      return;
+    }
+    downloadRoadmap(items, format, {
+      portfolioName: active?.name,
+      period: period === ALL_PERIODS ? undefined : scopeLabel,
+    });
+    toast.success(`Exported ${items.length} roadmap items as ${format.toUpperCase()}`);
+  };
 
   const move = async (item: RoadmapItem, stage: DeliveryStage) => {
     if (!active) return;
@@ -140,6 +183,43 @@ function RoadmapSurface() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="min-w-48">
+              <label htmlFor="roadmap-period" className="text-sm font-medium">
+                Quarter
+              </label>
+              <Select value={period} onValueChange={setPeriod}>
+                <SelectTrigger id="roadmap-period" className="mt-1">
+                  <SelectValue placeholder="All quarters" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={ALL_PERIODS}>All quarters</SelectItem>
+                  {periodOptions.map((p) => (
+                    <SelectItem key={p} value={p}>
+                      {p === UNSCHEDULED_PERIOD ? "No target period" : p}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" disabled={items.length === 0}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>
+                  {scopeLabel} · {items.length} items
+                </DropdownMenuLabel>
+                <DropdownMenuItem onSelect={() => exportRoadmap("csv")}>
+                  Download CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => exportRoadmap("json")}>
+                  Download JSON
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button variant="outline" asChild>
               <Link to="/portfoliox">Manage portfolio</Link>
             </Button>
@@ -177,7 +257,8 @@ function RoadmapSurface() {
                 <TabsTrigger value="periods">By quarter</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="stages" className="mt-4">
+              <TabsContent value="stages" className="mt-4 space-y-4">
+                <RoadmapAnalyticsPanel analytics={analytics} scopeLabel={scopeLabel} />
                 <RoadmapBoard
                   lanes={lanes}
                   canManage={canManage}
@@ -236,6 +317,7 @@ function RoadmapSurface() {
         onOpenChange={(open) => !open && setEditing(null)}
         entry={editing}
         candidates={(active?.entries ?? []).filter((e) => e.useCaseId !== editing?.useCaseId)}
+        allEntries={active?.entries ?? []}
         saving={store.isSavingEntry}
         onSave={async (patch) => {
           if (!active || !editing) return;

@@ -3,7 +3,7 @@
  * Writes only to the membership record; the source use case is never touched.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -33,12 +33,14 @@ import {
   type PortfolioEntry,
   type PortfolioRoadmapPatch,
 } from "@/lib/portfolio-model";
+import { describeCycle, findDependencyCycle } from "@/lib/roadmap";
 
 export function RoadmapItemDialog({
   open,
   onOpenChange,
   entry,
   candidates,
+  allEntries,
   saving,
   onSave,
 }: {
@@ -47,6 +49,8 @@ export function RoadmapItemDialog({
   entry: PortfolioEntry | null;
   /** Other entries in the same portfolio, offered as dependencies. */
   candidates: PortfolioEntry[];
+  /** Every entry in the portfolio — used to detect dependency cycles. */
+  allEntries: PortfolioEntry[];
   saving: boolean;
   onSave: (patch: PortfolioRoadmapPatch & { nextAction?: string | null }) => Promise<unknown>;
 }) {
@@ -71,7 +75,16 @@ export function RoadmapItemDialog({
     setDeps(entry.dependsOn ?? []);
   }, [entry]);
 
+  const cycle = useMemo(() => {
+    if (!entry) return null;
+    return findDependencyCycle(allEntries, entry.useCaseId, deps);
+  }, [allEntries, entry, deps]);
+
   const submit = async () => {
+    if (cycle) {
+      toast.error(`Circular dependency: ${describeCycle(cycle)}`);
+      return;
+    }
     if (start && end && end < start) {
       toast.error("Planned end date cannot be before the planned start date");
       return;
@@ -208,6 +221,12 @@ export function RoadmapItemDialog({
                 ))}
               </div>
             )}
+            {cycle && (
+              <p role="alert" className="text-sm font-medium text-destructive">
+                Circular dependency detected: {describeCycle(cycle)}. Remove one of these links
+                before saving.
+              </p>
+            )}
           </fieldset>
         </div>
 
@@ -215,7 +234,7 @@ export function RoadmapItemDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={submit} disabled={saving}>
+          <Button onClick={submit} disabled={saving || Boolean(cycle)}>
             {saving ? "Saving…" : "Save roadmap"}
           </Button>
         </DialogFooter>

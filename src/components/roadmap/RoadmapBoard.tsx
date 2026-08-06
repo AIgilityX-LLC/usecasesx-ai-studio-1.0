@@ -6,7 +6,7 @@
  */
 
 import { Link } from "@tanstack/react-router";
-import { AlertTriangle, ArrowLeft, ArrowRight, Pencil } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, Compass, Pencil, Wrench } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -101,6 +101,29 @@ function ItemCard({
           ))}
         </ul>
       )}
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button size="sm" variant="secondary" asChild>
+          <Link
+            to="/studio/use-case/$id"
+            params={{ id: item.useCaseId }}
+            aria-label={`Open ${item.title} in the AI Use Case Studio`}
+          >
+            <Wrench className="mr-1 h-3.5 w-3.5" />
+            Studio
+          </Link>
+        </Button>
+        <Button size="sm" variant="ghost" asChild>
+          <Link
+            to="/studio/use-case/$id/advisorx"
+            params={{ id: item.useCaseId }}
+            aria-label={`Open AdvisorX guidance for ${item.title}`}
+          >
+            <Compass className="mr-1 h-3.5 w-3.5" />
+            Advisory
+          </Link>
+        </Button>
+      </div>
 
       {canManage && (
         <div className="mt-3 flex gap-2">
