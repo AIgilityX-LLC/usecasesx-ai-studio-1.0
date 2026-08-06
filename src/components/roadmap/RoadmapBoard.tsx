@@ -27,13 +27,11 @@ import {
 function ItemCard({
   item,
   canManage,
-  portfolioId,
   onMove,
   onEdit,
 }: {
   item: RoadmapItem;
   canManage: boolean;
-  portfolioId: string;
   onMove: (item: RoadmapItem, stage: DeliveryStage) => void;
   onEdit: (item: RoadmapItem) => void;
 }) {
@@ -195,7 +193,6 @@ export function RoadmapBoard({
                     key={item.useCaseId}
                     item={item}
                     canManage={canManage}
-                    portfolioId={portfolioId}
                     onMove={onMove}
                     onEdit={onEdit}
                   />
