@@ -23,6 +23,7 @@ import { PLATFORM_ADMIN_ROLES } from "@/lib/admin/platform-admin";
 import { CsvImportPanel } from "@/components/admin/CsvImportPanel";
 import { GlobalLifecyclePanel } from "@/components/admin/GlobalLifecyclePanel";
 import { GlobalAuditViewer } from "@/components/admin/GlobalAuditViewer";
+import { CorpusQaPanel } from "@/components/admin/CorpusQaPanel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -145,6 +146,7 @@ function AdminPageInner() {
             <TabsTrigger value="report-templates">Report Templates</TabsTrigger>
             <TabsTrigger value="taxonomy">Taxonomy</TabsTrigger>
             <TabsTrigger value="import">Import</TabsTrigger>
+            <TabsTrigger value="corpus-qa">Corpus QA</TabsTrigger>
             <TabsTrigger value="audit">Audit</TabsTrigger>
             <TabsTrigger value="platforms">Platform Mapping</TabsTrigger>
             <TabsTrigger value="leads">Leads</TabsTrigger>
@@ -180,6 +182,9 @@ function AdminPageInner() {
           </TabsContent>
           <TabsContent value="report-templates" className="mt-6">
             <ReportTemplatesAdminTab />
+          </TabsContent>
+          <TabsContent value="corpus-qa" className="mt-6">
+            <CorpusQaPanel />
           </TabsContent>
           <TabsContent value="audit" className="mt-6">
             <GlobalAuditViewer />
