@@ -46,9 +46,7 @@ export type AuditEventReceipt = {
 };
 
 /** Append a governance audit record and return the written row's identity. */
-export async function recordAuditEventDetailed(
-  input: AuditEventInput,
-): Promise<AuditEventReceipt> {
+export async function recordAuditEventDetailed(input: AuditEventInput): Promise<AuditEventReceipt> {
   const requestId = input.requestId ?? newRequestId();
   const miss = (error: string | null): AuditEventReceipt => ({
     requestId,
@@ -98,7 +96,6 @@ export async function recordAuditEventDetailed(
 export async function recordAuditEvent(input: AuditEventInput): Promise<string> {
   return (await recordAuditEventDetailed(input)).requestId;
 }
-
 
 /** Append a product / activation event. */
 export async function recordProductEvent(input: ProductEventInput): Promise<string> {

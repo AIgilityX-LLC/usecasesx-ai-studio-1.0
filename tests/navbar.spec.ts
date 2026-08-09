@@ -58,50 +58,64 @@ test.describe("skip-to-content link", () => {
   });
 });
 
+/** Shared in-page color parser. Tailwind v4 tokens compute to `oklch(...)`,
+ *  so a plain rgb() regex misses them — paint the color on a 1x1 canvas and
+ *  read the resolved pixel instead. Returns null for fully transparent. */
+const LUMINANCE_PARSER = `(() => {
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = 1;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  return (color) => {
+    if (!color || color === "transparent" || color === "none") return null;
+    if (!ctx) return null;
+    ctx.clearRect(0, 0, 1, 1);
+    ctx.fillStyle = "#000";
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, 1, 1);
+    const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+    if (a === 0) return null;
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  };
+})()`;
+
 /** Returns the relative luminance (0=black, 1=white) of an element's rendered
  *  background color, walking up to the nearest ancestor with a non-transparent
  *  background so token-based dark surfaces are detected reliably. */
 async function backgroundLuminance(page: Page, selector: string): Promise<number> {
-  return page.evaluate((sel) => {
-    let el = document.querySelector(sel) as HTMLElement | null;
-    const parse = (c: string) => {
-      const m = c.match(/rg(?:b|ba)?\(([^)]+)\)/);
-      if (!m) return null;
-      const [r, g, b, a] = m[1].split(",").map((x) => parseFloat(x));
-      if (a === 0) return null;
-      return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-    };
-    while (el) {
-      const lum = parse(getComputedStyle(el).backgroundColor);
-      if (lum !== null) return lum;
-      el = el.parentElement;
-    }
-    return 1; // default to "light" if nothing found
-  }, selector);
+  return page.evaluate(
+    ({ sel, parserSrc }) => {
+      let el = document.querySelector(sel) as HTMLElement | null;
+      const parse = eval(parserSrc) as (c: string) => number | null;
+      while (el) {
+        const lum = parse(getComputedStyle(el).backgroundColor);
+        if (lum !== null) return lum;
+        el = el.parentElement;
+      }
+      return 1; // default to "light" if nothing found
+    },
+    { sel: selector, parserSrc: LUMINANCE_PARSER },
+  );
 }
 
 /** Returns the relative luminance of the nth (0-based) <section> rendered inside
  *  the main landmark, walking ancestors for the nearest opaque background. */
 async function sectionLuminance(page: Page, index: number): Promise<number | null> {
-  return page.evaluate((i) => {
-    const sections = Array.from(
-      document.querySelectorAll("main#main-content section"),
-    ) as HTMLElement[];
-    let el = sections[i] ?? null;
-    const parse = (c: string) => {
-      const m = c.match(/rg(?:b|ba)?\(([^)]+)\)/);
-      if (!m) return null;
-      const [r, g, b, a] = m[1].split(",").map((x) => parseFloat(x));
-      if (a === 0) return null;
-      return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-    };
-    while (el) {
-      const lum = parse(getComputedStyle(el).backgroundColor);
-      if (lum !== null) return lum;
-      el = el.parentElement;
-    }
-    return null;
-  }, index);
+  return page.evaluate(
+    ({ i, parserSrc }) => {
+      const sections = Array.from(
+        document.querySelectorAll("main#main-content section"),
+      ) as HTMLElement[];
+      let el = sections[i] ?? null;
+      const parse = eval(parserSrc) as (c: string) => number | null;
+      while (el) {
+        const lum = parse(getComputedStyle(el).backgroundColor);
+        if (lum !== null) return lum;
+        el = el.parentElement;
+      }
+      return null;
+    },
+    { i: index, parserSrc: LUMINANCE_PARSER },
+  );
 }
 
 test.describe("page hero tone + main landmark", () => {

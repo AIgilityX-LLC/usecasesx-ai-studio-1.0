@@ -33,3 +33,10 @@ dist-ssr
 
 # local e2e demo credentials (never committed)
 .env.e2e.local
+
+# Playwright artifacts
+test-results/
+playwright-report/
+playwright-run.log
+navbar-run.log
+launch-e2e.log

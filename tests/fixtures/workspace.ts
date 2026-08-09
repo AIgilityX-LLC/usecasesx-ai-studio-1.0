@@ -1,4 +1,8 @@
+/* eslint-disable no-empty-pattern, react-hooks/rules-of-hooks --
+   Playwright's fixture API requires the `async ({}, use) => {}` signature; the
+   `use` callback is not a React hook. */
 /**
+
  * Playwright fixtures that provision throwaway accounts and workspaces per test.
  *
  * Every test gets its own freshly created users, so no spec depends on the

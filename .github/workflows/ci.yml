@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint · typecheck · build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies (frozen lockfile)
+        run: bun install --frozen-lockfile
+      - name: Prepare test-mode env
+        run: node scripts/ci-test-env.mjs
+      - name: Lint
+        run: bun run lint
+      - name: Typecheck
+        run: bunx tsgo --noEmit || bunx tsc --noEmit
+      - name: Verify route tree
+        run: bun run verify:routes
+      - name: Build
+        run: bun run build
+      - name: Unit tests
+        run: bun run test:unit
+      - name: Upload build diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            dist/**
+            .output/**
+          retention-days: 5
+          if-no-files-found: ignore
+
+  playwright:
+    name: Playwright UI specs
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CI: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies (frozen lockfile)
+        run: bun install --frozen-lockfile
+      - name: Prepare test-mode env
+        run: node scripts/ci-test-env.mjs
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium firefox webkit
+      - name: Run Playwright specs
+        run: bunx playwright test 2>&1 | tee playwright-run.log
+      - name: Upload Playwright report, traces, screenshots & videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-diagnostics
+          path: |
+            playwright-report/**
+            test-results/**
+            playwright-run.log
+          retention-days: 7
+          if-no-files-found: ignore

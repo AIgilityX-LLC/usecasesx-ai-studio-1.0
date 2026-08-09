@@ -86,6 +86,14 @@ describe("export helpers enforce access, not just the UI", () => {
   const clicks: string[] = [];
   const printed: number[] = [];
 
+  // The bun runner's `vi` shim has no stubGlobal/unstubAllGlobals, so stash and
+  // restore the globals by hand — same effect, runner-agnostic.
+  const saved: Record<string, unknown> = {};
+  const stub = (key: string, value: unknown) => {
+    if (!(key in saved)) saved[key] = (globalThis as Record<string, unknown>)[key];
+    (globalThis as Record<string, unknown>)[key] = value;
+  };
+
   beforeEach(() => {
     clicks.length = 0;
     printed.length = 0;
@@ -99,25 +107,27 @@ describe("export helpers enforce access, not just the UI", () => {
       },
       remove() {},
     };
-    vi.stubGlobal("document", {
+    stub("document", {
       createElement: () => anchor,
       body: { appendChild: () => undefined },
     });
-    vi.stubGlobal(
+    stub(
       "Blob",
       class {
         constructor(readonly parts: unknown[]) {}
       },
     );
-    vi.stubGlobal("URL", {
+    stub("URL", {
       createObjectURL: () => "blob:test",
       revokeObjectURL: () => undefined,
     });
-    vi.stubGlobal("window", { print: () => printed.push(1) });
+    stub("window", { print: () => printed.push(1) });
   });
 
   afterEach(() => {
-    vi.unstubAllGlobals();
+    for (const [key, value] of Object.entries(saved)) {
+      (globalThis as Record<string, unknown>)[key] = value;
+    }
   });
 
   it("produces files for a permitted role", () => {
