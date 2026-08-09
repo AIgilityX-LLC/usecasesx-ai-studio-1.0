@@ -48,7 +48,11 @@ export function ExportReceipt({ receipt }: { receipt: ExportReceiptData }) {
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
         <dl className="grid gap-x-6 gap-y-1 sm:grid-cols-2">
-          <Row label="Format" value={EXPORT_FORMAT_LABELS[receipt.format]} testId="receipt-format" />
+          <Row
+            label="Format"
+            value={EXPORT_FORMAT_LABELS[receipt.format]}
+            testId="receipt-format"
+          />
           <Row label="File" value={receipt.fileName ?? "—"} testId="receipt-file" />
           <Row
             label="Audit event"
@@ -62,7 +66,11 @@ export function ExportReceipt({ receipt }: { receipt: ExportReceiptData }) {
             value={receipt.recordedAt ? new Date(receipt.recordedAt).toLocaleString() : "—"}
             testId="receipt-recorded-at"
           />
-          <Row label="Your role" value={receipt.workspaceRole ?? "no membership"} testId="receipt-role" />
+          <Row
+            label="Your role"
+            value={receipt.workspaceRole ?? "no membership"}
+            testId="receipt-role"
+          />
         </dl>
 
         {denied && receipt.deniedReason && (
@@ -82,9 +90,7 @@ export function ExportReceipt({ receipt }: { receipt: ExportReceiptData }) {
               ))}
             </ul>
           ) : (
-            <p className="mt-1 text-sm text-muted-foreground">
-              No records back this selection.
-            </p>
+            <p className="mt-1 text-sm text-muted-foreground">No records back this selection.</p>
           )}
         </div>
 

@@ -28,19 +28,56 @@ const VIEWER = {
 
 /** Frozen header keys, in order, copied from the contract document. */
 const USE_CASE_KEYS = [
-  "use_case_id", "slug", "studio_use_case_id", "title", "industry",
-  "business_function", "ai_capability", "value_potential", "complexity",
-  "risk_level", "time_to_value", "score_strategic", "score_value",
-  "score_feasibility", "score_ttv", "score_risk", "score_governance",
-  "score_total", "priority_band", "decision", "funding_state",
-  "delivery_stage", "target_period", "planned_start", "planned_end",
-  "milestone", "owner", "blocked_reason", "next_action", "benefit_count",
-  "benefits_evidenced", "gaps",
+  "use_case_id",
+  "slug",
+  "studio_use_case_id",
+  "title",
+  "industry",
+  "business_function",
+  "ai_capability",
+  "value_potential",
+  "complexity",
+  "risk_level",
+  "time_to_value",
+  "score_strategic",
+  "score_value",
+  "score_feasibility",
+  "score_ttv",
+  "score_risk",
+  "score_governance",
+  "score_total",
+  "priority_band",
+  "decision",
+  "funding_state",
+  "delivery_stage",
+  "target_period",
+  "planned_start",
+  "planned_end",
+  "milestone",
+  "owner",
+  "blocked_reason",
+  "next_action",
+  "benefit_count",
+  "benefits_evidenced",
+  "gaps",
 ];
 const BENEFIT_KEYS = [
-  "use_case_id", "slug", "benefit_id", "name", "category", "unit_type",
-  "currency", "period", "baseline_value", "target_value", "expected_value",
-  "confidence", "state", "benefit_owner", "erp_verification", "evidence_count",
+  "use_case_id",
+  "slug",
+  "benefit_id",
+  "name",
+  "category",
+  "unit_type",
+  "currency",
+  "period",
+  "baseline_value",
+  "target_value",
+  "expected_value",
+  "confidence",
+  "state",
+  "benefit_owner",
+  "erp_verification",
+  "evidence_count",
 ];
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -142,10 +179,9 @@ function assertContract(text: string, keys: string[]) {
     for (const [index, cell] of row.entries()) {
       // Quote only when required.
       const mustQuote = /[",\r\n]/.test(cell.value);
-      expect(
-        { column: keys[index], quoted: cell.quoted },
-        `column ${keys[index]} quoting`,
-      ).toEqual({ column: keys[index], quoted: mustQuote });
+      expect({ column: keys[index], quoted: cell.quoted }, `column ${keys[index]} quoting`).toEqual(
+        { column: keys[index], quoted: mustQuote },
+      );
       // Never leak JS placeholders or the screen-only em dash.
       expect(cell.value).not.toBe("null");
       expect(cell.value).not.toBe("undefined");
@@ -159,7 +195,11 @@ function assertContract(text: string, keys: string[]) {
     }
     // Numbers unformatted, no separators or currency symbols.
     for (const numeric of [
-      "score_total", "baseline_value", "target_value", "expected_value", "benefit_count",
+      "score_total",
+      "baseline_value",
+      "target_value",
+      "expected_value",
+      "benefit_count",
     ]) {
       const value = byKey[numeric];
       if (value) expect(value, `${numeric} is unformatted`).toMatch(/^-?\d+(\.\d+)?$/);

@@ -84,7 +84,5 @@ test("receipt identifies the audit row that was appended", async ({ page }) => {
 
   // And the recorded timestamp is the one displayed.
   const recordedAt = (await page.getByTestId("receipt-recorded-at").innerText()).trim();
-  expect(new Date(recordedAt).getTime()).toBe(
-    new Date(String(row["created_at"])).getTime(),
-  );
+  expect(new Date(recordedAt).getTime()).toBe(new Date(String(row["created_at"])).getTime());
 });

@@ -31,10 +31,9 @@ const PAPERS = [
   { name: "Letter", format: "Letter" as const, cssWidth: 816 - 91 },
 ];
 
-const LONG_NARRATIVE =
-  `${"Sustained multi-year transformation across every operating region and shared service centre. ".repeat(
-    40,
-  )}Supercalifragilisticexpialidocious-benefit-realisation-workstream-identifier-000000001`;
+const LONG_NARRATIVE = `${"Sustained multi-year transformation across every operating region and shared service centre. ".repeat(
+  40,
+)}Supercalifragilisticexpialidocious-benefit-realisation-workstream-identifier-000000001`;
 
 async function signIn(page: Page) {
   const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
