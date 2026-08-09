@@ -157,6 +157,50 @@ export const BENEFIT_VERIFICATION_LABELS: Record<BenefitVerificationMethod, stri
   erp_automated: "Automated ERP verification (Enterprise)",
 };
 
+/**
+ * ERP verification status. `not_configured` is the only value a Lite or Pro
+ * workspace can hold — nothing automated writes the others unless the
+ * Enterprise ERP verification capability is switched on for the workspace.
+ */
+export type ErpVerificationStatus = "not_configured" | "pending" | "verified" | "failed";
+
+export const ERP_VERIFICATION_STATUSES: ErpVerificationStatus[] = [
+  "not_configured",
+  "pending",
+  "verified",
+  "failed",
+];
+
+export const ERP_VERIFICATION_LABELS: Record<ErpVerificationStatus, string> = {
+  not_configured: "Owner-asserted",
+  pending: "ERP check pending",
+  verified: "ERP verified",
+  failed: "ERP check failed",
+};
+
+export const ERP_VERIFICATION_HELP: Record<ErpVerificationStatus, string> = {
+  not_configured: "No automated source connected. The benefit owner asserts this value.",
+  pending: "Submitted to the connected ERP source; awaiting the next reconciliation.",
+  verified: "Reconciled against the connected ERP source.",
+  failed: "The ERP source could not confirm this value. Review the evidence.",
+};
+
+/** A piece of measurable proof attached to a benefit — a link or an upload. */
+export type BenefitEvidenceKind = "link" | "file";
+
+export interface BenefitEvidenceItem {
+  id: string;
+  kind: BenefitEvidenceKind;
+  label: string;
+  /** External URL for links. */
+  url?: string;
+  /** Storage object path inside the private `benefit-evidence` bucket. */
+  path?: string;
+  addedAt: string;
+  addedBy?: string | null;
+  note?: string;
+}
+
 export interface Benefit {
   id: string;
   useCaseId: string;
@@ -173,14 +217,20 @@ export interface Benefit {
   measurementFrequency: MeasurementFrequency;
   benefitOwner: string | null;
   evidenceSource: string | null;
+  evidenceLinks: BenefitEvidenceItem[];
   state: BenefitState;
   verificationMethod: BenefitVerificationMethod;
+  erpVerificationStatus: ErpVerificationStatus;
+  erpSystem: string | null;
+  erpReference: string | null;
+  erpLastVerifiedAt: string | null;
   notes: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
 export type BenefitInput = Omit<Benefit, "id" | "createdAt" | "updatedAt">;
+
 
 export const COMMON_CURRENCIES = ["USD", "EUR", "GBP", "AED", "SAR", "AUD", "CAD", "SGD"];
 
