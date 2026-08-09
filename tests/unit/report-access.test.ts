@@ -130,7 +130,6 @@ describe("export helpers enforce access, not just the UI", () => {
     }
   });
 
-
   it("produces files for a permitted role", () => {
     expect(downloadUseCaseCsv(ITEMS, "AI Use Case Summary Report", "owner")).toMatch(/\.csv$/);
     expect(downloadBenefitsCsv(ITEMS, "AI Use Case Summary Report", "admin")).toMatch(
