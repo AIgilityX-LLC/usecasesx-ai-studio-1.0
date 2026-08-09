@@ -34,6 +34,7 @@ import {
   stageIndex,
   type WorkshopItem,
   type WorkshopItemKind,
+  type WorkshopItemStatus,
   type WorkshopStage,
 } from "@/lib/workshops";
 import {
@@ -289,7 +290,7 @@ export function WorkshopBoardView({ id }: { id: string }) {
               outcome={outcome}
               canGenerate={viewer.isFacilitator}
               busy={generate.isPending}
-              onGenerate={() => generate.mutate()}
+              onGenerate={() => generate.mutate(undefined)}
             />
           )}
         </CardContent>
