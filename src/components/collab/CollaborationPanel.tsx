@@ -67,7 +67,8 @@ export function CollaborationPanel({
   entityId: string;
   className?: string;
 }) {
-  const { session, loading: sessionLoading } = useSupabaseSession();
+  const session = useSupabaseSession();
+  const sessionLoading = session === undefined;
   const queryClient = useQueryClient();
   const load = useServerFn(getCollaborationFn);
   const addComment = useServerFn(addCommentFn);
