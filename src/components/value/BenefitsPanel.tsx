@@ -14,9 +14,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { EmptyState, ErrorState, LoadingSkeleton } from "@/components/ui-kit";
-import { History, Pencil, Plus, Trash2 } from "lucide-react";
+import { FileClock, History, Pencil, Plus, Trash2 } from "lucide-react";
 
 import { BenefitForm } from "@/components/value/BenefitForm";
+import { BenefitEvidenceHistoryDialog } from "@/components/value/BenefitEvidenceHistoryDialog";
 import { BenefitVerificationDialog } from "@/components/value/BenefitVerificationDialog";
 import { ValueSummary } from "@/components/value/ValueSummary";
 import { useBenefits } from "@/hooks/useBenefits";
@@ -40,6 +41,7 @@ export function BenefitsPanel({ useCaseId }: { useCaseId: string }) {
   const [editing, setEditing] = useState<Benefit | null>(null);
   const [adding, setAdding] = useState(false);
   const [inspecting, setInspecting] = useState<Benefit | null>(null);
+  const [evidenceHistoryFor, setEvidenceHistoryFor] = useState<Benefit | null>(null);
 
   const saving = create.isPending || update.isPending;
 
@@ -124,6 +126,14 @@ export function BenefitsPanel({ useCaseId }: { useCaseId: string }) {
                         onClick={() => setInspecting(benefit)}
                       >
                         <History className="h-3.5 w-3.5" aria-hidden />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        aria-label={`Evidence history for ${benefit.name}`}
+                        onClick={() => setEvidenceHistoryFor(benefit)}
+                      >
+                        <FileClock className="h-3.5 w-3.5" aria-hidden />
                       </Button>
                       <Button
                         size="icon"
