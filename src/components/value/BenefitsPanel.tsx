@@ -107,9 +107,7 @@ export function BenefitsPanel({ useCaseId }: { useCaseId: string }) {
                     </div>
                     <div className="flex items-center gap-1">
                       <Badge
-                        variant={
-                          EVIDENCED_STATES.includes(benefit.state) ? "default" : "secondary"
-                        }
+                        variant={EVIDENCED_STATES.includes(benefit.state) ? "default" : "secondary"}
                       >
                         {BENEFIT_STATE_LABELS[benefit.state]}
                       </Badge>

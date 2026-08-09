@@ -250,7 +250,8 @@ export function aggregateBenefits(benefits: Benefit[]): ValueAggregate {
     const multiplier = PERIOD_TO_ANNUAL[benefit.period] ?? 1;
     const normalised = benefit.expectedValue * multiplier;
     const key = compatibilityKey(benefit);
-    const basis: ValueGroup["basis"] = PERIOD_TO_ANNUAL[benefit.period] === null ? "one_off" : "annual";
+    const basis: ValueGroup["basis"] =
+      PERIOD_TO_ANNUAL[benefit.period] === null ? "one_off" : "annual";
     const existing = groups.get(key);
     if (existing) {
       existing.count += 1;
