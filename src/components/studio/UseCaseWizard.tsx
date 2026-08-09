@@ -192,6 +192,19 @@ export function UseCaseWizard({ id }: { id: string }) {
     [draftKey, id, saveStep, step.id, wizardState],
   );
 
+  // Server-persisted autosave: edits reach the workspace ~1.2s after typing
+  // stops, so a refresh, a new device or an expired tab resumes from the server
+  // rather than from a device-local copy.
+  const persistRef = useRef(persist);
+  persistRef.current = persist;
+  useEffect(() => {
+    if (!dirty || saving || reviewing) return;
+    const timer = setTimeout(() => {
+      void persistRef.current();
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, [dirty, saving, reviewing, wizardState]);
+
   const autosaveState: AutosaveState = saving
     ? "saving"
     : saveFailed
