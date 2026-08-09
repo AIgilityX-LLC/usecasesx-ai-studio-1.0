@@ -79,6 +79,8 @@ export function CollaborationPanel({
 
   const [draft, setDraft] = useState("");
   const [assignRole, setAssignRole] = useState<AssignmentRole>("owner");
+  const [activityFilter, setActivityFilter] = useState<ActivityCategory>("all");
+  const [activityPages, setActivityPages] = useState(1);
 
   const queryKey = ["collaboration", entityType, entityId];
   const query = useQuery({
