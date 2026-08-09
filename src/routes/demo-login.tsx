@@ -1,12 +1,44 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Download, Loader2, RotateCcw, ShieldCheck } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/SiteShell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { listDemoArtifactsFn, resetDemoTenantsFn } from "@/lib/demo/demo.functions";
+import { DEMO_WALKTHROUGH, type DemoEdition } from "@/lib/demo/demo-content";
+
+type DemoArtifact = Awaited<ReturnType<typeof listDemoArtifactsFn>>[number];
+
+function download(filename: string, mime: string, contents: string) {
+  const url = URL.createObjectURL(new Blob([contents], { type: mime }));
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+function csvCell(value: string) {
+  return /[",\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
+}
+
+function artifactCsv(artifact: DemoArtifact) {
+  const rows = [
+    ["report_title", "portfolio", "use_case_title", "decision", "audit_event_id"],
+    ...artifact.useCases.map((uc) => [
+      artifact.reportTitle,
+      artifact.portfolio,
+      uc.title,
+      uc.decision,
+      artifact.auditEventId ?? "",
+    ]),
+  ];
+  return rows.map((row) => row.map(csvCell).join(",")).join("\n");
+}
+
 
 /**
  * Demonstration sign-in. The personas below hold no production data and exist
