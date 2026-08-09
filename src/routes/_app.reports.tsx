@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { PageHero } from "@/components/usecasex/PageHero";
-import { MOCK_USE_CASES, type MockUseCase } from "@/lib/usecasex.mock";
+import type { UseCaseContent } from "@/lib/domain/saved-use-cases.repository";
 import {
   computeTotalScore,
   interpretScore,
@@ -140,19 +140,19 @@ function ReportsPage() {
   const selectedItems = useMemo(() => {
     return Array.from(selectedSlugs)
       .map((slug) => {
-        const uc = MOCK_USE_CASES.find((u) => u.slug === slug);
+        const uc = store.useCaseContent[slug];
         const entry = store.saved.find((s) => s.useCaseSlug === slug);
         return uc
           ? { uc, score: entry?.score, note: entry?.note, priority: entry?.priority }
           : null;
       })
       .filter(Boolean) as Array<{
-      uc: MockUseCase;
+      uc: UseCaseContent;
       score?: ScoreDimensions;
       note?: string;
       priority?: string;
     }>;
-  }, [selectedSlugs, store.saved]);
+  }, [selectedSlugs, store.saved, store.useCaseContent]);
 
   const handlePrint = () => {
     trackCTAEvent("report_printed", { reportType });
@@ -258,7 +258,7 @@ function ReportsPage() {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-56 overflow-auto rounded-md border p-2">
                     {store.saved.map((s) => {
-                      const uc = MOCK_USE_CASES.find((u) => u.slug === s.useCaseSlug);
+                      const uc = store.useCaseContent[s.useCaseSlug];
                       if (!uc) return null;
                       const checked = selectedSlugs.has(s.useCaseSlug);
                       return (
