@@ -67,6 +67,7 @@ const roadmapSearchSchema = z.object({
 
 
 export const Route = createFileRoute("/_app/roadmap")({
+  validateSearch: zodValidator(roadmapSearchSchema),
   head: () => ({
     meta: [
       { title: "RoadmapX™ — Delivery sequence | UseCasesX™" },
@@ -103,14 +104,27 @@ function RoadmapSurface() {
   const authz = useAuthz();
   const canManage = authz.can("portfolio.manage");
 
-  const [portfolioId, setPortfolioId] = useState<string | null>(null);
+  const search = Route.useSearch();
+  const navigate = useNavigate({ from: "/roadmap" });
+  const preferences = useExportPreferences("roadmap");
+
   const [editing, setEditing] = useState<PortfolioEntry | null>(null);
-  const [period, setPeriod] = useState<string>(ALL_PERIODS);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [streaming, setStreaming] = useState(false);
+
+  const period = search.period || ALL_PERIODS;
+  const tab = search.tab || "stages";
+
+  const setPeriod = (value: string) =>
+    navigate({ search: (prev) => ({ ...prev, period: value === ALL_PERIODS ? "" : value }) });
+  const setPortfolioId = (value: string) =>
+    navigate({ search: (prev) => ({ ...prev, portfolio: value, period: "" }) });
+  const setTab = (value: string) => navigate({ search: (prev) => ({ ...prev, tab: value }) });
 
   const portfolios = store.portfolios;
   const active = useMemo(
-    () => portfolios.find((p) => p.id === portfolioId) ?? portfolios[0] ?? null,
-    [portfolios, portfolioId],
+    () => portfolios.find((p) => p.id === search.portfolio) ?? portfolios[0] ?? null,
+    [portfolios, search.portfolio],
   );
 
   const allItems = useMemo(() => buildRoadmapItems(active?.entries ?? []), [active]);
@@ -126,6 +140,10 @@ function RoadmapSurface() {
   const periods = useMemo(() => groupByPeriod(items), [items]);
   const summary = useMemo(() => summarizeRoadmap(items), [items]);
   const analytics = useMemo(() => analyzeRoadmap(items), [items]);
+  const itemTitles = useMemo(
+    () => new Map(items.map((item) => [item.useCaseId, item.title] as const)),
+    [items],
+  );
 
   const scopeLabel =
     period === ALL_PERIODS
@@ -139,12 +157,65 @@ function RoadmapSurface() {
       toast.error("Nothing to export in the current view");
       return;
     }
-    downloadRoadmap(items, format, {
-      portfolioName: active?.name,
-      period: period === ALL_PERIODS ? undefined : scopeLabel,
-    });
+    downloadRoadmap(
+      items,
+      format,
+      {
+        portfolioName: active?.name,
+        period: period === ALL_PERIODS ? undefined : scopeLabel,
+      },
+      preferences.columns ?? undefined,
+    );
     toast.success(`Exported ${items.length} roadmap items as ${format.toUpperCase()}`);
   };
+
+  /** Streamed server-side export — reliable for large filtered sets. */
+  const exportViaServer = async (format: RoadmapExportFormat) => {
+    if (!active) return;
+    setStreaming(true);
+    try {
+      const { data } = await supabase.auth.getSession();
+      const token = data.session?.access_token;
+      if (!token) {
+        toast.error("Sign in again to export");
+        return;
+      }
+      const serverPeriod =
+        period === ALL_PERIODS || period === UNSCHEDULED_PERIOD ? undefined : period;
+      const response = await fetch("/api/public/usecasex/roadmap/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          portfolioId: active.id,
+          format,
+          period: serverPeriod,
+          columns: preferences.columns ?? undefined,
+        }),
+      });
+      if (!response.ok) throw new Error(String(response.status));
+      const blob = await response.blob();
+      saveAs(blob, roadmapExportFileName(format, serverPeriod));
+      toast.success(`Streamed ${format.toUpperCase()} export ready`);
+    } catch {
+      toast.error("Server export failed — try the direct download");
+    } finally {
+      setStreaming(false);
+    }
+  };
+
+  const copyShareLink = async () => {
+    try {
+      const url = new URL(window.location.href);
+      if (active) url.searchParams.set("portfolio", active.id);
+      if (period !== ALL_PERIODS) url.searchParams.set("period", period);
+      url.searchParams.set("tab", tab);
+      await navigator.clipboard.writeText(url.toString());
+      toast.success("Share link copied — it reopens this exact view");
+    } catch {
+      toast.error("Could not copy the link");
+    }
+  };
+
 
   const move = async (item: RoadmapItem, stage: DeliveryStage) => {
     if (!active) return;
