@@ -1,14 +1,28 @@
 // Reusable hooks for UseCasesX™ Pro Dashboard.
-// Mock-backed for now; swap internals for Supabase-backed createServerFn later
-// without changing call sites.
+// Supabase-backed via useUseCaseXPro — no mock data.
 
 import { useMemo } from "react";
-import { MOCK_USE_CASES, type MockUseCase, type Level, type Risk } from "@/lib/usecasex.mock";
+import { useUseCaseXPro } from "@/hooks/usecasex-pro";
+import { computeTotalScore } from "@/lib/usecasex.store";
+import type { UseCaseContent } from "@/lib/domain/saved-use-cases.repository";
 
-export interface SavedUseCase extends MockUseCase {
+export interface SavedUseCase {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  valuePotential: string;
+  complexity: string;
+  riskLevel: string;
+  timeToValue: string;
+  maturity: string;
+  industry: { slug: string; name: string };
+  businessFunction: string;
+  aiType: string;
+  objective: string;
   savedAt: string;
   note?: string;
-  priority: "Low" | "Medium" | "High";
+  priority: "Low" | "Medium" | "High" | "Strategic";
 }
 
 export interface UseCaseScore {
@@ -19,7 +33,7 @@ export interface UseCaseScore {
   risk: number;
   readiness: number;
   ttv: number;
-  total: number; // 0-100
+  total: number;
 }
 
 export interface Portfolio {
@@ -37,124 +51,82 @@ export interface GeneratedReport {
   useCaseCount: number;
 }
 
-// --- Mock seed ---------------------------------------------------------
-const SAVED_SLUGS = [
-  "defense-threat-intel-fusion",
-  "clinical-triage-copilot",
-  "public-citizen-services-copilot",
-  "energy-grid-load-forecasting",
-  "telco-network-incident-rca",
-  "retail-personalized-merchandising",
-  "banking-aml-agent",
-  "manufacturing-predictive-maintenance",
-];
-
-const PRIORITY_BY_INDEX: Array<SavedUseCase["priority"]> = [
-  "High",
-  "High",
-  "Medium",
-  "High",
-  "Medium",
-  "Low",
-  "High",
-  "Medium",
-];
-
-function hash(str: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return Math.abs(h);
+/** Map the DB maturity enum/text to the dashboard's Beginner/Intermediate/Advanced. */
+function mapMaturity(content: UseCaseContent): string {
+  if (content.maturityLevel) return content.maturityLevel;
+  if (!content.maturity) return "—";
+  const m = content.maturity;
+  if (m === "concept" || m === "prototype") return "Beginner";
+  if (m === "pilot") return "Intermediate";
+  if (m === "production" || m === "scaled") return "Advanced";
+  return m;
 }
 
-function scoreFor(uc: MockUseCase): UseCaseScore {
-  const lvl = (l: Level) => (l === "High" ? 85 : l === "Medium" ? 60 : 35);
-  const risk = (r: Risk) => (r === "Critical" ? 20 : r === "High" ? 40 : r === "Medium" ? 65 : 85);
-  const ttv = uc.timeToValue === "Short" ? 85 : uc.timeToValue === "Medium" ? 60 : 35;
-  const readiness = uc.maturity === "Advanced" ? 80 : uc.maturity === "Intermediate" ? 60 : 40;
-  const feas = 100 - lvl(uc.complexity) + 25;
-  const strategic = lvl(uc.valuePotential) + ((hash(uc.id) % 15) - 7);
-  const value = lvl(uc.valuePotential);
-  const total = Math.round((strategic + value + feas + risk(uc.riskLevel) + readiness + ttv) / 6);
-  return {
-    useCaseId: uc.id,
-    strategic: Math.max(0, Math.min(100, strategic)),
-    value,
-    feasibility: Math.max(0, Math.min(100, feas)),
-    risk: risk(uc.riskLevel),
-    readiness,
-    ttv,
-    total: Math.max(0, Math.min(100, total)),
-  };
-}
-
-// --- Hooks -------------------------------------------------------------
 export function useSavedUseCases(): SavedUseCase[] {
+  const store = useUseCaseXPro();
   return useMemo(() => {
-    return SAVED_SLUGS.map((slug, i) => {
-      const uc = MOCK_USE_CASES.find((u) => u.slug === slug);
-      if (!uc) return null;
-      return {
-        ...uc,
-        savedAt: new Date(Date.now() - (i + 1) * 86_400_000).toISOString(),
-        priority: PRIORITY_BY_INDEX[i] ?? "Medium",
-      } satisfies SavedUseCase;
-    }).filter(Boolean) as SavedUseCase[];
-  }, []);
+    return store.saved
+      .map((entry) => {
+        const content = store.useCaseContent[entry.useCaseSlug];
+        if (!content) return null;
+        return {
+          id: entry.useCaseSlug,
+          slug: content.slug,
+          title: content.title,
+          summary: content.summary,
+          valuePotential: content.valuePotential ?? "—",
+          complexity: content.complexity ?? "—",
+          riskLevel: content.riskLevel ?? "—",
+          timeToValue: content.timeToValue ?? "—",
+          maturity: mapMaturity(content),
+          industry: content.industry ?? { slug: "", name: "—" },
+          businessFunction: content.businessFunction ?? "—",
+          aiType: content.aiCapability ?? "—",
+          objective: "",
+          savedAt: entry.savedAt,
+          note: entry.note,
+          priority: entry.priority as SavedUseCase["priority"],
+        } satisfies SavedUseCase;
+      })
+      .filter(Boolean) as SavedUseCase[];
+  }, [store.saved, store.useCaseContent]);
 }
 
 export function useUseCaseScores(): UseCaseScore[] {
-  const saved = useSavedUseCases();
-  return useMemo(() => saved.map(scoreFor), [saved]);
+  const store = useUseCaseXPro();
+  return useMemo(() => {
+    return store.saved
+      .filter((s) => s.score)
+      .map((s) => {
+        const score = s.score!;
+        return {
+          useCaseId: s.useCaseSlug,
+          strategic: score.strategicAlignment,
+          value: score.valuePotential,
+          feasibility: score.feasibility,
+          risk: score.riskManageability,
+          readiness: score.governanceReadiness,
+          ttv: score.timeToValue,
+          total: computeTotalScore(score),
+        } satisfies UseCaseScore;
+      });
+  }, [store.saved]);
 }
 
 export function usePortfolios(): Portfolio[] {
-  const saved = useSavedUseCases();
-  return useMemo(
-    () => [
-      {
-        id: "p1",
-        name: "Cost & Productivity",
-        objective: "Operational efficiency",
-        useCaseIds: saved.slice(0, 3).map((s) => s.id),
-      },
-      {
-        id: "p2",
-        name: "Customer Experience",
-        objective: "CX uplift",
-        useCaseIds: saved.slice(3, 6).map((s) => s.id),
-      },
-      {
-        id: "p3",
-        name: "Risk & Compliance",
-        objective: "Govern AI risk",
-        useCaseIds: saved.slice(6).map((s) => s.id),
-      },
-    ],
-    [saved],
-  );
+  const store = useUseCaseXPro();
+  return useMemo(() => {
+    return store.portfolios.map((p) => ({
+      id: p.id,
+      name: p.name,
+      objective: p.objective ?? "",
+      useCaseIds: p.entries.map((e) => e.useCaseId),
+    }));
+  }, [store.portfolios]);
 }
 
 export function useGeneratedReports(): GeneratedReport[] {
-  return useMemo(
-    () => [
-      {
-        id: "r1",
-        title: "Q2 AI Opportunity Board Pack",
-        kind: "Executive PDF",
-        createdAt: "2026-05-12T09:00:00Z",
-        useCaseCount: 8,
-      },
-      {
-        id: "r2",
-        title: "Cost & Productivity Portfolio",
-        kind: "Portfolio PDF",
-        createdAt: "2026-05-19T15:30:00Z",
-        useCaseCount: 3,
-      },
-    ],
-    [],
-  );
+  // No mock data — returns empty until the generated_reports table is wired.
+  // The ProDashboard shows an empty state when this is empty.
+  return useMemo(() => [], []);
 }
