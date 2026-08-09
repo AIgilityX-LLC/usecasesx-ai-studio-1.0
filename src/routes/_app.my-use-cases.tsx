@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo } from "react";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { PageHero } from "@/components/usecasex/PageHero";
-import { MOCK_USE_CASES, type MockUseCase } from "@/lib/usecasex.mock";
+import type { UseCaseContent } from "@/lib/domain/saved-use-cases.repository";
 import {
   computeTotalScore,
   interpretScore,
@@ -74,14 +74,14 @@ function SavedPage() {
   const items = useMemo(() => {
     return store.saved
       .map((entry) => {
-        const uc = MOCK_USE_CASES.find((u) => u.slug === entry.useCaseSlug);
+        const uc = store.useCaseContent[entry.useCaseSlug];
         return uc ? { entry, uc } : null;
       })
       .filter(Boolean) as {
       entry: ReturnType<typeof useUseCaseXPro>["saved"][number];
-      uc: MockUseCase;
+      uc: UseCaseContent;
     }[];
-  }, [store.saved]);
+  }, [store.saved, store.useCaseContent]);
 
   if (!session) {
     return (
@@ -150,7 +150,7 @@ function SavedCard({
   score,
   store,
 }: {
-  uc: MockUseCase;
+  uc: UseCaseContent;
   note: string;
   priority: Priority;
   score?: ScoreDimensions;
@@ -161,8 +161,8 @@ function SavedCard({
   // Preserve active tag context (Industry = primary, Department = business
   // function) when navigating from a saved card to the detail view.
   const detailSearch = {
-    dept: uc.industry.slug,
-    func: slugify(uc.businessFunction),
+    dept: uc.industry?.slug ?? "",
+    func: slugify(uc.businessFunction ?? ""),
   } as any;
 
   return (
@@ -184,17 +184,17 @@ function SavedCard({
         <p className="text-xs text-muted-foreground line-clamp-3">{uc.summary}</p>
         <div className="flex flex-wrap gap-1.5 pt-1">
           <Badge variant="secondary" className="text-[10px]" title="Industry">
-            {uc.industry.name}
+            {uc.industry?.name ?? "—"}
           </Badge>
           <Badge
             variant="outline"
             className="text-[10px] border-violet-500/40 text-violet-600 dark:text-violet-400"
             title="Department"
           >
-            {uc.businessFunction}
+            {uc.businessFunction ?? "—"}
           </Badge>
           <Badge variant="outline" className="text-[10px]">
-            {uc.aiType}
+            {uc.aiCapability ?? "—"}
           </Badge>
         </div>
       </CardHeader>

@@ -38,6 +38,34 @@ export type ScoreColumns = {
   total: number;
 };
 
+/**
+ * Live use-case content hydrated from the `use_cases` table (plus join
+ * tables for industry, business function and AI capability). Replaces the
+ * `MockUseCase` lookups that powered Pro routes with static data.
+ */
+export interface UseCaseContent {
+  slug: string;
+  title: string;
+  summary: string;
+  valuePotential: string | null;
+  complexity: string | null;
+  riskLevel: string | null;
+  timeToValue: string | null;
+  maturityLevel: string | null;
+  maturity: string | null;
+  industry: { slug: string; name: string } | null;
+  businessFunction: string | null;
+  aiCapability: string | null;
+}
+
+export type EnrichedSavedRow = {
+  use_case_id: string;
+  priority: string;
+  note: string | null;
+  saved_at: string;
+  content: UseCaseContent | null;
+};
+
 /** Resolves a public use-case slug to its id. Returns null when unknown. */
 export async function resolveUseCaseIdBySlug(slug: string): Promise<string | null> {
   const clean = parseInput(slugSchema, slug);
@@ -149,10 +177,15 @@ export function parseScore(score: unknown) {
  * Raw personal workspace read used by the Pro hook.
  *
  * `saved_use_cases.use_case_id` has no foreign key (it can reference either the
- * global catalogue or a workspace draft), so the slug is hydrated separately
- * rather than embedded by PostgREST.
+ * global catalogue or a workspace draft), so the content is hydrated in a
+ * batch query against `use_cases` plus the industry / function / capability
+ * join tables rather than embedded by PostgREST.
+ *
+ * Returns `EnrichedSavedRow` so callers get the full use-case content
+ * (title, summary, classification fields, industry, function, capability)
+ * alongside the saved-entry metadata — no more `MOCK_USE_CASES` lookups.
  */
-export async function listSavedForUser(userId: string | null) {
+export async function listSavedForUser(userId: string | null): Promise<EnrichedSavedRow[]> {
   const uid = requireUserId(userId);
   const result = await supabase
     .from("saved_use_cases")
@@ -161,19 +194,102 @@ export async function listSavedForUser(userId: string | null) {
     .order("saved_at", { ascending: false });
   const rows = (unwrapResult(result, { allowNull: true }) ?? []) as Array<{
     use_case_id: string;
-    use_cases?: { slug: string } | null;
+    priority: string;
+    note: string | null;
+    saved_at: string;
   }>;
+  if (rows.length === 0) return [];
+
   const ids = [...new Set(rows.map((row) => row.use_case_id))];
-  if (ids.length === 0) return rows;
-  const slugs = await supabase.from("use_cases").select("id, slug").in("id", ids);
-  const byId = new Map(
-    (unwrapResult(slugs, { allowNull: true }) ?? []).map((uc) => [uc.id, uc.slug] as const),
+
+  // Batch-fetch use case content + join tables in parallel.
+  const [ucRes, indRes, funcRes, capRes] = await Promise.all([
+    supabase
+      .from("use_cases")
+      .select(
+        "id, slug, title, summary, value_potential, complexity, risk_level, time_to_value, maturity_level, maturity",
+      )
+      .in("id", ids),
+    supabase
+      .from("use_case_industries")
+      .select("use_case_id, industries!inner(slug, name)")
+      .in("use_case_id", ids),
+    supabase
+      .from("use_case_business_functions")
+      .select("use_case_id, business_functions(name)")
+      .in("use_case_id", ids),
+    supabase
+      .from("use_case_capabilities")
+      .select("use_case_id, ai_capabilities(name)")
+      .in("use_case_id", ids),
+  ]);
+
+  const ucMap = new Map(
+    (unwrapResult(ucRes, { allowNull: true }) ?? []).map((uc) => [uc.id, uc] as const),
   );
-  for (const row of rows) {
-    const slug = byId.get(row.use_case_id);
-    row.use_cases = slug ? { slug } : null;
+
+  const indByUc = new Map<string, { slug: string; name: string }>();
+  for (const row of (unwrapResult(indRes, { allowNull: true }) ?? []) as Array<{
+    use_case_id: string;
+    industries?: { slug: string; name: string } | null;
+  }>) {
+    if (row.industries) indByUc.set(row.use_case_id, row.industries);
   }
-  return rows;
+
+  const funcByUc = new Map<string, string>();
+  for (const row of (unwrapResult(funcRes, { allowNull: true }) ?? []) as Array<{
+    use_case_id: string;
+    business_functions?: { name: string } | null;
+  }>) {
+    if (row.business_functions?.name) funcByUc.set(row.use_case_id, row.business_functions.name);
+  }
+
+  const capByUc = new Map<string, string>();
+  for (const row of (unwrapResult(capRes, { allowNull: true }) ?? []) as Array<{
+    use_case_id: string;
+    ai_capabilities?: { name: string } | null;
+  }>) {
+    if (row.ai_capabilities?.name) capByUc.set(row.use_case_id, row.ai_capabilities.name);
+  }
+
+  return rows.map((row) => {
+    const uc = ucMap.get(row.use_case_id) as
+      | {
+          slug: string;
+          title: string;
+          summary: string;
+          value_potential: string | null;
+          complexity: string | null;
+          risk_level: string | null;
+          time_to_value: string | null;
+          maturity_level: string | null;
+          maturity: string | null;
+        }
+      | undefined;
+    if (!uc) {
+      return { ...row, content: null };
+    }
+    return {
+      use_case_id: row.use_case_id,
+      priority: row.priority,
+      note: row.note,
+      saved_at: row.saved_at,
+      content: {
+        slug: uc.slug,
+        title: uc.title,
+        summary: uc.summary,
+        valuePotential: uc.value_potential,
+        complexity: uc.complexity,
+        riskLevel: uc.risk_level,
+        timeToValue: uc.time_to_value,
+        maturityLevel: uc.maturity_level,
+        maturity: uc.maturity,
+        industry: indByUc.get(row.use_case_id) ?? null,
+        businessFunction: funcByUc.get(row.use_case_id) ?? null,
+        aiCapability: capByUc.get(row.use_case_id) ?? null,
+      },
+    };
+  });
 }
 
 export async function listScoresForUser(userId: string | null) {
