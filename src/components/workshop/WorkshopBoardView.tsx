@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { EmptyState, ErrorState, CardSkeleton } from "@/components/ui-kit";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import {
   BUCKET_LABEL,
   CRITERION_LABEL,
@@ -144,7 +145,19 @@ export function WorkshopBoardView({ id }: { id: string }) {
 
   const scores = useMemo(() => scoreItems(board.data?.votes ?? []), [board.data?.votes]);
 
-  if (board.isLoading) return <CardSkeleton />;
+  if (session === undefined || board.isLoading) return <CardSkeleton />;
+  if (session === null)
+    return (
+      <EmptyState
+        title="Sign in to open this workshop"
+        description="Workshop sessions are private to their participants."
+        action={
+          <Button asChild>
+            <Link to="/auth">Sign in</Link>
+          </Button>
+        }
+      />
+    );
   if (board.isError)
     return (
       <ErrorState

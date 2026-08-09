@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { STAGE_META, WORKSHOP_STATUS_LABEL } from "@/lib/workshops";
 import { createWorkshopFn, listWorkshopsFn } from "@/lib/workshops.functions";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 
 export const Route = createFileRoute("/_app/workshops/")({
   head: () => ({
@@ -46,7 +47,13 @@ function WorkshopsPage() {
   const [startsOn, setStartsOn] = useState("");
   const [endsOn, setEndsOn] = useState("");
 
-  const list = useQuery({ queryKey: ["workshops"], queryFn: () => listWorkshopsFn() });
+  const session = useSupabaseSession();
+  // Authenticated server fn: only call it once a bearer token exists.
+  const list = useQuery({
+    queryKey: ["workshops"],
+    queryFn: () => listWorkshopsFn(),
+    enabled: Boolean(session),
+  });
 
   const create = useMutation({
     mutationFn: () =>
@@ -159,8 +166,18 @@ function WorkshopsPage() {
         </Card>
       )}
 
-      {list.isLoading ? (
+      {session === undefined || (session && list.isLoading) ? (
         <CardSkeleton />
+      ) : session === null ? (
+        <EmptyState
+          title="Sign in to run workshops"
+          description="Facilitator-led sessions are private to your workspace."
+          action={
+            <Button asChild>
+              <Link to="/auth">Sign in</Link>
+            </Button>
+          }
+        />
       ) : list.isError ? (
         <ErrorState
           title="Could not load workshops"
