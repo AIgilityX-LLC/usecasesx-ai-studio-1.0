@@ -111,15 +111,12 @@ test.describe("phase 3: private report access", () => {
     }
 
     /* ---- RLS is the boundary, not the UI ------------------------------ */
-    const { createClient } = await import("@supabase/supabase-js");
-    const url = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL ?? "";
-    const anonKey =
-      process.env.SUPABASE_PUBLISHABLE_KEY ?? process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
-    const asOutsider = createClient(url, anonKey, { auth: { persistSession: false } });
+    const asOutsider = anonClient();
     await asOutsider.auth.signInWithPassword({
       email: outsider.email,
       password: outsider.password,
     });
+
     const { data: leaked } = await asOutsider
       .from("portfolios")
       .select("id")
