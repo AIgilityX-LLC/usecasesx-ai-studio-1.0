@@ -24,7 +24,7 @@ export type CapabilityFlags = Record<CapabilityFlagKey, boolean>;
  */
 export const DEFAULT_CAPABILITY_FLAGS: CapabilityFlags = Object.freeze({
   opportunityMap: true,
-  workshopMode: false,
+  workshopMode: true,
   stageGates: false,
   multiEntity: false,
   integrations: false,

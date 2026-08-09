@@ -63,6 +63,7 @@ const CORE: Item[] = [
   { to: "/discover", label: "Discovery Wizard", icon: Wand2 },
   { to: "/opportunities", label: "Opportunities", icon: Lightbulb, pro: true },
   { to: "/opportunity-map", label: "Opportunity Map", icon: Map, pro: true },
+  { to: "/workshops", label: "Workshops", icon: Users, pro: true },
   { to: "/quick-wins", label: "Quick Wins Matrix", icon: Grid2x2 },
   { to: "/roi-calculator", label: "ROI & Mission Value", icon: Calculator },
   { to: "/insights", label: "Deployment Intelligence", icon: BarChart3 },
