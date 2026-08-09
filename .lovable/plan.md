@@ -1,58 +1,65 @@
-## Alignment: your 12 deliverables vs. what the platform already does
+# Phase 3 Verification — Opportunity-to-Portfolio and Workshop Outcome
 
-| #   | Deliverable                                       | Status     | Where it lives today                                                                |
-| --- | ------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------- |
-| 1   | AI Use Case Identification & Longlist Report      | ✅ Have    | Repository, Studio, Quick Wins                                                      |
-| 2   | AI Use Case Assessment & Prioritization Framework | ✅ Have    | Feasibility (5-pillar), Quick Wins, Portfolio                                       |
-| 3   | AI Use Case Conceptual Design Documents           | ✅ Have    | Blueprint (19 sections), Use-case canvas                                            |
-| 4   | AI Analytical Logic Models                        | ⚠️ Partial | Blueprint "AI Approach" + "MVP Prediction" freetext only — no structured model spec |
-| 5   | AI Data Requirements Definition                   | ✅ Have    | Data Readiness module                                                               |
-| 6   | AI Reference Workflows & Process Diagrams         | ❌ Missing | `patterns` is an empty stub                                                         |
-| 7   | AI Capability Requirement Framework               | ⚠️ Partial | Feasibility questions + SARPI link only                                             |
-| 8   | AI Risk & Assumption Register                     | ⚠️ Partial | C3G governance captures classes/controls, no itemized register                      |
-| 9   | AI Governance Considerations Document             | ✅ Have    | C3G Governance + AdvisorX                                                           |
-| 10  | AI Use Case Portfolio Roadmap                     | ⚠️ Partial | Portfolio card/table + horizons; `roadmap` is a stub                                |
-| 11  | AI Integration Consideration Notes (Generic)      | ⚠️ Partial | API Integration page is marketing-only                                              |
-| 12  | Final Handover & Knowledge Transfer Package       | ❌ Missing | Blueprint export is closest, no KT package                                          |
+Goal: produce evidence that a Pro user can go Discover → Portfolio → Export without database intervention, that a facilitator can turn workshop inputs into a portfolio and report, that every chart reconciles with its source rows, and that nothing private leaks. Ends with an explicit Go / Conditional Go / No-Go for Phase 4.
 
-**Net: 5 complete, 5 partial, 2 missing.** The pieces exist but they aren't assembled into the 12 named enterprise deliverables an advisory engagement hands over.
+This is a verification phase. No feature work, no schema change. The only files created are test specs, a reconciliation script and the report documents. Any defect found is logged in the report, not fixed inline, unless it is a P0 permission or data-integrity defect.
 
-## What I'll build
+## What already exists
 
-The unifying idea: a **Deliverables workspace** per use case that generates all 12 named documents from data you've already captured (canvas, feasibility, data readiness, governance, roadmap), each individually exportable to PDF/Word, plus a one-click bundle.
+Coverage present today: RLS isolation, tenancy isolation, authz matrix, audit immutability, opportunities RLS, collaboration workspace + timeline, workshop permissions + invitations, handoff lifecycle, CSV/PDF export contract and receipt, print layout across three browsers, mobile responsive, navbar, demo smoke, and 191 unit tests.
 
-**1. Deliverables hub** — new route `/studio/use-case/$id/deliverables` listing all 12 as cards with status (ready / needs data / draft), each opening a structured generator + export. Linked from the use-case index and Blueprint page.
+Gaps that block a defensible Phase 3 sign-off:
 
-**2. Fill the partials with structured schemas** (not just freetext):
+1. No single spec that walks one Pro user end-to-end Discover → Opportunity → Studio → Score → Portfolio → Roadmap → Export.
+2. No facilitator spec that converts workshop outputs into a portfolio and then a report.
+3. No reconciliation check — Opportunity Map counts, portfolio rollups, roadmap buckets, benefit totals and handoff analytics are each computed in the UI layer and never compared against the underlying rows.
+4. No anonymous-access sweep asserting that every Pro/Enterprise route redirects or gates rather than rendering data.
+5. No AI-outage behaviour test.
 
-- **#4 Analytical Logic Model** — structured spec: prediction target, inputs/features, output & thresholds, model family, training/validation approach, feedback loop.
-- **#7 Capability Requirement Framework** — capability inventory across strategy/data/people/tech/governance with current-vs-required rating and build/buy/partner call.
-- **#8 Risk & Assumption Register** — itemized rows: risk/assumption, likelihood×impact, owner, mitigation, residual, review date.
-- **#11 Integration Consideration Notes** — generic technical template: source systems, auth, data formats, latency/SLA, error handling, middleware pattern.
+## Work items
 
-**3. Build the two missing ones:**
+### 1. Journey specs (Playwright, workspace fixture)
 
-- **#6 Reference Workflows & Process Diagrams** — before/after swim-lane + step sequence builder (text-driven, renders as an ordered process diagram), replacing the `patterns` stub content.
-- **#12 Final Handover & KT Package** — assembles all completed deliverables + runbook, contacts, decision log, and lessons-learned into a single exportable package (PDF/Word/zip-of-sections).
+- `tests/journey-opportunity-to-portfolio.spec.ts` — one Pro user, no admin client writes: capture an opportunity, convert it to a studio use case, score it, add it to a new portfolio, place it on the roadmap, add a benefit, export a package. Assert each step persisted, and that the next screen reads the row the previous step wrote.
+- `tests/journey-workshop-to-portfolio.spec.ts` — facilitator runs a workshop, promotes voted items to use cases, creates a portfolio from them, generates the executive report, and confirms the report cites the workshop as provenance.
+- Both use the existing `tests/fixtures/workspace.ts` provisioning so each run is isolated.
 
-**4. Roadmap (#10)** — upgrade Portfolio roadmap export into the named "Portfolio Roadmap" deliverable with sequenced phases, dependencies and value gates.
+### 2. Data reconciliation harness
 
-## Data model
+- `scripts/qa/reconcile-phase3.mjs` — for a target workspace, read the source rows through the service-role client (server-side script only, never shipped to the browser) and recompute every aggregate the UI displays: Opportunity Map counts by status/urgency, portfolio item counts and decision mix, roadmap period buckets, benefit expected-value totals by state, handoff counts by target/status, activity-timeline event counts.
+- Output a table of `surface | UI value | source value | delta`. Any non-zero delta is a defect row in the report.
+- UI values are read from the same pure domain functions the components call (`portfolio` model, `roadmap`, `opportunity-map`, `benefits.model`, `handoff.analytics`) so the comparison tests the mapping, not a screenshot.
 
-One new table `use_case_deliverables` (org/workspace-scoped, RLS + GRANTs) storing `use_case_id`, `deliverable_type` (enum of the 12), `content` (jsonb structured per type), `status`, timestamps — so each deliverable is saved, versioned by updated_at, and reused by the Handover package. Reuses existing `blueprints`, `feasibility_scores`, `data_readiness_assessments` where already present.
+### 3. Access and exposure evidence
 
-## Delivery order
+- `tests/anonymous-access-sweep.spec.ts` — enumerate every route from the generated route tree, visit each signed-out, and assert the protected ones redirect to `/auth` and never render workspace data. Fails loudly on any new route added without a gate.
+- Extend role coverage: viewer cannot export or change status; contributor cannot manage members; facilitator can manage only their workshop.
+- Private-report exposure: a share token for portfolio A must not read portfolio B; a revoked member must lose read access on the next request; export receipts must record an `audit_events` row that the actor cannot edit or delete.
+- Seat-limit and fair-use gating re-checked at the boundary (at limit, over limit).
 
-1. Migration + Deliverables hub shell + navigation
-2. Structured generators for the 5 partials (#4, #7, #8, #10, #11)
-3. Missing builds (#6 workflows, #12 handover package)
-4. Shared PDF/Word export + bundle
-5. Verify: tsgo typecheck + Playwright screenshots of the hub and 2–3 generators
+### 4. Resilience and presentation
 
-## Scope notes
+- AI outage: stub the AI gateway to fail and confirm narrative surfaces show a labelled degraded state, that generation is blocked rather than inventing facts, and that non-AI export still completes.
+- Desktop 1280 and mobile 390 passes over the journey surfaces, checking loading, empty, error and role-based states.
 
-- Enterprise/Pro-gated, consistent with existing `RequirePlan` usage.
-- Reuses existing jsPDF + docx export patterns already in the Blueprint page.
-- No changes to SARPI integration pages.
+### 5. Reports
 
-This is large; I can build it in the order above, or start with just the hub + the 2 missing deliverables if you want a smaller first slice. Want the full package or the smaller slice first?
+- `docs/testing/phase-3-test-report.md` — per-scenario result, defect list with severity (P0–P3), and the acceptance-criteria table.
+- `docs/testing/phase-3-reconciliation.md` — the delta table plus method notes.
+- `docs/testing/phase-3-access-evidence.md` — route sweep matrix, revocation and share-token results, export audit IDs.
+- Decision section in the test report: Go if zero P0 and zero reconciliation delta; Conditional Go if only P2/P3 remain with named owners and dates; No-Go on any P0 permission or data-integrity defect.
+
+## Technical notes
+
+- All new specs run under the existing Playwright config, which boots the app on port 8080 and captures trace, screenshot and video on failure.
+- Backend-dependent specs skip with a warning when credentials are absent, matching the current CI behaviour, so the Phase 3 run must be executed in a credentialed environment for the evidence to count.
+- The reconciliation script is a Node script under `scripts/qa/`, invoked manually; it is not imported by app code and never bundled.
+- No migration is required. If the run exposes a missing RLS policy, that becomes a separate, staged change with its own approval — it is not folded into this phase.
+
+## Sequencing
+
+1. Reconciliation harness (fastest signal on data integrity).
+2. Two journey specs.
+3. Access and exposure sweep.
+4. Resilience and responsive passes.
+5. Write the three documents and issue the decision.
