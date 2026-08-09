@@ -16,13 +16,15 @@ import type {
   BenefitInput,
   BenefitPeriod,
   BenefitState,
+  BenefitEvidenceItem,
   BenefitUnitType,
   BenefitVerificationMethod,
+  ErpVerificationStatus,
   MeasurementFrequency,
 } from "@/lib/value/benefits.model";
 
 const COLUMNS =
-  "id, use_case_id, name, category, kpi, unit_type, currency, period, baseline_value, target_value, expected_value, confidence, measurement_frequency, benefit_owner, evidence_source, state, verification_method, notes, created_at, updated_at";
+  "id, use_case_id, name, category, kpi, unit_type, currency, period, baseline_value, target_value, expected_value, confidence, measurement_frequency, benefit_owner, evidence_source, evidence_links, state, verification_method, erp_verification_status, erp_system, erp_reference, erp_last_verified_at, notes, created_at, updated_at";
 
 type Row = {
   id: string;
@@ -40,8 +42,13 @@ type Row = {
   measurement_frequency: string;
   benefit_owner: string | null;
   evidence_source: string | null;
+  evidence_links: unknown;
   state: string;
   verification_method: string;
+  erp_verification_status: string | null;
+  erp_system: string | null;
+  erp_reference: string | null;
+  erp_last_verified_at: string | null;
   notes: string | null;
   created_at: string;
   updated_at: string;
@@ -64,8 +71,16 @@ function toBenefit(row: Row): Benefit {
     measurementFrequency: row.measurement_frequency as MeasurementFrequency,
     benefitOwner: row.benefit_owner,
     evidenceSource: row.evidence_source,
+    evidenceLinks: Array.isArray(row.evidence_links)
+      ? (row.evidence_links as BenefitEvidenceItem[])
+      : [],
     state: row.state as BenefitState,
     verificationMethod: row.verification_method as BenefitVerificationMethod,
+    erpVerificationStatus: (row.erp_verification_status ??
+      "not_configured") as ErpVerificationStatus,
+    erpSystem: row.erp_system,
+    erpReference: row.erp_reference,
+    erpLastVerifiedAt: row.erp_last_verified_at,
     notes: row.notes,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -89,8 +104,13 @@ function toRow(input: BenefitInput) {
     measurement_frequency: input.measurementFrequency,
     benefit_owner: input.benefitOwner?.trim() || null,
     evidence_source: input.evidenceSource?.trim() || null,
+    evidence_links: input.evidenceLinks ?? [],
     state: input.state,
     verification_method: input.verificationMethod,
+    erp_verification_status: input.erpVerificationStatus ?? "not_configured",
+    erp_system: input.erpSystem?.trim() || null,
+    erp_reference: input.erpReference?.trim() || null,
+    erp_last_verified_at: input.erpLastVerifiedAt,
     notes: input.notes?.trim() || null,
   };
 }
