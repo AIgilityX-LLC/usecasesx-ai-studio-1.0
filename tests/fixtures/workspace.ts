@@ -44,7 +44,41 @@ export function anonClient(): SupabaseClient {
 
 let counter = 0;
 
+/**
+ * Puts a fixture user on the Pro plan and makes them the owner of their own
+ * workspace. Pro surfaces (portfolios, roadmap, Opportunity Map, workshops)
+ * render an upgrade wall for lite accounts, and the create/manage controls also
+ * require an editor workspace role — so any journey spec that exercises them
+ * must grant both before signing in.
+ */
+export async function grantPro(user: TestUser) {
+  const admin = adminClient();
+  // The profile row may not exist yet (the handle_new_user trigger races with
+  // fixture setup), so upsert rather than update.
+  const { error } = await admin
+    .from("profiles")
+    .upsert({ user_id: user.userId, email: user.email, plan_type: "pro" }, { onConflict: "user_id" });
+  if (error) throw error;
+
+
+  const { data: workspaceId, error: rpcError } = await admin.rpc("ensure_user_workspace", {
+    _user_id: user.userId,
+  });
+  if (rpcError) throw rpcError;
+
+  const { error: memberError } = await admin
+    .from("workspace_members")
+    .upsert(
+      { workspace_id: workspaceId, user_id: user.userId, role: "owner" },
+      { onConflict: "workspace_id,user_id" },
+    );
+  if (memberError) throw memberError;
+  return workspaceId as string;
+}
+
+
 /** Creates a confirmed user through the admin API and returns its credentials. */
+
 export async function createTestUser(prefix: string): Promise<TestUser> {
   const admin = adminClient();
   counter += 1;
