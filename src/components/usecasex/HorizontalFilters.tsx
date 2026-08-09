@@ -2,6 +2,11 @@ import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { FacetState } from "@/components/UseCaseFilters";
 import { ChevronDown, SlidersHorizontal } from "lucide-react";
+import {
+  PUBLIC_PROVENANCE_LABELS,
+  PROVENANCE_NAMES,
+  QUALITY_NAMES,
+} from "@/lib/admin/corpus-quality";
 
 interface Props {
   tax: {
@@ -104,6 +109,19 @@ export function HorizontalFilters({ tax, value, onChange, onClear, activeCount }
     ...(tax.processes && tax.processes.length
       ? [{ key: "processes" as const, label: "Business Process", options: tax.processes }]
       : []),
+    {
+      key: "provenance",
+      label: "Provenance",
+      options: PUBLIC_PROVENANCE_LABELS.map((slug) => ({
+        slug,
+        name: PROVENANCE_NAMES[slug] ?? slug,
+      })),
+    },
+    {
+      key: "qualityStatus",
+      label: "Quality status",
+      options: [{ slug: "quality_passed", name: QUALITY_NAMES.quality_passed }],
+    },
     ...(tax.tags && tax.tags.length
       ? [{ key: "tags" as const, label: "Tags", options: tax.tags }]
       : []),
