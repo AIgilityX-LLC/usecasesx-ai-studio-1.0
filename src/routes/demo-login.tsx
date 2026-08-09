@@ -29,6 +29,18 @@ const PERSONAS = [
     plan: "Enterprise",
   },
   {
+    email: "pro@demo.usecasex.app",
+    label: "Pro User",
+    blurb: "Standard Pro seat — discovery, studio, scoring, portfolio and reports.",
+    plan: "Pro",
+  },
+  {
+    email: "enterprise@demo.usecasex.app",
+    label: "Enterprise User",
+    blurb: "Enterprise seat — ERP-verified value, governance and suite handoffs.",
+    plan: "Enterprise",
+  },
+  {
     email: "facilitator@demo.usecasex.app",
     label: "Facilitator / Trainer",
     blurb: "Runs Discovery & Value Design workshops end to end.",

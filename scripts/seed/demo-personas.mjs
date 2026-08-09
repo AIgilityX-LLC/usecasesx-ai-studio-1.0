@@ -1,7 +1,7 @@
 /**
  * Demo personas for client demonstrations.
  *
- * Creates (idempotently) the four demo personas shown on /demo-login, each with
+ * Creates (idempotently) the demo personas shown on /demo-login, each with
  * its own organization + default workspace, plan and role. These accounts are
  * demonstration-only and hold no production data.
  *
@@ -28,6 +28,13 @@ const PERSONAS = [
     email: "tenantadmin@demo.usecasex.app",
     label: "Tenant Admin",
     role: "admin",
+    plan: "enterprise",
+  },
+  { email: "pro@demo.usecasex.app", label: "Pro User", role: null, plan: "pro" },
+  {
+    email: "enterprise@demo.usecasex.app",
+    label: "Enterprise User",
+    role: null,
     plan: "enterprise",
   },
   {
