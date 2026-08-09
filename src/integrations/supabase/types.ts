@@ -3476,6 +3476,265 @@ export type Database = {
         };
         Relationships: [];
       };
+      workshop_items: {
+        Row: {
+          business_function: string | null;
+          converted_at: string | null;
+          created_at: string;
+          detail: string | null;
+          id: string;
+          kind: string;
+          merged_into_id: string | null;
+          opportunity_id: string | null;
+          source_item_id: string | null;
+          status: string;
+          submitted_by: string | null;
+          submitted_by_name: string | null;
+          title: string;
+          updated_at: string;
+          use_case_id: string | null;
+          workshop_id: string;
+        };
+        Insert: {
+          business_function?: string | null;
+          converted_at?: string | null;
+          created_at?: string;
+          detail?: string | null;
+          id?: string;
+          kind?: string;
+          merged_into_id?: string | null;
+          opportunity_id?: string | null;
+          source_item_id?: string | null;
+          status?: string;
+          submitted_by?: string | null;
+          submitted_by_name?: string | null;
+          title: string;
+          updated_at?: string;
+          use_case_id?: string | null;
+          workshop_id: string;
+        };
+        Update: {
+          business_function?: string | null;
+          converted_at?: string | null;
+          created_at?: string;
+          detail?: string | null;
+          id?: string;
+          kind?: string;
+          merged_into_id?: string | null;
+          opportunity_id?: string | null;
+          source_item_id?: string | null;
+          status?: string;
+          submitted_by?: string | null;
+          submitted_by_name?: string | null;
+          title?: string;
+          updated_at?: string;
+          use_case_id?: string | null;
+          workshop_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "workshop_items_merged_into_id_fkey";
+            columns: ["merged_into_id"];
+            isOneToOne: false;
+            referencedRelation: "workshop_items";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "workshop_items_source_item_id_fkey";
+            columns: ["source_item_id"];
+            isOneToOne: false;
+            referencedRelation: "workshop_items";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "workshop_items_workshop_id_fkey";
+            columns: ["workshop_id"];
+            isOneToOne: false;
+            referencedRelation: "workshops";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      workshop_outcomes: {
+        Row: {
+          created_at: string;
+          generated_by: string | null;
+          id: string;
+          summary: Json;
+          updated_at: string;
+          workshop_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          generated_by?: string | null;
+          id?: string;
+          summary?: Json;
+          updated_at?: string;
+          workshop_id: string;
+        };
+        Update: {
+          created_at?: string;
+          generated_by?: string | null;
+          id?: string;
+          summary?: Json;
+          updated_at?: string;
+          workshop_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "workshop_outcomes_workshop_id_fkey";
+            columns: ["workshop_id"];
+            isOneToOne: true;
+            referencedRelation: "workshops";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      workshop_participants: {
+        Row: {
+          created_at: string;
+          display_name: string;
+          email: string | null;
+          id: string;
+          role: string;
+          user_id: string | null;
+          workshop_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          display_name: string;
+          email?: string | null;
+          id?: string;
+          role?: string;
+          user_id?: string | null;
+          workshop_id: string;
+        };
+        Update: {
+          created_at?: string;
+          display_name?: string;
+          email?: string | null;
+          id?: string;
+          role?: string;
+          user_id?: string | null;
+          workshop_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "workshop_participants_workshop_id_fkey";
+            columns: ["workshop_id"];
+            isOneToOne: false;
+            referencedRelation: "workshops";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      workshop_votes: {
+        Row: {
+          created_at: string;
+          criterion: string;
+          id: string;
+          item_id: string;
+          score: number;
+          updated_at: string;
+          voter_id: string;
+          workshop_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          criterion: string;
+          id?: string;
+          item_id: string;
+          score: number;
+          updated_at?: string;
+          voter_id: string;
+          workshop_id: string;
+        };
+        Update: {
+          created_at?: string;
+          criterion?: string;
+          id?: string;
+          item_id?: string;
+          score?: number;
+          updated_at?: string;
+          voter_id?: string;
+          workshop_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "workshop_votes_item_id_fkey";
+            columns: ["item_id"];
+            isOneToOne: false;
+            referencedRelation: "workshop_items";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "workshop_votes_workshop_id_fkey";
+            columns: ["workshop_id"];
+            isOneToOne: false;
+            referencedRelation: "workshops";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      workshops: {
+        Row: {
+          business_functions: string[];
+          client_name: string | null;
+          created_at: string;
+          created_by: string;
+          ends_on: string | null;
+          id: string;
+          objective: string | null;
+          organization_id: string | null;
+          stage: string;
+          starts_on: string | null;
+          status: string;
+          title: string;
+          updated_at: string;
+          workspace_id: string;
+        };
+        Insert: {
+          business_functions?: string[];
+          client_name?: string | null;
+          created_at?: string;
+          created_by: string;
+          ends_on?: string | null;
+          id?: string;
+          objective?: string | null;
+          organization_id?: string | null;
+          stage?: string;
+          starts_on?: string | null;
+          status?: string;
+          title: string;
+          updated_at?: string;
+          workspace_id: string;
+        };
+        Update: {
+          business_functions?: string[];
+          client_name?: string | null;
+          created_at?: string;
+          created_by?: string;
+          ends_on?: string | null;
+          id?: string;
+          objective?: string | null;
+          organization_id?: string | null;
+          stage?: string;
+          starts_on?: string | null;
+          status?: string;
+          title?: string;
+          updated_at?: string;
+          workspace_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "workshops_workspace_id_fkey";
+            columns: ["workspace_id"];
+            isOneToOne: false;
+            referencedRelation: "workspaces";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       workspace_export_preferences: {
         Row: {
           columns: string[];
@@ -3670,6 +3929,14 @@ export type Database = {
         Returns: boolean;
       };
       user_org_id: { Args: { _user_id: string }; Returns: string };
+      workshop_is_facilitator: {
+        Args: { _user_id: string; _workshop_id: string };
+        Returns: boolean;
+      };
+      workshop_is_member: {
+        Args: { _user_id: string; _workshop_id: string };
+        Returns: boolean;
+      };
       workspace_org: { Args: { _workspace_id: string }; Returns: string };
       workspace_role: {
         Args: { _user_id: string; _workspace_id: string };

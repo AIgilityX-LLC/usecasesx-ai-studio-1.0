@@ -67,6 +67,8 @@ import { Route as AppSectorsSectorRouteImport } from './routes/_app.sectors.$sec
 import { Route as AppSegmentsSegmentRouteImport } from './routes/_app.segments.$segment'
 import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
+import { Route as AppWorkshopsIndexRouteImport } from './routes/_app.workshops.index'
+import { Route as AppWorkshopsIdRouteImport } from './routes/_app.workshops.$id'
 import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
 import { Route as ApiPublicHooksErpReconciliationRouteImport } from './routes/api/public/hooks/erp-reconciliation'
 import { Route as ApiPublicHooksEvidenceCleanupRouteImport } from './routes/api/public/hooks/evidence-cleanup'
@@ -376,6 +378,16 @@ const AppUseCasesSlugRoute = AppUseCasesSlugRouteImport.update({
   path: '/use-cases/$slug',
   getParentRoute: () => AppRoute,
 } as any)
+const AppWorkshopsIndexRoute = AppWorkshopsIndexRouteImport.update({
+  id: '/workshops/',
+  path: '/workshops/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkshopsIdRoute = AppWorkshopsIdRouteImport.update({
+  id: '/workshops/$id',
+  path: '/workshops/$id',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCyberxC3gIntakeRoute = AppCyberxC3gIntakeRouteImport.update({
   id: '/cyberx/c3g/intake',
   path: '/cyberx/c3g/intake',
@@ -542,9 +554,11 @@ export interface FileRoutesByFullPath {
   '/segments/$segment': typeof AppSegmentsSegmentRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
+  '/workshops/$id': typeof AppWorkshopsIdRoute
   '/account/': typeof AppAccountIndexRoute
   '/boards/': typeof AppBoardsIndexRoute
   '/opportunities/': typeof AppOpportunitiesIndexRoute
+  '/workshops/': typeof AppWorkshopsIndexRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
@@ -618,9 +632,11 @@ export interface FileRoutesByTo {
   '/segments/$segment': typeof AppSegmentsSegmentRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
+  '/workshops/$id': typeof AppWorkshopsIdRoute
   '/account': typeof AppAccountIndexRoute
   '/boards': typeof AppBoardsIndexRoute
   '/opportunities': typeof AppOpportunitiesIndexRoute
+  '/workshops': typeof AppWorkshopsIndexRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
@@ -698,9 +714,11 @@ export interface FileRoutesById {
   '/_app/segments/$segment': typeof AppSegmentsSegmentRoute
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
+  '/_app/workshops/$id': typeof AppWorkshopsIdRoute
   '/_app/account/': typeof AppAccountIndexRoute
   '/_app/boards/': typeof AppBoardsIndexRoute
   '/_app/opportunities/': typeof AppOpportunitiesIndexRoute
+  '/_app/workshops/': typeof AppWorkshopsIndexRoute
   '/_app/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
@@ -778,9 +796,11 @@ export interface FileRouteTypes {
     | '/segments/$segment'
     | '/studio/portfolio'
     | '/use-cases/$slug'
+    | '/workshops/$id'
     | '/account/'
     | '/boards/'
     | '/opportunities/'
+    | '/workshops/'
     | '/cyberx/c3g/intake'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
@@ -854,9 +874,11 @@ export interface FileRouteTypes {
     | '/segments/$segment'
     | '/studio/portfolio'
     | '/use-cases/$slug'
+    | '/workshops/$id'
     | '/account'
     | '/boards'
     | '/opportunities'
+    | '/workshops'
     | '/cyberx/c3g/intake'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
@@ -933,9 +955,11 @@ export interface FileRouteTypes {
     | '/_app/segments/$segment'
     | '/_app/studio/portfolio'
     | '/_app/use-cases/$slug'
+    | '/_app/workshops/$id'
     | '/_app/account/'
     | '/_app/boards/'
     | '/_app/opportunities/'
+    | '/_app/workshops/'
     | '/_app/cyberx/c3g/intake'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
@@ -1381,6 +1405,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUseCasesSlugRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/workshops/': {
+      id: '/_app/workshops/'
+      path: '/workshops'
+      fullPath: '/workshops/'
+      preLoaderRoute: typeof AppWorkshopsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/workshops/$id': {
+      id: '/_app/workshops/$id'
+      path: '/workshops/$id'
+      fullPath: '/workshops/$id'
+      preLoaderRoute: typeof AppWorkshopsIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/cyberx/c3g/intake': {
       id: '/_app/cyberx/c3g/intake'
       path: '/cyberx/c3g/intake'
@@ -1629,7 +1667,9 @@ interface AppRouteChildren {
   AppSectorsSectorRoute: typeof AppSectorsSectorRoute
   AppSegmentsSegmentRoute: typeof AppSegmentsSegmentRoute
   AppUseCasesSlugRoute: typeof AppUseCasesSlugRoute
+  AppWorkshopsIdRoute: typeof AppWorkshopsIdRoute
   AppOpportunitiesIndexRoute: typeof AppOpportunitiesIndexRoute
+  AppWorkshopsIndexRoute: typeof AppWorkshopsIndexRoute
   AppCyberxC3gIntakeRoute: typeof AppCyberxC3gIntakeRoute
 }
 
@@ -1676,7 +1716,9 @@ const AppRouteChildren: AppRouteChildren = {
   AppSectorsSectorRoute: AppSectorsSectorRoute,
   AppSegmentsSegmentRoute: AppSegmentsSegmentRoute,
   AppUseCasesSlugRoute: AppUseCasesSlugRoute,
+  AppWorkshopsIdRoute: AppWorkshopsIdRoute,
   AppOpportunitiesIndexRoute: AppOpportunitiesIndexRoute,
+  AppWorkshopsIndexRoute: AppWorkshopsIndexRoute,
   AppCyberxC3gIntakeRoute: AppCyberxC3gIntakeRoute,
 }
 
@@ -1714,13 +1756,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
