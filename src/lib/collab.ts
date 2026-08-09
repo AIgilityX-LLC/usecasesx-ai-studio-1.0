@@ -198,6 +198,29 @@ export type ActivityEntry = {
   summary: string;
 };
 
+/** Timeline filter buckets. Keep these stable — the UI and tests key off them. */
+export const ACTIVITY_CATEGORIES = ["all", "notes", "review", "people", "other"] as const;
+export type ActivityCategory = (typeof ACTIVITY_CATEGORIES)[number];
+
+export const ACTIVITY_CATEGORY_LABELS: Record<ActivityCategory, string> = {
+  all: "All activity",
+  notes: "Review notes",
+  review: "Review states",
+  people: "People",
+  other: "Other changes",
+};
+
+/** Buckets one audit event type into a timeline filter category. */
+export function activityCategory(event: string): Exclude<ActivityCategory, "all"> {
+  if (event.startsWith("collab.comment.")) return "notes";
+  if (event.startsWith("collab.review_status.")) return "review";
+  if (event.startsWith("collab.assignment.") || event.startsWith("membership.")) return "people";
+  return "other";
+}
+
+/** Number of timeline entries revealed per page. */
+export const ACTIVITY_PAGE_SIZE = 10;
+
 export type WorkspaceMemberRow = {
   userId: string;
   displayName: string;
