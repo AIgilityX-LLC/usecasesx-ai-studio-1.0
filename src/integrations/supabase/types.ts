@@ -2403,6 +2403,92 @@ export type Database = {
         }
         Relationships: []
       }
+      use_case_benefits: {
+        Row: {
+          baseline_value: number | null
+          benefit_owner: string | null
+          category: string
+          confidence: string
+          created_at: string
+          created_by: string | null
+          currency: string | null
+          evidence_source: string | null
+          expected_value: number | null
+          id: string
+          kpi: string | null
+          measurement_frequency: string
+          name: string
+          notes: string | null
+          organization_id: string | null
+          period: string
+          state: string
+          target_value: number | null
+          unit_type: string
+          updated_at: string
+          use_case_id: string
+          verification_method: string
+          workspace_id: string | null
+        }
+        Insert: {
+          baseline_value?: number | null
+          benefit_owner?: string | null
+          category?: string
+          confidence?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          evidence_source?: string | null
+          expected_value?: number | null
+          id?: string
+          kpi?: string | null
+          measurement_frequency?: string
+          name: string
+          notes?: string | null
+          organization_id?: string | null
+          period?: string
+          state?: string
+          target_value?: number | null
+          unit_type?: string
+          updated_at?: string
+          use_case_id: string
+          verification_method?: string
+          workspace_id?: string | null
+        }
+        Update: {
+          baseline_value?: number | null
+          benefit_owner?: string | null
+          category?: string
+          confidence?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          evidence_source?: string | null
+          expected_value?: number | null
+          id?: string
+          kpi?: string | null
+          measurement_frequency?: string
+          name?: string
+          notes?: string | null
+          organization_id?: string | null
+          period?: string
+          state?: string
+          target_value?: number | null
+          unit_type?: string
+          updated_at?: string
+          use_case_id?: string
+          verification_method?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "use_case_benefits_use_case_id_fkey"
+            columns: ["use_case_id"]
+            isOneToOne: false
+            referencedRelation: "ai_use_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       use_case_boards: {
         Row: {
           board_type: string | null
