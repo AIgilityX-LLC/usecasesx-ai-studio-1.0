@@ -2412,6 +2412,11 @@ export type Database = {
           created_at: string
           created_by: string | null
           currency: string | null
+          erp_last_verified_at: string | null
+          erp_reference: string | null
+          erp_system: string | null
+          erp_verification_status: string
+          evidence_links: Json
           evidence_source: string | null
           expected_value: number | null
           id: string
@@ -2437,6 +2442,11 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           currency?: string | null
+          erp_last_verified_at?: string | null
+          erp_reference?: string | null
+          erp_system?: string | null
+          erp_verification_status?: string
+          evidence_links?: Json
           evidence_source?: string | null
           expected_value?: number | null
           id?: string
@@ -2462,6 +2472,11 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           currency?: string | null
+          erp_last_verified_at?: string | null
+          erp_reference?: string | null
+          erp_system?: string | null
+          erp_verification_status?: string
+          evidence_links?: Json
           evidence_source?: string | null
           expected_value?: number | null
           id?: string
