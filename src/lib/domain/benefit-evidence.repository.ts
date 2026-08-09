@@ -36,7 +36,7 @@ export async function uploadEvidenceFile(
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id;
   if (!userId) {
-    throw new DomainError("unauthorized", "Sign in to attach evidence.");
+    throw new DomainError("unauthenticated", "Sign in to attach evidence.");
   }
   const path = `${userId}/${useCaseId}/${Date.now()}-${safeName(file.name)}`;
   const result = await supabase.storage

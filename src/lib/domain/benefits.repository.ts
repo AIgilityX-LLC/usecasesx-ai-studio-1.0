@@ -8,6 +8,7 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { normalizeError, unwrapResult } from "./errors";
 import type {
   Benefit,
@@ -104,7 +105,7 @@ function toRow(input: BenefitInput) {
     measurement_frequency: input.measurementFrequency,
     benefit_owner: input.benefitOwner?.trim() || null,
     evidence_source: input.evidenceSource?.trim() || null,
-    evidence_links: input.evidenceLinks ?? [],
+    evidence_links: JSON.parse(JSON.stringify(input.evidenceLinks ?? [])) as Json,
     state: input.state,
     verification_method: input.verificationMethod,
     erp_verification_status: input.erpVerificationStatus ?? "not_configured",
