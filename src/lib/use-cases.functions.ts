@@ -23,6 +23,10 @@ const ListInput = z.object({
   timeToValue: z.array(z.string()).optional().default([]),
   deploymentModel: z.array(z.string()).optional().default([]),
   securityClassification: z.array(z.string()).optional().default([]),
+  /** Provenance labels (see `validate_use_case_provenance`). */
+  provenance: z.array(z.string()).optional().default([]),
+  /** Quality gate status. Published content is always `quality_passed`. */
+  qualityStatus: z.array(z.string()).optional().default([]),
   sort: z.enum(["recent", "impact", "maturity", "featured"]).optional().default("recent"),
   featuredOnly: z.boolean().optional().default(false),
   landingOnly: z.boolean().optional().default(false),
@@ -36,6 +40,7 @@ const SELECT = `id, slug, title, summary, organization, organization_type, regio
   value_potential, complexity, risk_level, time_to_value, visibility,
   deployment_model, security_classification, cost_range,
   is_featured, show_on_landing, display_order, published_at,
+  provenance, provenance_note, quality_status, quality_checked_at,
   use_case_industries ( industries ( slug, name ) ),
   use_case_capabilities ( ai_capabilities ( slug, name ) ),
   use_case_business_functions ( business_functions ( slug, name ) ),
@@ -125,6 +130,8 @@ export const listUseCases = createServerFn({ method: "GET" })
     if (data.deploymentModel.length) query = query.in("deployment_model", data.deploymentModel);
     if (data.securityClassification.length)
       query = query.in("security_classification", data.securityClassification);
+    if (data.provenance.length) query = query.in("provenance", data.provenance);
+    if (data.qualityStatus.length) query = query.in("quality_status", data.qualityStatus);
 
     if (data.sort === "impact")
       query = query.order("impact_score", { ascending: false, nullsFirst: false });

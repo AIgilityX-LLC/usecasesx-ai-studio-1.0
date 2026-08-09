@@ -19,6 +19,10 @@ export interface FacetState {
   roiRange: string[];
   deploymentModel: string[];
   securityClassification: string[];
+  /** Provenance labels — public verification of where a record came from. */
+  provenance: string[];
+  /** Quality-gate status — public records are always `quality_passed`. */
+  qualityStatus: string[];
 }
 
 interface Props {
