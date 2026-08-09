@@ -131,7 +131,10 @@ test.describe("workshop invitations", () => {
     await facilitatorPage.getByRole("button", { name: /create share link/i }).click();
     await facilitatorPage.waitForTimeout(2000);
     const revokedPath = await copyNewestInviteLink(facilitatorPage);
-    await facilitatorPage.getByRole("button", { name: /^revoke$/i }).first().click();
+    await facilitatorPage
+      .getByRole("button", { name: /^revoke$/i })
+      .first()
+      .click();
     await facilitatorPage.waitForTimeout(2000);
     await facilitatorContext.close();
 

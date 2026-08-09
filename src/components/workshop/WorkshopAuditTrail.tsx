@@ -72,7 +72,6 @@ export function WorkshopAuditTrail({
         ) : groups.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nothing has been recorded here yet.</p>
         ) : (
-
           <div className="space-y-5">
             {groups.map((group) => (
               <div key={group.stage} className="space-y-2">

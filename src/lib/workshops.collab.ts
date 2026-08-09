@@ -6,12 +6,7 @@
  */
 
 import { exportDeliverablePDF, type ExportDoc } from "@/lib/deliverables.export";
-import {
-  BUCKET_LABEL,
-  STAGE_META,
-  type OutcomeSummary,
-  type WorkshopStage,
-} from "@/lib/workshops";
+import { BUCKET_LABEL, STAGE_META, type OutcomeSummary, type WorkshopStage } from "@/lib/workshops";
 
 export type WorkshopInvitationRole = "facilitator" | "participant" | "observer";
 
@@ -277,4 +272,3 @@ export function downloadWorkshopAuditCSV(
   link.remove();
   URL.revokeObjectURL(url);
 }
-
