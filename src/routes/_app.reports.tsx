@@ -12,10 +12,12 @@ import {
   AUDIT_EVENTS,
   PRODUCT_EVENTS,
   recordAuditEvent,
+  recordAuditEventDetailed,
   recordProductEvent,
 } from "@/lib/telemetry";
 import {
   buildGuardedNarrative,
+  buildProvenanceSummary,
   buildPortfolioReport,
   PROVENANCE_HELP,
   PROVENANCE_LABELS,
@@ -29,6 +31,7 @@ import {
 } from "@/lib/reports/report-access";
 import { useWorkspaceContext } from "@/hooks/useWorkspaceContext";
 
+import { ExportReceipt, type ExportReceiptData } from "@/components/reports/ExportReceipt";
 import { ReportDocument } from "@/components/reports/ReportDocument";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -114,6 +117,7 @@ function ReportsPage() {
   const [generatedAt, setGeneratedAt] = useState<Date | null>(null);
   /** Narrative edits are the user's own words once touched; null = use generated. */
   const [narrativeOverride, setNarrativeOverride] = useState<string | null>(null);
+  const [receipt, setReceipt] = useState<ExportReceiptData | null>(null);
 
   useEffect(() => {
     if (session === undefined) return;
@@ -252,12 +256,18 @@ function ReportsPage() {
     }
   };
 
-  const recordExport = (
+  const provenance = useMemo(() => buildProvenanceSummary(report, items), [report, items]);
+
+  /**
+   * Appends the audit record and returns a receipt pointing at that exact row,
+   * so what the user is shown is what governance stored.
+   */
+  const recordExport = async (
     format: "pdf" | "csv" | "csv_benefits",
     filename?: string,
     denied?: string,
   ) => {
-    void recordAuditEvent({
+    const written = await recordAuditEventDetailed({
       event: AUDIT_EVENTS.exportGenerated,
       entity: { type: "report", id: portfolio?.id ?? null },
       severity: denied ? "warning" : "info",
@@ -269,7 +279,19 @@ function ReportsPage() {
         outcome: denied ? "denied" : "completed",
         denied_reason: denied ?? null,
         workspace_role: exportRole,
+        provenance: provenance.lines,
       },
+    });
+    setReceipt({
+      format,
+      auditEventId: written.auditEventId,
+      requestId: written.requestId,
+      recordedAt: written.recordedAt,
+      fileName: filename ?? null,
+      outcome: denied ? "denied" : "completed",
+      deniedReason: denied ?? null,
+      workspaceRole: exportRole ?? null,
+      provenance,
     });
     if (denied) return;
     void recordProductEvent({
@@ -283,7 +305,7 @@ function ReportsPage() {
   const runExport = (format: "pdf" | "csv" | "csv_benefits", run: () => string | void) => {
     try {
       const filename = run() ?? undefined;
-      recordExport(format, filename);
+      void recordExport(format, filename);
       if (filename) toast.success(`Exported ${filename}`);
     } catch (error) {
       const message =
@@ -292,7 +314,7 @@ function ReportsPage() {
           : error instanceof Error
             ? error.message
             : "Export failed";
-      recordExport(format, undefined, message);
+      void recordExport(format, undefined, message);
       toast.error(message);
     }
   };
@@ -473,6 +495,8 @@ function ReportsPage() {
                 : (canExportReport(exportRole, "csv") as { reason: string }).reason}
             </p>
           )}
+
+          {receipt && <ExportReceipt receipt={receipt} />}
 
           {generated && (
             <Card>

@@ -23,5 +23,19 @@ export default defineConfig({
           : undefined,
       },
     },
+    // Print/paper-fit checks are the only specs worth paying for in three
+    // engines: page breaking and text metrics differ per engine, everything
+    // else in this suite is engine-independent.
+    {
+      name: "firefox-print",
+      testMatch: /report-print-layout\.spec\.ts$/,
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "webkit-print",
+      testMatch: /report-print-layout\.spec\.ts$/,
+      use: { ...devices["Desktop Safari"] },
+    },
   ],
 });
+
