@@ -7,7 +7,7 @@
  * failed AI call never blocks completion.
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AutosaveStatus, DraftRecoveryBanner } from "@/components/ui-kit";
 import {
   clearDraft,
