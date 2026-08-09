@@ -63,7 +63,7 @@ test("raises a SARPI request, captures consent, and shows it in the queue with p
     const admin = adminClient();
     const { data } = await admin
       .from("suite_handoff_requests")
-      .select("target, request_type, status, consent, source_version, source_refs, payload")
+      .select("target, request_type, status, consent, source_version, subject_refs, payload")
       .eq("title", title)
       .maybeSingle();
 
@@ -75,8 +75,8 @@ test("raises a SARPI request, captures consent, and shows it in the queue with p
     expect(record["consent"]?.confirmed).toBe(true);
     expect(String(record["consent"]?.statement ?? "")).toContain("SARPI");
     expect(record["source_version"]?.fingerprint).toBeTruthy();
-    expect(Array.isArray(record["source_refs"])).toBe(true);
-    expect((record["source_refs"] as unknown[]).length).toBeGreaterThan(0);
+    expect(Array.isArray(record["subject_refs"])).toBe(true);
+    expect((record["subject_refs"] as unknown[]).length).toBeGreaterThan(0);
     expect(record["payload"]?.organizationName).toBe("E2E Test Organization");
   } finally {
     await session.close();
