@@ -87,7 +87,7 @@ export const assignCollaboratorFn = createServerFn({ method: "POST" })
     const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
     const { workspaceId } = await assign(context.supabase, context.userId, data);
     await writeAuditEvent(
-      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId } },
+      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId, organizationId: null } },
       {
         event: "collab.assignment.added",
         entity: { type: data.entityType, id: data.entityId },
@@ -127,7 +127,7 @@ export const setReviewStatusFn = createServerFn({ method: "POST" })
       data,
     );
     await writeAuditEvent(
-      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId } },
+      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId, organizationId: null } },
       {
         event: "collab.review_status.changed",
         entity: { type: data.entityType, id: data.entityId },
