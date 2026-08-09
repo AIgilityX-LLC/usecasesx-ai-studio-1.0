@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { EmptyState, ErrorState, CardSkeleton } from "@/components/ui-kit";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import {
   BUCKET_LABEL,
   CRITERION_LABEL,
@@ -64,8 +65,15 @@ const KIND_FOR_STAGE: Partial<Record<WorkshopStage, WorkshopItemKind>> = {
 
 export function WorkshopBoardView({ id }: { id: string }) {
   const qc = useQueryClient();
+  const session = useSupabaseSession();
   const key = ["workshop", id];
-  const board = useQuery({ queryKey: key, queryFn: () => getWorkshopBoardFn({ data: { id } }) });
+  const board = useQuery({
+    queryKey: key,
+    queryFn: () => getWorkshopBoardFn({ data: { id } }),
+    // The server fn requires a bearer token; firing it before the session
+    // resolves throws "Unauthorized: No authorization header provided".
+    enabled: Boolean(session),
+  });
   const refresh = () => void qc.invalidateQueries({ queryKey: key });
   const [stageView, setStageView] = useState<WorkshopStage | null>(null);
 
@@ -137,7 +145,19 @@ export function WorkshopBoardView({ id }: { id: string }) {
 
   const scores = useMemo(() => scoreItems(board.data?.votes ?? []), [board.data?.votes]);
 
-  if (board.isLoading) return <CardSkeleton />;
+  if (session === undefined || board.isLoading) return <CardSkeleton />;
+  if (session === null)
+    return (
+      <EmptyState
+        title="Sign in to open this workshop"
+        description="Workshop sessions are private to their participants."
+        action={
+          <Button asChild>
+            <Link to="/auth">Sign in</Link>
+          </Button>
+        }
+      />
+    );
   if (board.isError)
     return (
       <ErrorState
