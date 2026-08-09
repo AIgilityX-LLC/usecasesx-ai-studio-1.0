@@ -470,6 +470,8 @@ function PortfolioDetail({
           <PortfolioAuditTrail portfolioId={portfolio.id} />
         </CardContent>
       </Card>
+
+      <CollaborationPanel entityType="portfolio" entityId={portfolio.id} />
     </div>
   );
 }
