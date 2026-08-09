@@ -175,7 +175,7 @@ export async function listBenefitAudit(useCaseId: string): Promise<BenefitAuditE
     .eq("entity_type", "use_case_benefit")
     .eq("entity_id", useCaseId)
     .order("created_at", { ascending: false })
-    .limit(50);
+    .limit(200);
   const rows = (unwrapResult(result, { allowNull: true }) ?? []) as {
     id: string;
     event_type: string;
@@ -190,4 +190,22 @@ export async function listBenefitAudit(useCaseId: string): Promise<BenefitAuditE
     previous: row.previous_value,
     next: row.new_value,
   }));
+}
+
+/**
+ * Audit trail for a single benefit. The database trigger stamps the audit row
+ * against the parent use case, with the benefit id inside the payload, so the
+ * per-benefit view filters on that payload rather than a second table.
+ */
+export async function listBenefitAuditForBenefit(
+  useCaseId: string,
+  benefitId: string,
+): Promise<BenefitAuditEntry[]> {
+  const entries = await listBenefitAudit(useCaseId);
+  return entries.filter((entry) => {
+    const id =
+      (entry.next?.["benefit_id"] as string | undefined) ??
+      (entry.previous?.["benefit_id"] as string | undefined);
+    return id === benefitId;
+  });
 }
