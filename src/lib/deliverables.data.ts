@@ -61,7 +61,9 @@ export async function loadDeliverableVersions(
 ): Promise<DeliverableVersionRow[]> {
   const { data, error } = await supabase
     .from("use_case_deliverable_versions")
-    .select("id,deliverable_id,use_case_id,deliverable_type,version,content,status,origin,summary,created_at")
+    .select(
+      "id,deliverable_id,use_case_id,deliverable_type,version,content,status,origin,summary,created_at",
+    )
     .eq("use_case_id", useCaseId)
     .eq("deliverable_type", type)
     .order("version", { ascending: false });
