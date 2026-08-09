@@ -53,11 +53,13 @@ let counter = 0;
  */
 export async function grantPro(user: TestUser) {
   const admin = adminClient();
+  // The profile row may not exist yet (the handle_new_user trigger races with
+  // fixture setup), so upsert rather than update.
   const { error } = await admin
     .from("profiles")
-    .update({ plan_type: "pro" })
-    .eq("user_id", user.userId);
+    .upsert({ user_id: user.userId, email: user.email, plan_type: "pro" }, { onConflict: "user_id" });
   if (error) throw error;
+
 
   const { data: workspaceId, error: rpcError } = await admin.rpc("ensure_user_workspace", {
     _user_id: user.userId,
