@@ -9,7 +9,7 @@ test("dbg", async ({ browser, users }) => {
   const { page, close } = await pageAs(browser, u);
   await page.goto("/portfoliox", { waitUntil: "networkidle" });
   await page.waitForTimeout(3000);
-  console.log("BODY", (await page.locator("body").innerText()).slice(0, 400));
+  console.log("MAIN", (await page.locator("main").innerText()).slice(0,600));
   await close();
   expect(true).toBe(true);
 });
