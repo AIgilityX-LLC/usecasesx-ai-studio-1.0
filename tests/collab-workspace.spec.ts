@@ -40,10 +40,15 @@ async function openTeam(page: Page) {
 
 /** Creates an invitation and returns its /invite/<token> path. */
 async function createInvitation(page: Page, email?: string): Promise<string> {
+  const link = page.locator("code", { hasText: "/invite/" }).first();
+  const before = (await link.count()) > 0 ? (await link.innerText()).trim() : "";
   await page.getByLabel("Email (optional for a share link)").fill(email ?? "");
   await page.getByRole("button", { name: "Create invitation" }).click();
-  const link = page.locator("code", { hasText: "/invite/" }).first();
   await expect(link).toBeVisible({ timeout: 30_000 });
+  // The panel reuses the same element, so wait for a genuinely new token.
+  await expect
+    .poll(async () => (await link.innerText()).trim(), { timeout: 30_000 })
+    .not.toBe(before);
   const href = (await link.innerText()).trim();
   return new URL(href).pathname;
 }
