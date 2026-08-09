@@ -26,6 +26,12 @@ type Db = SupabaseClient<any, any, any>;
 
 /* ------------------------------------------------------------- utilities */
 
+const ENTITY_TABLES: Record<CollabEntityType, string> = {
+  opportunity: "opportunities",
+  use_case: "ai_use_cases",
+  portfolio: "portfolios",
+};
+
 /** The workspace that owns a collaboration target; also acts as an access probe. */
 export async function entityWorkspaceId(
   supabase: Db,
@@ -37,9 +43,22 @@ export async function entityWorkspaceId(
     _entity_id: entityId,
   });
   if (error) throw new Error(error.message);
-  if (!data) throw new Error("This item is not available in your workspace.");
-  return data as string;
+  if (data) return data as string;
+
+  // Older rows predate workspace tagging. Fall back to the caller's own
+  // workspace, but only when RLS already lets them see the row.
+  const visible = await supabase
+    .from(ENTITY_TABLES[entityType])
+    .select("id")
+    .eq("id", entityId)
+    .maybeSingle();
+  if (visible.error || !visible.data) {
+    throw new Error("This item is not available in your workspace.");
+  }
+  const { resolveWorkspaceId } = await import("@/lib/opportunities.server");
+  return resolveWorkspaceId(supabase);
 }
+
 
 async function displayNames(
   supabase: Db,
