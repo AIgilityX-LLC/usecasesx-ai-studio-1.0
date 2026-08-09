@@ -363,11 +363,13 @@ function RoadmapSurface() {
               }
             />
           ) : (
-            <Tabs defaultValue="stages">
+            <Tabs value={tab} onValueChange={setTab}>
               <TabsList>
                 <TabsTrigger value="stages">Now / Next / Later</TabsTrigger>
                 <TabsTrigger value="periods">By quarter</TabsTrigger>
+                <TabsTrigger value="history">Change history</TabsTrigger>
               </TabsList>
+
 
               <TabsContent value="stages" className="mt-4 space-y-4">
                 <RoadmapAnalyticsPanel analytics={analytics} scopeLabel={scopeLabel} />
