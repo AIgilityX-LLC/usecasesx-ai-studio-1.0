@@ -99,6 +99,9 @@ function UseCaseDetailPage() {
               <Link className={linkClass} to="/studio/use-case/$id/blueprint" params={{ id }}>
                 Blueprint
               </Link>
+              <Link className={linkClass} to="/studio/use-case/$id/value" params={{ id }}>
+                Value
+              </Link>
               <Link className={linkClass} to="/studio/use-case/$id/deliverables" params={{ id }}>
                 Deliverables
               </Link>
