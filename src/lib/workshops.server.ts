@@ -136,7 +136,7 @@ export async function getBoard(
   const isFacilitator =
     workshop.createdBy === userId ||
     me?.role === "facilitator" ||
-    (await isOrgManager(supabase, workshop));
+    (await isOrgManager(supabase, workshop, userId));
 
   return {
     workshop,
@@ -162,14 +162,16 @@ export async function getBoard(
   };
 }
 
-async function isOrgManager(supabase: Db, workshop: Workshop): Promise<boolean> {
+/** Org owners/admins of the hosting organization can facilitate any session. */
+async function isOrgManager(supabase: Db, workshop: Workshop, userId: string): Promise<boolean> {
   if (!workshop.organizationId) return false;
   const { data } = await supabase.rpc("org_role", {
-    _user_id: workshop.createdBy,
+    _user_id: userId,
     _org_id: workshop.organizationId,
   });
   return data === "owner" || data === "admin";
 }
+
 
 /** RLS already blocks writes; this yields a readable message instead of a 403. */
 export async function assertFacilitator(

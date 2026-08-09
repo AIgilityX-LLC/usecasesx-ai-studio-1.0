@@ -4,21 +4,30 @@
  */
 
 import { useQuery } from "@tanstack/react-query";
-import { History } from "lucide-react";
+import { Download, FileText, History } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AUDIT_ACTION_LABEL, groupAuditByStage } from "@/lib/workshops.collab";
+import {
+  AUDIT_ACTION_LABEL,
+  downloadWorkshopAuditCSV,
+  downloadWorkshopAuditPDF,
+  groupAuditByStage,
+} from "@/lib/workshops.collab";
 import { STAGE_META, type WorkshopStage } from "@/lib/workshops";
 import { getWorkshopAuditFn } from "@/lib/workshops.functions";
 
 export function WorkshopAuditTrail({
   workshopId,
   stage,
+  workshopTitle = "Workshop",
 }: {
   workshopId: string;
   /** When set, only this stage's entries are shown. */
   stage?: WorkshopStage;
+  /** Used to name exported files. */
+  workshopTitle?: string;
 }) {
   const audit = useQuery({
     queryKey: ["workshop-audit", workshopId],
@@ -26,14 +35,34 @@ export function WorkshopAuditTrail({
   });
 
   const groups = groupAuditByStage(audit.data ?? []).filter((g) => !stage || g.stage === stage);
+  const visible = groups.flatMap((g) => g.entries);
+  const exportTitle = stage ? `${workshopTitle} — ${STAGE_META[stage].label}` : workshopTitle;
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2">
         <CardTitle className="flex items-center gap-2 text-base">
           <History className="h-4 w-4" /> Audit trail
           {stage ? ` — ${STAGE_META[stage].label}` : ""}
         </CardTitle>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={visible.length === 0}
+            onClick={() => downloadWorkshopAuditCSV(visible, exportTitle)}
+          >
+            <Download className="mr-2 h-4 w-4" /> Export CSV
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={visible.length === 0}
+            onClick={() => downloadWorkshopAuditPDF(visible, exportTitle)}
+          >
+            <FileText className="mr-2 h-4 w-4" /> Export PDF
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         {audit.isLoading ? (

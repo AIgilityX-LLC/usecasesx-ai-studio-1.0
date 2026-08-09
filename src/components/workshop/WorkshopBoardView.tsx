@@ -2,16 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import {
-  ArrowRight,
-  Check,
-  Download,
-  GitMerge,
-  Loader2,
-  Plus,
-  Trash2,
-  Users,
-} from "lucide-react";
+import { ArrowRight, Check, Download, GitMerge, Loader2, Plus, Trash2, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,7 +54,6 @@ import {
 import { downloadWorkshopOutcomePDF } from "@/lib/workshops.collab";
 import { WorkshopInvitePanel } from "@/components/workshop/WorkshopInvitePanel";
 import { WorkshopAuditTrail } from "@/components/workshop/WorkshopAuditTrail";
-
 
 const KIND_FOR_STAGE: Partial<Record<WorkshopStage, WorkshopItemKind>> = {
   context: "context",
@@ -329,9 +319,8 @@ export function WorkshopBoardView({ id }: { id: string }) {
 
       {viewer.isFacilitator && active === "context" && <WorkshopInvitePanel workshopId={id} />}
 
-      <WorkshopAuditTrail workshopId={id} stage={active} />
+      <WorkshopAuditTrail workshopId={id} stage={active} workshopTitle={workshop.title} />
     </div>
-
   );
 }
 
