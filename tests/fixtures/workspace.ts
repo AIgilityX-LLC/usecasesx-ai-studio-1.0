@@ -69,7 +69,6 @@ export async function grantPro(user: TestUser) {
   );
   if (error) throw error;
 
-
   const { data: workspaceId, error: rpcError } = await admin.rpc("ensure_user_workspace", {
     _user_id: user.userId,
   });

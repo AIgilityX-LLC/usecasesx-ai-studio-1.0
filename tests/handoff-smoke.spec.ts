@@ -105,9 +105,6 @@ test.describe("handoffs smoke", () => {
       } else {
         expect(String(auditRow.action ?? "")).toContain("export");
       }
-
-
-
     } finally {
       await close();
     }

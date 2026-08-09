@@ -24,9 +24,7 @@ async function visiblePortfolios(page: Page): Promise<string[]> {
   await expect(picker).toBeVisible({ timeout: 30_000 });
   await picker.click();
   const options = page.getByRole("option");
-  await expect
-    .poll(async () => (await options.count()) >= 0, { timeout: 15_000 })
-    .toBe(true);
+  await expect.poll(async () => (await options.count()) >= 0, { timeout: 15_000 }).toBe(true);
   const names = await options.allInnerTexts();
   await page.keyboard.press("Escape");
   return names.map((n) => n.trim());
@@ -180,4 +178,3 @@ test.describe("phase 3: private report access", () => {
     expect(leakedShared ?? [], "workspace reports must not leak cross-workspace").toHaveLength(0);
   });
 });
-
