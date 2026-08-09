@@ -143,75 +143,85 @@ async function fetchProData(userId: string): Promise<ProData> {
     });
   }
 
-  const portfolios: Portfolio[] = [];
-  for (const p of portfolioRows as any[]) {
-    const slugs: string[] = [];
-    const entries: PortfolioEntry[] = [];
-    for (const item of (p.portfolio_items ?? []) as any[]) {
-      const slug = item.use_cases?.slug as string | undefined;
-      if (slug) {
-        slugs.push(slug);
-        slugToId[slug] = item.use_case_id;
-      }
-      entries.push({
-        useCaseId: item.use_case_id,
-        useCaseSlug: slug,
-        useCaseTitle: (item.use_cases?.title as string | undefined) ?? slug,
-        rank: item.rank ?? null,
-        decision: (item.decision ?? "under_review") as PortfolioItemDecision,
-        targetPeriod: item.target_period ?? undefined,
-        fundingState: (item.funding_state ?? "unfunded") as FundingState,
-        nextAction: item.next_action ?? undefined,
-        deliveryStage: (item.delivery_stage ?? "unscheduled") as DeliveryStage,
-        plannedStartDate: item.planned_start_date ?? undefined,
-        plannedEndDate: item.planned_end_date ?? undefined,
-        milestone: item.milestone ?? undefined,
-        deliveryOwner: item.delivery_owner ?? undefined,
-        dependsOn: (item.depends_on ?? []) as string[],
-        blockedReason: item.blocked_reason ?? undefined,
-        notes: item.notes ?? undefined,
-        reviewNotes: item.review_notes ?? undefined,
-        lastReviewedAt: item.last_reviewed_at ?? undefined,
-        status: item.use_cases?.status ?? undefined,
-        valuePotential: item.use_cases?.value_potential ?? undefined,
-        complexity: item.use_cases?.complexity ?? undefined,
-        riskLevel: item.use_cases?.risk_level ?? undefined,
-        timeToValue: item.use_cases?.time_to_value ?? undefined,
-        functionName: item.use_cases?.function_name ?? undefined,
-        studioUseCaseId: item.studio_use_case_id ?? undefined,
-        addedAt: item.added_at,
-        updatedAt: item.updated_at ?? item.added_at,
-      });
-    }
-    entries.sort((a, b) => {
-      const ar = a.rank ?? Number.MAX_SAFE_INTEGER;
-      const br = b.rank ?? Number.MAX_SAFE_INTEGER;
-      if (ar !== br) return ar - br;
-      return (a.useCaseTitle ?? "").localeCompare(b.useCaseTitle ?? "");
-    });
-    portfolios.push({
-      id: p.id,
-      name: p.name,
-      type: (p.portfolio_type ?? "Custom Portfolio") as PortfolioType,
-      status: (p.status ?? "Draft") as PortfolioStatus,
-      objective: p.objective ?? undefined,
-      targetDepartment: p.target_department ?? undefined,
-      targetQuarter: p.target_quarter ?? undefined,
-      visibility: (p.visibility ?? "workspace") as PortfolioVisibility,
-      reviewCadence: (p.review_cadence ?? undefined) as ReviewCadence | undefined,
-      organizationUnitId: p.organization_unit_id ?? undefined,
-      parentPortfolioId: p.parent_portfolio_id ?? undefined,
-      useCaseSlugs: slugs,
-      entries,
-      reviewNotes: p.review_notes ?? undefined,
-      lastReviewedAt: p.last_reviewed_at ?? undefined,
-      createdAt: p.created_at,
-      updatedAt: p.updated_at ?? p.created_at,
-    });
-  }
+  const portfolios: Portfolio[] = (portfolioRows as any[]).map((p) =>
+    mapPortfolioRow(p, slugToId),
+  );
 
   return { saved, portfolios, slugToId, useCaseContent };
 }
+
+/**
+ * Map a raw `portfolios` row (with its joined items) onto the shared
+ * `Portfolio` shape. Exported so surfaces that read portfolios beyond the
+ * signed-in user's own rows — the workspace-aware reports picker, for one —
+ * present exactly the same object the rest of the product works with.
+ */
+export function mapPortfolioRow(p: any, slugToId?: Record<string, string>): Portfolio {
+  const slugs: string[] = [];
+  const entries: PortfolioEntry[] = [];
+  for (const item of (p.portfolio_items ?? []) as any[]) {
+    const slug = item.use_cases?.slug as string | undefined;
+    if (slug) {
+      slugs.push(slug);
+      if (slugToId) slugToId[slug] = item.use_case_id;
+    }
+    entries.push({
+      useCaseId: item.use_case_id,
+      useCaseSlug: slug,
+      useCaseTitle: (item.use_cases?.title as string | undefined) ?? slug,
+      rank: item.rank ?? null,
+      decision: (item.decision ?? "under_review") as PortfolioItemDecision,
+      targetPeriod: item.target_period ?? undefined,
+      fundingState: (item.funding_state ?? "unfunded") as FundingState,
+      nextAction: item.next_action ?? undefined,
+      deliveryStage: (item.delivery_stage ?? "unscheduled") as DeliveryStage,
+      plannedStartDate: item.planned_start_date ?? undefined,
+      plannedEndDate: item.planned_end_date ?? undefined,
+      milestone: item.milestone ?? undefined,
+      deliveryOwner: item.delivery_owner ?? undefined,
+      dependsOn: (item.depends_on ?? []) as string[],
+      blockedReason: item.blocked_reason ?? undefined,
+      notes: item.notes ?? undefined,
+      reviewNotes: item.review_notes ?? undefined,
+      lastReviewedAt: item.last_reviewed_at ?? undefined,
+      status: item.use_cases?.status ?? undefined,
+      valuePotential: item.use_cases?.value_potential ?? undefined,
+      complexity: item.use_cases?.complexity ?? undefined,
+      riskLevel: item.use_cases?.risk_level ?? undefined,
+      timeToValue: item.use_cases?.time_to_value ?? undefined,
+      functionName: item.use_cases?.function_name ?? undefined,
+      studioUseCaseId: item.studio_use_case_id ?? undefined,
+      addedAt: item.added_at,
+      updatedAt: item.updated_at ?? item.added_at,
+    });
+  }
+  entries.sort((a, b) => {
+    const ar = a.rank ?? Number.MAX_SAFE_INTEGER;
+    const br = b.rank ?? Number.MAX_SAFE_INTEGER;
+    if (ar !== br) return ar - br;
+    return (a.useCaseTitle ?? "").localeCompare(b.useCaseTitle ?? "");
+  });
+  return {
+    id: p.id,
+    name: p.name,
+    type: (p.portfolio_type ?? "Custom Portfolio") as PortfolioType,
+    status: (p.status ?? "Draft") as PortfolioStatus,
+    objective: p.objective ?? undefined,
+    targetDepartment: p.target_department ?? undefined,
+    targetQuarter: p.target_quarter ?? undefined,
+    visibility: (p.visibility ?? "workspace") as PortfolioVisibility,
+    reviewCadence: (p.review_cadence ?? undefined) as ReviewCadence | undefined,
+    organizationUnitId: p.organization_unit_id ?? undefined,
+    parentPortfolioId: p.parent_portfolio_id ?? undefined,
+    useCaseSlugs: slugs,
+    entries,
+    reviewNotes: p.review_notes ?? undefined,
+    lastReviewedAt: p.last_reviewed_at ?? undefined,
+    createdAt: p.created_at,
+    updatedAt: p.updated_at ?? p.created_at,
+  };
+}
+
 
 async function resolveSlugId(slug: string, cache: Record<string, string>): Promise<string | null> {
   if (cache[slug]) return cache[slug];
