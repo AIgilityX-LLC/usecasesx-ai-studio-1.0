@@ -17,7 +17,9 @@ import {
   AUDIT_EVENTS,
   PRODUCT_EVENTS,
   recordAuditEvent,
+  recordAuditEventDetailed,
   recordProductEvent,
+  type AuditEventReceipt,
 } from "@/lib/telemetry";
 import {
   buildConsent,
@@ -32,6 +34,7 @@ import {
   type HandoffStatus,
   type HandoffTarget,
 } from "@/lib/handoffs/handoff.model";
+import { toStatusEvent, type HandoffStatusEvent } from "@/lib/handoffs/handoff.analytics";
 
 const TABLE = "suite_handoff_requests";
 
@@ -241,4 +244,117 @@ export async function assignHandoffOwner(id: string, ownerUserId: string | null)
     source: "handoffs",
   });
   return mapRow(row);
+}
+
+/* -------------------------------------------------------- status history */
+
+/**
+ * Recorded status moves for the workspace's handoff requests, read back from
+ * the append-only audit log. Analytics never invent a transition: if it is not
+ * in `audit_events`, it did not happen as far as this surface is concerned.
+ */
+export async function listHandoffStatusEvents(
+  workspaceId: string,
+  options: { sinceDays?: number; limit?: number } = {},
+): Promise<HandoffStatusEvent[]> {
+  const since = new Date(
+    Date.now() - Math.max(1, options.sinceDays ?? 30) * 86_400_000,
+  ).toISOString();
+  const rows =
+    (unwrapResult(
+      await supabase
+        .from("audit_events")
+        .select("entity_id, created_at, previous_value, new_value, actor_id, event_type")
+        .eq("workspace_id", workspaceId)
+        .eq("entity_type", "suite_handoff_request")
+        .gte("created_at", since)
+        .order("created_at", { ascending: true })
+        .limit(options.limit ?? 1000),
+      { allowNull: true },
+    ) as any[] | null) ?? [];
+  return rows.map((row) => toStatusEvent(row));
+}
+
+/* ----------------------------------------------------------- bulk actions */
+
+export type BulkStatusOutcome = {
+  updated: HandoffRequest[];
+  skipped: { id: string; title: string; reason: string }[];
+};
+
+/**
+ * Apply one status move across many requests. Each request is validated
+ * individually against the transition table, so an illegal move on one row
+ * never silently corrupts the rest of the selection — it is reported back.
+ */
+export async function bulkUpdateHandoffStatus(input: {
+  requests: HandoffRequest[];
+  nextStatus: HandoffStatus;
+  note?: string;
+}): Promise<BulkStatusOutcome> {
+  const outcome: BulkStatusOutcome = { updated: [], skipped: [] };
+  if (statusNoteRequired(input.nextStatus) && !input.note?.trim()) {
+    throw new DomainError("validation", "Add a reason before declining these requests.");
+  }
+  for (const request of input.requests) {
+    if (!canTransition(request.status, input.nextStatus)) {
+      outcome.skipped.push({
+        id: request.id,
+        title: request.title,
+        reason: `Cannot move from ${request.status.replace("_", " ")}.`,
+      });
+      continue;
+    }
+    try {
+      outcome.updated.push(
+        await updateHandoffStatus({
+          id: request.id,
+          nextStatus: input.nextStatus,
+          note: input.note ?? "",
+        }),
+      );
+    } catch (error) {
+      outcome.skipped.push({
+        id: request.id,
+        title: request.title,
+        reason: error instanceof Error ? error.message : "Update failed.",
+      });
+    }
+  }
+  return outcome;
+}
+
+/* --------------------------------------------------------- export receipt */
+
+/**
+ * Append the audit row behind a single-request export and hand the caller its
+ * identity, so the surface can show a receipt that points at the real record.
+ */
+export async function recordHandoffExport(input: {
+  request: HandoffRequest;
+  format: "pdf" | "csv";
+  fileName: string | null;
+  outcome: "completed" | "denied";
+  deniedReason?: string | null;
+  workspaceRole: string | null;
+  provenance: string[];
+}): Promise<AuditEventReceipt> {
+  return recordAuditEventDetailed({
+    event: AUDIT_EVENTS.exportGenerated,
+    entity: { type: "suite_handoff_request", id: input.request.id },
+    next: {
+      format: input.format,
+      filename: input.fileName,
+      outcome: input.outcome,
+      deniedReason: input.deniedReason ?? null,
+      role: input.workspaceRole,
+      target: input.request.target,
+      status: input.request.status,
+      sourceFingerprint: input.request.sourceVersion?.fingerprint ?? null,
+      consentConfirmed: input.request.consent?.confirmed ?? false,
+      provenance: input.provenance,
+    },
+    severity: input.outcome === "denied" ? "warning" : "info",
+    source: "handoffs",
+  });
 }

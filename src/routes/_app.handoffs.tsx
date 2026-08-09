@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowRight, Info, Loader2, Send } from "lucide-react";
+import { Info, Loader2, Send } from "lucide-react";
 
 import { RequirePlan } from "@/components/RequirePlan";
-import { PageHeader, EmptyState, ErrorState, LoadingSkeleton } from "@/components/ui-kit";
+import { PageHeader, ErrorState, LoadingSkeleton } from "@/components/ui-kit";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,16 +23,21 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useWorkspaceContext } from "@/hooks/useWorkspaceContext";
 import { HandoffRequestDialog } from "@/components/handoffs/HandoffRequestDialog";
-import { listHandoffRequests, updateHandoffStatus } from "@/lib/domain/handoffs.repository";
+import { HandoffAnalyticsPanel } from "@/components/handoffs/HandoffAnalyticsPanel";
+import { HandoffExportDialog } from "@/components/handoffs/HandoffExportDialog";
+import { HandoffQueue } from "@/components/handoffs/HandoffQueue";
+import {
+  bulkUpdateHandoffStatus,
+  listHandoffRequests,
+  listHandoffStatusEvents,
+  updateHandoffStatus,
+} from "@/lib/domain/handoffs.repository";
 import {
   deliveryStatement,
   HANDOFF_STATUS_META,
   HANDOFF_TARGET_META,
   HANDOFF_TARGET_ORDER,
   makeSourceRef,
-  nextStatuses,
-  requestTypeLabel,
-  sourceHasDrifted,
   statusNoteRequired,
   summarizeQueue,
   type HandoffRequest,
@@ -70,19 +75,6 @@ function HandoffsRoute() {
   );
 }
 
-function toneClass(tone: "neutral" | "info" | "positive" | "warning") {
-  switch (tone) {
-    case "positive":
-      return "border-primary/40 text-primary";
-    case "warning":
-      return "border-destructive/40 text-destructive";
-    case "info":
-      return "border-accent-foreground/30 text-accent-foreground";
-    default:
-      return "border-border text-muted-foreground";
-  }
-}
-
 function HandoffsSurface() {
   const { data: context, isLoading: contextLoading } = useWorkspaceContext();
   const workspaceId = context?.workspace?.id ?? null;
@@ -95,10 +87,18 @@ function HandoffsSurface() {
     next: HandoffStatus;
   } | null>(null);
   const [note, setNote] = useState("");
+  const [exportTarget, setExportTarget] = useState<HandoffRequest | null>(null);
 
   const requestsQuery = useQuery({
     queryKey: ["handoff-requests", workspaceId],
     queryFn: () => listHandoffRequests(workspaceId as string),
+    enabled: Boolean(workspaceId),
+  });
+
+  /** Status moves come from the audit log, so analytics never invent a transition. */
+  const eventsQuery = useQuery({
+    queryKey: ["handoff-status-events", workspaceId],
+    queryFn: () => listHandoffStatusEvents(workspaceId as string, { sinceDays: 30 }),
     enabled: Boolean(workspaceId),
   });
 
@@ -131,11 +131,41 @@ function HandoffsSurface() {
     onSuccess: () => {
       toast.success("Request updated");
       queryClient.invalidateQueries({ queryKey: ["handoff-requests"] });
+      queryClient.invalidateQueries({ queryKey: ["handoff-status-events"] });
       setStatusTarget(null);
       setNote("");
     },
     onError: (error: unknown) => {
       toast.error("Could not update the request", {
+        description: error instanceof Error ? error.message : undefined,
+      });
+    },
+  });
+
+  /**
+   * A bulk move validates each row against the same transition table as a
+   * single move. Rows that cannot legally move are reported back rather than
+   * forced, so a mixed selection never quietly corrupts part of the queue.
+   */
+  const bulkMutation = useMutation({
+    mutationFn: async (input: { requests: HandoffRequest[]; nextStatus: HandoffStatus }) =>
+      bulkUpdateHandoffStatus({ requests: input.requests, nextStatus: input.nextStatus }),
+    onSuccess: (outcome) => {
+      queryClient.invalidateQueries({ queryKey: ["handoff-requests"] });
+      queryClient.invalidateQueries({ queryKey: ["handoff-status-events"] });
+      if (outcome.updated.length > 0) {
+        toast.success(
+          `${outcome.updated.length} request${outcome.updated.length === 1 ? "" : "s"} updated`,
+        );
+      }
+      if (outcome.skipped.length > 0) {
+        toast.warning(`${outcome.skipped.length} skipped`, {
+          description: outcome.skipped.map((s) => `${s.title}: ${s.reason}`).join(" · "),
+        });
+      }
+    },
+    onError: (error: unknown) => {
+      toast.error("Could not update those requests", {
         description: error instanceof Error ? error.message : undefined,
       });
     },
@@ -192,28 +222,28 @@ function HandoffsSurface() {
         })}
       </div>
 
-      <Tabs defaultValue="open">
+      <Tabs defaultValue="queue">
         <TabsList>
-          <TabsTrigger value="open">Open ({summary.open})</TabsTrigger>
-          <TabsTrigger value="all">All ({summary.total})</TabsTrigger>
+          <TabsTrigger value="queue">Queue ({summary.total})</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
-        <TabsContent value="open" className="mt-4">
-          <RequestList
-            requests={requests.filter((r) => nextStatuses(r.status).length > 0)}
+        <TabsContent value="queue" className="mt-4">
+          <HandoffQueue
+            requests={requests}
+            currentUserId={context?.userId ?? null}
+            busy={statusMutation.isPending || bulkMutation.isPending}
             onStatusChange={(request, next) => {
               setStatusTarget({ request, next });
               setNote("");
             }}
+            onBulkStatus={(selection, next) =>
+              bulkMutation.mutate({ requests: selection, nextStatus: next })
+            }
+            onExport={(request) => setExportTarget(request)}
           />
         </TabsContent>
-        <TabsContent value="all" className="mt-4">
-          <RequestList
-            requests={requests}
-            onStatusChange={(request, next) => {
-              setStatusTarget({ request, next });
-              setNote("");
-            }}
-          />
+        <TabsContent value="analytics" className="mt-4">
+          <HandoffAnalyticsPanel requests={requests} events={eventsQuery.data ?? []} />
         </TabsContent>
       </Tabs>
 
@@ -276,86 +306,15 @@ function HandoffsSurface() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
-}
 
-export function RequestList({
-  requests,
-  onStatusChange,
-}: {
-  requests: HandoffRequest[];
-  onStatusChange: (request: HandoffRequest, next: HandoffStatus) => void;
-}) {
-  if (requests.length === 0) {
-    return (
-      <EmptyState
-        title="No requests here yet"
-        description="Raise a request from one of the services above, or from a use case in the Studio."
-      />
-    );
-  }
-
-  return (
-    <div className="space-y-3">
-      {requests.map((request) => {
-        const statusMeta = HANDOFF_STATUS_META[request.status];
-        const drifted = sourceHasDrifted(request.sourceVersion, request.sourceRefs);
-        return (
-          <Card key={request.id}>
-            <CardHeader className="pb-3">
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <div>
-                  <CardTitle className="text-base">{request.title}</CardTitle>
-                  <CardDescription>
-                    {HANDOFF_TARGET_META[request.target].label} ·{" "}
-                    {requestTypeLabel(request.target, request.requestType)}
-                  </CardDescription>
-                </div>
-                <Badge variant="outline" className={toneClass(statusMeta.tone)}>
-                  {statusMeta.label}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              {request.summary && <p className="text-muted-foreground">{request.summary}</p>}
-              <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                <span>Raised {new Date(request.createdAt).toLocaleString()}</span>
-                <span>·</span>
-                <span>
-                  {request.sourceRefs.length} reference
-                  {request.sourceRefs.length === 1 ? "" : "s"}
-                </span>
-                <span>·</span>
-                <span>Source version {request.sourceVersion?.fingerprint ?? "unknown"}</span>
-                <span>·</span>
-                <span>{request.deliveryMode === "endpoint" ? "Sent" : "Queued"}</span>
-              </div>
-              {drifted && (
-                <p className="text-xs text-destructive">
-                  The referenced records have changed since this request was raised.
-                </p>
-              )}
-              {request.statusNote && (
-                <p className="rounded-md bg-muted p-2 text-xs">{request.statusNote}</p>
-              )}
-              <div className="flex flex-wrap gap-2">
-                {nextStatuses(request.status).map((next) => (
-                  <Button
-                    key={next}
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onStatusChange(request, next)}
-                  >
-                    {HANDOFF_STATUS_META[next].label}
-                    <ArrowRight className="ml-2 h-3 w-3" aria-hidden="true" />
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })}
+      {exportTarget && (
+        <HandoffExportDialog
+          request={exportTarget}
+          workspaceRole={context?.workspaceRole ?? null}
+          open
+          onOpenChange={(open) => !open && setExportTarget(null)}
+        />
+      )}
     </div>
   );
 }
