@@ -348,6 +348,11 @@ function RoadmapSurface() {
             />
           </div>
 
+          <PortfolioValueSummary
+            title="Value in this view"
+            studioUseCaseIds={items.map((item) => item.entry.studioUseCaseId)}
+          />
+
           {items.length === 0 ? (
             <EmptyState
               title="No use cases to sequence"
