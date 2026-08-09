@@ -45,7 +45,6 @@ import {
   type HandoffTarget,
 } from "@/lib/handoffs/handoff.model";
 
-
 export const Route = createFileRoute("/_app/handoffs")({
   head: () => ({
     meta: [
@@ -76,7 +75,6 @@ function HandoffsRoute() {
   );
 }
 
-
 function HandoffsSurface() {
   const { data: context, isLoading: contextLoading } = useWorkspaceContext();
   const workspaceId = context?.workspace?.id ?? null;
@@ -106,7 +104,6 @@ function HandoffsSurface() {
 
   const requests = useMemo(() => requestsQuery.data ?? [], [requestsQuery.data]);
   const summary = useMemo(() => summarizeQueue(requests), [requests]);
-
 
   /**
    * A workspace-level request references the workspace itself. Surfaces that
@@ -173,8 +170,6 @@ function HandoffsSurface() {
       });
     },
   });
-
-
 
   if (contextLoading || requestsQuery.isLoading) return <LoadingSkeleton />;
   if (requestsQuery.isError) {
@@ -252,7 +247,6 @@ function HandoffsSurface() {
         </TabsContent>
       </Tabs>
 
-
       {dialogTarget && (
         <HandoffRequestDialog
           open
@@ -322,6 +316,5 @@ function HandoffsSurface() {
         />
       )}
     </div>
-
   );
 }

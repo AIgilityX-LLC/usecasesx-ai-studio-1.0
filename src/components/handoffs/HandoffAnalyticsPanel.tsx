@@ -14,10 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { EmptyState } from "@/components/ui-kit";
-import {
-  buildHandoffAnalytics,
-  type HandoffStatusEvent,
-} from "@/lib/handoffs/handoff.analytics";
+import { buildHandoffAnalytics, type HandoffStatusEvent } from "@/lib/handoffs/handoff.analytics";
 import type { HandoffRequest } from "@/lib/handoffs/handoff.model";
 
 export function HandoffAnalyticsPanel({
@@ -55,9 +52,7 @@ export function HandoffAnalyticsPanel({
         <Metric
           label="Median hours to complete"
           value={
-            analytics.medianHoursToComplete === null
-              ? "—"
-              : String(analytics.medianHoursToComplete)
+            analytics.medianHoursToComplete === null ? "—" : String(analytics.medianHoursToComplete)
           }
           testId="metric-median"
         />
@@ -144,7 +139,11 @@ export function HandoffAnalyticsPanel({
           ) : (
             <ul className="space-y-3" data-testid="handoff-warnings">
               {analytics.warnings.map((warning) => (
-                <li key={warning.type} className="space-y-1" data-testid={`warning-${warning.type}`}>
+                <li
+                  key={warning.type}
+                  className="space-y-1"
+                  data-testid={`warning-${warning.type}`}
+                >
                   <div className="flex items-baseline justify-between gap-3">
                     <span className="text-sm font-medium">{warning.label}</span>
                     <Badge

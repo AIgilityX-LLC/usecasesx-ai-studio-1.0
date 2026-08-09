@@ -94,9 +94,9 @@ describe("applyQueueFilters", () => {
   });
 
   it("matches a source version fingerprint by prefix, case-insensitively", () => {
-    expect(applyQueueFilters(rows, filters({ sourceVersion: "ZZZ" }), ME).map((r) => r.id)).toEqual([
-      "b",
-    ]);
+    expect(applyQueueFilters(rows, filters({ sourceVersion: "ZZZ" }), ME).map((r) => r.id)).toEqual(
+      ["b"],
+    );
   });
 
   it("searches title, summary, request type and reference labels", () => {
@@ -123,13 +123,21 @@ describe("commonNextStatuses", () => {
   });
 
   it("offers only moves legal for every selected request", () => {
-    const mixed = [request({ id: "a", status: "queued" }), request({ id: "b", status: "accepted" })];
+    const mixed = [
+      request({ id: "a", status: "queued" }),
+      request({ id: "b", status: "accepted" }),
+    ];
     const shared = commonNextStatuses(mixed);
     expect(shared).not.toContain("in_review");
     for (const status of shared) {
-      expect(["completed", "cancelled", "declined", "dispatched", "in_review", "accepted"]).toContain(
-        status,
-      );
+      expect([
+        "completed",
+        "cancelled",
+        "declined",
+        "dispatched",
+        "in_review",
+        "accepted",
+      ]).toContain(status);
     }
   });
 

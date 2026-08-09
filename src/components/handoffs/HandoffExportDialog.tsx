@@ -182,7 +182,11 @@ export function HandoffExportDialog({
                 value={receipt.recordedAt ? new Date(receipt.recordedAt).toLocaleString() : "—"}
                 testId="receipt-recorded-at"
               />
-              <Row label="Your role" value={receipt.role ?? "no membership"} testId="receipt-role" />
+              <Row
+                label="Your role"
+                value={receipt.role ?? "no membership"}
+                testId="receipt-role"
+              />
             </dl>
             {receipt.deniedReason && (
               <p className="text-sm text-destructive" data-testid="receipt-denied-reason">

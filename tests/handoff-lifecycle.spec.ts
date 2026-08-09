@@ -35,10 +35,7 @@ test("raises a SARPI request, captures consent, and shows it in the queue with p
     await openHandoffs(page);
 
     const title = `Readiness review ${Date.now().toString(36)}`;
-    await page
-      .getByRole("button", { name: "Request" })
-      .first()
-      .click();
+    await page.getByRole("button", { name: "Request" }).first().click();
 
     await expect(page.getByText("What are you asking for?")).toBeVisible({ timeout: 20_000 });
     await chooseRequestType(page, "AI readiness assessment");
@@ -106,10 +103,7 @@ test("a confidential target refuses to send until sharing consent is confirmed",
     await page.locator("#c3g-ref").fill("UC-001");
     await page.locator("#c3g-stage").click();
     await page.getByRole("option", { name: "Pilot" }).click();
-    await page
-      .locator("label", { hasText: "Model drift" })
-      .first()
-      .click();
+    await page.locator("label", { hasText: "Model drift" }).first().click();
 
     const consent = page.getByLabel("Confirm sharing consent");
     await expect(consent).toBeVisible();
