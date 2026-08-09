@@ -74,7 +74,6 @@ const PERSONAS = [
   },
 ];
 
-
 export const Route = createFileRoute("/demo-login")({
   head: () => ({
     meta: [
@@ -207,7 +206,6 @@ function DemoLoginPage() {
             </ul>
           </section>
         ))}
-
 
         <p className="text-xs text-muted-foreground">
           Using your own account instead?{" "}

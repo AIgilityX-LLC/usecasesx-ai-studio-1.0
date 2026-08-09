@@ -283,7 +283,10 @@ for (const persona of PERSONAS) {
   }
   for (const e of ents ?? []) {
     if (e.plan_code !== persona.plan) {
-      await admin.from("entitlements").update({ revoked_at: new Date().toISOString() }).eq("id", e.id);
+      await admin
+        .from("entitlements")
+        .update({ revoked_at: new Date().toISOString() })
+        .eq("id", e.id);
     }
   }
 
