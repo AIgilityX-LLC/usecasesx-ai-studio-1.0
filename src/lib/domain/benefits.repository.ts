@@ -8,6 +8,7 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { normalizeError, unwrapResult } from "./errors";
 import type {
   Benefit,
@@ -16,13 +17,15 @@ import type {
   BenefitInput,
   BenefitPeriod,
   BenefitState,
+  BenefitEvidenceItem,
   BenefitUnitType,
   BenefitVerificationMethod,
+  ErpVerificationStatus,
   MeasurementFrequency,
 } from "@/lib/value/benefits.model";
 
 const COLUMNS =
-  "id, use_case_id, name, category, kpi, unit_type, currency, period, baseline_value, target_value, expected_value, confidence, measurement_frequency, benefit_owner, evidence_source, state, verification_method, notes, created_at, updated_at";
+  "id, use_case_id, name, category, kpi, unit_type, currency, period, baseline_value, target_value, expected_value, confidence, measurement_frequency, benefit_owner, evidence_source, evidence_links, state, verification_method, erp_verification_status, erp_system, erp_reference, erp_last_verified_at, notes, created_at, updated_at";
 
 type Row = {
   id: string;
@@ -40,8 +43,13 @@ type Row = {
   measurement_frequency: string;
   benefit_owner: string | null;
   evidence_source: string | null;
+  evidence_links: unknown;
   state: string;
   verification_method: string;
+  erp_verification_status: string | null;
+  erp_system: string | null;
+  erp_reference: string | null;
+  erp_last_verified_at: string | null;
   notes: string | null;
   created_at: string;
   updated_at: string;
@@ -64,8 +72,16 @@ function toBenefit(row: Row): Benefit {
     measurementFrequency: row.measurement_frequency as MeasurementFrequency,
     benefitOwner: row.benefit_owner,
     evidenceSource: row.evidence_source,
+    evidenceLinks: Array.isArray(row.evidence_links)
+      ? (row.evidence_links as BenefitEvidenceItem[])
+      : [],
     state: row.state as BenefitState,
     verificationMethod: row.verification_method as BenefitVerificationMethod,
+    erpVerificationStatus: (row.erp_verification_status ??
+      "not_configured") as ErpVerificationStatus,
+    erpSystem: row.erp_system,
+    erpReference: row.erp_reference,
+    erpLastVerifiedAt: row.erp_last_verified_at,
     notes: row.notes,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -89,8 +105,13 @@ function toRow(input: BenefitInput) {
     measurement_frequency: input.measurementFrequency,
     benefit_owner: input.benefitOwner?.trim() || null,
     evidence_source: input.evidenceSource?.trim() || null,
+    evidence_links: JSON.parse(JSON.stringify(input.evidenceLinks ?? [])) as Json,
     state: input.state,
     verification_method: input.verificationMethod,
+    erp_verification_status: input.erpVerificationStatus ?? "not_configured",
+    erp_system: input.erpSystem?.trim() || null,
+    erp_reference: input.erpReference?.trim() || null,
+    erp_last_verified_at: input.erpLastVerifiedAt,
     notes: input.notes?.trim() || null,
   };
 }
@@ -155,7 +176,7 @@ export async function listBenefitAudit(useCaseId: string): Promise<BenefitAuditE
     .eq("entity_type", "use_case_benefit")
     .eq("entity_id", useCaseId)
     .order("created_at", { ascending: false })
-    .limit(50);
+    .limit(200);
   const rows = (unwrapResult(result, { allowNull: true }) ?? []) as {
     id: string;
     event_type: string;
@@ -170,4 +191,22 @@ export async function listBenefitAudit(useCaseId: string): Promise<BenefitAuditE
     previous: row.previous_value,
     next: row.new_value,
   }));
+}
+
+/**
+ * Audit trail for a single benefit. The database trigger stamps the audit row
+ * against the parent use case, with the benefit id inside the payload, so the
+ * per-benefit view filters on that payload rather than a second table.
+ */
+export async function listBenefitAuditForBenefit(
+  useCaseId: string,
+  benefitId: string,
+): Promise<BenefitAuditEntry[]> {
+  const entries = await listBenefitAudit(useCaseId);
+  return entries.filter((entry) => {
+    const id =
+      (entry.next?.["benefit_id"] as string | undefined) ??
+      (entry.previous?.["benefit_id"] as string | undefined);
+    return id === benefitId;
+  });
 }

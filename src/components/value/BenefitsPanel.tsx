@@ -14,9 +14,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { EmptyState, ErrorState, LoadingSkeleton } from "@/components/ui-kit";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { History, Pencil, Plus, Trash2 } from "lucide-react";
 
 import { BenefitForm } from "@/components/value/BenefitForm";
+import { BenefitVerificationDialog } from "@/components/value/BenefitVerificationDialog";
 import { ValueSummary } from "@/components/value/ValueSummary";
 import { useBenefits } from "@/hooks/useBenefits";
 import { toUserMessage } from "@/lib/domain/errors";
@@ -28,6 +29,7 @@ import {
   EVIDENCED_STATES,
   formatBenefitAmount,
   isMeasurable,
+  ERP_VERIFICATION_LABELS,
   MEASUREMENT_FREQUENCY_LABELS,
   type Benefit,
   type BenefitInput,
@@ -37,6 +39,7 @@ export function BenefitsPanel({ useCaseId }: { useCaseId: string }) {
   const { benefits, aggregate, isLoading, error, create, update, remove } = useBenefits(useCaseId);
   const [editing, setEditing] = useState<Benefit | null>(null);
   const [adding, setAdding] = useState(false);
+  const [inspecting, setInspecting] = useState<Benefit | null>(null);
 
   const saving = create.isPending || update.isPending;
 
@@ -111,6 +114,17 @@ export function BenefitsPanel({ useCaseId }: { useCaseId: string }) {
                       >
                         {BENEFIT_STATE_LABELS[benefit.state]}
                       </Badge>
+                      <Badge variant="outline">
+                        {ERP_VERIFICATION_LABELS[benefit.erpVerificationStatus]}
+                      </Badge>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        aria-label={`Verification and history for ${benefit.name}`}
+                        onClick={() => setInspecting(benefit)}
+                      >
+                        <History className="h-3.5 w-3.5" aria-hidden />
+                      </Button>
                       <Button
                         size="icon"
                         variant="ghost"
@@ -163,6 +177,9 @@ export function BenefitsPanel({ useCaseId }: { useCaseId: string }) {
                     {MEASUREMENT_FREQUENCY_LABELS[benefit.measurementFrequency]} ·{" "}
                     {BENEFIT_CONFIDENCE_LABELS[benefit.confidence]}
                     {benefit.evidenceSource ? ` · Evidence: ${benefit.evidenceSource}` : ""}
+                    {benefit.evidenceLinks.length > 0
+                      ? ` · ${benefit.evidenceLinks.length} attachment${benefit.evidenceLinks.length === 1 ? "" : "s"}`
+                      : ""}
                   </p>
 
                   {!isMeasurable(benefit) && (
@@ -202,6 +219,14 @@ export function BenefitsPanel({ useCaseId }: { useCaseId: string }) {
           />
         </DialogContent>
       </Dialog>
+
+      <BenefitVerificationDialog
+        benefit={inspecting}
+        open={Boolean(inspecting)}
+        onOpenChange={(open) => {
+          if (!open) setInspecting(null);
+        }}
+      />
     </div>
   );
 }

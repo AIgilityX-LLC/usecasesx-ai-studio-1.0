@@ -12,6 +12,8 @@ import {
   type Portfolio,
 } from "@/lib/usecasex.store";
 import { useUseCaseXPro } from "@/hooks/usecasex-pro";
+import { useBenefitsBySlug } from "@/hooks/useBenefits";
+import { ValueSummary } from "@/components/value/ValueSummary";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -153,6 +155,19 @@ function ReportsPage() {
       priority?: string;
     }>;
   }, [selectedSlugs, store.saved, store.useCaseContent]);
+
+  // Value realisation for the selection. Reports work in repository slugs;
+  // benefits live on Studio use cases, so the lineage map bridges the two.
+  const selectedSlugToId = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const slug of selectedSlugs) {
+      const id = store.slugToId[slug];
+      if (id) map[slug] = id;
+    }
+    return map;
+  }, [selectedSlugs, store.slugToId]);
+
+  const value = useBenefitsBySlug(selectedSlugToId);
 
   const handlePrint = () => {
     trackCTAEvent("report_printed", { reportType });
@@ -352,6 +367,14 @@ function ReportsPage() {
                   ? store.portfolios.find((p) => p.id === portfolioId)
                   : undefined
               }
+            />
+
+            <ValueSummary
+              aggregate={value.aggregate}
+              loading={value.isLoading}
+              title="Value realisation"
+              description="Benefits captured in the AI Use Case Studio for the selected use cases. Only compatible units, currencies and periods are combined."
+              emptyHint="No benefits have been captured in the Studio for these use cases yet."
             />
           </div>
         </section>

@@ -39,9 +39,16 @@ import {
   type BenefitInput,
   type BenefitPeriod,
   type BenefitState,
+  type BenefitEvidenceItem,
   type BenefitUnitType,
+  type ErpVerificationStatus,
   type MeasurementFrequency,
+  ERP_VERIFICATION_HELP,
+  ERP_VERIFICATION_LABELS,
 } from "@/lib/value/benefits.model";
+import { Badge } from "@/components/ui/badge";
+import { BenefitEvidenceEditor } from "./BenefitEvidenceEditor";
+import { ENTERPRISE_VALUE_FEATURES } from "@/lib/feature-flags";
 
 type Draft = {
   name: string;
@@ -59,6 +66,7 @@ type Draft = {
   evidenceSource: string;
   state: BenefitState;
   notes: string;
+  evidenceLinks: BenefitEvidenceItem[];
 };
 
 const EMPTY: Draft = {
@@ -77,6 +85,7 @@ const EMPTY: Draft = {
   evidenceSource: "",
   state: "proposed",
   notes: "",
+  evidenceLinks: [],
 };
 
 function toDraft(benefit: Benefit): Draft {
@@ -96,6 +105,7 @@ function toDraft(benefit: Benefit): Draft {
     evidenceSource: benefit.evidenceSource ?? "",
     state: benefit.state,
     notes: benefit.notes ?? "",
+    evidenceLinks: benefit.evidenceLinks ?? [],
   };
 }
 
@@ -160,7 +170,14 @@ export function BenefitForm({
       state: draft.state,
       // Automated ERP verification is Enterprise-only and not live; every
       // benefit captured in Pro is manually evidenced.
-      verificationMethod: "manual",
+      verificationMethod: benefit?.verificationMethod ?? "manual",
+      evidenceLinks: draft.evidenceLinks,
+      // ERP verification is written by the Enterprise reconciliation job, never
+      // by this form, so existing values are carried through untouched.
+      erpVerificationStatus: benefit?.erpVerificationStatus ?? "not_configured",
+      erpSystem: benefit?.erpSystem ?? null,
+      erpReference: benefit?.erpReference ?? null,
+      erpLastVerifiedAt: benefit?.erpLastVerifiedAt ?? null,
       notes: draft.notes,
     });
   };
@@ -377,6 +394,24 @@ export function BenefitForm({
         </div>
 
         <div className="sm:col-span-2">
+          <BenefitEvidenceEditor
+            useCaseId={useCaseId}
+            items={draft.evidenceLinks}
+            disabled={saving}
+            onChange={(next) => set("evidenceLinks", next)}
+          />
+        </div>
+
+        <div className="sm:col-span-2">
+          <ErpVerificationPanel
+            status={benefit?.erpVerificationStatus ?? "not_configured"}
+            system={benefit?.erpSystem ?? null}
+            reference={benefit?.erpReference ?? null}
+            lastVerifiedAt={benefit?.erpLastVerifiedAt ?? null}
+          />
+        </div>
+
+        <div className="sm:col-span-2">
           <Label htmlFor="benefit-notes">Notes</Label>
           <Textarea
             id="benefit-notes"
@@ -403,5 +438,65 @@ export function BenefitForm({
         </Button>
       </div>
     </form>
+  );
+}
+
+/**
+ * Read-only view of ERP verification state. Automated reconciliation is an
+ * Enterprise capability behind a feature flag; when it is off we say so plainly
+ * rather than implying the value has been machine-checked.
+ */
+function ErpVerificationPanel({
+  status,
+  system,
+  reference,
+  lastVerifiedAt,
+}: {
+  status: ErpVerificationStatus;
+  system: string | null;
+  reference: string | null;
+  lastVerifiedAt: string | null;
+}) {
+  const enabled = ENTERPRISE_VALUE_FEATURES.erpBenefitVerification;
+  return (
+    <div className="rounded-lg border border-dashed p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+          ERP verification
+        </Label>
+        <Badge variant={status === "verified" ? "default" : "outline"}>
+          {ERP_VERIFICATION_LABELS[status]}
+        </Badge>
+      </div>
+      <p className="mt-1 text-[11px] text-muted-foreground">{ERP_VERIFICATION_HELP[status]}</p>
+      {(system || reference || lastVerifiedAt) && (
+        <dl className="mt-2 grid gap-1 text-[11px] text-muted-foreground sm:grid-cols-3">
+          {system && (
+            <div>
+              <dt className="font-medium text-foreground">Source</dt>
+              <dd>{system}</dd>
+            </div>
+          )}
+          {reference && (
+            <div>
+              <dt className="font-medium text-foreground">Reference</dt>
+              <dd className="truncate">{reference}</dd>
+            </div>
+          )}
+          {lastVerifiedAt && (
+            <div>
+              <dt className="font-medium text-foreground">Last checked</dt>
+              <dd>{new Date(lastVerifiedAt).toLocaleDateString()}</dd>
+            </div>
+          )}
+        </dl>
+      )}
+      {!enabled && (
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          Automated ERP verification is an Enterprise capability and is not active in this
+          workspace. Benefits here are owner-asserted and evidenced manually.
+        </p>
+      )}
+    </div>
   );
 }

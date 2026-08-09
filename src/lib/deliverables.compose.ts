@@ -23,6 +23,19 @@ import {
   type RiskRow,
 } from "@/lib/deliverables";
 import type { ExportSection } from "@/lib/deliverables.export";
+import { listBenefits } from "@/lib/domain/benefits.repository";
+import {
+  BENEFIT_CATEGORY_LABELS,
+  BENEFIT_CONFIDENCE_LABELS,
+  BENEFIT_PERIOD_LABELS,
+  BENEFIT_STATE_LABELS,
+  BENEFIT_UNIT_LABELS,
+  ERP_VERIFICATION_LABELS,
+  MEASUREMENT_FREQUENCY_LABELS,
+  aggregateBenefits,
+  formatBenefitAmount,
+  type Benefit,
+} from "@/lib/value/benefits.model";
 
 /* --------------------------- source data bundle --------------------------- */
 
@@ -32,6 +45,8 @@ export type UseCaseSources = {
   dataReadiness: Record<string, unknown> | null;
   blueprint: Record<string, unknown> | null;
   saved: Record<string, DeliverableRow>;
+  /** Value-realisation benefits captured for this use case. */
+  benefits: Benefit[];
 };
 
 export async function loadUseCaseSources(useCaseId: string): Promise<UseCaseSources> {
@@ -43,9 +58,11 @@ export async function loadUseCaseSources(useCaseId: string): Promise<UseCaseSour
     loadDeliverables(useCaseId).catch(() => [] as DeliverableRow[]),
   ]);
 
+  const benefits = await listBenefits(useCaseId).catch(() => [] as Benefit[]);
+
   const saved: Record<string, DeliverableRow> = {};
   rows.forEach((r) => (saved[r.deliverable_type] = r));
-  return { useCase, feasibility, dataReadiness, blueprint, saved };
+  return { useCase, feasibility, dataReadiness, blueprint, saved, benefits };
 }
 
 /* ------------------------------ helpers ---------------------------------- */
@@ -416,6 +433,78 @@ export type ComposedDeliverable = {
   moduleRoute?: string;
 };
 
+/**
+ * Value-realisation sections appended to the deliverables where money belongs.
+ *
+ * Totals come from the same conservative aggregator the Studio uses: only
+ * compatible unit/currency/period groups are summed, and anything that cannot
+ * be combined is listed as an explicit exclusion rather than folded in.
+ */
+export function benefitSections(benefits: Benefit[]): ExportSection[] {
+  if (benefits.length === 0) return [];
+
+  const sections: ExportSection[] = [
+    {
+      heading: "Benefits register",
+      kind: "table",
+      columns: ["Benefit", "Category", "Expected", "Cadence", "Owner", "State", "Verification"],
+      rows: benefits.map((b) => [
+        b.kpi ? `${b.name} (${b.kpi})` : b.name,
+        BENEFIT_CATEGORY_LABELS[b.category],
+        b.expectedValue == null
+          ? "Not quantified"
+          : `${formatBenefitAmount(b.expectedValue, b.unitType, b.currency)} · ${BENEFIT_PERIOD_LABELS[b.period]}`,
+        MEASUREMENT_FREQUENCY_LABELS[b.measurementFrequency],
+        b.benefitOwner || "Unassigned",
+        `${BENEFIT_STATE_LABELS[b.state]} (${BENEFIT_CONFIDENCE_LABELS[b.confidence]} confidence)`,
+        ERP_VERIFICATION_LABELS[b.erpVerificationStatus],
+      ]),
+    },
+  ];
+
+  const aggregate = aggregateBenefits(benefits);
+  if (aggregate.groups.length > 0) {
+    sections.push({
+      heading: "Aggregated value (compatible groups only)",
+      kind: "table",
+      columns: ["Group", "Benefits", "Expected total", "Evidenced total"],
+      rows: aggregate.groups.map((g) => [
+        `${BENEFIT_UNIT_LABELS[g.unitType]}${g.currency ? ` · ${g.currency}` : ""} · ${g.basis === "annual" ? "annual run rate" : "one-off"}`,
+        String(g.count),
+        formatBenefitAmount(g.expectedTotal, g.unitType, g.currency),
+        formatBenefitAmount(g.evidencedTotal, g.unitType, g.currency),
+      ]),
+    });
+  }
+
+  if (aggregate.exclusions.length > 0) {
+    sections.push({
+      heading: "Excluded from totals",
+      kind: "text",
+      body: aggregate.exclusions
+        .map((e) => `• ${e.label}: ${e.benefits.map((b) => b.name).join(", ")}`)
+        .join("\n"),
+    });
+  }
+
+  sections.push({
+    heading: "Verification basis",
+    kind: "text",
+    body: benefits.some((b) => b.erpVerificationStatus === "verified")
+      ? "Some benefits are reconciled against a connected ERP source; the remainder are asserted by the named benefit owner and evidenced manually."
+      : "All benefits are asserted by the named benefit owner and evidenced manually. No automated system verification has been applied.",
+  });
+
+  return sections;
+}
+
+/** Deliverables whose narrative is incomplete without the value case. */
+const VALUE_BEARING: DeliverableType[] = [
+  "prioritization_framework",
+  "portfolio_roadmap",
+  "handover_package",
+];
+
 export function composeDeliverable(
   dType: DeliverableType,
   src: UseCaseSources,
@@ -437,6 +526,14 @@ export function composeDeliverable(
     if (nonEmpty(derived)) {
       sections = derived;
       origin = "derived";
+    }
+  }
+
+  if (VALUE_BEARING.includes(dType)) {
+    const value = benefitSections(src.benefits ?? []);
+    if (value.length > 0) {
+      sections = [...sections, ...value];
+      if (origin === "empty") origin = "derived";
     }
   }
 
