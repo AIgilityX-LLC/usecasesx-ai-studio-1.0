@@ -200,9 +200,7 @@ export async function updateHandoffStatus(input: {
   if (input.nextStatus === "dispatched") patch["dispatched_at"] = now;
   if (input.nextStatus === "completed") patch["completed_at"] = now;
 
-  const row = unwrapResult(
-    await db().update(patch).eq("id", input.id).select("*").single(),
-  ) as any;
+  const row = unwrapResult(await db().update(patch).eq("id", input.id).select("*").single()) as any;
   const updated = mapRow(row);
 
   await recordAuditEvent({

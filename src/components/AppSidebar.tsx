@@ -98,7 +98,6 @@ const INTEGRATIONS: Item[] = [
   { to: "/handoffs", label: "Suite Handoffs", icon: Send, pro: true },
 ];
 
-
 const ADMIN: Item[] = [
   { to: "/reports", label: "Reports", icon: FileBarChart },
   { to: "/administration", label: "Admin Panel", icon: Settings, admin: true },

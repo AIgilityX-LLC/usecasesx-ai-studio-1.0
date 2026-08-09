@@ -142,8 +142,7 @@ export function HandoffRequestDialog({
       setErrors({});
     },
     onError: (error: unknown) => {
-      const message =
-        error instanceof Error ? error.message : "We could not send that request.";
+      const message = error instanceof Error ? error.message : "We could not send that request.";
       toast.error("Request not sent", { description: message });
     },
   });
@@ -362,9 +361,7 @@ export function HandoffRequestDialog({
                 <div className="space-y-2">
                   {sourceRefs.map((ref) => {
                     const key = `${ref.type}:${ref.id}`;
-                    const checked = ((payload["contextSnapshot"] as string[]) ?? []).includes(
-                      key,
-                    );
+                    const checked = ((payload["contextSnapshot"] as string[]) ?? []).includes(key);
                     return (
                       <label key={key} className="flex items-start gap-2 text-sm">
                         <Checkbox
@@ -373,8 +370,7 @@ export function HandoffRequestDialog({
                           aria-label={ref.label}
                         />
                         <span>
-                          {ref.label}{" "}
-                          <span className="text-muted-foreground">({ref.type})</span>
+                          {ref.label} <span className="text-muted-foreground">({ref.type})</span>
                         </span>
                       </label>
                     );
@@ -488,8 +484,7 @@ export function HandoffRequestDialog({
             </ul>
             {err("sourceRefs")}
             <p className="mt-2 text-xs text-muted-foreground">
-              We record a pointer and a version stamp for each record, not a copy of its
-              contents.
+              We record a pointer and a version stamp for each record, not a copy of its contents.
             </p>
           </div>
 

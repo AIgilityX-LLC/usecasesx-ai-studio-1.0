@@ -90,9 +90,10 @@ function HandoffsSurface() {
   const queryClient = useQueryClient();
 
   const [dialogTarget, setDialogTarget] = useState<HandoffTarget | null>(null);
-  const [statusTarget, setStatusTarget] = useState<
-    { request: HandoffRequest; next: HandoffStatus } | null
-  >(null);
+  const [statusTarget, setStatusTarget] = useState<{
+    request: HandoffRequest;
+    next: HandoffStatus;
+  } | null>(null);
   const [note, setNote] = useState("");
 
   const requestsQuery = useQuery({
@@ -122,7 +123,6 @@ function HandoffsSurface() {
           ]
         : [],
     [workspaceId, workspaceName],
-
   );
 
   const statusMutation = useMutation({

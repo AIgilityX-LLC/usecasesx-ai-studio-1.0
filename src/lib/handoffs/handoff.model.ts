@@ -71,8 +71,7 @@ export const HANDOFF_TARGET_META: Record<HandoffTarget, HandoffTargetMeta> = {
   sarpi: {
     key: "sarpi",
     label: "SARPI™ readiness & value",
-    description:
-      "Readiness assessment and value validation for a selected set of use cases.",
+    description: "Readiness assessment and value validation for a selected set of use cases.",
     connection: "internal_queue",
     sensitivity: "internal",
     requestTypes: [
@@ -312,9 +311,7 @@ export function makeSourceRef(input: {
  * they do not. Deterministic and order-independent.
  */
 export function sourceFingerprint(refs: HandoffSourceRef[]): string {
-  const parts = refs
-    .map((ref) => `${ref.type}:${ref.id}@${ref.version ?? "unversioned"}`)
-    .sort();
+  const parts = refs.map((ref) => `${ref.type}:${ref.id}@${ref.version ?? "unversioned"}`).sort();
   let hash = 2166136261; // FNV-1a, enough to detect drift; not a security hash
   const input = parts.join("|");
   for (let i = 0; i < input.length; i += 1) {
@@ -420,13 +417,7 @@ export type HandoffPayload = {
   [K in HandoffTarget]: z.infer<(typeof payloadSchemas)[K]>;
 };
 
-export const LIFECYCLE_STAGES = [
-  "Concept",
-  "Prototype",
-  "Pilot",
-  "Production",
-  "Scaled",
-] as const;
+export const LIFECYCLE_STAGES = ["Concept", "Prototype", "Pilot", "Production", "Scaled"] as const;
 
 /** The default risk indicator vocabulary offered by the C3G request form. */
 export const RISK_INDICATOR_OPTIONS = [
@@ -534,9 +525,10 @@ export function requestTypeLabel(target: HandoffTarget, requestType: string): st
 
 /** Queue counts by status, used by the admin queue header and analytics. */
 export function summarizeQueue(requests: HandoffRequest[]) {
-  const byStatus = Object.fromEntries(
-    HANDOFF_STATUSES.map((status) => [status, 0]),
-  ) as Record<HandoffStatus, number>;
+  const byStatus = Object.fromEntries(HANDOFF_STATUSES.map((status) => [status, 0])) as Record<
+    HandoffStatus,
+    number
+  >;
   const byTarget = Object.fromEntries(HANDOFF_TARGETS.map((t) => [t, 0])) as Record<
     HandoffTarget,
     number

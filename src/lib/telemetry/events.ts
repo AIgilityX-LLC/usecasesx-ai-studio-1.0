@@ -39,7 +39,6 @@ export const AUDIT_EVENTS = {
   adminAction: "admin.action",
 } as const;
 
-
 export type AuditEventName = (typeof AUDIT_EVENTS)[keyof typeof AUDIT_EVENTS];
 
 export const AUDIT_SEVERITIES = ["info", "notice", "warning", "critical"] as const;
@@ -84,7 +83,6 @@ export const PRODUCT_EVENTS = {
   advisoryRequested: "advisory.requested",
   handoffRequested: "handoff.requested",
   handoffCompleted: "handoff.completed",
-
 
   // journey funnel (dashboard next-action surface)
   journeyStageViewed: "journey.stage_viewed",
