@@ -309,7 +309,12 @@ function ReportsPage() {
         workspace_role: exportRole,
         provenance: provenance.lines,
       },
+      // Tenancy is stated explicitly so the row is readable under the
+      // workspace-scoped audit policy even if ambient context is unset.
+      workspaceId: workspace.data?.workspaceId ?? null,
+      organizationId: workspace.data?.organizationId ?? null,
     });
+
     setReceipt({
       format,
       auditEventId: written.auditEventId,
