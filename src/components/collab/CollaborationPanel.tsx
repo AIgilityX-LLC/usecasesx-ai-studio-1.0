@@ -170,6 +170,10 @@ export function CollaborationPanel({
     (m) => !data.assignments.some((a) => a.userId === m.userId && a.assignmentRole === assignRole),
   );
   const canWrite = data.seats.edition !== "lite" || data.canManage;
+  const filteredActivity = data.activity.filter(
+    (a) => activityFilter === "all" || activityCategory(a.event) === activityFilter,
+  );
+  const visibleActivity = filteredActivity.slice(0, activityPages * ACTIVITY_PAGE_SIZE);
 
   return (
     <Card className={className}>
