@@ -630,6 +630,10 @@ function UseCaseDetailPage() {
               region={c.region}
               publishedAt={c.published_at}
               updatedAt={c.updated_at}
+              provenance={c.provenance}
+              provenanceNote={c.provenance_note}
+              qualityStatus={c.quality_status}
+              qualityCheckedAt={c.quality_checked_at}
               links={Array.isArray(c.use_case_links) ? c.use_case_links : []}
             />
 

@@ -2,6 +2,14 @@ import { BadgeCheck, Users, Bot, Building2 } from "lucide-react";
 
 export type LineageKind = "curated" | "community" | "workspace" | "ai_generated";
 
+/** Quality gate recorded on the global record when it was last reviewed. */
+const QUALITY_LABEL: Record<string, string> = {
+  quality_passed: "Quality checked",
+  needs_review: "Awaiting review",
+  unverified: "Not yet quality checked",
+  rejected: "Rejected in review",
+};
+
 interface SourceLineageProps {
   /** `submitted_by` on the global record: null → curated by the AIgilityX team. */
   submittedBy?: string | null;
@@ -11,6 +19,13 @@ interface SourceLineageProps {
   updatedAt?: string | null;
   /** Reference links attached to the record. */
   links?: { id?: string; label?: string | null; url: string; kind?: string | null }[];
+  /** Provenance label stored on the record (e.g. `aigilityx_editorial`). */
+  provenance?: string | null;
+  /** Plain-language statement of how the entry was produced and what is not claimed. */
+  provenanceNote?: string | null;
+  /** Editorial quality gate: `quality_passed`, `needs_review`, `unverified`, `rejected`. */
+  qualityStatus?: string | null;
+  qualityCheckedAt?: string | null;
 }
 
 const LINEAGE: Record<
@@ -61,8 +76,19 @@ export function SourceLineage({
   publishedAt,
   updatedAt,
   links = [],
+  provenance,
+  provenanceNote,
+  qualityStatus,
+  qualityCheckedAt,
 }: SourceLineageProps) {
-  const kind: LineageKind = submittedBy ? "community" : "curated";
+  const kind: LineageKind =
+    provenance === "workspace_authored"
+      ? "workspace"
+      : provenance === "community_contribution" ||
+          provenance === "partner_contribution" ||
+          submittedBy
+        ? "community"
+        : "curated";
   const meta = LINEAGE[kind];
   const Icon = meta.icon;
   const published = formatDate(publishedAt);
@@ -74,6 +100,13 @@ export function SourceLineage({
   if (region) facts.push({ label: "Region", value: region });
   if (published) facts.push({ label: "Published", value: published });
   if (updated) facts.push({ label: "Last reviewed", value: updated });
+  if (qualityStatus)
+    facts.push({
+      label: "Quality status",
+      value: `${QUALITY_LABEL[qualityStatus] ?? qualityStatus}${
+        formatDate(qualityCheckedAt) ? ` · ${formatDate(qualityCheckedAt)}` : ""
+      }`,
+    });
 
   return (
     <section aria-labelledby="source-lineage-heading">
@@ -89,6 +122,9 @@ export function SourceLineage({
           <div className="min-w-0">
             <div className="text-sm font-semibold text-foreground">{meta.label}</div>
             <p className="mt-1 text-sm text-muted-foreground">{meta.description}</p>
+            {provenanceNote && (
+              <p className="mt-2 text-sm text-muted-foreground">{provenanceNote}</p>
+            )}
           </div>
         </div>
 

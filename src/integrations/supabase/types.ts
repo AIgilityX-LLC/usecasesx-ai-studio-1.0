@@ -3542,11 +3542,13 @@ export type Database = {
           deployment_model: string | null
           display_order: number
           effort_score: number | null
+          evidence_urls: string[]
           governance_notes: string | null
           governance_required: boolean
           hero_image_url: string | null
           id: string
           impact_score: number | null
+          implementation_notes: string | null
           is_featured: boolean
           kpis: string[] | null
           maturity: Database["public"]["Enums"]["maturity_stage"] | null
@@ -3558,7 +3560,11 @@ export type Database = {
           privacy_notes: string | null
           privacy_review_required: boolean
           problem: string | null
+          provenance: string
+          provenance_note: string | null
           published_at: string | null
+          quality_checked_at: string | null
+          quality_status: string
           recommended_platforms: string[] | null
           region: string | null
           risk_level: string | null
@@ -3592,11 +3598,13 @@ export type Database = {
           deployment_model?: string | null
           display_order?: number
           effort_score?: number | null
+          evidence_urls?: string[]
           governance_notes?: string | null
           governance_required?: boolean
           hero_image_url?: string | null
           id?: string
           impact_score?: number | null
+          implementation_notes?: string | null
           is_featured?: boolean
           kpis?: string[] | null
           maturity?: Database["public"]["Enums"]["maturity_stage"] | null
@@ -3608,7 +3616,11 @@ export type Database = {
           privacy_notes?: string | null
           privacy_review_required?: boolean
           problem?: string | null
+          provenance?: string
+          provenance_note?: string | null
           published_at?: string | null
+          quality_checked_at?: string | null
+          quality_status?: string
           recommended_platforms?: string[] | null
           region?: string | null
           risk_level?: string | null
@@ -3642,11 +3654,13 @@ export type Database = {
           deployment_model?: string | null
           display_order?: number
           effort_score?: number | null
+          evidence_urls?: string[]
           governance_notes?: string | null
           governance_required?: boolean
           hero_image_url?: string | null
           id?: string
           impact_score?: number | null
+          implementation_notes?: string | null
           is_featured?: boolean
           kpis?: string[] | null
           maturity?: Database["public"]["Enums"]["maturity_stage"] | null
@@ -3658,7 +3672,11 @@ export type Database = {
           privacy_notes?: string | null
           privacy_review_required?: boolean
           problem?: string | null
+          provenance?: string
+          provenance_note?: string | null
           published_at?: string | null
+          quality_checked_at?: string | null
+          quality_status?: string
           recommended_platforms?: string[] | null
           region?: string | null
           risk_level?: string | null
