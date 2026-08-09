@@ -1,8 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { fallback, zodValidator } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Download, Info } from "lucide-react";
+import saveAs from "file-saver";
+import { Download, Info, Link2, Settings2 } from "lucide-react";
 
+import { supabase } from "@/integrations/supabase/client";
 import { RequirePlan } from "@/components/RequirePlan";
 import { PageHeader, EmptyState, ErrorState, LoadingSkeleton } from "@/components/ui-kit";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -14,6 +18,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -26,6 +31,7 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useUseCaseXPro } from "@/hooks/usecasex-pro";
 import { useAuthz } from "@/hooks/useAuthz";
+import { useExportPreferences } from "@/hooks/useExportPreferences";
 import {
   DELIVERY_STAGE_LABELS,
   type DeliveryStage,
@@ -42,10 +48,23 @@ import {
   summarizeRoadmap,
   type RoadmapItem,
 } from "@/lib/roadmap";
-import { downloadRoadmap, type RoadmapExportFormat } from "@/lib/roadmap-export";
+import {
+  downloadRoadmap,
+  roadmapExportFileName,
+  type RoadmapExportFormat,
+} from "@/lib/roadmap-export";
 import { RoadmapAnalyticsPanel } from "@/components/roadmap/RoadmapAnalyticsPanel";
+import { RoadmapAuditPanel } from "@/components/roadmap/RoadmapAuditPanel";
 import { RoadmapBoard } from "@/components/roadmap/RoadmapBoard";
+import { RoadmapExportSettingsDialog } from "@/components/roadmap/RoadmapExportSettingsDialog";
 import { RoadmapItemDialog } from "@/components/roadmap/RoadmapItemDialog";
+
+const roadmapSearchSchema = z.object({
+  portfolio: fallback(z.string(), "").default(""),
+  period: fallback(z.string(), "").default(""),
+  tab: fallback(z.string(), "stages").default("stages"),
+});
+
 
 export const Route = createFileRoute("/_app/roadmap")({
   head: () => ({
