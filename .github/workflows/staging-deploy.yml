@@ -55,7 +55,7 @@ jobs:
       - name: Smoke the deployed environment
         run: bunx playwright install --with-deps chromium && bun run test:smoke
         env:
-          SMOKE_BASE_URL: ${{ steps.deploy.outputs.url }}
+          E2E_BASE_URL: ${{ steps.deploy.outputs.url }}
       - name: Upload build artifacts
         if: always()
         uses: actions/upload-artifact@v4
