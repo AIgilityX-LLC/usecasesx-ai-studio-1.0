@@ -102,10 +102,7 @@ export const Route = createFileRoute("/_app/administration")({
 
 function AdminPage() {
   return (
-    <RequireRoles
-      anyOf={PLATFORM_ADMIN_ROLES}
-      action="open the UseCasesX platform admin"
-    >
+    <RequireRoles anyOf={PLATFORM_ADMIN_ROLES} action="open the UseCasesX platform admin">
       <AdminPageInner />
     </RequireRoles>
   );

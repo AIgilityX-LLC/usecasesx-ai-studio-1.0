@@ -59,7 +59,9 @@ describe("csv import planning", () => {
   it("honours the duplicate strategy", () => {
     const existing = { "predictive-demand-forecasting": "id-1" };
     const parsed = parseCsv(header);
-    expect(buildImportPlan(parsed, { existingBySlug: existing, strategy: "skip" }).summary.skip).toBe(1);
+    expect(
+      buildImportPlan(parsed, { existingBySlug: existing, strategy: "skip" }).summary.skip,
+    ).toBe(1);
     expect(
       buildImportPlan(parsed, { existingBySlug: existing, strategy: "update" }).summary.update,
     ).toBe(1);
