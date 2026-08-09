@@ -228,11 +228,44 @@ async function main() {
     .single();
   check(!memberNote.error, "a joined member can add a review note");
 
+  // Timeline visibility: audit rows are readable by their own actor and by
+  // workspace owners/admins — a contributor never sees other people's events.
+  await host.client.from("audit_events").insert({
+    actor_id: host.userId,
+    entity_type: "opportunity",
+    entity_id: entityId,
+    event_type: "collab.comment.created",
+    workspace_id: hostWs,
+  });
+  await member.client.from("audit_events").insert({
+    actor_id: member.userId,
+    entity_type: "opportunity",
+    entity_id: entityId,
+    event_type: "collab.comment.created",
+    workspace_id: hostWs,
+  });
+
   const memberTimeline = await member.client
     .from("audit_events")
-    .select("id")
+    .select("id, actor_id")
     .eq("entity_id", entityId);
-  check((memberTimeline.data ?? []).length > 0, "a joined member can read the activity timeline");
+  check(
+    (memberTimeline.data ?? []).some((r: any) => r.actor_id === member.userId),
+    "a joined member reads their own activity events",
+  );
+  check(
+    !(memberTimeline.data ?? []).some((r: any) => r.actor_id === host.userId),
+    "a contributor cannot read another member's activity events",
+  );
+  const hostTimeline = await host.client
+    .from("audit_events")
+    .select("id, actor_id")
+    .eq("entity_id", entityId);
+  check(
+    (hostTimeline.data ?? []).some((r: any) => r.actor_id === member.userId),
+    "the workspace owner reads the full activity timeline",
+  );
+
 
   // A member is not an admin: they cannot mint invitations or evict the host.
   const memberInvite = await member.client.from("workspace_invitations").insert({
