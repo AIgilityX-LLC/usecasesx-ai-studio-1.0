@@ -39,7 +39,6 @@ function artifactCsv(artifact: DemoArtifact) {
   return rows.map((row) => row.map(csvCell).join(",")).join("\n");
 }
 
-
 /**
  * Demonstration sign-in. The personas below hold no production data and exist
  * only so a client walkthrough can switch roles quickly. The shared password is
@@ -178,7 +177,9 @@ function DemoLoginPage() {
       const summary = result.results
         .map((r) => `${r.edition}: ${r.status.replace("_", " ")}`)
         .join(" · ");
-      setResetMessage(`Demo tenants reset ${new Date(result.resetAt).toLocaleTimeString()} — ${summary}`);
+      setResetMessage(
+        `Demo tenants reset ${new Date(result.resetAt).toLocaleTimeString()} — ${summary}`,
+      );
       await loadArtifacts();
     } catch (resetError) {
       setError(resetError instanceof Error ? resetError.message : "Demo reset failed.");
@@ -298,7 +299,10 @@ function DemoLoginPage() {
                 <ol className="space-y-2">
                   {DEMO_WALKTHROUGH[edition].map((step) => (
                     <li key={step.title} className="rounded-md border p-2">
-                      <Link to={step.to} className="text-sm font-medium underline-offset-2 hover:underline">
+                      <Link
+                        to={step.to}
+                        className="text-sm font-medium underline-offset-2 hover:underline"
+                      >
                         {step.title}
                       </Link>
                       <p className="text-xs text-muted-foreground">{step.detail}</p>
@@ -318,7 +322,6 @@ function DemoLoginPage() {
             {error}
           </p>
         )}
-
 
         {[
           {
