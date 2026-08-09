@@ -65,13 +65,11 @@ export const portfolioCreateSchema = z.object({
   organizationUnitId: z.string().uuid().nullish(),
 });
 
-export const portfolioPatchSchema = portfolioCreateSchema
-  .partial()
-  .extend({
-    status: z.string().trim().min(1).max(40).optional(),
-    reviewNotes: z.string().trim().max(4000).nullish(),
-    markReviewed: z.boolean().optional(),
-  });
+export const portfolioPatchSchema = portfolioCreateSchema.partial().extend({
+  status: z.string().trim().min(1).max(40).optional(),
+  reviewNotes: z.string().trim().max(4000).nullish(),
+  markReviewed: z.boolean().optional(),
+});
 
 /**
  * Portfolio-specific decision fields. These live on the membership record and
@@ -98,8 +96,6 @@ export const portfolioEntryPatchSchema = z
     blockedReason: z.string().trim().max(500).nullish(),
   })
   .refine((v) => Object.values(v).some((x) => x !== undefined), { message: "Nothing to update" });
-
-
 
 export const reportRequestSchema = z.object({
   title: z.string().trim().min(1, { message: "Report title is required" }).max(160),

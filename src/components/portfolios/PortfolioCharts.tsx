@@ -56,7 +56,15 @@ const tooltipStyle = {
   cursor: { fill: "var(--muted)", opacity: 0.35 },
 } as const;
 
-function ChartFrame({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
+function ChartFrame({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="rounded-xl border border-border bg-card p-4">
       <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
@@ -124,7 +132,14 @@ export function PortfolioCharts({ entries }: { entries: PortfolioEntry[] }) {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={decisionData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-            <XAxis dataKey="name" {...axisProps} interval={0} angle={-18} textAnchor="end" height={54} />
+            <XAxis
+              dataKey="name"
+              {...axisProps}
+              interval={0}
+              angle={-18}
+              textAnchor="end"
+              height={54}
+            />
             <YAxis allowDecimals={false} {...axisProps} />
             <Tooltip {...tooltipStyle} />
             <Bar dataKey="value" name="Use cases" radius={[4, 4, 0, 0]}>
@@ -161,7 +176,14 @@ export function PortfolioCharts({ entries }: { entries: PortfolioEntry[] }) {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={periodData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-            <XAxis dataKey="name" {...axisProps} interval={0} angle={-18} textAnchor="end" height={54} />
+            <XAxis
+              dataKey="name"
+              {...axisProps}
+              interval={0}
+              angle={-18}
+              textAnchor="end"
+              height={54}
+            />
             <YAxis allowDecimals={false} {...axisProps} />
             <Tooltip {...tooltipStyle} />
             <Bar dataKey="value" name="Use cases" fill="var(--chart-3)" radius={[4, 4, 0, 0]} />

@@ -4,11 +4,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import type {
-  PortfolioEntry,
-  PortfolioVisibility,
-  ReviewCadence,
-} from "@/lib/portfolio-model";
+import type { PortfolioEntry, PortfolioVisibility, ReviewCadence } from "@/lib/portfolio-model";
 
 export type Priority = "Low" | "Medium" | "High" | "Strategic";
 
@@ -104,7 +100,6 @@ export interface Portfolio {
   lastReviewedAt?: string;
   createdAt: string;
   updatedAt?: string;
-
 }
 
 interface StoreShape {

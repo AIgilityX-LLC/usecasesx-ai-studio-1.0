@@ -269,7 +269,6 @@ function PortfolioDetail({
         <CardContent className="space-y-6">
           <PortfolioMetrics entries={visibleEntries} lastReviewedAt={portfolio.lastReviewedAt} />
 
-
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Field label="Status">
               <Select
@@ -436,7 +435,6 @@ function PortfolioDetail({
             </>
           )}
         </CardContent>
-
       </Card>
 
       <Card>

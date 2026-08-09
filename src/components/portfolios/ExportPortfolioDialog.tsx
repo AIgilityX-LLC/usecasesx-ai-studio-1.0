@@ -135,8 +135,6 @@ export function ExportPortfolioDialog({
             </label>
           )}
 
-
-
           <fieldset className="space-y-2">
             <legend className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Fields
