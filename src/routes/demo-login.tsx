@@ -143,32 +143,66 @@ function DemoLoginPage() {
           </p>
         )}
 
-        <ul className="grid gap-3 sm:grid-cols-2">
-          {PERSONAS.map((persona) => (
-            <li key={persona.email}>
-              <Card className="h-full">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center justify-between gap-2 text-base">
-                    {persona.label}
-                    <Badge variant="outline">{persona.plan}</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3 text-sm">
-                  <p className="text-muted-foreground">{persona.blurb}</p>
-                  <p className="truncate text-xs text-muted-foreground">{persona.email}</p>
-                  <Button
-                    className="w-full"
-                    onClick={() => void signIn(persona.email)}
-                    disabled={busy !== null}
-                  >
-                    {busy === persona.email && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Sign in as {persona.label}
-                  </Button>
-                </CardContent>
-              </Card>
-            </li>
-          ))}
-        </ul>
+        {[
+          {
+            heading: "Edition accounts",
+            note: "Pre-seeded with opportunities, a portfolio and a sample report so the end-to-end journey is visible immediately.",
+            items: PERSONAS.filter((p) => p.featured),
+          },
+          {
+            heading: "Role accounts",
+            note: "Administration and workshop roles for role-specific walkthroughs.",
+            items: PERSONAS.filter((p) => !p.featured),
+          },
+        ].map((group) => (
+          <section key={group.heading} className="space-y-3">
+            <div>
+              <h2 className="text-sm font-semibold tracking-tight">{group.heading}</h2>
+              <p className="text-xs text-muted-foreground">{group.note}</p>
+            </div>
+            <ul className="grid gap-3 sm:grid-cols-2">
+              {group.items.map((persona) => (
+                <li key={persona.email}>
+                  <Card className={persona.featured ? "h-full border-primary/50" : "h-full"}>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="flex items-center justify-between gap-2 text-base">
+                        {persona.label}
+                        <Badge variant={persona.featured ? "default" : "outline"}>
+                          {persona.plan}
+                        </Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3 text-sm">
+                      <p className="text-muted-foreground">{persona.blurb}</p>
+                      <p className="text-xs text-muted-foreground">{persona.tenant}</p>
+                      <dl className="space-y-1 rounded-md bg-muted/50 p-2 text-xs">
+                        <div className="flex gap-2">
+                          <dt className="w-16 shrink-0 text-muted-foreground">Email</dt>
+                          <dd className="truncate font-mono">{persona.email}</dd>
+                        </div>
+                        <div className="flex gap-2">
+                          <dt className="w-16 shrink-0 text-muted-foreground">Password</dt>
+                          <dd className="font-mono">{DEMO_PASSWORD}</dd>
+                        </div>
+                      </dl>
+                      <Button
+                        className="w-full"
+                        onClick={() => void signIn(persona.email)}
+                        disabled={busy !== null}
+                      >
+                        {busy === persona.email && (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                        Sign in as {persona.label}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+
 
         <p className="text-xs text-muted-foreground">
           Using your own account instead?{" "}
