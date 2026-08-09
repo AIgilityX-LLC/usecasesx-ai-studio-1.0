@@ -23,6 +23,7 @@ import {
   unsaveUseCase,
   updateSavedUseCase,
   upsertUseCaseScore,
+  type UseCaseContent,
 } from "@/lib/domain/saved-use-cases.repository";
 import {
   addUseCaseToPortfolio,
@@ -65,9 +66,11 @@ interface ProData {
   portfolios: Portfolio[];
   /** slug → use_case.id resolution map for cheap mutation lookups. */
   slugToId: Record<string, string>;
+  /** slug → live use-case content (title, summary, classification, industry…). */
+  useCaseContent: Record<string, UseCaseContent>;
 }
 
-const EMPTY: ProData = { saved: [], portfolios: [], slugToId: {} };
+const EMPTY: ProData = { saved: [], portfolios: [], slugToId: {}, useCaseContent: {} };
 
 function normalizeScore(
   row: {
@@ -117,21 +120,14 @@ async function fetchProData(userId: string): Promise<ProData> {
     listPortfoliosForUser(userId),
   ]);
 
-  const savedRes = { data: savedRows };
-  const scoresRes = { data: scoreRows };
-  const portRes = { data: portfolioRows };
-
-  const slugToId: Record<string, string> = {};
-  const scoresByUcId = new Map<string, ScoreDimensions | undefined>();
-  for (const s of scoresRes.data ?? []) {
-    scoresByUcId.set(s.use_case_id, normalizeScore(s));
-  }
-
   const saved: SavedUseCaseEntry[] = [];
-  for (const row of (savedRes.data ?? []) as any[]) {
-    const slug = row.use_cases?.slug as string | undefined;
+  const useCaseContent: Record<string, UseCaseContent> = {};
+  for (const row of savedRows) {
+    const content = row.content;
+    const slug = content?.slug;
     if (!slug) continue;
     slugToId[slug] = row.use_case_id;
+    useCaseContent[slug] = content;
     saved.push({
       useCaseSlug: slug,
       savedAt: row.saved_at,
