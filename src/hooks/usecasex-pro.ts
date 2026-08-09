@@ -144,7 +144,7 @@ async function fetchProData(userId: string): Promise<ProData> {
   }
 
   const portfolios: Portfolio[] = [];
-  for (const p of (portRes.data ?? []) as any[]) {
+  for (const p of portfolioRows as any[]) {
     const slugs: string[] = [];
     const entries: PortfolioEntry[] = [];
     for (const item of (p.portfolio_items ?? []) as any[]) {
@@ -210,7 +210,7 @@ async function fetchProData(userId: string): Promise<ProData> {
     });
   }
 
-  return { saved, portfolios, slugToId };
+  return { saved, portfolios, slugToId, useCaseContent };
 }
 
 async function resolveSlugId(slug: string, cache: Record<string, string>): Promise<string | null> {
