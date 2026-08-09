@@ -45,9 +45,9 @@ describe("audit summaries", () => {
     expect(summariseAuditEvent("collab.review_status.changed", { status: "reviewed" })).toBe(
       "Moved to Reviewed",
     );
-    expect(summariseAuditEvent("membership.invited", { email: "a@b.com", role: "viewer" })).toContain(
-      "a@b.com",
-    );
+    expect(
+      summariseAuditEvent("membership.invited", { email: "a@b.com", role: "viewer" }),
+    ).toContain("a@b.com");
   });
 });
 

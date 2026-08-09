@@ -96,7 +96,8 @@ export function CollaborationPanel({
       toast.success("Review note added");
       void refresh();
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Could not add the note."),
+    onError: (e: unknown) =>
+      toast.error(e instanceof Error ? e.message : "Could not add the note."),
   });
 
   const statusMutation = useMutation({
@@ -149,7 +150,9 @@ export function CollaborationPanel({
           <CardTitle className="text-base">Collaboration</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm text-muted-foreground">
-          <p>{query.error instanceof Error ? query.error.message : "Could not load collaboration."}</p>
+          <p>
+            {query.error instanceof Error ? query.error.message : "Could not load collaboration."}
+          </p>
           <Button size="sm" variant="secondary" onClick={() => void query.refetch()}>
             Try again
           </Button>
@@ -254,7 +257,9 @@ export function CollaborationPanel({
                     <div className="flex items-start justify-between gap-3">
                       <div className="text-sm">
                         <span className="font-medium">{c.authorName}</span>{" "}
-                        <span className="text-xs text-muted-foreground">{timeAgo(c.createdAt)}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {timeAgo(c.createdAt)}
+                        </span>
                         {c.resolvedAt && (
                           <Badge variant="outline" className="ml-2">
                             Resolved
@@ -334,7 +339,10 @@ export function CollaborationPanel({
 
             {canWrite && (
               <div className="flex flex-wrap items-center gap-2">
-                <Select value={assignRole} onValueChange={(v) => setAssignRole(v as AssignmentRole)}>
+                <Select
+                  value={assignRole}
+                  onValueChange={(v) => setAssignRole(v as AssignmentRole)}
+                >
                   <SelectTrigger className="h-8 w-40" aria-label="Assignment role">
                     <SelectValue />
                   </SelectTrigger>

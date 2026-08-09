@@ -174,7 +174,6 @@ function OpportunityDetailPage() {
 
       <CollaborationPanel entityType="opportunity" entityId={opp.id} />
 
-
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}

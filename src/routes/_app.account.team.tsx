@@ -34,13 +34,13 @@ export const Route = createFileRoute("/_app/account/team")({
       { title: "Team & invitations — UseCasesX™" },
       {
         name: "description",
-        content:
-          "Invite teammates to your workspace, set their role, and remove access instantly.",
+        content: "Invite teammates to your workspace, set their role, and remove access instantly.",
       },
       { property: "og:title", content: "Team & invitations — UseCasesX™" },
       {
         property: "og:description",
-        content: "Manage workspace members, roles and invitations within your plan's fair-use team size.",
+        content:
+          "Manage workspace members, roles and invitations within your plan's fair-use team size.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -70,8 +70,7 @@ function TeamPage() {
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["team"] });
 
   const inviteMutation = useMutation({
-    mutationFn: () =>
-      invite({ data: { email: email.trim(), role, expiresInDays: 14 } }),
+    mutationFn: () => invite({ data: { email: email.trim(), role, expiresInDays: 14 } }),
     onSuccess: (result) => {
       setEmail("");
       setLastLink(`${window.location.origin}/invite/${result.token}`);
@@ -239,7 +238,9 @@ function TeamPage() {
               <div className="flex items-center gap-2">
                 {canManage && !m.isSelf ? (
                   <Select
-                    value={(INVITE_ROLES as readonly string[]).includes(m.role) ? m.role : "contributor"}
+                    value={
+                      (INVITE_ROLES as readonly string[]).includes(m.role) ? m.role : "contributor"
+                    }
                     onValueChange={async (v) => {
                       try {
                         await changeRole({ data: { userId: m.userId, role: v as InviteRole } });
@@ -275,7 +276,9 @@ function TeamPage() {
                         toast.success("Member removed — their access ended immediately");
                         void refresh();
                       } catch (e) {
-                        toast.error(e instanceof Error ? e.message : "Could not remove the member.");
+                        toast.error(
+                          e instanceof Error ? e.message : "Could not remove the member.",
+                        );
                       }
                     }}
                   >

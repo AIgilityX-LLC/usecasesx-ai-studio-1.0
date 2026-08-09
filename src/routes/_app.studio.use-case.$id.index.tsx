@@ -133,7 +133,6 @@ function UseCaseDetailPage() {
             </div>
 
             <CollaborationPanel entityType="use_case" entityId={id} />
-
           </>
         )}
 

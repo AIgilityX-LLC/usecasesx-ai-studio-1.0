@@ -59,7 +59,6 @@ export async function entityWorkspaceId(
   return resolveWorkspaceId(supabase);
 }
 
-
 async function displayNames(
   supabase: Db,
   workspaceId: string,
@@ -142,7 +141,12 @@ export async function addComment(
   return { id: (data as any).id as string, workspaceId };
 }
 
-export async function setCommentResolved(supabase: Db, userId: string, id: string, resolved: boolean) {
+export async function setCommentResolved(
+  supabase: Db,
+  userId: string,
+  id: string,
+  resolved: boolean,
+) {
   const { data, error } = await supabase
     .from("collab_comments")
     .update({
@@ -396,7 +400,12 @@ export async function teamOverview(supabase: Db, userId: string): Promise<TeamOv
 export async function createInvitation(
   supabase: Db,
   userId: string,
-  input: { email?: string | undefined; role: InviteRole; message?: string | undefined; expiresInDays: number },
+  input: {
+    email?: string | undefined;
+    role: InviteRole;
+    message?: string | undefined;
+    expiresInDays: number;
+  },
 ) {
   const overview = await teamOverview(supabase, userId);
   if (!overview.canManage) {
