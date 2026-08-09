@@ -1,3 +1,4 @@
+import { CollaborationPanel } from "@/components/collab/CollaborationPanel";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
