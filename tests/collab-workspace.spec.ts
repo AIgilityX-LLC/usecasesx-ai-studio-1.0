@@ -229,7 +229,7 @@ test.describe("workspace collaboration", () => {
     ).toBeVisible();
     const cta = page.getByRole("link", { name: "Talk to us about Enterprise" });
     await expect(cta).toBeVisible();
-    await expect(cta).toHaveAttribute("href", "/contact");
+    await expect(cta).toHaveAttribute("href", "/pricing");
     await expect(page.getByRole("button", { name: "Create invitation" })).toBeDisabled();
 
     // Clean up the spare invitations so the cap is released.

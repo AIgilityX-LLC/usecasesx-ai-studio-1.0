@@ -148,7 +148,7 @@ function TeamPage() {
               engagement for larger teams and workflow orchestration.
             </p>
             <Button asChild size="sm" className="mt-3">
-              <Link to="/contact">Talk to us about Enterprise</Link>
+              <Link to="/pricing">Talk to us about Enterprise</Link>
             </Button>
           </CardContent>
         )}
