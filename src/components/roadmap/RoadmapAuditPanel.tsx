@@ -65,7 +65,9 @@ export function RoadmapAuditPanel({
     return (data ?? [])
       .filter((event) => event.useCaseId && inView.has(event.useCaseId))
       .map((event) => ({ event, fields: changes(event) }))
-      .filter(({ event, fields }) => fields.length > 0 || event.eventType !== "portfolio_item.updated")
+      .filter(
+        ({ event, fields }) => fields.length > 0 || event.eventType !== "portfolio_item.updated",
+      )
       .slice(0, 50);
   }, [data, useCaseIds]);
 

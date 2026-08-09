@@ -65,7 +65,6 @@ const roadmapSearchSchema = z.object({
   tab: fallback(z.string(), "stages").default("stages"),
 });
 
-
 export const Route = createFileRoute("/_app/roadmap")({
   validateSearch: zodValidator(roadmapSearchSchema),
   head: () => ({
@@ -122,8 +121,7 @@ function RoadmapSurface() {
     });
   const setPortfolioId = (value: string) =>
     navigate({ to: "/roadmap", search: { ...search, portfolio: value, period: "" } });
-  const setTab = (value: string) =>
-    navigate({ to: "/roadmap", search: { ...search, tab: value } });
+  const setTab = (value: string) => navigate({ to: "/roadmap", search: { ...search, tab: value } });
 
   const portfolios = store.portfolios;
   const active = useMemo(
@@ -219,7 +217,6 @@ function RoadmapSurface() {
       toast.error("Could not copy the link");
     }
   };
-
 
   const move = async (item: RoadmapItem, stage: DeliveryStage) => {
     if (!active) return;
@@ -336,7 +333,6 @@ function RoadmapSurface() {
             </Button>
           </div>
 
-
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <SummaryCard label="On the roadmap" value={summary.total} />
             <SummaryCard label="Overdue" value={summary.overdue} tone={summary.overdue > 0} />
@@ -369,7 +365,6 @@ function RoadmapSurface() {
                 <TabsTrigger value="periods">By quarter</TabsTrigger>
                 <TabsTrigger value="history">Change history</TabsTrigger>
               </TabsList>
-
 
               <TabsContent value="stages" className="mt-4 space-y-4">
                 <RoadmapAnalyticsPanel analytics={analytics} scopeLabel={scopeLabel} />
@@ -466,7 +461,6 @@ function RoadmapSurface() {
           await store.updatePortfolioEntry(active.id, editing.useCaseId, patch);
         }}
       />
-
     </div>
   );
 }
