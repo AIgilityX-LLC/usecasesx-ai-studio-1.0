@@ -1,269 +1,204 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, pageAs, openTeam, createInvitation, captureOpportunity } from "./fixtures/workspace";
 
 /**
- * End-to-end coverage of lightweight Pro collaboration:
+ * End-to-end coverage of lightweight Pro collaboration.
  *
- *  1. workspace invitations accepted through a share link and an email invite,
- *     across two personas, with workspace-scoped access enforced;
- *  2. member removal revoking access to invitations, collaboration data and
- *     protected actions immediately;
- *  3. the activity timeline attributing events to their author, ordered newest
- *     first, and reflecting comment / review-state / assignment changes;
- *  4. the Pro fair-use seat cap blocking new invitations and surfacing the
- *     Enterprise conversation CTA.
- *
- * The specs run serially against the seeded demo personas and clean up after
- * themselves (joined members are removed, spare invitations revoked) so the
- * demo workspace is left as it was found.
+ * Every spec provisions its own throwaway users (see tests/fixtures/workspace.ts).
+ * Each user gets their own organization + workspace on first sign-in, so the
+ * suite carries no shared demo state, needs no cleanup of seeded personas and
+ * can run in any order.
  */
-const PASSWORD = process.env.DEMO_PASSWORD ?? "Demo@123-UCX";
-const HOST = "facilitator@demo.usecasex.app";
-const LINK_JOINER = "superadmin@demo.usecasex.app";
-const EMAIL_JOINER = "tenantadmin@demo.usecasex.app";
 
 const PRO_SEAT_LIMIT = 8;
 
-async function signIn(page: Page, email: string) {
-  await page.goto("/auth", { waitUntil: "networkidle" });
-  // The controlled inputs only accept text once React has hydrated.
-  await page.waitForTimeout(2500);
-  await page.getByPlaceholder("you@org.com").fill(email);
-  await page.getByPlaceholder(/^Password/).fill(PASSWORD);
-  await page.locator("button[type=submit]").first().click();
-  await page.waitForURL(/\/(onboarding|dashboard)/, { timeout: 45_000 });
-}
-
-async function openTeam(page: Page) {
-  await page.goto("/account/team", { waitUntil: "networkidle" });
-  await expect(page.getByText("Team size")).toBeVisible({ timeout: 30_000 });
-}
-
-/** Creates an invitation and returns its /invite/<token> path. */
-async function createInvitation(page: Page, email?: string): Promise<string> {
-  const link = page.locator("code", { hasText: "/invite/" }).first();
-  const before = (await link.count()) > 0 ? (await link.innerText()).trim() : "";
-  await page.getByLabel("Email (optional for a share link)").fill(email ?? "");
-  await page.getByRole("button", { name: "Create invitation" }).click();
-  await expect(link).toBeVisible({ timeout: 30_000 });
-  // The panel reuses the same element, so wait for a genuinely new token.
-  await expect
-    .poll(async () => (await link.innerText()).trim(), { timeout: 30_000 })
-    .not.toBe(before);
-  const href = (await link.innerText()).trim();
-  return new URL(href).pathname;
-}
-
-/** Revokes every pending invitation so the workspace is left clean. */
-async function revokeAllInvitations(page: Page) {
-  for (let i = 0; i < 12; i += 1) {
-    const revoke = page.getByRole("button", { name: /^revoke$/i }).first();
-    if ((await revoke.count()) === 0) break;
-    await revoke.click();
-    await page.waitForTimeout(1200);
-  }
-}
-
-async function removeMemberIfPresent(page: Page, label: RegExp) {
-  const button = page.getByRole("button", { name: label }).first();
-  if ((await button.count()) === 0) return false;
-  await button.click();
-  await page.waitForTimeout(2000);
-  return true;
-}
-
 test.describe("workspace collaboration", () => {
-  test.describe.configure({ mode: "serial" });
-  test.setTimeout(180_000);
+  test.setTimeout(240_000);
 
-  let opportunityPath = "";
-  let shareLinkPath = "";
-  let emailInvitePath = "";
-  const noteBody = `Baseline agreed with finance ${Date.now()}`;
+  test("collaboration activity is attributed to its author and ordered newest first", async ({
+    browser,
+    users,
+  }) => {
+    const host = await users.create("host");
+    const { page, close } = await pageAs(browser, host);
 
-  test("host captures an opportunity and records collaboration activity", async ({ browser }) => {
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await signIn(page, HOST);
+    await captureOpportunity(page, `Collaboration probe ${Date.now()}`);
+    const noteBody = `Baseline agreed with finance ${Date.now()}`;
 
-    await page.goto("/opportunities/new", { waitUntil: "networkidle" });
-    await page.waitForTimeout(2000);
-    await page.getByLabel(/Problem name/).fill(`Collaboration probe ${Date.now()}`);
-    await page.getByRole("button", { name: "Save opportunity" }).click();
-    await page.waitForURL(/\/opportunities\/[0-9a-f-]{36}/, { timeout: 45_000 });
-    opportunityPath = new URL(page.url()).pathname;
+    await expect(page.getByText("Collaboration").first()).toBeVisible({ timeout: 45_000 });
 
-    const panel = page
-      .locator("div")
-      .filter({ hasText: /^Collaboration/ })
-      .first();
-    await expect(page.getByText("Collaboration").first()).toBeVisible({ timeout: 30_000 });
-    void panel;
-
-    // 1. A review note.
     await page.getByLabel("Review note").fill(noteBody);
     await page.getByRole("button", { name: "Add note" }).click();
-    await expect(page.getByText(noteBody)).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText(noteBody)).toBeVisible({ timeout: 45_000 });
 
-    // 2. A review-state change.
     await page.getByLabel("Review state").click();
     await page.getByRole("option", { name: "Ready for review" }).click();
-    await expect(page.getByText("Ready for review").first()).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText("Ready for review").first()).toBeVisible({ timeout: 45_000 });
 
-    // 3. An owner assignment.
     await page.getByRole("tab", { name: /People/ }).click();
     await page.getByLabel("Assign teammate").click();
     await page.getByRole("option").first().click();
     await page.waitForTimeout(2500);
 
-    // The timeline attributes each event and orders it newest first.
     await page.getByRole("tab", { name: "Activity" }).click();
     const entries = page.locator('[role="tabpanel"][data-state="active"] ol > li');
-    await expect(entries.first()).toBeVisible({ timeout: 30_000 });
+    await expect(entries.first()).toBeVisible({ timeout: 45_000 });
 
     const summaries = await entries.allInnerTexts();
     const joined = summaries.join("\n");
     expect(joined).toContain("Added a review note");
     expect(joined).toContain("Moved to Ready for review");
     expect(joined).toContain("Assigned owner");
-    // Every entry names its author.
+
     for (const text of summaries) {
       expect(text.trim().length).toBeGreaterThan(0);
-      expect(text).toMatch(/Facilitator|Trainer|facilitator/i);
+      expect(text).toContain(host.fullName);
     }
-    // Newest first: the assignment happened after the note.
+
     const assignmentIndex = summaries.findIndex((s) => s.includes("Assigned owner"));
-    const noteIndex = summaries.findIndex((s) => s.includes("Added a review note"));
     const statusIndex = summaries.findIndex((s) => s.includes("Moved to Ready for review"));
+    const noteIndex = summaries.findIndex((s) => s.includes("Added a review note"));
     expect(assignmentIndex).toBeLessThan(statusIndex);
     expect(statusIndex).toBeLessThan(noteIndex);
 
-    await context.close();
+    await close();
   });
 
-  test("host issues a share link and an email invitation", async ({ browser }) => {
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await signIn(page, HOST);
-    await openTeam(page);
+  test("a share link invitation grants workspace-scoped access", async ({ browser, users }) => {
+    const host = await users.create("host");
+    const joiner = await users.create("linkjoin");
 
-    shareLinkPath = await createInvitation(page);
-    expect(shareLinkPath).toMatch(/^\/invite\/.+/);
-    await expect(page.getByText("Share link").first()).toBeVisible({ timeout: 20_000 });
+    const hostSession = await pageAs(browser, host);
+    const noteBody = `Share link note ${Date.now()}`;
+    const opportunityPath = await captureOpportunity(hostSession.page, `Share link probe ${Date.now()}`);
+    await hostSession.page.getByLabel("Review note").fill(noteBody);
+    await hostSession.page.getByRole("button", { name: "Add note" }).click();
+    await expect(hostSession.page.getByText(noteBody)).toBeVisible({ timeout: 45_000 });
 
-    emailInvitePath = await createInvitation(page, EMAIL_JOINER);
-    expect(emailInvitePath).not.toBe(shareLinkPath);
-    await expect(page.getByText(EMAIL_JOINER).first()).toBeVisible({ timeout: 20_000 });
+    await openTeam(hostSession.page);
+    const sharePath = await createInvitation(hostSession.page);
+    expect(sharePath).toMatch(/^\/invite\/.+/);
+    await expect(hostSession.page.getByText("Share link").first()).toBeVisible({ timeout: 30_000 });
+    await hostSession.close();
 
-    await context.close();
-  });
+    const joinerSession = await pageAs(browser, joiner);
+    // Before joining, the host's item is out of reach.
+    await joinerSession.page.goto(opportunityPath, { waitUntil: "networkidle" });
+    await joinerSession.page.waitForTimeout(3000);
+    await expect(joinerSession.page.getByText(noteBody)).toHaveCount(0);
 
-  test("second persona joins through the share link and sees workspace data", async ({
-    browser,
-  }) => {
-    test.skip(!shareLinkPath, "No share link was issued");
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await signIn(page, LINK_JOINER);
+    await joinerSession.page.goto(sharePath, { waitUntil: "networkidle" });
+    await expect(joinerSession.page.getByText("You are in.")).toBeVisible({ timeout: 60_000 });
 
-    await page.goto(shareLinkPath, { waitUntil: "networkidle" });
-    await expect(page.getByText("You are in.")).toBeVisible({ timeout: 45_000 });
-
-    // Scoped access: the host's opportunity and its review trail are readable.
-    await page.goto(opportunityPath, { waitUntil: "networkidle" });
-    await expect(page.getByText(noteBody)).toBeVisible({ timeout: 45_000 });
-    await context.close();
-  });
-
-  test("third persona joins through their email invitation", async ({ browser }) => {
-    test.skip(!emailInvitePath, "No email invitation was issued");
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await signIn(page, EMAIL_JOINER);
-
-    await page.goto(emailInvitePath, { waitUntil: "networkidle" });
-    await expect(page.getByText("You are in.")).toBeVisible({ timeout: 45_000 });
-
-    await page.goto(opportunityPath, { waitUntil: "networkidle" });
-    await expect(page.getByText(noteBody)).toBeVisible({ timeout: 45_000 });
+    await joinerSession.page.goto(opportunityPath, { waitUntil: "networkidle" });
+    await expect(joinerSession.page.getByText(noteBody)).toBeVisible({ timeout: 60_000 });
 
     // A joiner is not an admin of the host workspace: no invitation controls.
-    await openTeam(page);
-    await expect(page.getByRole("button", { name: "Create invitation" })).toHaveCount(0);
-    await context.close();
-  });
-
-  test("an email invitation cannot be redeemed by a different account", async ({ browser }) => {
-    test.skip(!emailInvitePath, "No email invitation was issued");
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await signIn(page, "participant2@demo.usecasex.app");
-
-    await page.goto(emailInvitePath, { waitUntil: "networkidle" });
+    await openTeam(joinerSession.page);
     await expect(
-      page.getByText(/different email address|already been used|not valid/i),
-    ).toBeVisible({ timeout: 45_000 });
-    await context.close();
+      joinerSession.page.getByRole("button", { name: "Create invitation" }),
+    ).toHaveCount(0);
+    await joinerSession.close();
   });
 
-  test("Pro seat cap blocks new invitations and shows the Enterprise CTA", async ({ browser }) => {
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await signIn(page, HOST);
-    await openTeam(page);
+  test("an email invitation is bound to its recipient", async ({ browser, users }) => {
+    const host = await users.create("host");
+    const invited = await users.create("invited");
+    const stranger = await users.create("stranger");
 
-    // Fill the remaining fair-use seats with pending invitations.
-    for (let i = 0; i < PRO_SEAT_LIMIT + 2; i += 1) {
-      const capReached = await page
-        .getByText("You have reached your plan's fair-use team size.")
-        .count();
-      if (capReached > 0) break;
-      await createInvitation(page);
-      await page.waitForTimeout(1200);
-    }
+    const hostSession = await pageAs(browser, host);
+    const noteBody = `Email invite note ${Date.now()}`;
+    const opportunityPath = await captureOpportunity(hostSession.page, `Email invite probe ${Date.now()}`);
+    await hostSession.page.getByLabel("Review note").fill(noteBody);
+    await hostSession.page.getByRole("button", { name: "Add note" }).click();
+    await expect(hostSession.page.getByText(noteBody)).toBeVisible({ timeout: 45_000 });
 
-    await expect(page.getByText("You have reached your plan's fair-use team size.")).toBeVisible({
+    await openTeam(hostSession.page);
+    const invitePath = await createInvitation(hostSession.page, invited.email);
+    await expect(hostSession.page.getByText(invited.email).first()).toBeVisible({
       timeout: 30_000,
     });
+    await hostSession.close();
+
+    // The wrong account cannot redeem it.
+    const strangerSession = await pageAs(browser, stranger);
+    await strangerSession.page.goto(invitePath, { waitUntil: "networkidle" });
     await expect(
-      page.getByText(/Enterprise Design Partner engagement for larger teams/),
-    ).toBeVisible();
+      strangerSession.page.getByText(/different email address|already been used|not valid/i),
+    ).toBeVisible({ timeout: 60_000 });
+    await strangerSession.close();
+
+    // The intended recipient can.
+    const invitedSession = await pageAs(browser, invited);
+    await invitedSession.page.goto(invitePath, { waitUntil: "networkidle" });
+    await expect(invitedSession.page.getByText("You are in.")).toBeVisible({ timeout: 60_000 });
+    await invitedSession.page.goto(opportunityPath, { waitUntil: "networkidle" });
+    await expect(invitedSession.page.getByText(noteBody)).toBeVisible({ timeout: 60_000 });
+    await invitedSession.close();
+  });
+
+  test("removing a member revokes their access immediately", async ({ browser, users }) => {
+    const host = await users.create("host");
+    const member = await users.create("member");
+
+    const hostSession = await pageAs(browser, host);
+    const noteBody = `Removal note ${Date.now()}`;
+    const opportunityPath = await captureOpportunity(hostSession.page, `Removal probe ${Date.now()}`);
+    await hostSession.page.getByLabel("Review note").fill(noteBody);
+    await hostSession.page.getByRole("button", { name: "Add note" }).click();
+    await expect(hostSession.page.getByText(noteBody)).toBeVisible({ timeout: 45_000 });
+
+    await openTeam(hostSession.page);
+    const sharePath = await createInvitation(hostSession.page);
+
+    const memberSession = await pageAs(browser, member);
+    await memberSession.page.goto(sharePath, { waitUntil: "networkidle" });
+    await expect(memberSession.page.getByText("You are in.")).toBeVisible({ timeout: 60_000 });
+    await memberSession.page.goto(opportunityPath, { waitUntil: "networkidle" });
+    await expect(memberSession.page.getByText(noteBody)).toBeVisible({ timeout: 60_000 });
+
+    // The host removes them.
+    await openTeam(hostSession.page);
+    const removeButton = hostSession.page
+      .getByRole("button", { name: new RegExp(`^Remove .*${member.fullName}`, "i") })
+      .first();
+    await expect(removeButton).toBeVisible({ timeout: 45_000 });
+    await removeButton.click();
+    await expect(hostSession.page.getByText(member.fullName)).toHaveCount(0, { timeout: 45_000 });
+    await hostSession.close();
+
+    // Access is gone on the next load: no data, no protected actions.
+    await memberSession.page.goto(opportunityPath, { waitUntil: "networkidle" });
+    await memberSession.page.waitForTimeout(4000);
+    await expect(memberSession.page.getByText(noteBody)).toHaveCount(0);
+    await expect(memberSession.page.getByRole("button", { name: "Add note" })).toHaveCount(0);
+
+    await openTeam(memberSession.page);
+    await expect(memberSession.page.getByText(host.fullName)).toHaveCount(0);
+    await memberSession.close();
+  });
+
+  test("the Pro seat cap blocks new invitations and shows the Enterprise CTA", async ({
+    browser,
+    users,
+  }) => {
+    const host = await users.create("cap");
+    const { page, close } = await pageAs(browser, host);
+    await openTeam(page);
+
+    const capNotice = page.getByText("You have reached your plan's fair-use team size.");
+    for (let i = 0; i < PRO_SEAT_LIMIT + 2; i += 1) {
+      if ((await capNotice.count()) > 0) break;
+      await createInvitation(page);
+      await page.waitForTimeout(800);
+    }
+
+    await expect(capNotice).toBeVisible({ timeout: 45_000 });
+    await expect(page.getByText(/Enterprise Design Partner engagement for larger teams/)).toBeVisible();
     const cta = page.getByRole("link", { name: "Talk to us about Enterprise" });
     await expect(cta).toBeVisible();
     await expect(cta).toHaveAttribute("href", "/pricing");
     await expect(page.getByRole("button", { name: "Create invitation" })).toBeDisabled();
 
-    // Clean up the spare invitations so the cap is released.
-    await revokeAllInvitations(page);
-    await expect(page.getByText("No invitations are waiting.")).toBeVisible({ timeout: 30_000 });
-    await context.close();
-  });
-
-  test("removing a member revokes their access immediately", async ({ browser }) => {
-    const hostContext = await browser.newContext();
-    const hostPage = await hostContext.newPage();
-    await signIn(hostPage, HOST);
-    await openTeam(hostPage);
-
-    const removedLink = await removeMemberIfPresent(hostPage, /^Remove .*Super/i);
-    const removedEmail = await removeMemberIfPresent(hostPage, /^Remove .*(Tenant|tenantadmin)/i);
-    expect(removedLink || removedEmail).toBeTruthy();
-    await hostContext.close();
-
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await signIn(page, EMAIL_JOINER);
-
-    // Collaboration data for the host's item is no longer reachable.
-    await page.goto(opportunityPath, { waitUntil: "networkidle" });
-    await page.waitForTimeout(4000);
-    await expect(page.getByText(noteBody)).toHaveCount(0);
-
-    // Protected action: the review-note composer for that item is gone too.
-    await expect(page.getByRole("button", { name: "Add note" })).toHaveCount(0);
-
-    // Their own team page shows their own workspace, not the host's invitations.
-    await openTeam(page);
-    await expect(page.getByText("Facilitator / Trainer")).toHaveCount(0);
-    await context.close();
+    await close();
   });
 });
