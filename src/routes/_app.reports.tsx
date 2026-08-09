@@ -104,6 +104,33 @@ function ReportsPage() {
   const [loading, setLoading] = useState(true);
   const store = useUseCaseXPro();
   const workspace = useWorkspaceContext();
+  /**
+   * Portfolios offered in the picker: the user's own plus colleague-owned ones
+   * the database lets them read. RLS decides membership; this list only labels
+   * the owner so the two groups stay distinguishable.
+   */
+  const visiblePortfolios = useWorkspacePortfolios();
+  const portfolioOptions = useMemo(() => {
+    const own = store.portfolios.map((portfolio) => ({
+      portfolio,
+      ownerName: "You",
+      isMine: true,
+    }));
+    const seen = new Set(own.map((o) => o.portfolio.id));
+    const shared = (visiblePortfolios.data ?? [])
+      .filter((entry) => !entry.isMine && !seen.has(entry.portfolio.id))
+      .map((entry) => ({
+        portfolio: entry.portfolio,
+        ownerName: entry.ownerName,
+        isMine: false,
+      }));
+    return [...own, ...shared];
+  }, [store.portfolios, visiblePortfolios.data]);
+  const allPortfolios = useMemo(
+    () => portfolioOptions.map((option) => option.portfolio),
+    [portfolioOptions],
+  );
+
   /** Workspace membership role decides which export formats are permitted. */
   const exportRole = workspace.data?.workspaceRole ?? null;
   const exportAllowed = (format: ExportFormat) => canExportReport(exportRole, format).allowed;
