@@ -110,6 +110,7 @@ async function seed(tenant: Tenant, spec: DemoContentSpec) {
     .select("id")
     .single();
   fail("create board", boardError);
+  if (!board) throw new Error("create board: no row returned");
 
   for (const opp of spec.opportunities) {
     const { error } = await supabaseAdmin.from("opportunities").insert({
@@ -144,6 +145,7 @@ async function seed(tenant: Tenant, spec: DemoContentSpec) {
       .select("id")
       .single();
     fail("insert use case", error);
+    if (!data) throw new Error("insert use case: no row returned");
     useCases.push({
       id: data.id,
       decision: uc.decision,
@@ -167,6 +169,7 @@ async function seed(tenant: Tenant, spec: DemoContentSpec) {
     .select("id")
     .single();
   fail("create portfolio", portfolioError);
+  if (!portfolio) throw new Error("create portfolio: no row returned");
 
   for (const [index, uc] of useCases.entries()) {
     const { error } = await supabaseAdmin.from("portfolio_items").insert({
