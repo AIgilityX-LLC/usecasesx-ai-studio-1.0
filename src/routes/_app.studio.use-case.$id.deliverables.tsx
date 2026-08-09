@@ -9,22 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import {
-  DELIVERABLE_META,
-  type DeliverableType,
-  type DeliverableStatus,
-} from "@/lib/deliverables";
+import { DELIVERABLE_META, type DeliverableType, type DeliverableStatus } from "@/lib/deliverables";
 import { saveDeliverable } from "@/lib/deliverables.data";
 import {
   composeAll,
   loadUseCaseSources,
   type ComposedDeliverable,
 } from "@/lib/deliverables.compose";
-import {
-  exportPackagePDF,
-  exportPackageWord,
-  type ExportPackage,
-} from "@/lib/deliverables.export";
+import { exportPackagePDF, exportPackageWord, type ExportPackage } from "@/lib/deliverables.export";
 import { FairUseMeter } from "@/components/ai/FairUseMeter";
 import { useFairUse } from "@/hooks/useFairUse";
 import {
@@ -81,7 +73,12 @@ const ORIGIN_LABEL: Record<ComposedDeliverable["origin"], string> = {
 };
 
 function slugify(value: string): string {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "use-case";
+  return (
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "") || "use-case"
+  );
 }
 
 function DeliverablesHub() {
@@ -188,7 +185,9 @@ function DeliverablesHub() {
       }
       await refresh();
       await fairUse.refresh();
-      toast.success(`Stored ${targets.length} generated deliverable${targets.length === 1 ? "" : "s"}.`);
+      toast.success(
+        `Stored ${targets.length} generated deliverable${targets.length === 1 ? "" : "s"}.`,
+      );
     } catch {
       toast.error("We could not store the generated deliverables. Try again.");
     } finally {

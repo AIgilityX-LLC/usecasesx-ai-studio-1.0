@@ -266,7 +266,9 @@ export async function exportPackageWord(pkg: ExportPackage, fileName: string) {
     new Paragraph({ heading: HeadingLevel.TITLE, children: [new TextRun(pkg.title)] }),
   ];
   if (pkg.subtitle) {
-    children.push(new Paragraph({ children: [new TextRun({ text: pkg.subtitle, italics: true })] }));
+    children.push(
+      new Paragraph({ children: [new TextRun({ text: pkg.subtitle, italics: true })] }),
+    );
   }
   children.push(
     new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun("Contents")] }),

@@ -58,10 +58,7 @@ export async function fairUseStatus(
 
   const remaining = Math.max(
     0,
-    Math.min(
-      limits.perUserPerDay - usedByUser,
-      limits.perWorkspacePerDay - usedByWorkspace,
-    ),
+    Math.min(limits.perUserPerDay - usedByUser, limits.perWorkspacePerDay - usedByWorkspace),
   );
 
   return {

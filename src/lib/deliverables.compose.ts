@@ -37,9 +37,7 @@ export type UseCaseSources = {
 export async function loadUseCaseSources(useCaseId: string): Promise<UseCaseSources> {
   const [useCase, feasibility, dataReadiness, blueprint, rows] = await Promise.all([
     studioRepo.getStudioUseCase<Record<string, unknown>>(useCaseId).catch(() => null),
-    studioRepo
-      .getLatestFeasibility<Record<string, unknown>>(useCaseId, "*")
-      .catch(() => null),
+    studioRepo.getLatestFeasibility<Record<string, unknown>>(useCaseId, "*").catch(() => null),
     studioRepo.getLatestDataReadiness<Record<string, unknown>>(useCaseId).catch(() => null),
     studioRepo.getBlueprint<Record<string, unknown>>(useCaseId).catch(() => null),
     loadDeliverables(useCaseId).catch(() => [] as DeliverableRow[]),
