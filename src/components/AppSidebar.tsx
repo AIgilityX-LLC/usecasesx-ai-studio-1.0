@@ -88,9 +88,7 @@ const CORE: Item[] = [
   { to: "/patterns", label: "Pattern Library", icon: BookOpen },
 ];
 
-const STUDIO_PRO: Item[] = [
-  { to: "/roadmap", label: "Portfolio Roadmap", icon: Map, pro: true },
-];
+const STUDIO_PRO: Item[] = [{ to: "/roadmap", label: "Portfolio Roadmap", icon: Map, pro: true }];
 
 const INTEGRATIONS: Item[] = [
   { to: "/sarpi", label: "SARPI Readiness", icon: Rocket, pro: true },

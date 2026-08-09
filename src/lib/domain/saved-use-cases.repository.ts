@@ -185,9 +185,7 @@ export function parseScore(score: unknown) {
  * (title, summary, classification fields, industry, function, capability)
  * alongside the saved-entry metadata — no more `MOCK_USE_CASES` lookups.
  */
-export async function listSavedForUser(
-  userId: string | null,
-): Promise<EnrichedSavedRow[]> {
+export async function listSavedForUser(userId: string | null): Promise<EnrichedSavedRow[]> {
   const uid = requireUserId(userId);
   const result = await supabase
     .from("saved_use_cases")
@@ -243,8 +241,7 @@ export async function listSavedForUser(
     use_case_id: string;
     business_functions?: { name: string } | null;
   }>) {
-    if (row.business_functions?.name)
-      funcByUc.set(row.use_case_id, row.business_functions.name);
+    if (row.business_functions?.name) funcByUc.set(row.use_case_id, row.business_functions.name);
   }
 
   const capByUc = new Map<string, string>();
@@ -252,8 +249,7 @@ export async function listSavedForUser(
     use_case_id: string;
     ai_capabilities?: { name: string } | null;
   }>) {
-    if (row.ai_capabilities?.name)
-      capByUc.set(row.use_case_id, row.ai_capabilities.name);
+    if (row.ai_capabilities?.name) capByUc.set(row.use_case_id, row.ai_capabilities.name);
   }
 
   return rows.map((row) => {
