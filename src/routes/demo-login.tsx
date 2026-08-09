@@ -17,48 +17,58 @@ const DEMO_PASSWORD = import.meta.env.VITE_DEMO_PASSWORD ?? "Demo@123-UCX";
 
 const PERSONAS = [
   {
-    email: "superadmin@demo.usecasex.app",
-    label: "Platform SuperAdmin",
-    blurb: "Platform administration, taxonomy governance and tenant oversight.",
-    plan: "Enterprise",
-  },
-  {
-    email: "tenantadmin@demo.usecasex.app",
-    label: "Tenant Admin",
-    blurb: "Workspace owner — members, entitlements, portfolios and reporting.",
-    plan: "Enterprise",
-  },
-  {
     email: "pro@demo.usecasex.app",
     label: "Pro User",
     blurb: "Standard Pro seat — discovery, studio, scoring, portfolio and reports.",
     plan: "Pro",
+    tenant: "Meridian Retail (Pro Demo) · Pro Demo Workspace",
+    featured: true,
   },
   {
     email: "enterprise@demo.usecasex.app",
     label: "Enterprise User",
     blurb: "Enterprise seat — ERP-verified value, governance and suite handoffs.",
     plan: "Enterprise",
+    tenant: "Atlas Energy (Enterprise Demo) · Enterprise Demo Workspace",
+    featured: true,
+  },
+  {
+    email: "superadmin@demo.usecasex.app",
+    label: "Platform SuperAdmin",
+    blurb: "Platform administration, taxonomy governance and tenant oversight.",
+    plan: "Enterprise",
+    tenant: "UseCasesX Demo Platform",
+  },
+  {
+    email: "tenantadmin@demo.usecasex.app",
+    label: "Tenant Admin",
+    blurb: "Workspace owner — members, entitlements, portfolios and reporting.",
+    plan: "Enterprise",
+    tenant: "Northwind Group (Demo Tenant)",
   },
   {
     email: "facilitator@demo.usecasex.app",
     label: "Facilitator / Trainer",
     blurb: "Runs Discovery & Value Design workshops end to end.",
     plan: "Pro",
+    tenant: "Workshop Academy (Demo)",
   },
   {
     email: "participant1@demo.usecasex.app",
     label: "Participant One",
     blurb: "Submits pain points and opportunities, scores candidates.",
     plan: "Pro",
+    tenant: "Workshop Academy (Demo)",
   },
   {
     email: "participant2@demo.usecasex.app",
     label: "Participant Two",
     blurb: "Second voice in the room — proves scoping and traceability.",
     plan: "Pro",
+    tenant: "Workshop Academy (Demo)",
   },
 ];
+
 
 export const Route = createFileRoute("/demo-login")({
   head: () => ({
