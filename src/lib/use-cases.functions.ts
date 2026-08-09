@@ -40,6 +40,7 @@ const SELECT = `id, slug, title, summary, organization, organization_type, regio
   value_potential, complexity, risk_level, time_to_value, visibility,
   deployment_model, security_classification, cost_range,
   is_featured, show_on_landing, display_order, published_at,
+  provenance, provenance_note, quality_status, quality_checked_at,
   use_case_industries ( industries ( slug, name ) ),
   use_case_capabilities ( ai_capabilities ( slug, name ) ),
   use_case_business_functions ( business_functions ( slug, name ) ),
