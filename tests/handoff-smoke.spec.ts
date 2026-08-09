@@ -80,16 +80,21 @@ test.describe("handoffs smoke", () => {
       const file = await download;
       if (file) expect(file.suggestedFilename()).toMatch(/\.csv$/);
 
-      // Exports are auditable: the receipt is backed by an audit row.
-      await page.waitForTimeout(2_000);
-      const { data: audit } = await admin
+      // Exports are auditable: the receipt names the exact audit row, and that
+      // row must exist in the database.
+      const receiptId = page.getByTestId("receipt-audit-id");
+      await expect(receiptId).toBeVisible({ timeout: 30_000 });
+      const auditEventId = (await receiptId.innerText()).trim();
+      expect(auditEventId, "the receipt must name an audit event").not.toBe("not recorded");
+
+      const { data: auditRow } = await admin
         .from("audit_events")
         .select("id, action")
-        .eq("actor_id", operator.userId);
-      expect(
-        (audit ?? []).some((row) => String(row.action ?? "").includes("export")),
-        "handoff export must be audited",
-      ).toBe(true);
+        .eq("id", auditEventId)
+        .maybeSingle();
+      expect(auditRow?.id, "the receipt's audit row must exist").toBe(auditEventId);
+      expect(String(auditRow?.action ?? "")).toContain("export");
+
     } finally {
       await close();
     }
