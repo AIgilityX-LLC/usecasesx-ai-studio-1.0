@@ -161,7 +161,9 @@ export async function buildAuditTrail(
   );
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const itemRows = (items.data ?? []) as any[];
-  const itemTitle = new Map<string, string>(itemRows.map((i) => [i.id as string, i.title as string]));
+  const itemTitle = new Map<string, string>(
+    itemRows.map((i) => [i.id as string, i.title as string]),
+  );
   const itemStage = new Map<string, WorkshopStage>(
     itemRows.map((i) => [i.id as string, KIND_STAGE_MAP[i.kind as string] ?? "capture"]),
   );
