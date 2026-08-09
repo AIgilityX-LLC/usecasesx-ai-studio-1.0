@@ -23,6 +23,10 @@ const ListInput = z.object({
   timeToValue: z.array(z.string()).optional().default([]),
   deploymentModel: z.array(z.string()).optional().default([]),
   securityClassification: z.array(z.string()).optional().default([]),
+  /** Provenance labels (see `validate_use_case_provenance`). */
+  provenance: z.array(z.string()).optional().default([]),
+  /** Quality gate status. Published content is always `quality_passed`. */
+  qualityStatus: z.array(z.string()).optional().default([]),
   sort: z.enum(["recent", "impact", "maturity", "featured"]).optional().default("recent"),
   featuredOnly: z.boolean().optional().default(false),
   landingOnly: z.boolean().optional().default(false),
