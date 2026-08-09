@@ -14,6 +14,10 @@ import {
 type OpportunityInsert = Database["public"]["Tables"]["opportunities"]["Insert"];
 type UseCaseInsert = Database["public"]["Tables"]["ai_use_cases"]["Insert"];
 
+function fail(context: string, error: { message?: string } | null) {
+  if (error) throw new Error(`${context}: ${error.message ?? "unknown error"}`);
+}
+
 interface Tenant {
   userId: string;
   orgId: string;
@@ -63,11 +67,26 @@ async function purge(tenant: Tenant) {
   for (const p of portfolios ?? []) {
     await supabaseAdmin.from("portfolio_items").delete().eq("portfolio_id", p.id);
   }
-  await supabaseAdmin.from("portfolios").delete().eq("workspace_id", ws);
-  await supabaseAdmin.from("ai_use_cases").delete().eq("workspace_id", ws);
-  await supabaseAdmin.from("use_case_boards").delete().eq("workspace_id", ws);
-  await supabaseAdmin.from("opportunities").delete().eq("workspace_id", ws);
-  await supabaseAdmin.from("generated_reports").delete().eq("workspace_id", ws);
+  fail(
+    "delete portfolios",
+    (await supabaseAdmin.from("portfolios").delete().eq("workspace_id", ws)).error,
+  );
+  fail(
+    "delete use cases",
+    (await supabaseAdmin.from("ai_use_cases").delete().eq("workspace_id", ws)).error,
+  );
+  fail(
+    "delete boards",
+    (await supabaseAdmin.from("use_case_boards").delete().eq("workspace_id", ws)).error,
+  );
+  fail(
+    "delete opportunities",
+    (await supabaseAdmin.from("opportunities").delete().eq("workspace_id", ws)).error,
+  );
+  fail(
+    "delete reports",
+    (await supabaseAdmin.from("generated_reports").delete().eq("workspace_id", ws)).error,
+  );
   await supabaseAdmin
     .from("audit_events")
     .delete()
@@ -90,7 +109,7 @@ async function seed(tenant: Tenant, spec: DemoContentSpec) {
     })
     .select("id")
     .single();
-  if (boardError) throw boardError;
+  fail("create board", boardError);
 
   for (const opp of spec.opportunities) {
     const { error } = await supabaseAdmin.from("opportunities").insert({
@@ -102,7 +121,7 @@ async function seed(tenant: Tenant, spec: DemoContentSpec) {
       owner_name: tenant.label,
       source: "workshop",
     } as unknown as OpportunityInsert);
-    if (error) throw error;
+    fail("insert opportunity", error);
   }
 
   const useCases: Array<{ id: string; decision: string; delivery_stage: string; title: string }> =
@@ -124,7 +143,7 @@ async function seed(tenant: Tenant, spec: DemoContentSpec) {
       } as unknown as UseCaseInsert)
       .select("id")
       .single();
-    if (error) throw error;
+    fail("insert use case", error);
     useCases.push({
       id: data.id,
       decision: uc.decision,
@@ -147,7 +166,7 @@ async function seed(tenant: Tenant, spec: DemoContentSpec) {
     })
     .select("id")
     .single();
-  if (portfolioError) throw portfolioError;
+  fail("create portfolio", portfolioError);
 
   for (const [index, uc] of useCases.entries()) {
     const { error } = await supabaseAdmin.from("portfolio_items").insert({
@@ -159,7 +178,7 @@ async function seed(tenant: Tenant, spec: DemoContentSpec) {
       funding_state: uc.decision === "approved" ? "funded" : "requested",
       added_by: userId,
     });
-    if (error) throw error;
+    fail("insert portfolio item", error);
   }
 
   const { error: reportError } = await supabaseAdmin.from("generated_reports").insert({
@@ -177,7 +196,7 @@ async function seed(tenant: Tenant, spec: DemoContentSpec) {
       use_cases: useCases.map((u) => ({ title: u.title, decision: u.decision })),
     },
   });
-  if (reportError) throw reportError;
+  fail("insert report", reportError);
 
   await supabaseAdmin.from("audit_events").insert({
     actor_id: userId,
