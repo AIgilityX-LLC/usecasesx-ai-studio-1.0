@@ -58,6 +58,7 @@ import { Route as PTokenRouteImport } from './routes/p.$token'
 import { Route as AppAccountIndexRouteImport } from './routes/_app.account.index'
 import { Route as AppAccountOrganizationRouteImport } from './routes/_app.account.organization'
 import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.security'
+import { Route as AppAccountTeamRouteImport } from './routes/_app.account.team'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
 import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
@@ -335,6 +336,11 @@ const AppAccountSecurityRoute = AppAccountSecurityRouteImport.update({
   path: '/security',
   getParentRoute: () => AppAccountRoute,
 } as any)
+const AppAccountTeamRoute = AppAccountTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => AppAccountRoute,
+} as any)
 const AppBoardsIndexRoute = AppBoardsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -559,6 +565,7 @@ export interface FileRoutesByFullPath {
   '/p/$token': typeof PTokenRoute
   '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
+  '/account/team': typeof AppAccountTeamRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
   '/opportunities/$id': typeof AppOpportunitiesIdRoute
@@ -639,6 +646,7 @@ export interface FileRoutesByTo {
   '/p/$token': typeof PTokenRoute
   '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
+  '/account/team': typeof AppAccountTeamRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
   '/opportunities/$id': typeof AppOpportunitiesIdRoute
@@ -723,6 +731,7 @@ export interface FileRoutesById {
   '/p/$token': typeof PTokenRoute
   '/_app/account/organization': typeof AppAccountOrganizationRoute
   '/_app/account/security': typeof AppAccountSecurityRoute
+  '/_app/account/team': typeof AppAccountTeamRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/boards/collections': typeof AppBoardsCollectionsRoute
   '/_app/opportunities/$id': typeof AppOpportunitiesIdRoute
@@ -807,6 +816,7 @@ export interface FileRouteTypes {
     | '/p/$token'
     | '/account/organization'
     | '/account/security'
+    | '/account/team'
     | '/boards/$boardId'
     | '/boards/collections'
     | '/opportunities/$id'
@@ -887,6 +897,7 @@ export interface FileRouteTypes {
     | '/p/$token'
     | '/account/organization'
     | '/account/security'
+    | '/account/team'
     | '/boards/$boardId'
     | '/boards/collections'
     | '/opportunities/$id'
@@ -970,6 +981,7 @@ export interface FileRouteTypes {
     | '/p/$token'
     | '/_app/account/organization'
     | '/_app/account/security'
+    | '/_app/account/team'
     | '/_app/boards/$boardId'
     | '/_app/boards/collections'
     | '/_app/opportunities/$id'
@@ -1367,6 +1379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAccountSecurityRouteImport
       parentRoute: typeof AppAccountRoute
     }
+    '/_app/account/team': {
+      id: '/_app/account/team'
+      path: '/team'
+      fullPath: '/account/team'
+      preLoaderRoute: typeof AppAccountTeamRouteImport
+      parentRoute: typeof AppAccountRoute
+    }
     '/_app/boards/': {
       id: '/_app/boards/'
       path: '/'
@@ -1597,12 +1616,14 @@ declare module '@tanstack/react-router' {
 interface AppAccountRouteChildren {
   AppAccountOrganizationRoute: typeof AppAccountOrganizationRoute
   AppAccountSecurityRoute: typeof AppAccountSecurityRoute
+  AppAccountTeamRoute: typeof AppAccountTeamRoute
   AppAccountIndexRoute: typeof AppAccountIndexRoute
 }
 
 const AppAccountRouteChildren: AppAccountRouteChildren = {
   AppAccountOrganizationRoute: AppAccountOrganizationRoute,
   AppAccountSecurityRoute: AppAccountSecurityRoute,
+  AppAccountTeamRoute: AppAccountTeamRoute,
   AppAccountIndexRoute: AppAccountIndexRoute,
 }
 
