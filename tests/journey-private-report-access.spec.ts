@@ -7,7 +7,7 @@
  * is paired with a service-role read so a permissive policy cannot pass by
  * rendering an empty page.
  */
-import { adminClient, expect, grantPro, pageAs, test } from "./fixtures/workspace";
+import { adminClient, anonClient, expect, grantPro, pageAs, test } from "./fixtures/workspace";
 
 test.describe("phase 3: private report access", () => {
   test.describe.configure({ mode: "serial", timeout: 240_000 });
