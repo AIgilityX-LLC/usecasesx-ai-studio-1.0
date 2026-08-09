@@ -469,7 +469,7 @@ export function benefitSections(benefits: Benefit[]): ExportSection[] {
       kind: "table",
       columns: ["Group", "Benefits", "Expected total", "Evidenced total"],
       rows: aggregate.groups.map((g) => [
-        `${BENEFIT_UNIT_LABELS[g.unitType]}${g.currency ? ` · ${g.currency}` : ""} · ${g.periodLabel}`,
+        `${BENEFIT_UNIT_LABELS[g.unitType]}${g.currency ? ` · ${g.currency}` : ""} · ${g.basis === "annual" ? "annual run rate" : "one-off"}`,
         String(g.count),
         formatBenefitAmount(g.expectedTotal, g.unitType, g.currency),
         formatBenefitAmount(g.evidencedTotal, g.unitType, g.currency),
@@ -481,7 +481,9 @@ export function benefitSections(benefits: Benefit[]): ExportSection[] {
     sections.push({
       heading: "Excluded from totals",
       kind: "text",
-      body: aggregate.exclusions.map((e) => `• ${e.benefitName} — ${e.reason}`).join("\n"),
+      body: aggregate.exclusions
+        .map((e) => `• ${e.label}: ${e.benefits.map((b) => b.name).join(", ")}`)
+        .join("\n"),
     });
   }
 
