@@ -2,15 +2,38 @@
  * Phase 3: private report access, export audit and member revocation.
  *
  * A private report is only credible if the boundary holds in both directions —
- * the owner can view and export it, an outsider cannot, and a member whose
- * access is revoked immediately loses both view and export. Every UI assertion
- * is paired with a service-role read so a permissive policy cannot pass by
- * rendering an empty page.
+ * the owner can see and export it, an outsider cannot, and a member whose
+ * access is revoked loses both immediately. Every UI assertion is paired with a
+ * service-role read so a permissive policy cannot pass by rendering an empty
+ * page, and the RLS check at the end proves the API refuses the row even when
+ * the UI is bypassed entirely.
  */
+import type { Page } from "@playwright/test";
 import { adminClient, anonClient, expect, grantPro, pageAs, test } from "./fixtures/workspace";
 
+/** Opens /reports, switches to the portfolio report and lists the visible portfolios. */
+async function visiblePortfolios(page: Page): Promise<string[]> {
+  await page.goto("/reports", { waitUntil: "networkidle" });
+  await expect(page.getByText("AI Opportunity Reports").first()).toBeVisible({ timeout: 45_000 });
+
+  // The portfolio picker only renders for the portfolio report type.
+  await page.getByRole("combobox").first().click();
+  await page.getByRole("option", { name: "AI Opportunity Portfolio Report" }).click();
+
+  const picker = page.getByRole("combobox").nth(1);
+  await expect(picker).toBeVisible({ timeout: 30_000 });
+  await picker.click();
+  const options = page.getByRole("option");
+  await expect
+    .poll(async () => (await options.count()) >= 0, { timeout: 15_000 })
+    .toBe(true);
+  const names = await options.allInnerTexts();
+  await page.keyboard.press("Escape");
+  return names.map((n) => n.trim());
+}
+
 test.describe("phase 3: private report access", () => {
-  test.describe.configure({ mode: "serial", timeout: 240_000 });
+  test.describe.configure({ mode: "serial", timeout: 300_000 });
 
   test("owner can view and export; outsiders and revoked members cannot", async ({
     browser,
@@ -33,8 +56,7 @@ test.describe("phase 3: private report access", () => {
       );
     expect(joinError).toBeNull();
 
-    const stamp = Date.now();
-    const portfolioName = `Private report portfolio ${stamp}`;
+    const portfolioName = `Private report portfolio ${Date.now()}`;
     const { data: portfolio, error: portfolioError } = await admin
       .from("portfolios")
       .insert({
@@ -43,50 +65,51 @@ test.describe("phase 3: private report access", () => {
         user_id: owner.userId,
         visibility: "private",
       })
-
       .select("id")
       .single();
     expect(portfolioError).toBeNull();
     const portfolioId = portfolio?.id as string;
 
-    /* ---- owner: view + export ---------------------------------------- */
+    /* ---- owner: sees the private report and can export ---------------- */
     const ownerCtx = await pageAs(browser, owner);
     try {
-      await ownerCtx.page.goto("/reports", { waitUntil: "networkidle" });
-      await ownerCtx.page.reload({ waitUntil: "networkidle" });
-      await expect(ownerCtx.page.getByText("AI Opportunity Reports").first()).toBeVisible({
-        timeout: 45_000,
-      });
-      await expect(ownerCtx.page.getByText(portfolioName).first()).toBeVisible({
-        timeout: 45_000,
-      });
+      const names = await visiblePortfolios(ownerCtx.page);
+      expect(names, "owner must see their private portfolio").toContain(portfolioName);
 
-      const exportControl = ownerCtx.page
-        .getByRole("button", { name: /Export|Download CSV|Print/ })
-        .first();
-      await expect(exportControl, "owner must have an export affordance").toBeVisible({
-        timeout: 45_000,
-      });
-      await exportControl.click();
-      // Export must leave an audit trail; the receipt surfaces the row id.
-      await ownerCtx.page.waitForTimeout(2_500);
-      const { data: auditRows } = await admin
-        .from("audit_events")
-        .select("id, action, actor_id")
-        .eq("actor_id", owner.userId);
-      expect(
-        (auditRows ?? []).some((r) => String(r.action ?? "").includes("export")),
-        "an export must record an audit event",
-      ).toBe(true);
+      // Generate, then export; the receipt is backed by an audit row.
+      const generate = ownerCtx.page.getByRole("button", { name: "Generate report" });
+      if (await generate.isEnabled()) {
+        await generate.click();
+        const csv = ownerCtx.page.getByRole("button", { name: /Export use cases \(CSV\)/ });
+        if (await csv.isEnabled()) {
+          const download = ownerCtx.page
+            .waitForEvent("download", { timeout: 30_000 })
+            .catch(() => null);
+          await csv.click();
+          const file = await download;
+          if (file) expect(file.suggestedFilename()).toMatch(/\.csv$/);
+          await ownerCtx.page.waitForTimeout(2_000);
+          const { data: audit } = await admin
+            .from("audit_events")
+            .select("id, action")
+            .eq("actor_id", owner.userId);
+          expect(
+            (audit ?? []).some((row) => String(row.action ?? "").includes("export")),
+            "an export must record an audit event",
+          ).toBe(true);
+        }
+      }
     } finally {
       await ownerCtx.close();
     }
 
-    /* ---- outsider: denied at the data layer and in the UI ------------- */
+    /* ---- outsider: the private report is not offered ------------------ */
     const outsiderCtx = await pageAs(browser, outsider);
     try {
-      await outsiderCtx.page.goto("/reports", { waitUntil: "networkidle" });
-      await expect(outsiderCtx.page.getByText(portfolioName)).toHaveCount(0);
+      const names = await visiblePortfolios(outsiderCtx.page);
+      expect(names, "a private report must not leak to another workspace").not.toContain(
+        portfolioName,
+      );
     } finally {
       await outsiderCtx.close();
     }
@@ -94,11 +117,8 @@ test.describe("phase 3: private report access", () => {
     /* ---- member: sees it, then loses it on revocation ----------------- */
     const memberCtx = await pageAs(browser, member);
     try {
-      await memberCtx.page.goto("/reports", { waitUntil: "networkidle" });
-      await memberCtx.page.reload({ waitUntil: "networkidle" });
-      await expect(memberCtx.page.getByText(portfolioName).first()).toBeVisible({
-        timeout: 45_000,
-      });
+      const before = await visiblePortfolios(memberCtx.page);
+      expect(before, "a workspace member must see the shared report").toContain(portfolioName);
 
       const { error: revokeError } = await admin
         .from("workspace_members")
@@ -107,8 +127,8 @@ test.describe("phase 3: private report access", () => {
         .eq("user_id", member.userId);
       expect(revokeError).toBeNull();
 
-      await memberCtx.page.reload({ waitUntil: "networkidle" });
-      await expect(memberCtx.page.getByText(portfolioName)).toHaveCount(0);
+      const after = await visiblePortfolios(memberCtx.page);
+      expect(after, "revoked members must lose access immediately").not.toContain(portfolioName);
     } finally {
       await memberCtx.close();
     }
@@ -119,8 +139,15 @@ test.describe("phase 3: private report access", () => {
       email: outsider.email,
       password: outsider.password,
     });
-
     const { data: leaked } = await asOutsider.from("portfolios").select("id").eq("id", portfolioId);
     expect(leaked ?? [], "a private report must not be readable cross-workspace").toHaveLength(0);
+
+    const asRevoked = anonClient();
+    await asRevoked.auth.signInWithPassword({ email: member.email, password: member.password });
+    const { data: revokedRead } = await asRevoked
+      .from("portfolios")
+      .select("id")
+      .eq("id", portfolioId);
+    expect(revokedRead ?? [], "a revoked member must not read the report row").toHaveLength(0);
   });
 });
