@@ -90,7 +90,12 @@ describe("duplicate hints", () => {
 
 describe("outcome summary", () => {
   const items = [
-    item({ id: "p1", kind: "pain_point", title: "Manual invoice checks", businessFunction: "Finance" }),
+    item({
+      id: "p1",
+      kind: "pain_point",
+      title: "Manual invoice checks",
+      businessFunction: "Finance",
+    }),
     item({ id: "p2", kind: "pain_point", title: "Slow HR onboarding", businessFunction: "HR" }),
     item({ id: "u1", title: "Invoice matching copilot", status: "shortlisted" }),
     item({ id: "u2", title: "Cash forecast model" }),

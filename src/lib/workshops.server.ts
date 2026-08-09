@@ -134,7 +134,9 @@ export async function getBoard(
   const participantRows = (participants.data ?? []).map(toParticipant);
   const me = participantRows.find((p) => p.userId === userId) ?? null;
   const isFacilitator =
-    workshop.createdBy === userId || me?.role === "facilitator" || (await isOrgManager(supabase, workshop));
+    workshop.createdBy === userId ||
+    me?.role === "facilitator" ||
+    (await isOrgManager(supabase, workshop));
 
   return {
     workshop,

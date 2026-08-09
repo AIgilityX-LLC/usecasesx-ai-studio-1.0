@@ -112,8 +112,11 @@ export function WorkshopBoardView({ id }: { id: string }) {
     "Outcome summary generated",
   );
   const addParticipant = mutate(
-    (participant: { displayName: string; email: string; role: "participant" | "observer" | "facilitator" }) =>
-      addParticipantFn({ data: { workshopId: id, participant } }),
+    (participant: {
+      displayName: string;
+      email: string;
+      role: "participant" | "observer" | "facilitator";
+    }) => addParticipantFn({ data: { workshopId: id, participant } }),
     "Participant added",
   );
   const removeParticipant = mutate(
@@ -150,7 +153,10 @@ export function WorkshopBoardView({ id }: { id: string }) {
   const kind = KIND_FOR_STAGE[active];
   const stageItems = kind ? items.filter((i) => i.kind === kind) : [];
   const candidates = items.filter(
-    (i) => (i.kind === "opportunity" || i.kind === "use_case") && i.status !== "merged" && i.status !== "rejected",
+    (i) =>
+      (i.kind === "opportunity" || i.kind === "use_case") &&
+      i.status !== "merged" &&
+      i.status !== "rejected",
   );
   const shortlisted = items.filter((i) => i.status === "shortlisted");
   const myVotes = new Map(
@@ -309,10 +315,26 @@ function ContextStage({
   onRemove,
   busy,
 }: {
-  workshop: { objective: string; clientName: string; businessFunctions: string[]; startsOn: string | null; endsOn: string | null };
-  participants: Array<{ id: string; displayName: string; email: string | null; role: string; userId: string | null }>;
+  workshop: {
+    objective: string;
+    clientName: string;
+    businessFunctions: string[];
+    startsOn: string | null;
+    endsOn: string | null;
+  };
+  participants: Array<{
+    id: string;
+    displayName: string;
+    email: string | null;
+    role: string;
+    userId: string | null;
+  }>;
   canManage: boolean;
-  onAdd: (p: { displayName: string; email: string; role: "participant" | "observer" | "facilitator" }) => void;
+  onAdd: (p: {
+    displayName: string;
+    email: string;
+    role: "participant" | "observer" | "facilitator";
+  }) => void;
   onRemove: (id: string) => void;
   busy: boolean;
 }) {
@@ -324,15 +346,21 @@ function ContextStage({
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="space-y-3 text-sm">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Client</div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Client
+          </div>
           <p>{workshop.clientName || "Not recorded"}</p>
         </div>
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Objective</div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Objective
+          </div>
           <p className="whitespace-pre-wrap">{workshop.objective || "Not recorded"}</p>
         </div>
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Functions in scope</div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Functions in scope
+          </div>
           {workshop.businessFunctions.length === 0 ? (
             <p className="text-muted-foreground">None listed</p>
           ) : (
@@ -346,7 +374,9 @@ function ContextStage({
           )}
         </div>
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Dates</div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Dates
+          </div>
           <p>
             {workshop.startsOn ?? "—"} → {workshop.endsOn ?? "—"}
           </p>
@@ -530,7 +560,11 @@ function CollectStage({
               </SelectContent>
             </Select>
             <Button type="submit" disabled={busy}>
-              {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
+              {busy ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Plus className="mr-2 h-4 w-4" />
+              )}
               Add
             </Button>
           </div>
@@ -554,7 +588,9 @@ function CollectStage({
                 <div className="min-w-0">
                   <div className="font-medium">{item.title}</div>
                   {item.detail && (
-                    <p className="mt-1 whitespace-pre-wrap text-sm text-muted-foreground">{item.detail}</p>
+                    <p className="mt-1 whitespace-pre-wrap text-sm text-muted-foreground">
+                      {item.detail}
+                    </p>
                   )}
                   <div className="mt-1 text-xs text-muted-foreground">
                     {item.submittedByName}
@@ -662,7 +698,11 @@ function ScoringStage({
                         <span className="ml-1 text-muted-foreground">avg {avg.toFixed(1)}</span>
                       )}
                     </div>
-                    <div className="mt-1 flex gap-1" role="group" aria-label={CRITERION_LABEL[criterion]}>
+                    <div
+                      className="mt-1 flex gap-1"
+                      role="group"
+                      aria-label={CRITERION_LABEL[criterion]}
+                    >
                       {[1, 2, 3, 4, 5].map((n) => (
                         <button
                           key={n}
@@ -711,7 +751,12 @@ function ShortlistStage({
     (a, b) => (scores.get(b.id)?.composite ?? -1) - (scores.get(a.id)?.composite ?? -1),
   );
   if (ranked.length === 0)
-    return <EmptyState title="No candidates yet" description="The longlist builds from earlier stages." />;
+    return (
+      <EmptyState
+        title="No candidates yet"
+        description="The longlist builds from earlier stages."
+      />
+    );
   return (
     <ol className="space-y-2">
       {ranked.map((item, index) => {
@@ -807,7 +852,8 @@ function PortfolioStage({
         ))}
       </ul>
       <p className="text-xs text-muted-foreground">
-        Converted drafts carry their workshop lineage, and appear in the Studio portfolio once scored.
+        Converted drafts carry their workshop lineage, and appear in the Studio portfolio once
+        scored.
       </p>
     </div>
   );
@@ -857,8 +903,8 @@ function OutcomeStage({
               <ul className="space-y-1">
                 {outcome.summary.map.map((row) => (
                   <li key={row.businessFunction}>
-                    <span className="font-medium">{row.businessFunction}</span> — {row.painPoints} pain
-                    point(s), {row.opportunities} opportunity(ies), {row.useCases} use case(s)
+                    <span className="font-medium">{row.businessFunction}</span> — {row.painPoints}{" "}
+                    pain point(s), {row.opportunities} opportunity(ies), {row.useCases} use case(s)
                   </li>
                 ))}
               </ul>
@@ -919,7 +965,9 @@ function OutcomeStage({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="space-y-2">
-      <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</h3>
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        {title}
+      </h3>
       {children}
     </section>
   );
@@ -929,13 +977,7 @@ function Muted({ children }: { children: React.ReactNode }) {
   return <p className="text-muted-foreground">{children}</p>;
 }
 
-function RowList({
-  rows,
-  empty,
-}: {
-  rows: import("@/lib/workshops").OutcomeRow[];
-  empty: string;
-}) {
+function RowList({ rows, empty }: { rows: import("@/lib/workshops").OutcomeRow[]; empty: string }) {
   if (rows.length === 0) return <Muted>{empty}</Muted>;
   return (
     <ul className="space-y-1">

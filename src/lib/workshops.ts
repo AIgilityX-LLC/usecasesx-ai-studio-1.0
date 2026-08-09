@@ -411,7 +411,12 @@ export type OutcomeSummary = {
     converted: number;
   };
   /** Opportunity Map: demand per business function per kind. */
-  map: Array<{ businessFunction: string; painPoints: number; opportunities: number; useCases: number }>;
+  map: Array<{
+    businessFunction: string;
+    painPoints: number;
+    opportunities: number;
+    useCases: number;
+  }>;
   longlist: OutcomeRow[];
   shortlist: OutcomeRow[];
   quickWins: OutcomeRow[];
@@ -504,8 +509,7 @@ export function buildOutcomeSummary(input: {
     nextSteps.push("Convert the remaining shortlisted items into Studio drafts.");
   nextSteps.push("Assign a business owner and a baseline measure to each shortlisted item.");
   nextSteps.push("Score the shortlist in the Studio scorecard and review it in the portfolio.");
-  if (gaps.length > 0)
-    nextSteps.push(`Revisit functions with unmet demand: ${gaps.join(", ")}.`);
+  if (gaps.length > 0) nextSteps.push(`Revisit functions with unmet demand: ${gaps.join(", ")}.`);
 
   return {
     generatedAt: (input.now ?? new Date()).toISOString(),

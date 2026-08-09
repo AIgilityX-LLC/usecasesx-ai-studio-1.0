@@ -25,7 +25,8 @@ export const Route = createFileRoute("/_app/workshops/")({
       { property: "og:title", content: "Workshops — AI Discovery & Value Design" },
       {
         property: "og:description",
-        content: "Structured, facilitator-led AI discovery sessions from context to outcome summary.",
+        content:
+          "Structured, facilitator-led AI discovery sessions from context to outcome summary.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

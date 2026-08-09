@@ -180,11 +180,16 @@ export const addParticipantFn = createServerFn({ method: "POST" })
 
 export const removeParticipantFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ workshopId: z.string().uuid(), id: z.string().uuid() }).parse(d))
+  .inputValidator((d) =>
+    z.object({ workshopId: z.string().uuid(), id: z.string().uuid() }).parse(d),
+  )
   .handler(async ({ data, context }) => {
     const { assertFacilitator } = await import("@/lib/workshops.server");
     await assertFacilitator(context.supabase, data.workshopId, context.userId);
-    const { error } = await context.supabase.from("workshop_participants").delete().eq("id", data.id);
+    const { error } = await context.supabase
+      .from("workshop_participants")
+      .delete()
+      .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
