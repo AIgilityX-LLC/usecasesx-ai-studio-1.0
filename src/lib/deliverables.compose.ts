@@ -440,6 +440,18 @@ export type ComposedDeliverable = {
  * compatible unit/currency/period groups are summed, and anything that cannot
  * be combined is listed as an explicit exclusion rather than folded in.
  */
+/** Evidence rendered inline: links keep their URL, uploads stay private by name. */
+function formatEvidence(benefit: Benefit): string {
+  const items = benefit.evidenceLinks ?? [];
+  const parts = items.map((item) =>
+    item.kind === "link" && item.url
+      ? `${item.label}: ${item.url}`
+      : `${item.label} (private upload)`,
+  );
+  if (benefit.evidenceSource) parts.unshift(`Source: ${benefit.evidenceSource}`);
+  return parts.length > 0 ? parts.join("\n") : "No evidence attached";
+}
+
 export function benefitSections(benefits: Benefit[]): ExportSection[] {
   if (benefits.length === 0) return [];
 
