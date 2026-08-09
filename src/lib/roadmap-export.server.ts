@@ -102,5 +102,6 @@ export async function loadRoadmapExportData(
 
   const all = buildRoadmapItems(entries);
   const items = period ? all.filter((item) => (item.period ?? "") === period) : all;
-  return { portfolioName: portfolio.data.name as string, items };
+  const name = (portfolio.data as unknown as { name?: string | null }).name ?? null;
+  return { portfolioName: name, items };
 }
