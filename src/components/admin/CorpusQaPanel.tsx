@@ -142,11 +142,7 @@ export function CorpusQaPanel() {
             disabled={!report}
             onClick={() =>
               report &&
-              download(
-                `launch-corpus-quality-${stamp}.csv`,
-                "text/csv",
-                qaReportToCsv(report),
-              )
+              download(`launch-corpus-quality-${stamp}.csv`, "text/csv", qaReportToCsv(report))
             }
           >
             <Download className="mr-2 h-4 w-4" /> Quality report (CSV)

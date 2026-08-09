@@ -280,7 +280,16 @@ export function qaReportToCsv(report: QaReport): string {
 /** Auditable CSV of catalogue import / lifecycle events with provenance. */
 export function importLogToCsv(entries: ImportLogEntry[]): string {
   return toCsv(
-    ["timestamp", "actor", "action", "use_case_id", "slug", "provenance", "quality_status", "detail"],
+    [
+      "timestamp",
+      "actor",
+      "action",
+      "use_case_id",
+      "slug",
+      "provenance",
+      "quality_status",
+      "detail",
+    ],
     entries.map((e) => [
       e.ts,
       e.actor,

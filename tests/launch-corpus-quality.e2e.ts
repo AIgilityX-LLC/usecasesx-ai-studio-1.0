@@ -86,11 +86,7 @@ async function main() {
     check("unpublished record is not publicly discoverable", (hidden.data?.length ?? 0) === 0);
 
     // 5. Shared gate (used by the admin QA action) agrees with the trigger.
-    const { data: preRow } = await admin
-      .from("use_cases")
-      .select("*")
-      .eq("id", id)
-      .single();
+    const { data: preRow } = await admin.from("use_cases").select("*").eq("id", id).single();
     const preResult = evaluateQualityGate(preRow as unknown as QaRecord);
     check(
       "shared quality gate marks the record as failing",
@@ -109,14 +105,24 @@ async function main() {
         published_at: new Date().toISOString(),
       })
       .eq("id", id);
-    check("publish succeeds once provenance + quality pass", !published.error, published.error?.message ?? "");
+    check(
+      "publish succeeds once provenance + quality pass",
+      !published.error,
+      published.error?.message ?? "",
+    );
 
     const { data: postRow } = await admin.from("use_cases").select("*").eq("id", id).single();
     const postResult = evaluateQualityGate(postRow as unknown as QaRecord);
-    check("shared quality gate marks the published record as passing", postResult.passes,
-      postResult.issues.map((i) => i.code).join(", "));
+    check(
+      "shared quality gate marks the published record as passing",
+      postResult.passes,
+      postResult.issues.map((i) => i.code).join(", "),
+    );
 
-    const visible = await anon.from("use_cases").select("id, provenance, quality_status").eq("slug", slug);
+    const visible = await anon
+      .from("use_cases")
+      .select("id, provenance, quality_status")
+      .eq("slug", slug);
     check("published record is publicly discoverable", (visible.data?.length ?? 0) === 1);
     check(
       "public record carries a provenance label and passed quality",
@@ -138,7 +144,9 @@ async function main() {
     await admin.from("use_cases").delete().eq("id", id);
   }
 
-  console.log(failures === 0 ? "\n✅ launch-corpus quality gate holds" : `\n❌ ${failures} failure(s)`);
+  console.log(
+    failures === 0 ? "\n✅ launch-corpus quality gate holds" : `\n❌ ${failures} failure(s)`,
+  );
   process.exit(failures === 0 ? 0 : 1);
 }
 
