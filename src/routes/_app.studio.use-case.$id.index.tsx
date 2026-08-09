@@ -130,6 +130,9 @@ function UseCaseDetailPage() {
 
               <DecisionHistory useCaseId={id} />
             </div>
+
+            <CollaborationPanel entityType="use_case" entityId={id} />
+
           </>
         )}
 
