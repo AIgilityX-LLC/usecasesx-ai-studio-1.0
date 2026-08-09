@@ -114,24 +114,55 @@ test.describe("phase 3: private report access", () => {
       await outsiderCtx.close();
     }
 
-    /* ---- member: sees it, then loses it on revocation ----------------- */
+    /* ---- member: a shared report is readable, then revoked ------------ */
+    // The reports picker is deliberately scoped to the signed-in user's own
+    // portfolios, so member access is asserted at the data layer — that is
+    // where the sharing boundary actually lives.
+    const sharedName = `Shared report portfolio ${Date.now()}`;
+    const { data: shared, error: sharedError } = await admin
+      .from("portfolios")
+      .insert({
+        name: sharedName,
+        workspace_id: workspaceId,
+        user_id: owner.userId,
+        visibility: "workspace",
+      })
+      .select("id")
+      .single();
+    expect(sharedError).toBeNull();
+    const sharedId = shared?.id as string;
+
+    const asMember = anonClient();
+    await asMember.auth.signInWithPassword({ email: member.email, password: member.password });
+
+    const { data: memberSees } = await asMember.from("portfolios").select("id").eq("id", sharedId);
+    expect(memberSees ?? [], "a workspace member must read the shared report").toHaveLength(1);
+
+    const { data: memberPrivate } = await asMember
+      .from("portfolios")
+      .select("id")
+      .eq("id", portfolioId);
+    expect(memberPrivate ?? [], "even a member must not read a private report").toHaveLength(0);
+
     const memberCtx = await pageAs(browser, member);
     try {
-      const before = await visiblePortfolios(memberCtx.page);
-      expect(before, "a workspace member must see the shared report").toContain(portfolioName);
-
-      const { error: revokeError } = await admin
-        .from("workspace_members")
-        .delete()
-        .eq("workspace_id", workspaceId)
-        .eq("user_id", member.userId);
-      expect(revokeError).toBeNull();
-
-      const after = await visiblePortfolios(memberCtx.page);
-      expect(after, "revoked members must lose access immediately").not.toContain(portfolioName);
+      const names = await visiblePortfolios(memberCtx.page);
+      expect(names, "another member's report is not exportable from their account").not.toContain(
+        portfolioName,
+      );
     } finally {
       await memberCtx.close();
     }
+
+    const { error: revokeError } = await admin
+      .from("workspace_members")
+      .delete()
+      .eq("workspace_id", workspaceId)
+      .eq("user_id", member.userId);
+    expect(revokeError).toBeNull();
+
+    const { data: afterRevoke } = await asMember.from("portfolios").select("id").eq("id", sharedId);
+    expect(afterRevoke ?? [], "a revoked member must lose read access immediately").toHaveLength(0);
 
     /* ---- RLS is the boundary, not the UI ------------------------------ */
     const asOutsider = anonClient();
@@ -142,12 +173,11 @@ test.describe("phase 3: private report access", () => {
     const { data: leaked } = await asOutsider.from("portfolios").select("id").eq("id", portfolioId);
     expect(leaked ?? [], "a private report must not be readable cross-workspace").toHaveLength(0);
 
-    const asRevoked = anonClient();
-    await asRevoked.auth.signInWithPassword({ email: member.email, password: member.password });
-    const { data: revokedRead } = await asRevoked
+    const { data: leakedShared } = await asOutsider
       .from("portfolios")
       .select("id")
-      .eq("id", portfolioId);
-    expect(revokedRead ?? [], "a revoked member must not read the report row").toHaveLength(0);
+      .eq("id", sharedId);
+    expect(leakedShared ?? [], "workspace reports must not leak cross-workspace").toHaveLength(0);
   });
 });
+
