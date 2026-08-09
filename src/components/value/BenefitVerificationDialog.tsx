@@ -135,7 +135,7 @@ export function BenefitVerificationDialog({
                           {EVENT_LABELS[entry.eventType] ?? entry.eventType}
                         </span>
                         <span className="text-muted-foreground">
-                          {new Date(entry.createdAt).toLocaleString()}
+                          {new Date(entry.at).toLocaleString()}
                         </span>
                       </div>
                     </li>
