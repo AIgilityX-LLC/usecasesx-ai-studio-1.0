@@ -15,13 +15,20 @@ import {
   recordProductEvent,
 } from "@/lib/telemetry";
 import {
-  buildExecutiveNarrative,
+  buildGuardedNarrative,
   buildPortfolioReport,
   PROVENANCE_HELP,
   PROVENANCE_LABELS,
   type ReportItemInput,
 } from "@/lib/reports/report-model";
 import { downloadBenefitsCsv, downloadUseCaseCsv, printReport } from "@/lib/reports/report-export";
+import {
+  canExportReport,
+  ReportExportDeniedError,
+  type ExportFormat,
+} from "@/lib/reports/report-access";
+import { useWorkspaceContext } from "@/hooks/useWorkspaceContext";
+
 import { ReportDocument } from "@/components/reports/ReportDocument";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -93,6 +100,11 @@ function ReportsPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const store = useUseCaseXPro();
+  const workspace = useWorkspaceContext();
+  /** Workspace membership role decides which export formats are permitted. */
+  const exportRole = workspace.data?.workspaceRole ?? null;
+  const exportAllowed = (format: ExportFormat) => canExportReport(exportRole, format).allowed;
+
   const printRef = useRef<HTMLDivElement>(null);
 
   const [reportType, setReportType] = useState<ReportType>("AI Use Case Summary Report");
@@ -200,11 +212,16 @@ function ReportsPage() {
   ]);
 
   const report = useMemo(() => buildPortfolioReport(items, portfolio), [items, portfolio]);
-  const generatedNarrative = useMemo(
-    () => buildExecutiveNarrative(report, { organization: profile?.organization ?? null }),
-    [report, profile?.organization],
+  /**
+   * Narrative is guarded: gaps are stated explicitly with their provenance and
+   * the paragraph is blocked outright when no citable record backs it.
+   */
+  const guarded = useMemo(
+    () => buildGuardedNarrative(report, items, { organization: profile?.organization ?? null }),
+    [report, items, profile?.organization],
   );
-  const narrative = narrativeOverride ?? generatedNarrative;
+  const narrativeBlocked = guarded.status === "blocked";
+  const narrative = narrativeOverride ?? guarded.text;
 
   const handleGenerate = async () => {
     const stamp = new Date();
@@ -235,12 +252,26 @@ function ReportsPage() {
     }
   };
 
-  const recordExport = (format: "pdf" | "csv" | "csv_benefits", filename?: string) => {
+  const recordExport = (
+    format: "pdf" | "csv" | "csv_benefits",
+    filename?: string,
+    denied?: string,
+  ) => {
     void recordAuditEvent({
       event: AUDIT_EVENTS.exportGenerated,
       entity: { type: "report", id: portfolio?.id ?? null },
-      next: { reportType, format, filename: filename ?? null, useCaseCount: items.length },
+      severity: denied ? "warning" : "info",
+      next: {
+        reportType,
+        format,
+        filename: filename ?? null,
+        useCaseCount: items.length,
+        outcome: denied ? "denied" : "completed",
+        denied_reason: denied ?? null,
+        workspace_role: exportRole,
+      },
     });
+    if (denied) return;
     void recordProductEvent({
       event: PRODUCT_EVENTS.reportExported,
       entity: { type: "report" },
@@ -248,23 +279,33 @@ function ReportsPage() {
     });
   };
 
+  /** Runs an export helper and turns a denied role into a clear message. */
+  const runExport = (format: "pdf" | "csv" | "csv_benefits", run: () => string | void) => {
+    try {
+      const filename = run() ?? undefined;
+      recordExport(format, filename);
+      if (filename) toast.success(`Exported ${filename}`);
+    } catch (error) {
+      const message =
+        error instanceof ReportExportDeniedError
+          ? error.message
+          : error instanceof Error
+            ? error.message
+            : "Export failed";
+      recordExport(format, undefined, message);
+      toast.error(message);
+    }
+  };
+
   const handlePrint = () => {
     trackCTAEvent("report_printed", { reportType });
-    recordExport("pdf");
-    printReport();
+    runExport("pdf", () => printReport(exportRole));
   };
 
-  const handleCsv = () => {
-    const filename = downloadUseCaseCsv(items, reportType);
-    recordExport("csv", filename);
-    toast.success(`Exported ${filename}`);
-  };
+  const handleCsv = () => runExport("csv", () => downloadUseCaseCsv(items, reportType, exportRole));
 
-  const handleBenefitsCsv = () => {
-    const filename = downloadBenefitsCsv(items, reportType);
-    recordExport("csv_benefits", filename);
-    toast.success(`Exported ${filename}`);
-  };
+  const handleBenefitsCsv = () =>
+    runExport("csv_benefits", () => downloadBenefitsCsv(items, reportType, exportRole));
 
   if (loading) {
     return (
@@ -398,21 +439,40 @@ function ReportsPage() {
             <Button onClick={handleGenerate} disabled={items.length === 0}>
               <FileText className="mr-1 h-4 w-4" /> Generate report
             </Button>
-            <Button variant="outline" onClick={handlePrint} disabled={!generated}>
+            <Button
+              variant="outline"
+              onClick={handlePrint}
+              disabled={!generated || !exportAllowed("pdf")}
+              title={canExportReport(exportRole, "pdf").allowed ? undefined : "Access denied"}
+            >
               <Printer className="mr-1 h-4 w-4" /> Print / Save as PDF
             </Button>
             <Separator orientation="vertical" className="mx-1 h-9" />
-            <Button variant="outline" onClick={handleCsv} disabled={!generated}>
+            <Button
+              variant="outline"
+              onClick={handleCsv}
+              disabled={!generated || !exportAllowed("csv")}
+              title={canExportReport(exportRole, "csv").allowed ? undefined : "Access denied"}
+            >
               <Table2 className="mr-1 h-4 w-4" /> Export use cases (CSV)
             </Button>
             <Button
               variant="outline"
               onClick={handleBenefitsCsv}
-              disabled={!generated || report.totals.benefits === 0}
+              disabled={
+                !generated || report.totals.benefits === 0 || !exportAllowed("csv_benefits")
+              }
             >
               <FileDown className="mr-1 h-4 w-4" /> Export benefits (CSV)
             </Button>
           </div>
+          {generated && !exportAllowed("csv") && (
+            <p className="text-sm text-destructive" role="status" data-testid="export-denied-note">
+              {canExportReport(exportRole, "csv").allowed
+                ? null
+                : (canExportReport(exportRole, "csv") as { reason: string }).reason}
+            </p>
+          )}
 
           {generated && (
             <Card>
@@ -420,23 +480,45 @@ function ReportsPage() {
                 <CardTitle className="text-base">Executive narrative</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <p className="text-xs text-muted-foreground">
-                  {PROVENANCE_HELP.narrative} Edit it freely — your wording is what prints.
-                </p>
-                <Textarea
-                  value={narrative}
-                  rows={4}
-                  aria-label="Executive narrative"
-                  onChange={(e) => setNarrativeOverride(e.target.value)}
-                />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setNarrativeOverride(null)}
-                  disabled={narrativeOverride === null}
-                >
-                  <RotateCcw className="mr-1 h-3.5 w-3.5" /> Reset to generated text
-                </Button>
+                {narrativeBlocked ? (
+                  <p
+                    className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
+                    data-testid="narrative-blocked"
+                  >
+                    {guarded.text}
+                  </p>
+                ) : (
+                  <>
+                    <p className="text-xs text-muted-foreground">
+                      {PROVENANCE_HELP.narrative} Gaps are stated explicitly with the record they
+                      would have come from. Edit it freely — your wording is what prints.
+                    </p>
+                    <Textarea
+                      value={narrative}
+                      rows={5}
+                      aria-label="Executive narrative"
+                      onChange={(e) => setNarrativeOverride(e.target.value)}
+                    />
+                    {guarded.gaps.length > 0 && (
+                      <ul
+                        className="list-disc space-y-1 pl-5 text-xs text-muted-foreground"
+                        data-testid="narrative-gaps"
+                      >
+                        {guarded.gaps.map((gap) => (
+                          <li key={gap}>{gap}</li>
+                        ))}
+                      </ul>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setNarrativeOverride(null)}
+                      disabled={narrativeOverride === null}
+                    >
+                      <RotateCcw className="mr-1 h-3.5 w-3.5" /> Reset to generated text
+                    </Button>
+                  </>
+                )}
               </CardContent>
             </Card>
           )}

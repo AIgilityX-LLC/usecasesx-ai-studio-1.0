@@ -734,3 +734,130 @@ export function reportFileName(kind: string, generatedAt = new Date()): string {
     .replace(/(^-|-$)/g, "");
   return `usecasex-${slug}-${generatedAt.toISOString().slice(0, 10)}`;
 }
+
+/* ------------------------------------------------------- narrative guard */
+
+/**
+ * Stricter narrative rules.
+ *
+ * The generated paragraph is only allowed to restate figures that can be cited
+ * back to a stored record. `buildNarrativeCitations` lists the records behind
+ * the roll-up; when nothing citable exists the narrative is BLOCKED rather than
+ * softened, so a report can never carry prose without a source behind it.
+ */
+
+export type NarrativeCitation = {
+  slug: string;
+  title: string;
+  /** Records that back this row of the roll-up. */
+  sources: ProvenanceSource[];
+};
+
+export const NARRATIVE_BLOCKED_MESSAGE =
+  "Narrative blocked: no citable workspace record backs this selection. Score a use case, record a portfolio decision or capture a benefit, then regenerate.";
+
+/** Provenance sources actually present for a single use case. */
+export function citationsForReport(report: UseCaseReport, hasEntry: boolean): ProvenanceSource[] {
+  const sources: ProvenanceSource[] = [];
+  if (report.useCaseId || report.slug) sources.push("repository");
+  if (report.score) sources.push("score");
+  if (hasEntry) sources.push("portfolio");
+  if (report.value.benefits.length > 0) sources.push("studio_value");
+  return sources;
+}
+
+export function buildNarrativeCitations(
+  report: PortfolioReport,
+  items: ReportItemInput[],
+): NarrativeCitation[] {
+  const entryBySlug = new Map(items.map((i) => [i.content.slug, i.entry]));
+  return report.reports.map((r) => ({
+    slug: r.slug,
+    title: r.title,
+    sources: citationsForReport(r, Boolean(entryBySlug.get(r.slug))),
+  }));
+}
+
+/**
+ * Explicit gap statements. Each one names the missing record AND the source it
+ * would have come from, so a reader can tell a real zero from an absent record.
+ */
+export function buildNarrativeGaps(report: PortfolioReport): string[] {
+  const t = report.totals;
+  const out: string[] = [];
+  if (t.useCases === 0) return out;
+  if (t.scored < t.useCases) {
+    out.push(
+      `Gap — ${pluralise(t.useCases - t.scored, "use case")} has no saved score (${PROVENANCE_LABELS.score}), so no composite score or band is stated for it.`,
+    );
+  }
+  if (t.benefits === 0) {
+    out.push(
+      `Gap — no benefits exist in the ${PROVENANCE_LABELS.studio_value.toLowerCase()}, so this report states no financial value.`,
+    );
+  } else if (t.evidencedBenefits < t.benefits) {
+    out.push(
+      `Gap — ${pluralise(t.benefits - t.evidencedBenefits, "benefit")} is owner-asserted only (${PROVENANCE_LABELS.studio_value}), not evidenced.`,
+    );
+  }
+  if (t.withOwner < t.useCases) {
+    out.push(
+      `Gap — ${pluralise(t.useCases - t.withOwner, "item")} has no delivery owner on the ${PROVENANCE_LABELS.portfolio.toLowerCase()}.`,
+    );
+  }
+  if (t.withNextAction < t.useCases) {
+    out.push(
+      `Gap — ${pluralise(t.useCases - t.withNextAction, "item")} has no recorded next action (${PROVENANCE_LABELS.portfolio}).`,
+    );
+  }
+  return out;
+}
+
+export type GuardedNarrative =
+  | {
+      status: "blocked";
+      text: string;
+      reason: string;
+      gaps: string[];
+      citations: NarrativeCitation[];
+    }
+  | { status: "ok"; text: string; gaps: string[]; citations: NarrativeCitation[] };
+
+/**
+ * The only narrative entry point a surface should call. Produces the paragraph
+ * plus its gap statements, or blocks it when provenance is unavailable.
+ */
+export function buildGuardedNarrative(
+  report: PortfolioReport,
+  items: ReportItemInput[],
+  meta: Pick<ReportMeta, "organization">,
+): GuardedNarrative {
+  const citations = buildNarrativeCitations(report, items);
+  const gaps = buildNarrativeGaps(report);
+
+  if (report.totals.useCases === 0) {
+    return {
+      status: "blocked",
+      text: NARRATIVE_BLOCKED_MESSAGE,
+      reason: "No use cases selected.",
+      gaps,
+      citations,
+    };
+  }
+  const citable = citations.filter((c) =>
+    c.sources.some((s) => s === "score" || s === "portfolio" || s === "studio_value"),
+  );
+  if (citable.length === 0) {
+    return {
+      status: "blocked",
+      text: NARRATIVE_BLOCKED_MESSAGE,
+      reason: "No score, portfolio decision or value record backs the selection.",
+      gaps,
+      citations,
+    };
+  }
+
+  const body = buildExecutiveNarrative(report, meta);
+  const text = gaps.length > 0 ? `${body} ${gaps.join(" ")}` : body;
+  return { status: "ok", text, gaps, citations };
+}

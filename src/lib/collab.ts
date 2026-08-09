@@ -199,7 +199,14 @@ export type ActivityEntry = {
 };
 
 /** Timeline filter buckets. Keep these stable — the UI and tests key off them. */
-export const ACTIVITY_CATEGORIES = ["all", "notes", "review", "people", "other"] as const;
+export const ACTIVITY_CATEGORIES = [
+  "all",
+  "notes",
+  "review",
+  "people",
+  "exports",
+  "other",
+] as const;
 export type ActivityCategory = (typeof ACTIVITY_CATEGORIES)[number];
 
 export const ACTIVITY_CATEGORY_LABELS: Record<ActivityCategory, string> = {
@@ -207,6 +214,7 @@ export const ACTIVITY_CATEGORY_LABELS: Record<ActivityCategory, string> = {
   notes: "Review notes",
   review: "Review states",
   people: "People",
+  exports: "Reports & exports",
   other: "Other changes",
 };
 
@@ -215,6 +223,7 @@ export function activityCategory(event: string): Exclude<ActivityCategory, "all"
   if (event.startsWith("collab.comment.")) return "notes";
   if (event.startsWith("collab.review_status.")) return "review";
   if (event.startsWith("collab.assignment.") || event.startsWith("membership.")) return "people";
+  if (event === "export.generated" || event === "report.generated") return "exports";
   return "other";
 }
 
@@ -272,6 +281,15 @@ export function summariseAuditEvent(event: string, next: Record<string, unknown>
       const status = detail("status") as ReviewStatus | null;
       return `Moved to ${status ? REVIEW_STATUS_META[status].label : "a new review state"}`;
     }
+    case "export.generated": {
+      const format = detail("format");
+      const outcome = detail("outcome");
+      const label = format ? format.toUpperCase().replace("_", " ") : "an";
+      if (outcome === "denied") return `Export blocked — ${label} export was denied`;
+      return `Exported ${label}${detail("reportType") ? ` — ${detail("reportType")}` : ""}`;
+    }
+    case "report.generated":
+      return `Generated ${detail("reportType") ?? "a report"}`;
     case "entity.created":
       return "Created this item";
     case "entity.updated":
