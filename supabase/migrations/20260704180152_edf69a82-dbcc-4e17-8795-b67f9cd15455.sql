@@ -1,1 +1,0 @@
-REVOKE EXECUTE ON FUNCTION public.audit_use_cases() FROM PUBLIC, anon, authenticated;
