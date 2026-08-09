@@ -30,7 +30,8 @@ async function ownerId(): Promise<string> {
     .like("email", "%@demo.usecasex.app")
     .limit(1)
     .maybeSingle();
-  if (!fallback?.user_id) throw new Error("No demo persona profile found — seed demo accounts first.");
+  if (!fallback?.user_id)
+    throw new Error("No demo persona profile found — seed demo accounts first.");
   return fallback.user_id;
 }
 

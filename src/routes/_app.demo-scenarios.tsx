@@ -12,15 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  DEMO_DISCLAIMER,
-  DEMO_SCENARIOS,
-  type DemoScenario,
-} from "@/lib/demo/demo-scenarios";
-import {
-  copyDemoScenarioFn,
-  listMySampleCopiesFn,
-} from "@/lib/demo/demo-scenarios.functions";
+import { DEMO_DISCLAIMER, DEMO_SCENARIOS, type DemoScenario } from "@/lib/demo/demo-scenarios";
+import { copyDemoScenarioFn, listMySampleCopiesFn } from "@/lib/demo/demo-scenarios.functions";
 
 export const Route = createFileRoute("/_app/demo-scenarios")({
   head: () => ({

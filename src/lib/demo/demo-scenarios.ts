@@ -108,8 +108,9 @@ export interface DemoScenario {
 }
 
 const totalOf = (s: DemoScoreSpec) =>
-  Math.round(((s.value + s.feasibility + s.readiness + s.strategic + s.ttv + (10 - s.risk)) / 6) * 10) /
-  10;
+  Math.round(
+    ((s.value + s.feasibility + s.readiness + s.strategic + s.ttv + (10 - s.risk)) / 6) * 10,
+  ) / 10;
 
 export function scoreTotal(score: DemoScoreSpec): number {
   return totalOf(score);
@@ -132,13 +133,15 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
     board: "Group AI Portfolio Board (Demo)",
     portfolio: {
       name: "Group AI Investment Portfolio (Demo)",
-      objective: "Balance group-wide AI investment across three subsidiaries with one funding view.",
+      objective:
+        "Balance group-wide AI investment across three subsidiaries with one funding view.",
       targetQuarter: "FY27 Q1",
     },
     opportunities: [
       {
         title: "Group-wide spend classification",
-        pain_point: "Each subsidiary classifies supplier spend differently, so group savings are invisible.",
+        pain_point:
+          "Each subsidiary classifies supplier spend differently, so group savings are invisible.",
         desired_outcome: "One classified spend view across subsidiaries within a quarter of close.",
         business_function: "Finance",
         strategic_objective: "Operational efficiency",
@@ -203,7 +206,8 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
       },
       {
         title: "Cross-subsidiary route consolidation",
-        problem_statement: "Overlapping delivery routes inflate cost per drop across two subsidiaries.",
+        problem_statement:
+          "Overlapping delivery routes inflate cost per drop across two subsidiaries.",
         ai_type: "Optimisation",
         status: "idea",
         score: { value: 7, feasibility: 5, readiness: 5, risk: 5, strategic: 7, ttv: 5 },
@@ -411,7 +415,10 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
         },
       },
     ],
-    report: { title: "Demo — Northport Mutual retail AI portfolio review", kind: "portfolio_summary" },
+    report: {
+      title: "Demo — Northport Mutual retail AI portfolio review",
+      kind: "portfolio_summary",
+    },
     story: [
       {
         title: "1 · Start from the service backlog",
@@ -581,11 +588,15 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
         },
       },
     ],
-    report: { title: "Demo — Kestrel Industrials plant AI value summary", kind: "portfolio_summary" },
+    report: {
+      title: "Demo — Kestrel Industrials plant AI value summary",
+      kind: "portfolio_summary",
+    },
     story: [
       {
         title: "1 · Capture the plant backlog",
-        detail: "Downtime, inspection and scrap opportunities captured from a fictional plant review.",
+        detail:
+          "Downtime, inspection and scrap opportunities captured from a fictional plant review.",
         to: "/opportunities",
       },
       {
@@ -631,7 +642,8 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
     board: "Firm AI Board (Demo)",
     portfolio: {
       name: "Firm Productivity Portfolio (Demo)",
-      objective: "Two low-risk productivity wins delivered inside one quarter with no new headcount.",
+      objective:
+        "Two low-risk productivity wins delivered inside one quarter with no new headcount.",
       targetQuarter: "FY27 Q1",
     },
     opportunities: [

@@ -130,7 +130,11 @@ async function purgeWorkspace(workspaceId: string) {
 export async function resetDemoScenarioTemplates() {
   const ownerId = await resolveTemplateOwner();
   if (!ownerId) {
-    return { resetAt: new Date().toISOString(), results: [], note: "demo personas not provisioned" };
+    return {
+      resetAt: new Date().toISOString(),
+      results: [],
+      note: "demo personas not provisioned",
+    };
   }
 
   const results: Array<{ key: string; label: string; status: string; useCases: number }> = [];
