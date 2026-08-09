@@ -22,6 +22,15 @@ export const PUBLIC_LAUNCH_FEATURES = Object.freeze({
 });
 
 /**
+ * Value-realization capabilities that are designed now but sold with
+ * Enterprise. OFF by default so no surface can claim automated benefit
+ * verification is live in Lite or Pro.
+ */
+export const ENTERPRISE_VALUE_FEATURES = Object.freeze({
+  erpBenefitVerification: import.meta.env.VITE_ERP_BENEFIT_VERIFICATION === "true",
+});
+
+/**
  * Browser mirror of the capability flags used by the entitlement catalogue.
  * Defaults live in `src/lib/authz/flags.ts`; Enterprise capabilities that are
  * designed but not shipped stay OFF so no surface can claim they are live.

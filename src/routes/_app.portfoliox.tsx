@@ -63,6 +63,7 @@ import {
 import { ExportPortfolioDialog } from "@/components/portfolios/ExportPortfolioDialog";
 import { SharePortfolioDialog } from "@/components/portfolios/SharePortfolioDialog";
 import { PortfolioMetrics } from "@/components/portfolios/PortfolioMetrics";
+import { PortfolioValueSummary } from "@/components/value/PortfolioValueSummary";
 import { PortfolioEntriesTable } from "@/components/portfolios/PortfolioEntriesTable";
 import { PortfolioReviewNotes } from "@/components/portfolios/PortfolioReviewNotes";
 import { PortfolioCharts } from "@/components/portfolios/PortfolioCharts";
@@ -268,6 +269,10 @@ function PortfolioDetail({
 
         <CardContent className="space-y-6">
           <PortfolioMetrics entries={visibleEntries} lastReviewedAt={portfolio.lastReviewedAt} />
+
+          <PortfolioValueSummary
+            studioUseCaseIds={visibleEntries.map((entry) => entry.studioUseCaseId)}
+          />
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Field label="Status">

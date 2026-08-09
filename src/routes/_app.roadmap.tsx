@@ -58,6 +58,7 @@ import { RoadmapAuditPanel } from "@/components/roadmap/RoadmapAuditPanel";
 import { RoadmapBoard } from "@/components/roadmap/RoadmapBoard";
 import { RoadmapExportSettingsDialog } from "@/components/roadmap/RoadmapExportSettingsDialog";
 import { RoadmapItemDialog } from "@/components/roadmap/RoadmapItemDialog";
+import { PortfolioValueSummary } from "@/components/value/PortfolioValueSummary";
 
 const roadmapSearchSchema = z.object({
   portfolio: fallback(z.string(), "").default(""),
@@ -347,6 +348,11 @@ function RoadmapSurface() {
               tone={summary.blocked + summary.dependencyRisk > 0}
             />
           </div>
+
+          <PortfolioValueSummary
+            title="Value in this view"
+            studioUseCaseIds={items.map((item) => item.entry.studioUseCaseId)}
+          />
 
           {items.length === 0 ? (
             <EmptyState
