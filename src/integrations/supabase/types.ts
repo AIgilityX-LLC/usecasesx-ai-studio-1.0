@@ -3331,6 +3331,44 @@ export type Database = {
         }
         Relationships: []
       }
+      workspace_export_preferences: {
+        Row: {
+          columns: string[]
+          created_at: string
+          export_key: string
+          id: string
+          updated_at: string
+          updated_by: string | null
+          workspace_id: string
+        }
+        Insert: {
+          columns?: string[]
+          created_at?: string
+          export_key: string
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+          workspace_id: string
+        }
+        Update: {
+          columns?: string[]
+          created_at?: string
+          export_key?: string
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_export_preferences_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workspace_members: {
         Row: {
           added_by: string | null

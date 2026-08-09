@@ -21,6 +21,7 @@ export interface PortfolioAuditEvent {
   eventType: string;
   entityType: string;
   severity: string | null;
+  actorId: string | null;
   previous: Record<string, unknown> | null;
   next: Record<string, unknown> | null;
   /** Present for `portfolio_item.*` events; identifies the affected use case. */
@@ -33,6 +34,7 @@ type Row = {
   event_type: string;
   entity_type: string;
   severity: string | null;
+  actor_id: string | null;
   previous_value: unknown;
   new_value: unknown;
 };
@@ -50,7 +52,9 @@ export async function listPortfolioAuditEvents(
   const id = parseInput(uuidSchema, portfolioId);
   const result = await supabase
     .from("audit_events")
-    .select("id, created_at, event_type, entity_type, severity, previous_value, new_value")
+    .select(
+      "id, created_at, event_type, entity_type, severity, actor_id, previous_value, new_value",
+    )
     .eq("entity_id", id)
     .in("entity_type", ["portfolio", "portfolio_item"])
     .order("created_at", { ascending: false })
@@ -72,6 +76,7 @@ export async function listPortfolioAuditEvents(
       eventType: row.event_type,
       entityType: row.entity_type,
       severity: row.severity,
+      actorId: row.actor_id,
       previous,
       next,
       useCaseId,

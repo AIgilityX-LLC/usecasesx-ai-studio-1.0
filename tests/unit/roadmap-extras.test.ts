@@ -2,7 +2,12 @@ import { describe, expect, it } from "vitest";
 
 import type { PortfolioEntry } from "@/lib/portfolio-model";
 import { analyzeRoadmap, buildRoadmapItems, findDependencyCycle, listPeriods } from "@/lib/roadmap";
-import { roadmapToCsv, roadmapToJson } from "@/lib/roadmap-export";
+import {
+  DEFAULT_ROADMAP_COLUMNS,
+  normalizeColumns,
+  roadmapToCsv,
+  roadmapToJson,
+} from "@/lib/roadmap-export";
 
 const TODAY = new Date("2026-08-01T12:00:00Z");
 
@@ -109,5 +114,28 @@ describe("roadmap export", () => {
     expect(json.periodFilter).toBe("Q3 2026");
     expect(json.itemCount).toBe(1);
     expect(json.items[0].stage).toBe("now");
+  });
+});
+
+describe("roadmap export columns", () => {
+  const items = buildRoadmapItems(
+    [entry({ useCaseId: "a", deliveryStage: "now" })],
+    new Date("2026-08-01T12:00:00Z"),
+  );
+
+  it("normalizes and orders selected columns", () => {
+    expect(normalizeColumns(["stage", "use_case", "bogus"])).toEqual(["use_case", "stage"]);
+    expect(normalizeColumns([])).toEqual(DEFAULT_ROADMAP_COLUMNS);
+    expect(normalizeColumns(["bogus"])).toEqual(DEFAULT_ROADMAP_COLUMNS);
+  });
+
+  it("CSV honours the selected columns", () => {
+    const csv = roadmapToCsv(items, ["use_case", "stage"]);
+    expect(csv.split("\r\n")[0]).toBe("Use case,Stage");
+  });
+
+  it("JSON honours the selected columns", () => {
+    const parsed = JSON.parse(roadmapToJson(items, {}, ["use_case"]));
+    expect(Object.keys(parsed.items[0]).sort()).toEqual(["title", "useCaseId"]);
   });
 });

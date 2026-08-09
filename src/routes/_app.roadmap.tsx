@@ -1,8 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { fallback, zodValidator } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Download, Info } from "lucide-react";
+import saveAs from "file-saver";
+import { Download, Info, Link2, Settings2 } from "lucide-react";
 
+import { supabase } from "@/integrations/supabase/client";
 import { RequirePlan } from "@/components/RequirePlan";
 import { PageHeader, EmptyState, ErrorState, LoadingSkeleton } from "@/components/ui-kit";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -14,6 +18,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -26,6 +31,7 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useUseCaseXPro } from "@/hooks/usecasex-pro";
 import { useAuthz } from "@/hooks/useAuthz";
+import { useExportPreferences } from "@/hooks/useExportPreferences";
 import {
   DELIVERY_STAGE_LABELS,
   type DeliveryStage,
@@ -42,12 +48,25 @@ import {
   summarizeRoadmap,
   type RoadmapItem,
 } from "@/lib/roadmap";
-import { downloadRoadmap, type RoadmapExportFormat } from "@/lib/roadmap-export";
+import {
+  downloadRoadmap,
+  roadmapExportFileName,
+  type RoadmapExportFormat,
+} from "@/lib/roadmap-export";
 import { RoadmapAnalyticsPanel } from "@/components/roadmap/RoadmapAnalyticsPanel";
+import { RoadmapAuditPanel } from "@/components/roadmap/RoadmapAuditPanel";
 import { RoadmapBoard } from "@/components/roadmap/RoadmapBoard";
+import { RoadmapExportSettingsDialog } from "@/components/roadmap/RoadmapExportSettingsDialog";
 import { RoadmapItemDialog } from "@/components/roadmap/RoadmapItemDialog";
 
+const roadmapSearchSchema = z.object({
+  portfolio: fallback(z.string(), "").default(""),
+  period: fallback(z.string(), "").default(""),
+  tab: fallback(z.string(), "stages").default("stages"),
+});
+
 export const Route = createFileRoute("/_app/roadmap")({
+  validateSearch: zodValidator(roadmapSearchSchema),
   head: () => ({
     meta: [
       { title: "RoadmapX™ — Delivery sequence | UseCasesX™" },
@@ -84,14 +103,30 @@ function RoadmapSurface() {
   const authz = useAuthz();
   const canManage = authz.can("portfolio.manage");
 
-  const [portfolioId, setPortfolioId] = useState<string | null>(null);
+  const search = Route.useSearch();
+  const navigate = useNavigate({ from: "/roadmap" });
+  const preferences = useExportPreferences("roadmap");
+
   const [editing, setEditing] = useState<PortfolioEntry | null>(null);
-  const [period, setPeriod] = useState<string>(ALL_PERIODS);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [streaming, setStreaming] = useState(false);
+
+  const period = search.period || ALL_PERIODS;
+  const tab = search.tab || "stages";
+
+  const setPeriod = (value: string) =>
+    navigate({
+      to: "/roadmap",
+      search: { ...search, period: value === ALL_PERIODS ? "" : value },
+    });
+  const setPortfolioId = (value: string) =>
+    navigate({ to: "/roadmap", search: { ...search, portfolio: value, period: "" } });
+  const setTab = (value: string) => navigate({ to: "/roadmap", search: { ...search, tab: value } });
 
   const portfolios = store.portfolios;
   const active = useMemo(
-    () => portfolios.find((p) => p.id === portfolioId) ?? portfolios[0] ?? null,
-    [portfolios, portfolioId],
+    () => portfolios.find((p) => p.id === search.portfolio) ?? portfolios[0] ?? null,
+    [portfolios, search.portfolio],
   );
 
   const allItems = useMemo(() => buildRoadmapItems(active?.entries ?? []), [active]);
@@ -107,6 +142,10 @@ function RoadmapSurface() {
   const periods = useMemo(() => groupByPeriod(items), [items]);
   const summary = useMemo(() => summarizeRoadmap(items), [items]);
   const analytics = useMemo(() => analyzeRoadmap(items), [items]);
+  const itemTitles = useMemo(
+    () => new Map(items.map((item) => [item.useCaseId, item.title] as const)),
+    [items],
+  );
 
   const scopeLabel =
     period === ALL_PERIODS
@@ -120,11 +159,63 @@ function RoadmapSurface() {
       toast.error("Nothing to export in the current view");
       return;
     }
-    downloadRoadmap(items, format, {
-      portfolioName: active?.name,
-      period: period === ALL_PERIODS ? undefined : scopeLabel,
-    });
+    downloadRoadmap(
+      items,
+      format,
+      {
+        portfolioName: active?.name,
+        period: period === ALL_PERIODS ? undefined : scopeLabel,
+      },
+      preferences.columns ?? undefined,
+    );
     toast.success(`Exported ${items.length} roadmap items as ${format.toUpperCase()}`);
+  };
+
+  /** Streamed server-side export — reliable for large filtered sets. */
+  const exportViaServer = async (format: RoadmapExportFormat) => {
+    if (!active) return;
+    setStreaming(true);
+    try {
+      const { data } = await supabase.auth.getSession();
+      const token = data.session?.access_token;
+      if (!token) {
+        toast.error("Sign in again to export");
+        return;
+      }
+      const serverPeriod =
+        period === ALL_PERIODS || period === UNSCHEDULED_PERIOD ? undefined : period;
+      const response = await fetch("/api/public/usecasex/roadmap/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          portfolioId: active.id,
+          format,
+          period: serverPeriod,
+          columns: preferences.columns ?? undefined,
+        }),
+      });
+      if (!response.ok) throw new Error(String(response.status));
+      const blob = await response.blob();
+      saveAs(blob, roadmapExportFileName(format, serverPeriod));
+      toast.success(`Streamed ${format.toUpperCase()} export ready`);
+    } catch {
+      toast.error("Server export failed — try the direct download");
+    } finally {
+      setStreaming(false);
+    }
+  };
+
+  const copyShareLink = async () => {
+    try {
+      const url = new URL(window.location.href);
+      if (active) url.searchParams.set("portfolio", active.id);
+      if (period !== ALL_PERIODS) url.searchParams.set("period", period);
+      url.searchParams.set("tab", tab);
+      await navigator.clipboard.writeText(url.toString());
+      toast.success("Share link copied — it reopens this exact view");
+    } catch {
+      toast.error("Could not copy the link");
+    }
   };
 
   const move = async (item: RoadmapItem, stage: DeliveryStage) => {
@@ -203,9 +294,9 @@ function RoadmapSurface() {
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" disabled={items.length === 0}>
+                <Button variant="outline" disabled={items.length === 0 || streaming}>
                   <Download className="mr-2 h-4 w-4" />
-                  Export
+                  {streaming ? "Preparing…" : "Export"}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -218,8 +309,25 @@ function RoadmapSurface() {
                 <DropdownMenuItem onSelect={() => exportRoadmap("json")}>
                   Download JSON
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel>Large sets (streamed)</DropdownMenuLabel>
+                <DropdownMenuItem onSelect={() => void exportViaServer("csv")}>
+                  Streamed CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => void exportViaServer("json")}>
+                  Streamed JSON
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => setSettingsOpen(true)}>
+                  <Settings2 className="mr-2 h-4 w-4" />
+                  Export settings
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <Button variant="outline" onClick={() => void copyShareLink()}>
+              <Link2 className="mr-2 h-4 w-4" />
+              Copy share link
+            </Button>
             <Button variant="outline" asChild>
               <Link to="/portfoliox">Manage portfolio</Link>
             </Button>
@@ -251,10 +359,11 @@ function RoadmapSurface() {
               }
             />
           ) : (
-            <Tabs defaultValue="stages">
+            <Tabs value={tab} onValueChange={setTab}>
               <TabsList>
                 <TabsTrigger value="stages">Now / Next / Later</TabsTrigger>
                 <TabsTrigger value="periods">By quarter</TabsTrigger>
+                <TabsTrigger value="history">Change history</TabsTrigger>
               </TabsList>
 
               <TabsContent value="stages" className="mt-4 space-y-4">
@@ -307,10 +416,38 @@ function RoadmapSurface() {
                   </Card>
                 ))}
               </TabsContent>
+
+              <TabsContent value="history" className="mt-4">
+                {active && (
+                  <RoadmapAuditPanel
+                    portfolioId={active.id}
+                    useCaseIds={items.map((item) => item.useCaseId)}
+                    titles={itemTitles}
+                    scopeLabel={scopeLabel}
+                  />
+                )}
+              </TabsContent>
             </Tabs>
           )}
         </>
       )}
+
+      <RoadmapExportSettingsDialog
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        columns={preferences.columns}
+        canPersist={preferences.canPersist}
+        saving={preferences.isSaving}
+        onSave={async (columns) => {
+          if (!preferences.canPersist) return;
+          try {
+            await preferences.save([...columns]);
+            toast.success("Export columns saved for your workspace");
+          } catch {
+            toast.error("Could not save export settings");
+          }
+        }}
+      />
 
       <RoadmapItemDialog
         open={Boolean(editing)}

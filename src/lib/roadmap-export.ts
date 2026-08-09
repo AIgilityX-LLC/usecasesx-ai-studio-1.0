@@ -2,8 +2,9 @@
  * RoadmapX™ export.
  *
  * Exports exactly what is on screen: the currently filtered Now / Next / Later
- * items, with the same fields the board renders. Pure builders plus a thin
- * browser download helper.
+ * items, with the columns the workspace has chosen. Pure builders plus thin
+ * browser helpers (local download, and a streamed server-side download for
+ * large sets).
  */
 
 import saveAs from "file-saver";
@@ -12,13 +13,16 @@ import { toRoadmapRows, type RoadmapItem } from "@/lib/roadmap";
 
 export type RoadmapExportFormat = "csv" | "json";
 
+export type RoadmapRow = ReturnType<typeof toRoadmapRows>[number];
+export type RoadmapColumnKey = keyof RoadmapRow;
+
 export function toCsvCell(value: string | number | null | undefined): string {
   if (value === null || value === undefined) return "";
   const text = String(value);
   return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
-const CSV_HEADERS: { key: keyof ReturnType<typeof toRoadmapRows>[number]; label: string }[] = [
+export const ROADMAP_EXPORT_COLUMNS: { key: RoadmapColumnKey; label: string }[] = [
   { key: "use_case", label: "Use case" },
   { key: "stage", label: "Stage" },
   { key: "target_period", label: "Target period" },
@@ -34,12 +38,24 @@ const CSV_HEADERS: { key: keyof ReturnType<typeof toRoadmapRows>[number]; label:
   { key: "flags", label: "Flags" },
 ];
 
+export const DEFAULT_ROADMAP_COLUMNS: RoadmapColumnKey[] = ROADMAP_EXPORT_COLUMNS.map((c) => c.key);
+
+/** Keeps only known keys, in the canonical column order. Empty input = all columns. */
+export function normalizeColumns(keys?: readonly string[] | null): RoadmapColumnKey[] {
+  if (!keys || keys.length === 0) return [...DEFAULT_ROADMAP_COLUMNS];
+  const wanted = new Set(keys);
+  const picked = DEFAULT_ROADMAP_COLUMNS.filter((key) => wanted.has(key));
+  return picked.length > 0 ? picked : [...DEFAULT_ROADMAP_COLUMNS];
+}
+
 /** One row per roadmap item currently in view. */
-export function roadmapToCsv(items: RoadmapItem[]): string {
+export function roadmapToCsv(items: RoadmapItem[], columns?: readonly string[]): string {
+  const selected = normalizeColumns(columns);
+  const labels = new Map(ROADMAP_EXPORT_COLUMNS.map((c) => [c.key, c.label] as const));
   const rows = toRoadmapRows(items);
   const lines = [
-    CSV_HEADERS.map((h) => toCsvCell(h.label)).join(","),
-    ...rows.map((row) => CSV_HEADERS.map((h) => toCsvCell(row[h.key])).join(",")),
+    selected.map((key) => toCsvCell(labels.get(key) ?? key)).join(","),
+    ...rows.map((row) => selected.map((key) => toCsvCell(row[key])).join(",")),
   ];
   return lines.join("\r\n");
 }
@@ -51,28 +67,56 @@ export interface RoadmapExportMeta {
   exportedAt?: string;
 }
 
-export function roadmapToJson(items: RoadmapItem[], meta: RoadmapExportMeta = {}): string {
+const JSON_FIELD_BY_COLUMN: Record<RoadmapColumnKey, string> = {
+  use_case: "title",
+  stage: "stage",
+  target_period: "targetPeriod",
+  milestone: "milestone",
+  owner: "owner",
+  planned_start: "plannedStartDate",
+  planned_end: "plannedEndDate",
+  next_action: "nextAction",
+  decision: "decision",
+  funding_state: "fundingState",
+  blocked_reason: "blockedReason",
+  depends_on: "dependsOn",
+  flags: "flags",
+};
+
+export function roadmapToJson(
+  items: RoadmapItem[],
+  meta: RoadmapExportMeta = {},
+  columns?: readonly string[],
+): string {
+  const selected = normalizeColumns(columns);
+  const fields = new Set(selected.map((key) => JSON_FIELD_BY_COLUMN[key]));
+  const pick = (record: Record<string, unknown>) =>
+    Object.fromEntries(Object.entries(record).filter(([key]) => fields.has(key)));
+
   return JSON.stringify(
     {
       exportedAt: meta.exportedAt ?? new Date().toISOString(),
       portfolio: meta.portfolioName ?? null,
       periodFilter: meta.period ?? null,
       itemCount: items.length,
+      columns: selected,
       items: items.map((item) => ({
         useCaseId: item.useCaseId,
-        title: item.title,
-        stage: item.stage,
-        targetPeriod: item.period ?? null,
-        milestone: item.entry.milestone ?? null,
-        owner: item.entry.deliveryOwner ?? null,
-        plannedStartDate: item.entry.plannedStartDate ?? null,
-        plannedEndDate: item.entry.plannedEndDate ?? null,
-        nextAction: item.entry.nextAction ?? null,
-        decision: item.entry.decision,
-        fundingState: item.entry.fundingState,
-        blockedReason: item.entry.blockedReason ?? null,
-        dependsOn: item.dependencies.map((d) => ({ useCaseId: d.useCaseId, title: d.title })),
-        flags: item.flags,
+        ...pick({
+          title: item.title,
+          stage: item.stage,
+          targetPeriod: item.period ?? null,
+          milestone: item.entry.milestone ?? null,
+          owner: item.entry.deliveryOwner ?? null,
+          plannedStartDate: item.entry.plannedStartDate ?? null,
+          plannedEndDate: item.entry.plannedEndDate ?? null,
+          nextAction: item.entry.nextAction ?? null,
+          decision: item.entry.decision,
+          fundingState: item.entry.fundingState,
+          blockedReason: item.entry.blockedReason ?? null,
+          dependsOn: item.dependencies.map((d) => ({ useCaseId: d.useCaseId, title: d.title })),
+          flags: item.flags,
+        }),
       })),
     },
     null,
@@ -91,8 +135,10 @@ export function downloadRoadmap(
   items: RoadmapItem[],
   format: RoadmapExportFormat,
   meta: RoadmapExportMeta = {},
+  columns?: readonly string[],
 ) {
-  const content = format === "csv" ? roadmapToCsv(items) : roadmapToJson(items, meta);
+  const content =
+    format === "csv" ? roadmapToCsv(items, columns) : roadmapToJson(items, meta, columns);
   const type = format === "csv" ? "text/csv;charset=utf-8" : "application/json;charset=utf-8";
   saveAs(new Blob([content], { type }), roadmapExportFileName(format, meta.period));
 }
