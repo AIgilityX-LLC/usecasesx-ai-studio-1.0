@@ -40,9 +40,10 @@ test.describe("phase 3: private report access", () => {
       .insert({
         name: portfolioName,
         workspace_id: workspaceId,
-        created_by: owner.userId,
+        user_id: owner.userId,
         visibility: "private",
       })
+
       .select("id")
       .single();
     expect(portfolioError).toBeNull();
