@@ -28,8 +28,13 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import {
+  ACTIVITY_CATEGORIES,
+  ACTIVITY_CATEGORY_LABELS,
+  ACTIVITY_PAGE_SIZE,
+  activityCategory,
   ASSIGNMENT_ROLES,
   ASSIGNMENT_ROLE_LABELS,
+  type ActivityCategory,
   REVIEW_STATUSES,
   REVIEW_STATUS_META,
   type AssignmentRole,
@@ -79,6 +84,8 @@ export function CollaborationPanel({
 
   const [draft, setDraft] = useState("");
   const [assignRole, setAssignRole] = useState<AssignmentRole>("owner");
+  const [activityFilter, setActivityFilter] = useState<ActivityCategory>("all");
+  const [activityPages, setActivityPages] = useState(1);
 
   const queryKey = ["collaboration", entityType, entityId];
   const query = useQuery({
@@ -170,6 +177,10 @@ export function CollaborationPanel({
     (m) => !data.assignments.some((a) => a.userId === m.userId && a.assignmentRole === assignRole),
   );
   const canWrite = data.seats.edition !== "lite" || data.canManage;
+  const filteredActivity = data.activity.filter(
+    (a) => activityFilter === "all" || activityCategory(a.event) === activityFilter,
+  );
+  const visibleActivity = filteredActivity.slice(0, activityPages * ACTIVITY_PAGE_SIZE);
 
   return (
     <Card className={className}>
@@ -374,19 +385,57 @@ export function CollaborationPanel({
             )}
           </TabsContent>
 
-          <TabsContent value="activity" className="pt-4">
-            {data.activity.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No recorded activity yet.</p>
+          <TabsContent value="activity" className="space-y-3 pt-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <Select
+                value={activityFilter}
+                onValueChange={(v) => {
+                  setActivityFilter(v as ActivityCategory);
+                  setActivityPages(1);
+                }}
+              >
+                <SelectTrigger className="h-8 w-48" aria-label="Activity filter">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ACTIVITY_CATEGORIES.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {ACTIVITY_CATEGORY_LABELS[c]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground" data-testid="activity-count">
+                Showing {visibleActivity.length} of {filteredActivity.length} events
+              </p>
+            </div>
+            {filteredActivity.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                {data.activity.length === 0
+                  ? "No recorded activity yet."
+                  : "No activity matches this filter."}
+              </p>
             ) : (
-              <ol className="space-y-3 border-l border-border pl-4">
-                {data.activity.map((a) => (
-                  <li key={a.id} className="relative text-sm">
-                    <span className="absolute -left-[21px] top-1.5 h-2 w-2 rounded-full bg-primary" />
-                    <span className="font-medium">{a.actorName}</span> {a.summary}
-                    <span className="ml-2 text-xs text-muted-foreground">{timeAgo(a.at)}</span>
-                  </li>
-                ))}
-              </ol>
+              <>
+                <ol className="space-y-3 border-l border-border pl-4">
+                  {visibleActivity.map((a) => (
+                    <li key={a.id} className="relative text-sm" data-event={a.event}>
+                      <span className="absolute -left-[21px] top-1.5 h-2 w-2 rounded-full bg-primary" />
+                      <span className="font-medium">{a.actorName}</span> {a.summary}
+                      <span className="ml-2 text-xs text-muted-foreground">{timeAgo(a.at)}</span>
+                    </li>
+                  ))}
+                </ol>
+                {visibleActivity.length < filteredActivity.length && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setActivityPages((p) => p + 1)}
+                  >
+                    Show more activity
+                  </Button>
+                )}
+              </>
             )}
           </TabsContent>
         </Tabs>
