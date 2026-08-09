@@ -87,6 +87,11 @@ test.describe("handoffs smoke", () => {
       const auditEventId = (await receiptId.innerText()).trim();
       expect(auditEventId, "the receipt must name an audit event").not.toBe("not recorded");
 
+      // The receipt must name a real audit id (UUID), not a placeholder. The
+      // row itself is read back when the id is exposed in full.
+      expect(auditEventId, "the receipt must expose a full audit event id").toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+      );
       const { data: auditRow } = await admin
         .from("audit_events")
         .select("id, action")
@@ -94,6 +99,7 @@ test.describe("handoffs smoke", () => {
         .maybeSingle();
       expect(auditRow?.id, "the receipt's audit row must exist").toBe(auditEventId);
       expect(String(auditRow?.action ?? "")).toContain("export");
+
 
     } finally {
       await close();
