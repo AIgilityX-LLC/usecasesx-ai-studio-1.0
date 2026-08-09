@@ -61,7 +61,9 @@ const metrics = {
 writeFileSync("monitoring-metrics.json", `${JSON.stringify(metrics, null, 2)}\n`);
 
 if (errorRate > ERROR_RATE_THRESHOLD) {
-  await page(`5xx spike on ${baseUrl}: ${failures.map((f) => `${f.route} → ${f.status}`).join(", ")}`);
+  await page(
+    `5xx spike on ${baseUrl}: ${failures.map((f) => `${f.route} → ${f.status}`).join(", ")}`,
+  );
   console.error(`Error rate ${(errorRate * 100).toFixed(0)}% exceeds threshold.`);
   process.exit(1);
 }

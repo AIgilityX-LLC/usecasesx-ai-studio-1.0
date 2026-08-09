@@ -28,7 +28,8 @@ function stableUrl() {
 let url = stableUrl();
 
 if (process.env.CLOUDFLARE_API_TOKEN && process.env.CLOUDFLARE_ACCOUNT_ID) {
-  const name = target === "preview" && prNumber ? `usecasesx-pr-${prNumber}` : `usecasesx-${target}`;
+  const name =
+    target === "preview" && prNumber ? `usecasesx-pr-${prNumber}` : `usecasesx-${target}`;
   const args = ["wrangler", "deploy", "--name", name];
   if (target !== "production") args.push("--env", target);
   const out = execFileSync("bunx", args, { encoding: "utf8" });

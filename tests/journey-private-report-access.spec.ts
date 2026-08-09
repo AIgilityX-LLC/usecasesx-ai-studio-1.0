@@ -25,10 +25,12 @@ test.describe("phase 3: private report access", () => {
     await grantPro(member);
 
     // The member joins the owner's workspace as a contributor.
-    const { error: joinError } = await admin.from("workspace_members").upsert(
-      { workspace_id: workspaceId, user_id: member.userId, role: "contributor" },
-      { onConflict: "workspace_id,user_id" },
-    );
+    const { error: joinError } = await admin
+      .from("workspace_members")
+      .upsert(
+        { workspace_id: workspaceId, user_id: member.userId, role: "contributor" },
+        { onConflict: "workspace_id,user_id" },
+      );
     expect(joinError).toBeNull();
 
     const stamp = Date.now();
@@ -117,10 +119,7 @@ test.describe("phase 3: private report access", () => {
       password: outsider.password,
     });
 
-    const { data: leaked } = await asOutsider
-      .from("portfolios")
-      .select("id")
-      .eq("id", portfolioId);
+    const { data: leaked } = await asOutsider.from("portfolios").select("id").eq("id", portfolioId);
     expect(leaked ?? [], "a private report must not be readable cross-workspace").toHaveLength(0);
   });
 });

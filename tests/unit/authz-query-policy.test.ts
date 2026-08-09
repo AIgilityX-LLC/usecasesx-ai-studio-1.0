@@ -57,8 +57,8 @@ describe("authzQueryPolicy", () => {
     const resolvedFlags = sequence.map(isAuthzSubjectResolved);
     expect(resolvedFlags).toEqual([false, false, false, true]);
     // Every pre-final step must schedule another read, otherwise the UI stalls.
-    expect(
-      sequence.slice(0, -1).every((s) => authzQueryPolicy(s).refetchInterval !== false),
-    ).toBe(true);
+    expect(sequence.slice(0, -1).every((s) => authzQueryPolicy(s).refetchInterval !== false)).toBe(
+      true,
+    );
   });
 });

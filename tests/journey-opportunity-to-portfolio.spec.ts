@@ -69,7 +69,6 @@ test.describe("journey: opportunity to portfolio", () => {
         }
       }
 
-
       /* ---- Portfolio -------------------------------------------------- */
       // Provisioning (profile plan + workspace membership) can land after the
       // first authenticated render, so assert the authoritative subject before

@@ -57,9 +57,11 @@ export async function grantPro(user: TestUser) {
   // fixture setup), so upsert rather than update.
   const { error } = await admin
     .from("profiles")
-    .upsert({ user_id: user.userId, email: user.email, plan_type: "pro" }, { onConflict: "user_id" });
+    .upsert(
+      { user_id: user.userId, email: user.email, plan_type: "pro" },
+      { onConflict: "user_id" },
+    );
   if (error) throw error;
-
 
   const { data: workspaceId, error: rpcError } = await admin.rpc("ensure_user_workspace", {
     _user_id: user.userId,
@@ -75,7 +77,6 @@ export async function grantPro(user: TestUser) {
   if (memberError) throw memberError;
   return workspaceId as string;
 }
-
 
 /** Creates a confirmed user through the admin API and returns its credentials. */
 

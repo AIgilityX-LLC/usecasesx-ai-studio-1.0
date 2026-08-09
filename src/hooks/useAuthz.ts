@@ -42,7 +42,8 @@ export function useAuthz(): AuthzState {
   const queryClient = useQueryClient();
   const queryKey = useMemo(() => ["authz-context", session?.user.id ?? null], [session]);
 
-  const resolvedSubject = queryClient.getQueryData<{ subject?: AuthzSubject }>(queryKey)?.subject as
+  const resolvedSubject = queryClient.getQueryData<{ subject?: AuthzSubject }>(queryKey)
+    ?.subject as
     | (AuthzSubject & { organizationId: string | null; workspaceId: string | null })
     | undefined;
   const policy = authzQueryPolicy(resolvedSubject ?? null);
@@ -93,4 +94,3 @@ export function useAuthz(): AuthzState {
     };
   }, [session, query.data, query.isPending, refresh]);
 }
-
