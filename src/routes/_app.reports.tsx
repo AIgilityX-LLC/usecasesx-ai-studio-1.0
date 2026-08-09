@@ -368,7 +368,7 @@ function ReportBody({
 }: {
   reportType: ReportType;
   profile: Profile | null;
-  items: Array<{ uc: MockUseCase; score?: ScoreDimensions; note?: string; priority?: string }>;
+  items: Array<{ uc: UseCaseContent; score?: ScoreDimensions; note?: string; priority?: string }>;
   portfolio?: Portfolio;
 }) {
   const scored = items.filter((i) => i.score);
@@ -388,7 +388,9 @@ function ReportBody({
   const lowPriority = items.filter((i) => computeTotalScore(i.score) < 40 && i.score);
 
   const highRisk = items.filter((i) => i.uc.riskLevel === "High" || i.uc.riskLevel === "Critical");
-  const agentic = items.filter((i) => /agent/i.test(i.uc.aiType) || /agent/i.test(i.uc.title));
+  const agentic = items.filter(
+    (i) => /agent/i.test(i.uc.aiCapability ?? "") || /agent/i.test(i.uc.title),
+  );
 
   return (
     <>
@@ -461,7 +463,8 @@ function ReportBody({
                   <div>
                     <h3 className="font-semibold text-slate-900">{uc.title}</h3>
                     <p className="text-xs text-slate-500 mt-1">
-                      {uc.industry.name} · {uc.businessFunction} · {uc.aiType}
+                      {uc.industry?.name ?? "—"} · {uc.businessFunction ?? "—"} ·{" "}
+                      {uc.aiCapability ?? "—"}
                     </p>
                   </div>
                   <div className="text-right shrink-0">
@@ -475,11 +478,11 @@ function ReportBody({
                 </div>
                 <p className="text-sm text-slate-600 mt-2 leading-snug">{uc.summary}</p>
                 <div className="flex flex-wrap gap-1.5 mt-2 text-[10px]">
-                  <Tag>Value: {uc.valuePotential}</Tag>
-                  <Tag>Complexity: {uc.complexity}</Tag>
-                  <Tag>Risk: {uc.riskLevel}</Tag>
-                  <Tag>TTV: {uc.timeToValue}</Tag>
-                  <Tag>Maturity: {uc.maturity}</Tag>
+                  <Tag>Value: {uc.valuePotential ?? "—"}</Tag>
+                  <Tag>Complexity: {uc.complexity ?? "—"}</Tag>
+                  <Tag>Risk: {uc.riskLevel ?? "—"}</Tag>
+                  <Tag>TTV: {uc.timeToValue ?? "—"}</Tag>
+                  <Tag>Maturity: {uc.maturityLevel ?? uc.maturity ?? "—"}</Tag>
                 </div>
                 {interp && <p className="text-[11px] text-slate-500 mt-2 italic">{interp.label}</p>}
                 {note && (
