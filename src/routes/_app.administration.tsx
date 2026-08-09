@@ -417,51 +417,13 @@ function UseCasesTab() {
                     >
                       <Copy className="w-4 h-4" />
                     </Button>
-                    {u.status !== "Published" && canPublish && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        title="Publish"
-                        onClick={() => {
-                          store.setStatus(u.id, "Published", "Published");
-                          trackCTAEvent("admin_published", { id: u.id });
-                        }}
-                      >
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      </Button>
-                    )}
-                    {u.status === "Published" && canPublish && (
-                      <ConfirmAction
-                        title="Unpublish use case?"
-                        desc="It will no longer appear in the public catalogue."
-                        action="Unpublish"
-                        onConfirm={() => {
-                          store.setStatus(u.id, "Unpublished", "Unpublished");
-                          trackCTAEvent("admin_unpublished", { id: u.id });
-                        }}
-                        trigger={
-                          <Button variant="ghost" size="icon" title="Unpublish">
-                            <XCircle className="w-4 h-4 text-amber-600" />
-                          </Button>
-                        }
-                      />
-                    )}
-                    {canDelete && (
-                      <ConfirmAction
-                        title="Archive use case?"
-                        desc="It will be hidden from authors and users. Reversible by editing status."
-                        action="Archive"
-                        onConfirm={() => {
-                          store.setStatus(u.id, "Archived", "Archived");
-                          trackCTAEvent("admin_archived", { id: u.id });
-                        }}
-                        trigger={
-                          <Button variant="ghost" size="icon" title="Archive (admin only)">
-                            <Archive className="w-4 h-4 text-destructive" />
-                          </Button>
-                        }
-                      />
-                    )}
+                    <GlobalLifecyclePanel
+                      useCase={u}
+                      onChanged={() => {
+                        trackCTAEvent("admin_lifecycle_changed", { id: u.id });
+                        return store.reload();
+                      }}
+                    />
                   </div>
                 </td>
               </tr>
