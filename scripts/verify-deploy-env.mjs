@@ -19,13 +19,26 @@ const REQUIRED = [
 const missing = REQUIRED.filter((name) => !process.env[name]);
 
 if (missing.length > 0) {
+  const scope = target.toUpperCase();
   // Names only — never echo values.
-  console.error(`[${target}] missing required environment variables:`);
+  console.error(`::error::[${target}] deploy stopped: ${missing.length} required environment variable(s) missing.`);
+  console.error(`\n[${target}] missing required environment variables:`);
   for (const name of missing) console.error(`  - ${name}`);
   console.error(
-    "\nSet repository variables (VITE_*/URL values) and repository secrets (service role key) for this environment.",
+    [
+      "",
+      "How to fix:",
+      `  1. Open GitHub → Settings → Secrets and variables → Actions.`,
+      `  2. Add the ${scope}_* entries under Variables (URLs, publishable keys, project id).`,
+      `  3. Add the service role key and CLOUDFLARE_* credentials under Secrets.`,
+      "  4. Re-run this workflow.",
+      "",
+      "Full name-by-name template: .github/deployment-env.example",
+      "Reference table:            docs/process/deployment-environment.md",
+    ].join("\n"),
   );
   process.exit(1);
 }
+
 
 console.log(`[${target}] all ${REQUIRED.length} required environment variables are present.`);

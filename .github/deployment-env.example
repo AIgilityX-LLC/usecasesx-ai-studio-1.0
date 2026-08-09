@@ -1,0 +1,39 @@
+# Deployment variables and secrets — reference template
+#
+# Copy each entry into GitHub → Settings. Names are what the workflows read;
+# values below are placeholders and must never be committed with real values.
+#
+#   Repository VARIABLES  (Settings → Secrets and variables → Actions → Variables)
+#   Repository SECRETS    (Settings → Secrets and variables → Actions → Secrets)
+#
+# Environments used: `staging` (staging-deploy.yml) and preview (pr-preview.yml).
+
+# ---------------------------------------------------------------- VARIABLES
+# Staging — consumed by .github/workflows/staging-deploy.yml
+STAGING_SUPABASE_URL=https://your-staging-project.supabase.co
+STAGING_SUPABASE_PUBLISHABLE_KEY=sb_publishable_xxxxxxxxxxxxxxxxxxxx
+STAGING_SUPABASE_PROJECT_ID=your-staging-project-ref
+
+# Preview — consumed by .github/workflows/pr-preview.yml
+PREVIEW_SUPABASE_URL=https://your-preview-project.supabase.co
+PREVIEW_SUPABASE_PUBLISHABLE_KEY=sb_publishable_xxxxxxxxxxxxxxxxxxxx
+PREVIEW_SUPABASE_PROJECT_ID=your-preview-project-ref
+
+# Production monitoring — consumed by .github/workflows/monitoring.yml
+PRODUCTION_BASE_URL=https://your-production-domain
+
+# ------------------------------------------------------------------ SECRETS
+# Never expose these to the browser; they are injected at deploy time only.
+STAGING_SUPABASE_SERVICE_ROLE_KEY=<service role key for the staging project>
+PREVIEW_SUPABASE_SERVICE_ROLE_KEY=<service role key for the preview project>
+
+# Cloudflare Workers deploy credentials (shared by staging and preview)
+CLOUDFLARE_API_TOKEN=<API token with Workers Scripts:Edit>
+CLOUDFLARE_ACCOUNT_ID=<32-character account id>
+
+# Optional — AI Gateway key when server functions call models during build/QA
+LOVABLE_API_KEY=<gateway key>
+
+# Optional — alerting sink for monitoring.yml (Slack/Teams/webhook URL).
+# When unset, monitoring still runs and simply skips the notification step.
+ALERT_WEBHOOK_URL=<https://hooks.example.com/...>
