@@ -254,7 +254,7 @@ function StatCard({ label, value }: { label: string; value: number }) {
 
 function UseCasesTab() {
   const store = useAdminStore();
-  const { canDelete, canPublish } = useRoles();
+  // Lifecycle transitions now live in GlobalLifecyclePanel, gated on canPublishGlobal.
   const [query, setQuery] = useState("");
   const [statusF, setStatusF] = useState<string>("all");
   const [visF, setVisF] = useState<string>("all");
