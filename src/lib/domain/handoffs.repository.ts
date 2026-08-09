@@ -356,5 +356,7 @@ export async function recordHandoffExport(input: {
     },
     severity: input.outcome === "denied" ? "warning" : "info",
     source: "handoffs",
+    workspaceId: input.request.workspaceId,
+    organizationId: input.request.organizationId,
   });
 }

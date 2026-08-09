@@ -144,6 +144,24 @@ export async function listPortfoliosForUser(userId: string | null) {
   return attachUseCases(rows as PortfolioRow[]);
 }
 
+/**
+ * Every portfolio the signed-in user is allowed to read — their own plus
+ * workspace/organization-visible portfolios owned by colleagues. No client-side
+ * filter is applied: RLS on `portfolios` is the authority, so what this returns
+ * is exactly what the database permits.
+ */
+export async function listPortfoliosVisibleToUser(userId: string | null) {
+  requireUserId(userId);
+  const result = await supabase
+    .from("portfolios")
+    .select(`${PORTFOLIO_SELECT}, user_id, workspace_id`)
+    .order("created_at", { ascending: false });
+  const rows = unwrapResult(result, { allowNull: true }) ?? [];
+  return attachUseCases(rows as PortfolioRow[]) as unknown as Promise<
+    (PortfolioRow & { user_id: string; workspace_id: string | null })[]
+  >;
+}
+
 export async function createPortfolio(userId: string | null, input: PortfolioCreateInput) {
   const uid = requireUserId(userId);
   const clean = parseInput(portfolioCreateSchema, input);

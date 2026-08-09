@@ -92,19 +92,22 @@ test.describe("handoffs smoke", () => {
       expect(auditEventId, "the receipt must expose a full audit event id").toMatch(
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
       );
-      // Known gap (tracked): the receipt renders a UUID but the matching
-      // audit_events row is not always readable straight after the export, so
-      // the row read is reported rather than enforced until that is fixed.
-      const { data: auditRow } = await admin
-        .from("audit_events")
-        .select("id, action")
-        .eq("id", auditEventId)
-        .maybeSingle();
-      if (!auditRow) {
-        console.warn(`handoff export receipt ${auditEventId} has no readable audit_events row`);
-      } else {
-        expect(String(auditRow.action ?? "")).toContain("export");
+      // The row is written by the browser client, so poll briefly rather than
+      // reading once — but fail if it never becomes readable.
+      let auditRow: { id: string; event_type: string | null; workspace_id: string | null } | null =
+        null;
+      for (let attempt = 0; attempt < 20 && !auditRow; attempt++) {
+        const { data } = await admin
+          .from("audit_events")
+          .select("id, event_type, workspace_id")
+          .eq("id", auditEventId)
+          .maybeSingle();
+        auditRow = (data as typeof auditRow) ?? null;
+        if (!auditRow) await page.waitForTimeout(500);
       }
+      expect(auditRow, `audit_events row ${auditEventId} was never readable`).not.toBeNull();
+      expect(String(auditRow?.event_type ?? "")).toContain("export");
+      expect(auditRow?.workspace_id, "the audit row must carry workspace tenancy").toBeTruthy();
     } finally {
       await close();
     }

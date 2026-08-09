@@ -54,6 +54,14 @@ export type AuditEventInput = {
   severity?: AuditSeverity;
   source?: string;
   requestId?: string | null;
+  /**
+   * Explicit tenancy for the record. Callers that know the workspace an action
+   * belongs to should pass it: the ambient tenant can still be unset (a fresh
+   * tab, an export taken before the workspace context resolves) and a row
+   * without tenancy is invisible to the workspace-scoped audit read policy.
+   */
+  workspaceId?: string | null;
+  organizationId?: string | null;
 };
 
 /* --------------------------------------------------------- product events */

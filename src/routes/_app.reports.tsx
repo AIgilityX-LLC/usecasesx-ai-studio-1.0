@@ -30,6 +30,7 @@ import {
   type ExportFormat,
 } from "@/lib/reports/report-access";
 import { useWorkspaceContext } from "@/hooks/useWorkspaceContext";
+import { useWorkspacePortfolios } from "@/hooks/useWorkspacePortfolios";
 
 import { ExportReceipt, type ExportReceiptData } from "@/components/reports/ExportReceipt";
 import { ReportDocument } from "@/components/reports/ReportDocument";
@@ -104,6 +105,33 @@ function ReportsPage() {
   const [loading, setLoading] = useState(true);
   const store = useUseCaseXPro();
   const workspace = useWorkspaceContext();
+  /**
+   * Portfolios offered in the picker: the user's own plus colleague-owned ones
+   * the database lets them read. RLS decides membership; this list only labels
+   * the owner so the two groups stay distinguishable.
+   */
+  const visiblePortfolios = useWorkspacePortfolios();
+  const portfolioOptions = useMemo(() => {
+    const own = store.portfolios.map((portfolio) => ({
+      portfolio,
+      ownerName: "You",
+      isMine: true,
+    }));
+    const seen = new Set(own.map((o) => o.portfolio.id));
+    const shared = (visiblePortfolios.data ?? [])
+      .filter((entry) => !entry.isMine && !seen.has(entry.portfolio.id))
+      .map((entry) => ({
+        portfolio: entry.portfolio,
+        ownerName: entry.ownerName,
+        isMine: false,
+      }));
+    return [...own, ...shared];
+  }, [store.portfolios, visiblePortfolios.data]);
+  const allPortfolios = useMemo(
+    () => portfolioOptions.map((option) => option.portfolio),
+    [portfolioOptions],
+  );
+
   /** Workspace membership role decides which export formats are permitted. */
   const exportRole = workspace.data?.workspaceRole ?? null;
   const exportAllowed = (format: ExportFormat) => canExportReport(exportRole, format).allowed;
@@ -150,7 +178,7 @@ function ReportsPage() {
     if (!store.saved.length) return;
     let slugs: string[] = [];
     if (reportType === "AI Opportunity Portfolio Report" && portfolioId) {
-      const p = store.portfolios.find((x) => x.id === portfolioId);
+      const p = allPortfolios.find((x) => x.id === portfolioId);
       slugs = p?.useCaseSlugs ?? [];
     } else if (reportType === "AI Quick Wins Report") {
       slugs = store.saved.filter((s) => computeTotalScore(s.score) >= 70).map((s) => s.useCaseSlug);
@@ -159,11 +187,11 @@ function ReportsPage() {
       slugs = store.saved.map((s) => s.useCaseSlug);
     }
     setSelectedSlugs(new Set(slugs));
-  }, [reportType, portfolioId, store.saved, store.portfolios]);
+  }, [reportType, portfolioId, store.saved, allPortfolios]);
 
   const portfolio = useMemo(
-    () => store.portfolios.find((p) => p.id === portfolioId) ?? null,
-    [store.portfolios, portfolioId],
+    () => allPortfolios.find((p) => p.id === portfolioId) ?? null,
+    [allPortfolios, portfolioId],
   );
 
   // Value realisation for the selection. Reports work in repository slugs;
@@ -182,7 +210,7 @@ function ReportsPage() {
   /** One assembled input row per selected use case — the report's only source. */
   const items: ReportItemInput[] = useMemo(() => {
     const entryBySlug = new Map(
-      store.portfolios
+      allPortfolios
         .flatMap((p) => (portfolio ? (p.id === portfolio.id ? p.entries : []) : p.entries))
         .map((entry) => [entry.useCaseSlug ?? "", entry]),
     );
@@ -209,7 +237,7 @@ function ReportsPage() {
     store.saved,
     store.useCaseContent,
     store.slugToId,
-    store.portfolios,
+    allPortfolios,
     portfolio,
     value.benefitsBySlug,
     value.studioIdBySlug,
@@ -281,7 +309,12 @@ function ReportsPage() {
         workspace_role: exportRole,
         provenance: provenance.lines,
       },
+      // Tenancy is stated explicitly so the row is readable under the
+      // workspace-scoped audit policy even if ambient context is unset.
+      workspaceId: workspace.data?.workspace.id ?? null,
+      organizationId: workspace.data?.organization.id ?? null,
     });
+
     setReceipt({
       format,
       auditEventId: written.auditEventId,
@@ -405,9 +438,10 @@ function ReportsPage() {
                       <SelectValue placeholder="Select a portfolio" />
                     </SelectTrigger>
                     <SelectContent>
-                      {store.portfolios.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.name}
+                      {portfolioOptions.map((option) => (
+                        <SelectItem key={option.portfolio.id} value={option.portfolio.id}>
+                          {option.portfolio.name}
+                          {option.isMine ? "" : ` — shared by ${option.ownerName}`}
                         </SelectItem>
                       ))}
                     </SelectContent>
