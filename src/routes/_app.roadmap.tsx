@@ -421,10 +421,38 @@ function RoadmapSurface() {
                   </Card>
                 ))}
               </TabsContent>
+
+              <TabsContent value="history" className="mt-4">
+                {active && (
+                  <RoadmapAuditPanel
+                    portfolioId={active.id}
+                    useCaseIds={items.map((item) => item.useCaseId)}
+                    titles={itemTitles}
+                    scopeLabel={scopeLabel}
+                  />
+                )}
+              </TabsContent>
             </Tabs>
           )}
         </>
       )}
+
+      <RoadmapExportSettingsDialog
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        columns={preferences.columns}
+        canPersist={preferences.canPersist}
+        saving={preferences.isSaving}
+        onSave={async (columns) => {
+          if (!preferences.canPersist) return;
+          try {
+            await preferences.save([...columns]);
+            toast.success("Export columns saved for your workspace");
+          } catch {
+            toast.error("Could not save export settings");
+          }
+        }}
+      />
 
       <RoadmapItemDialog
         open={Boolean(editing)}
@@ -438,6 +466,7 @@ function RoadmapSurface() {
           await store.updatePortfolioEntry(active.id, editing.useCaseId, patch);
         }}
       />
+
     </div>
   );
 }
