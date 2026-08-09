@@ -30,6 +30,7 @@ import {
   type ExportFormat,
 } from "@/lib/reports/report-access";
 import { useWorkspaceContext } from "@/hooks/useWorkspaceContext";
+import { useWorkspacePortfolios } from "@/hooks/useWorkspacePortfolios";
 
 import { ExportReceipt, type ExportReceiptData } from "@/components/reports/ExportReceipt";
 import { ReportDocument } from "@/components/reports/ReportDocument";
@@ -177,7 +178,7 @@ function ReportsPage() {
     if (!store.saved.length) return;
     let slugs: string[] = [];
     if (reportType === "AI Opportunity Portfolio Report" && portfolioId) {
-      const p = store.portfolios.find((x) => x.id === portfolioId);
+      const p = allPortfolios.find((x) => x.id === portfolioId);
       slugs = p?.useCaseSlugs ?? [];
     } else if (reportType === "AI Quick Wins Report") {
       slugs = store.saved.filter((s) => computeTotalScore(s.score) >= 70).map((s) => s.useCaseSlug);
@@ -186,11 +187,11 @@ function ReportsPage() {
       slugs = store.saved.map((s) => s.useCaseSlug);
     }
     setSelectedSlugs(new Set(slugs));
-  }, [reportType, portfolioId, store.saved, store.portfolios]);
+  }, [reportType, portfolioId, store.saved, allPortfolios]);
 
   const portfolio = useMemo(
-    () => store.portfolios.find((p) => p.id === portfolioId) ?? null,
-    [store.portfolios, portfolioId],
+    () => allPortfolios.find((p) => p.id === portfolioId) ?? null,
+    [allPortfolios, portfolioId],
   );
 
   // Value realisation for the selection. Reports work in repository slugs;
@@ -209,7 +210,7 @@ function ReportsPage() {
   /** One assembled input row per selected use case — the report's only source. */
   const items: ReportItemInput[] = useMemo(() => {
     const entryBySlug = new Map(
-      store.portfolios
+      allPortfolios
         .flatMap((p) => (portfolio ? (p.id === portfolio.id ? p.entries : []) : p.entries))
         .map((entry) => [entry.useCaseSlug ?? "", entry]),
     );
@@ -236,7 +237,7 @@ function ReportsPage() {
     store.saved,
     store.useCaseContent,
     store.slugToId,
-    store.portfolios,
+    allPortfolios,
     portfolio,
     value.benefitsBySlug,
     value.studioIdBySlug,
@@ -432,9 +433,10 @@ function ReportsPage() {
                       <SelectValue placeholder="Select a portfolio" />
                     </SelectTrigger>
                     <SelectContent>
-                      {store.portfolios.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.name}
+                      {portfolioOptions.map((option) => (
+                        <SelectItem key={option.portfolio.id} value={option.portfolio.id}>
+                          {option.portfolio.name}
+                          {option.isMine ? "" : ` — shared by ${option.ownerName}`}
                         </SelectItem>
                       ))}
                     </SelectContent>
