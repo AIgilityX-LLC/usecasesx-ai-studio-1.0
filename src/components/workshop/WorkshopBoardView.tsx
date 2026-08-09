@@ -88,10 +88,10 @@ export function WorkshopBoardView({ id }: { id: string }) {
     "Added to the board",
   );
   const updateItem = mutate(
-    (input: Parameters<typeof updateWorkshopItemFn>[0]["data"]) =>
-      updateWorkshopItemFn({ data: input }),
+    (input: { id: string; status: WorkshopItemStatus }) => updateWorkshopItemFn({ data: input }),
     "Item updated",
   );
+
   const mergeItems = mutate(
     (input: { sourceId: string; targetId: string }) =>
       mergeWorkshopItemsFn({ data: { workshopId: id, ...input } }),
