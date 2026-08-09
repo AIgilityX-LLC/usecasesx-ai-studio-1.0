@@ -2118,6 +2118,86 @@ export type Database = {
           },
         ]
       }
+      suite_handoff_requests: {
+        Row: {
+          completed_at: string | null
+          consent: Json
+          created_at: string
+          delivery_mode: string
+          dispatched_at: string | null
+          id: string
+          organization_id: string | null
+          owner_user_id: string | null
+          payload: Json
+          request_type: string
+          requested_by: string
+          sensitivity: string
+          source_version: Json
+          status: string
+          status_note: string | null
+          subject_refs: Json
+          summary: string | null
+          target: string
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          consent?: Json
+          created_at?: string
+          delivery_mode?: string
+          dispatched_at?: string | null
+          id?: string
+          organization_id?: string | null
+          owner_user_id?: string | null
+          payload?: Json
+          request_type: string
+          requested_by: string
+          sensitivity?: string
+          source_version?: Json
+          status?: string
+          status_note?: string | null
+          subject_refs?: Json
+          summary?: string | null
+          target: string
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          consent?: Json
+          created_at?: string
+          delivery_mode?: string
+          dispatched_at?: string | null
+          id?: string
+          organization_id?: string | null
+          owner_user_id?: string | null
+          payload?: Json
+          request_type?: string
+          requested_by?: string
+          sensitivity?: string
+          source_version?: Json
+          status?: string
+          status_note?: string | null
+          subject_refs?: Json
+          summary?: string | null
+          target?: string
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suite_handoff_requests_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       taxonomy_lifecycle_stages: {
         Row: {
           created_at: string

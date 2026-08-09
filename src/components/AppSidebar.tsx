@@ -95,7 +95,9 @@ const INTEGRATIONS: Item[] = [
   { to: "/sarpi", label: "SARPI Readiness", icon: Rocket, pro: true },
   { to: "/advisorx", label: "AdvisorX Guidance", icon: Compass, pro: true },
   { to: "/cyberx/c3g/intake", label: "C3G Governance", icon: Shield, pro: true },
+  { to: "/handoffs", label: "Suite Handoffs", icon: Send, pro: true },
 ];
+
 
 const ADMIN: Item[] = [
   { to: "/reports", label: "Reports", icon: FileBarChart },
