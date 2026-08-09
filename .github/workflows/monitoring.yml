@@ -1,0 +1,85 @@
+name: Production monitoring
+
+# Synthetic monitoring + alerting for the production surface.
+# Alerts fire for: failed builds/deploys, 5xx spikes, and Playwright regressions.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_run:
+    workflows: ["CI", "Staging deploy"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  build-failure-alert:
+    name: Alert on failed build or deploy
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify
+        run: node -e "process.exit(0)"
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            await github.rest.issues.create({
+              ...context.repo,
+              title: `[alert] ${run.name} failed on ${run.head_branch}`,
+              labels: ['alert', 'ci'],
+              body: `Workflow **${run.name}** failed.\n\nRun: ${run.html_url}\nCommit: ${run.head_sha}`,
+            });
+      - name: Page the on-call webhook
+        if: env.ALERT_WEBHOOK_URL != ''
+        env:
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+        run: |
+          curl -sS -X POST "$ALERT_WEBHOOK_URL" \
+            -H 'content-type: application/json' \
+            -d "{\"text\":\"Build/deploy failure: ${{ github.event.workflow_run.html_url }}\"}"
+
+  synthetic-health:
+    name: Synthetic health & 5xx spike detection
+    if: github.event_name != 'workflow_run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      MONITOR_BASE_URL: ${{ vars.PRODUCTION_URL }}
+      ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Probe critical routes and evaluate error rate
+        run: node scripts/monitoring/probe-production.mjs
+      - name: Upload probe metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: monitoring-metrics
+          path: monitoring-metrics.json
+          retention-days: 14
+          if-no-files-found: ignore
+
+  playwright-regression-alert:
+    name: Alert on Playwright regressions
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.name == 'CI' &&
+      github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            await github.rest.issues.create({
+              ...context.repo,
+              title: `[alert] Playwright regression on ${run.head_branch}`,
+              labels: ['alert', 'tests'],
+              body: `CI failed — download the \`playwright-diagnostics\` artifact for traces, screenshots and video.\n\nRun: ${run.html_url}`,
+            });

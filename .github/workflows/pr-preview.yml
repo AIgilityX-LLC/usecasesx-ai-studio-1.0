@@ -1,0 +1,71 @@
+name: PR preview deploy
+
+# Gives every pull request its own URL for Playwright runs and manual QA.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  preview:
+    name: Build & deploy PR preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      VITE_SUPABASE_URL: ${{ vars.PREVIEW_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.PREVIEW_SUPABASE_PUBLISHABLE_KEY }}
+      VITE_SUPABASE_PROJECT_ID: ${{ vars.PREVIEW_SUPABASE_PROJECT_ID }}
+      SUPABASE_URL: ${{ vars.PREVIEW_SUPABASE_URL }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ vars.PREVIEW_SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.PREVIEW_SUPABASE_SERVICE_ROLE_KEY }}
+      APP_ENV: preview
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies (frozen lockfile)
+        run: bun install --frozen-lockfile
+      - name: Verify required env vars
+        run: node scripts/verify-deploy-env.mjs preview
+      - name: Build
+        run: bun run build
+      - name: Deploy preview
+        id: deploy
+        run: node scripts/deploy-environment.mjs preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Run Playwright against the preview URL
+        run: bunx playwright install --with-deps chromium && bunx playwright test --project=chromium
+        env:
+          E2E_BASE_URL: ${{ steps.deploy.outputs.url }}
+          E2E_START_SERVER: "0"
+      - name: Comment the preview URL on the PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = process.env.PREVIEW_URL;
+            const body = url
+              ? `Preview deployment ready: ${url}\n\nPlaywright ran against this URL. Use it for manual QA.`
+              : 'Preview deployment failed — see the workflow logs.';
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.repo, issue_number: context.issue.number,
+            });
+            const existing = comments.find((c) => c.body?.startsWith('Preview deployment'));
+            if (existing) {
+              await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
+            }
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.url }}

@@ -69,10 +69,33 @@ test.describe("journey: opportunity to portfolio", () => {
         }
       }
 
-
       /* ---- Portfolio -------------------------------------------------- */
+      // Provisioning (profile plan + workspace membership) can land after the
+      // first authenticated render, so assert the authoritative subject before
+      // expecting the entitlement-gated control.
+      const { data: membership } = await admin
+        .from("workspace_members")
+        .select("workspace_id, role")
+        .eq("user_id", owner.userId);
+      expect(membership?.length, "fixture user must own a workspace").toBeGreaterThan(0);
+      expect(membership?.[0]?.role).toBe("owner");
+      const { data: profile } = await admin
+        .from("profiles")
+        .select("plan_type")
+        .eq("user_id", owner.userId)
+        .maybeSingle();
+      expect(profile?.plan_type, "fixture user must be on Pro").toBe("pro");
+
       await page.goto("/portfoliox", { waitUntil: "networkidle" });
-      await page.getByRole("button", { name: "New portfolio" }).click();
+      // The authz context polls until tenancy + role resolve; reload once so a
+      // subject cached before provisioning cannot gate the control.
+      await page.reload({ waitUntil: "networkidle" });
+      const newPortfolio = page.getByRole("button", { name: "New portfolio" }).first();
+      await expect(newPortfolio, "Pro owner must see the create control").toBeVisible({
+        timeout: 45_000,
+      });
+      await newPortfolio.click();
+
       const portfolioName = `Journey portfolio ${stamp}`;
       await page.getByLabel("Portfolio name").fill(portfolioName);
       await page.getByLabel("Strategic objective").fill("Verify Phase 3 reconciliation");
