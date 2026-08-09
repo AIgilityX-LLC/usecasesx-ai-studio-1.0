@@ -237,6 +237,14 @@ export function BenefitsPanel({ useCaseId }: { useCaseId: string }) {
           if (!open) setInspecting(null);
         }}
       />
+
+      <BenefitEvidenceHistoryDialog
+        benefit={evidenceHistoryFor}
+        open={Boolean(evidenceHistoryFor)}
+        onOpenChange={(open) => {
+          if (!open) setEvidenceHistoryFor(null);
+        }}
+      />
     </div>
   );
 }
