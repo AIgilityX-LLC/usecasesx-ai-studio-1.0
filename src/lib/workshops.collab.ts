@@ -184,3 +184,97 @@ export function workshopOutcomeFileName(summary: OutcomeSummary): string {
 export function downloadWorkshopOutcomePDF(summary: OutcomeSummary): void {
   exportDeliverablePDF(buildWorkshopOutcomeDoc(summary), workshopOutcomeFileName(summary));
 }
+
+/* ----------------------------------------------------- audit trail exports */
+
+function slugify(value: string, fallback: string): string {
+  return (
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || fallback
+  );
+}
+
+const AUDIT_COLUMNS = ["When", "Action", "Who", "Detail"];
+
+function auditRow(entry: WorkshopAuditEntry): string[] {
+  return [
+    new Date(entry.at).toLocaleString(),
+    AUDIT_ACTION_LABEL[entry.action],
+    entry.actorName,
+    entry.summary,
+  ];
+}
+
+/** One table per stage, newest first, covering votes and conversions. */
+export function buildWorkshopAuditDoc(
+  entries: WorkshopAuditEntry[],
+  workshopTitle: string,
+): ExportDoc {
+  const groups = groupAuditByStage(entries);
+  return {
+    title: `${workshopTitle} — Audit trail`,
+    subtitle: `${entries.length} recorded action${entries.length === 1 ? "" : "s"} · Exported ${new Date().toLocaleString()}`,
+    sections: groups.length
+      ? groups.map((group) => ({
+          heading: STAGE_META[group.stage].label,
+          kind: "table" as const,
+          columns: AUDIT_COLUMNS,
+          rows: group.entries.map(auditRow),
+        }))
+      : [
+          {
+            heading: "Audit trail",
+            kind: "text" as const,
+            body: "No activity has been recorded for this session yet.",
+          },
+        ],
+  };
+}
+
+export function downloadWorkshopAuditPDF(
+  entries: WorkshopAuditEntry[],
+  workshopTitle: string,
+): void {
+  exportDeliverablePDF(
+    buildWorkshopAuditDoc(entries, workshopTitle),
+    `${slugify(workshopTitle, "workshop")}-audit-trail.pdf`,
+  );
+}
+
+const csvCell = (value: string) => `"${value.replace(/"/g, '""')}"`;
+
+/** Spreadsheet-friendly variant: one row per action, stage as a column. */
+export function buildWorkshopAuditCSV(entries: WorkshopAuditEntry[]): string {
+  const header = ["Stage", "Timestamp (ISO)", "When", "Action", "Who", "Detail"];
+  const rows = groupAuditByStage(entries).flatMap((group) =>
+    group.entries.map((entry) => [
+      STAGE_META[group.stage].label,
+      entry.at,
+      new Date(entry.at).toLocaleString(),
+      AUDIT_ACTION_LABEL[entry.action],
+      entry.actorName,
+      entry.summary,
+    ]),
+  );
+  return [header, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n");
+}
+
+export function downloadWorkshopAuditCSV(
+  entries: WorkshopAuditEntry[],
+  workshopTitle: string,
+): void {
+  const blob = new Blob([buildWorkshopAuditCSV(entries)], {
+    type: "text/csv;charset=utf-8;",
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${slugify(workshopTitle, "workshop")}-audit-trail.csv`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
