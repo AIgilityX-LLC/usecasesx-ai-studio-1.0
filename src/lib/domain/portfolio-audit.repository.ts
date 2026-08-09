@@ -21,6 +21,7 @@ export interface PortfolioAuditEvent {
   eventType: string;
   entityType: string;
   severity: string | null;
+  actorId: string | null;
   previous: Record<string, unknown> | null;
   next: Record<string, unknown> | null;
   /** Present for `portfolio_item.*` events; identifies the affected use case. */
@@ -33,6 +34,7 @@ type Row = {
   event_type: string;
   entity_type: string;
   severity: string | null;
+  actor_id: string | null;
   previous_value: unknown;
   new_value: unknown;
 };
