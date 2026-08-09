@@ -178,7 +178,12 @@ export function BenefitEvidenceEditor({
           disabled={disabled}
           onChange={(e) => setUrl(e.target.value)}
         />
-        <Button type="button" variant="outline" onClick={addLink} disabled={disabled || !url.trim()}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={addLink}
+          disabled={disabled || !url.trim()}
+        >
           <Plus className="mr-1 h-3.5 w-3.5" aria-hidden />
           Add link
         </Button>

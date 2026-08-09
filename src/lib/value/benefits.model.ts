@@ -231,7 +231,6 @@ export interface Benefit {
 
 export type BenefitInput = Omit<Benefit, "id" | "createdAt" | "updatedAt">;
 
-
 export const COMMON_CURRENCIES = ["USD", "EUR", "GBP", "AED", "SAR", "AUD", "CAD", "SGD"];
 
 /* --------------------------------------------------------- aggregation ---- */
