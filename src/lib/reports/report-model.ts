@@ -884,10 +884,9 @@ export function buildProvenanceSummary(
   items: ReportItemInput[],
 ): ProvenanceSummary {
   const citations = buildNarrativeCitations(report, items);
-  const counts = { repository: 0, score: 0, portfolio: 0, studio_value: 0 } as Record<
-    ProvenanceSource,
-    number
-  >;
+  const counts = Object.fromEntries(
+    (Object.keys(PROVENANCE_LABELS) as ProvenanceSource[]).map((source) => [source, 0]),
+  ) as Record<ProvenanceSource, number>;
   for (const citation of citations) {
     for (const source of citation.sources) counts[source] += 1;
   }
