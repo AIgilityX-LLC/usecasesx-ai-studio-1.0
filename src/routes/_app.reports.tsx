@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { PageHero } from "@/components/usecasex/PageHero";
-import { SCORE_LABELS, computeTotalScore, type ScoreDimensions } from "@/lib/usecasex.store";
+import { computeTotalScore } from "@/lib/usecasex.store";
 import { useUseCaseXPro } from "@/hooks/usecasex-pro";
 import { useBenefitsBySlug } from "@/hooks/useBenefits";
 import { ValueSummary } from "@/components/value/ValueSummary";
@@ -484,6 +484,3 @@ function SectionHeading({ title, source }: { title: string; source: string }) {
     </div>
   );
 }
-
-export { SCORE_LABELS };
-export type { ScoreDimensions };
