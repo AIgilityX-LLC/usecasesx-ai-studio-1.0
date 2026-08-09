@@ -21,7 +21,9 @@ const missing = REQUIRED.filter((name) => !process.env[name]);
 if (missing.length > 0) {
   const scope = target.toUpperCase();
   // Names only — never echo values.
-  console.error(`::error::[${target}] deploy stopped: ${missing.length} required environment variable(s) missing.`);
+  console.error(
+    `::error::[${target}] deploy stopped: ${missing.length} required environment variable(s) missing.`,
+  );
   console.error(`\n[${target}] missing required environment variables:`);
   for (const name of missing) console.error(`  - ${name}`);
   console.error(
@@ -39,6 +41,5 @@ if (missing.length > 0) {
   );
   process.exit(1);
 }
-
 
 console.log(`[${target}] all ${REQUIRED.length} required environment variables are present.`);
