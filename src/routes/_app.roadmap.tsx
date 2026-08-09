@@ -58,6 +58,7 @@ import { RoadmapAuditPanel } from "@/components/roadmap/RoadmapAuditPanel";
 import { RoadmapBoard } from "@/components/roadmap/RoadmapBoard";
 import { RoadmapExportSettingsDialog } from "@/components/roadmap/RoadmapExportSettingsDialog";
 import { RoadmapItemDialog } from "@/components/roadmap/RoadmapItemDialog";
+import { PortfolioValueSummary } from "@/components/value/PortfolioValueSummary";
 
 const roadmapSearchSchema = z.object({
   portfolio: fallback(z.string(), "").default(""),
