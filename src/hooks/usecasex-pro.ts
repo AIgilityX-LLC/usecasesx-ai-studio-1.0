@@ -143,9 +143,7 @@ async function fetchProData(userId: string): Promise<ProData> {
     });
   }
 
-  const portfolios: Portfolio[] = (portfolioRows as any[]).map((p) =>
-    mapPortfolioRow(p, slugToId),
-  );
+  const portfolios: Portfolio[] = (portfolioRows as any[]).map((p) => mapPortfolioRow(p, slugToId));
 
   return { saved, portfolios, slugToId, useCaseContent };
 }
@@ -221,7 +219,6 @@ export function mapPortfolioRow(p: any, slugToId?: Record<string, string>): Port
     updatedAt: p.updated_at ?? p.created_at,
   };
 }
-
 
 async function resolveSlugId(slug: string, cache: Record<string, string>): Promise<string | null> {
   if (cache[slug]) return cache[slug];
