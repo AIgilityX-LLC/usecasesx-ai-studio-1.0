@@ -101,7 +101,7 @@ function HandoffsSurface() {
     enabled: Boolean(workspaceId),
   });
 
-  const requests = requestsQuery.data ?? [];
+  const requests = useMemo(() => requestsQuery.data ?? [], [requestsQuery.data]);
   const summary = useMemo(() => summarizeQueue(requests), [requests]);
 
   /**
@@ -121,7 +121,8 @@ function HandoffsSurface() {
             }),
           ]
         : [],
-    [workspaceId, workspaceName, context],
+    [workspaceId, workspaceName],
+
   );
 
   const statusMutation = useMutation({
