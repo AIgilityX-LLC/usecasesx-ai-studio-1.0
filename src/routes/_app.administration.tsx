@@ -1470,9 +1470,20 @@ function TaxonomyEditor({ table, title }: { table: string; title: string }) {
     }
   };
 
-  const remove = async (id: string) => {
+  const [blocked, setBlocked] = useState<{ name: string; count: number } | null>(null);
+
+  /**
+   * Reference integrity: never delete a taxonomy value that catalogue records
+   * still point at, and always show the admin the exact orphan risk.
+   */
+  const remove = async (row: TaxRow) => {
     try {
-      await adminRepo.deleteTaxonomyRow(table, id);
+      const references = await adminRepo.countTaxonomyReferences(table, row.id);
+      if (references > 0) {
+        setBlocked({ name: row.name, count: references });
+        return;
+      }
+      await adminRepo.deleteTaxonomyRow(table, row.id);
       load();
     } catch (e) {
       alert(toUserMessage(e, "We could not remove this entry."));
@@ -1528,12 +1539,27 @@ function TaxonomyEditor({ table, title }: { table: string; title: string }) {
                 />
                 {r.is_published ? "Pub" : "Draft"}
               </label>
-              <Button size="icon" variant="ghost" onClick={() => remove(r.id)} title="Delete">
+              <Button size="icon" variant="ghost" onClick={() => void remove(r)} title="Delete">
                 <XCircle className="w-4 h-4 text-destructive" />
               </Button>
             </li>
           ))}
         </ul>
+        {blocked && (
+          <div
+            role="alert"
+            className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-xs text-destructive"
+          >
+            <p className="font-medium">“{blocked.name}” cannot be deleted.</p>
+            <p className="mt-1 text-destructive/90">
+              {blocked.count} catalogue {blocked.count === 1 ? "record references" : "records reference"}{" "}
+              this value. Re-tag those records first, or unpublish this entry instead of deleting it.
+            </p>
+            <Button size="sm" variant="outline" className="mt-2" onClick={() => setBlocked(null)}>
+              Dismiss
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
