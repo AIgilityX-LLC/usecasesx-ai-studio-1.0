@@ -17,7 +17,12 @@ export default defineConfig({
   forbidOnly: isCI,
   retries: isCI ? 1 : 0,
   reporter: isCI
-    ? [["github"], ["list"], ["html", { open: "never", outputFolder: "playwright-report" }], ["json", { outputFile: "playwright-report/results.json" }]]
+    ? [
+        ["github"],
+        ["list"],
+        ["html", { open: "never", outputFolder: "playwright-report" }],
+        ["json", { outputFile: "playwright-report/results.json" }],
+      ]
     : [["list"]],
   outputDir: "test-results",
   use: {
