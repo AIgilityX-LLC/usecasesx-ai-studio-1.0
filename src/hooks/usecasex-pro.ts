@@ -421,6 +421,7 @@ export function useUseCaseXPro() {
     () => ({
       // Data
       saved: data.saved,
+      useCaseContent: data.useCaseContent,
       portfolios: data.portfolios,
       isLoading: query.isLoading,
       isAuthenticated: !!userId,
