@@ -41,10 +41,7 @@ export function GlobalAuditViewer() {
     void load();
   }, [load]);
 
-  const actions = useMemo(
-    () => Array.from(new Set(rows.map((r) => r.action))).sort(),
-    [rows],
-  );
+  const actions = useMemo(() => Array.from(new Set(rows.map((r) => r.action))).sort(), [rows]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -108,9 +105,7 @@ export function GlobalAuditViewer() {
         {loading && <p className="text-xs text-muted-foreground">Loading audit entries…</p>}
 
         {!loading && filtered.length === 0 && !error && (
-          <p className="text-xs text-muted-foreground">
-            No audit entries match your filters yet.
-          </p>
+          <p className="text-xs text-muted-foreground">No audit entries match your filters yet.</p>
         )}
 
         {filtered.length > 0 && (

@@ -90,7 +90,13 @@ if (signInError) {
 const { error: writeError } = await anon
   .from("use_cases")
   .insert({ title: "probe", slug: `probe-${Date.now()}` } as never);
-check("anonymous: global catalogue write rejected", !!writeError, writeError ? "" : "insert succeeded");
+check(
+  "anonymous: global catalogue write rejected",
+  !!writeError,
+  writeError ? "" : "insert succeeded",
+);
 
-console.log(failures === 0 ? "\n✅ global lifecycle visibility holds" : `\n❌ ${failures} failure(s)`);
+console.log(
+  failures === 0 ? "\n✅ global lifecycle visibility holds" : `\n❌ ${failures} failure(s)`,
+);
 process.exit(failures === 0 ? 0 : 1);

@@ -1552,8 +1552,9 @@ function TaxonomyEditor({ table, title }: { table: string; title: string }) {
           >
             <p className="font-medium">“{blocked.name}” cannot be deleted.</p>
             <p className="mt-1 text-destructive/90">
-              {blocked.count} catalogue {blocked.count === 1 ? "record references" : "records reference"}{" "}
-              this value. Re-tag those records first, or unpublish this entry instead of deleting it.
+              {blocked.count} catalogue{" "}
+              {blocked.count === 1 ? "record references" : "records reference"} this value. Re-tag
+              those records first, or unpublish this entry instead of deleting it.
             </p>
             <Button size="sm" variant="outline" className="mt-2" onClick={() => setBlocked(null)}>
               Dismiss
