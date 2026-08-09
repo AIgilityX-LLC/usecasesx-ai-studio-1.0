@@ -8,11 +8,7 @@ import {
   EXPORT_ROLES,
   type ExportFormat,
 } from "@/lib/reports/report-access";
-import {
-  downloadBenefitsCsv,
-  downloadUseCaseCsv,
-  printReport,
-} from "@/lib/reports/report-export";
+import { downloadBenefitsCsv, downloadUseCaseCsv, printReport } from "@/lib/reports/report-export";
 import type { ReportItemInput } from "@/lib/reports/report-model";
 
 const ITEMS: ReportItemInput[] = [
@@ -107,9 +103,12 @@ describe("export helpers enforce access, not just the UI", () => {
       createElement: () => anchor,
       body: { appendChild: () => undefined },
     });
-    vi.stubGlobal("Blob", class {
-      constructor(readonly parts: unknown[]) {}
-    });
+    vi.stubGlobal(
+      "Blob",
+      class {
+        constructor(readonly parts: unknown[]) {}
+      },
+    );
     vi.stubGlobal("URL", {
       createObjectURL: () => "blob:test",
       revokeObjectURL: () => undefined,

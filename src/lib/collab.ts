@@ -227,7 +227,6 @@ export function activityCategory(event: string): Exclude<ActivityCategory, "all"
   return "other";
 }
 
-
 /** Number of timeline entries revealed per page. */
 export const ACTIVITY_PAGE_SIZE = 10;
 

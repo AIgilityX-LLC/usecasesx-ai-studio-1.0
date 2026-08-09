@@ -162,5 +162,4 @@ describe("narrative provenance guard", () => {
     expect(citations[0]!.sources).toEqual(["repository", "score", "portfolio", "studio_value"]);
     expect(citations[1]!.sources).toEqual(["repository"]);
   });
-
 });

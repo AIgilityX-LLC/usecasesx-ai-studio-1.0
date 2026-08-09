@@ -80,10 +80,7 @@ export class ReportExportDeniedError extends Error {
 }
 
 /** Throwing variant used at the call site of every download/print helper. */
-export function assertCanExportReport(
-  role: string | null | undefined,
-  format: ExportFormat,
-): void {
+export function assertCanExportReport(role: string | null | undefined, format: ExportFormat): void {
   const decision = canExportReport(role, format);
   if (!decision.allowed) throw new ReportExportDeniedError(format, role, decision.reason);
 }

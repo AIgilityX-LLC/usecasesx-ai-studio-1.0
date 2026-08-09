@@ -814,7 +814,13 @@ export function buildNarrativeGaps(report: PortfolioReport): string[] {
 }
 
 export type GuardedNarrative =
-  | { status: "blocked"; text: string; reason: string; gaps: string[]; citations: NarrativeCitation[] }
+  | {
+      status: "blocked";
+      text: string;
+      reason: string;
+      gaps: string[];
+      citations: NarrativeCitation[];
+    }
   | { status: "ok"; text: string; gaps: string[]; citations: NarrativeCitation[] };
 
 /**

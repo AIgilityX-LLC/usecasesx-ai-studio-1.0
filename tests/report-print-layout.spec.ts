@@ -37,10 +37,10 @@ async function signIn(page: Page) {
   const session = await res.json();
   const ref = new URL(SUPABASE_URL).hostname.split(".")[0];
   await page.goto(`${BASE}/`);
-  await page.evaluate(
-    ({ key, value }) => window.localStorage.setItem(key, value),
-    { key: `sb-${ref}-auth-token`, value: JSON.stringify(session) },
-  );
+  await page.evaluate(({ key, value }) => window.localStorage.setItem(key, value), {
+    key: `sb-${ref}-auth-token`,
+    value: JSON.stringify(session),
+  });
 }
 
 /** Generates the report currently selected on /reports and waits for the document. */

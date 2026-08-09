@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  ACTIVITY_CATEGORIES,
-  ACTIVITY_CATEGORY_LABELS,
-  activityCategory,
-} from "@/lib/collab";
+import { ACTIVITY_CATEGORIES, ACTIVITY_CATEGORY_LABELS, activityCategory } from "@/lib/collab";
 
 describe("activity timeline categories", () => {
   it("buckets export and report events into the exports filter", () => {

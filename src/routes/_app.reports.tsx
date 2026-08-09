@@ -223,7 +223,6 @@ function ReportsPage() {
   const narrativeBlocked = guarded.status === "blocked";
   const narrative = narrativeOverride ?? guarded.text;
 
-
   const handleGenerate = async () => {
     const stamp = new Date();
     setGenerated(true);
@@ -307,7 +306,6 @@ function ReportsPage() {
 
   const handleBenefitsCsv = () =>
     runExport("csv_benefits", () => downloadBenefitsCsv(items, reportType, exportRole));
-
 
   if (loading) {
     return (
@@ -461,7 +459,9 @@ function ReportsPage() {
             <Button
               variant="outline"
               onClick={handleBenefitsCsv}
-              disabled={!generated || report.totals.benefits === 0 || !exportAllowed("csv_benefits")}
+              disabled={
+                !generated || report.totals.benefits === 0 || !exportAllowed("csv_benefits")
+              }
             >
               <FileDown className="mr-1 h-4 w-4" /> Export benefits (CSV)
             </Button>
@@ -473,7 +473,6 @@ function ReportsPage() {
                 : (canExportReport(exportRole, "csv") as { reason: string }).reason}
             </p>
           )}
-
 
           {generated && (
             <Card>
@@ -521,7 +520,6 @@ function ReportsPage() {
                   </>
                 )}
               </CardContent>
-
             </Card>
           )}
         </div>

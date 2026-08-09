@@ -188,9 +188,8 @@ describe("real workspace records always match the contract", () => {
 
   it("keeps every row at exactly the contracted field count after unquoting", () => {
     for (const csv of [buildUseCasesCsv(items), benefitsToCsv(items)]) {
-      const expected = csv === benefitsToCsv(items)
-        ? BENEFIT_CSV_COLUMNS.length
-        : USE_CASE_CSV_COLUMNS.length;
+      const expected =
+        csv === benefitsToCsv(items) ? BENEFIT_CSV_COLUMNS.length : USE_CASE_CSV_COLUMNS.length;
       for (const row of parseCsv(csv)) expect(row).toHaveLength(expected);
     }
   });
