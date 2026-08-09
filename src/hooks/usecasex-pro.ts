@@ -120,6 +120,12 @@ async function fetchProData(userId: string): Promise<ProData> {
     listPortfoliosForUser(userId),
   ]);
 
+  const slugToId: Record<string, string> = {};
+  const scoresByUcId = new Map<string, ScoreDimensions | undefined>();
+  for (const s of scoreRows) {
+    scoresByUcId.set(s.use_case_id, normalizeScore(s));
+  }
+
   const saved: SavedUseCaseEntry[] = [];
   const useCaseContent: Record<string, UseCaseContent> = {};
   for (const row of savedRows) {
