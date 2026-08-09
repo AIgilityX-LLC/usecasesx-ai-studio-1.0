@@ -116,10 +116,14 @@ function RoadmapSurface() {
   const tab = search.tab || "stages";
 
   const setPeriod = (value: string) =>
-    navigate({ search: (prev) => ({ ...prev, period: value === ALL_PERIODS ? "" : value }) });
+    navigate({
+      to: "/roadmap",
+      search: { ...search, period: value === ALL_PERIODS ? "" : value },
+    });
   const setPortfolioId = (value: string) =>
-    navigate({ search: (prev) => ({ ...prev, portfolio: value, period: "" }) });
-  const setTab = (value: string) => navigate({ search: (prev) => ({ ...prev, tab: value }) });
+    navigate({ to: "/roadmap", search: { ...search, portfolio: value, period: "" } });
+  const setTab = (value: string) =>
+    navigate({ to: "/roadmap", search: { ...search, tab: value } });
 
   const portfolios = store.portfolios;
   const active = useMemo(
