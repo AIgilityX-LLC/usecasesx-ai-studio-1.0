@@ -3,12 +3,16 @@
  * with the service-role client and never production tenant data.
  */
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import type { Database } from "@/integrations/supabase/types";
 import {
   DEMO_CONTENT,
   DEMO_EDITION_EMAIL,
   type DemoEdition,
   type DemoContentSpec,
 } from "./demo-content";
+
+type OpportunityInsert = Database["public"]["Tables"]["opportunities"]["Insert"];
+type UseCaseInsert = Database["public"]["Tables"]["ai_use_cases"]["Insert"];
 
 interface Tenant {
   userId: string;
@@ -97,7 +101,7 @@ async function seed(tenant: Tenant, spec: DemoContentSpec) {
       owner_user_id: userId,
       owner_name: tenant.label,
       source: "workshop",
-    });
+    } as unknown as OpportunityInsert);
     if (error) throw error;
   }
 
@@ -117,7 +121,7 @@ async function seed(tenant: Tenant, spec: DemoContentSpec) {
         position: index,
         created_by: userId,
         owner_user_id: userId,
-      })
+      } as unknown as UseCaseInsert)
       .select("id")
       .single();
     if (error) throw error;
