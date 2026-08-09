@@ -29,6 +29,7 @@ import { Route as AppCompareRouteImport } from './routes/_app.compare'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppDataReadinessRouteImport } from './routes/_app.data-readiness'
 import { Route as AppDecisionRouteImport } from './routes/_app.decision'
+import { Route as AppDemoScenariosRouteImport } from './routes/_app.demo-scenarios'
 import { Route as AppDiscoverRouteImport } from './routes/_app.discover'
 import { Route as AppEntitlementRouteImport } from './routes/_app.entitlement'
 import { Route as AppFeasibilityRouteImport } from './routes/_app.feasibility'
@@ -191,6 +192,11 @@ const AppDataReadinessRoute = AppDataReadinessRouteImport.update({
 const AppDecisionRoute = AppDecisionRouteImport.update({
   id: '/decision',
   path: '/decision',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDemoScenariosRoute = AppDemoScenariosRouteImport.update({
+  id: '/demo-scenarios',
+  path: '/demo-scenarios',
   getParentRoute: () => AppRoute,
 } as any)
 const AppDiscoverRoute = AppDiscoverRouteImport.update({
@@ -549,6 +555,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
   '/decision': typeof AppDecisionRoute
+  '/demo-scenarios': typeof AppDemoScenariosRoute
   '/discover': typeof AppDiscoverRoute
   '/entitlement': typeof AppEntitlementRoute
   '/feasibility': typeof AppFeasibilityRoute
@@ -632,6 +639,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
   '/decision': typeof AppDecisionRoute
+  '/demo-scenarios': typeof AppDemoScenariosRoute
   '/discover': typeof AppDiscoverRoute
   '/entitlement': typeof AppEntitlementRoute
   '/feasibility': typeof AppFeasibilityRoute
@@ -719,6 +727,7 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/data-readiness': typeof AppDataReadinessRoute
   '/_app/decision': typeof AppDecisionRoute
+  '/_app/demo-scenarios': typeof AppDemoScenariosRoute
   '/_app/discover': typeof AppDiscoverRoute
   '/_app/entitlement': typeof AppEntitlementRoute
   '/_app/feasibility': typeof AppFeasibilityRoute
@@ -806,6 +815,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/data-readiness'
     | '/decision'
+    | '/demo-scenarios'
     | '/discover'
     | '/entitlement'
     | '/feasibility'
@@ -889,6 +899,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/data-readiness'
     | '/decision'
+    | '/demo-scenarios'
     | '/discover'
     | '/entitlement'
     | '/feasibility'
@@ -975,6 +986,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard'
     | '/_app/data-readiness'
     | '/_app/decision'
+    | '/_app/demo-scenarios'
     | '/_app/discover'
     | '/_app/entitlement'
     | '/_app/feasibility'
@@ -1198,6 +1210,13 @@ declare module '@tanstack/react-router' {
       path: '/decision'
       fullPath: '/decision'
       preLoaderRoute: typeof AppDecisionRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/demo-scenarios': {
+      id: '/_app/demo-scenarios'
+      path: '/demo-scenarios'
+      fullPath: '/demo-scenarios'
+      preLoaderRoute: typeof AppDemoScenariosRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/discover': {
@@ -1736,6 +1755,7 @@ interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppDataReadinessRoute: typeof AppDataReadinessRoute
   AppDecisionRoute: typeof AppDecisionRoute
+  AppDemoScenariosRoute: typeof AppDemoScenariosRoute
   AppDiscoverRoute: typeof AppDiscoverRoute
   AppEntitlementRoute: typeof AppEntitlementRoute
   AppFeasibilityRoute: typeof AppFeasibilityRoute
@@ -1788,6 +1808,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppDataReadinessRoute: AppDataReadinessRoute,
   AppDecisionRoute: AppDecisionRoute,
+  AppDemoScenariosRoute: AppDemoScenariosRoute,
   AppDiscoverRoute: AppDiscoverRoute,
   AppEntitlementRoute: AppEntitlementRoute,
   AppFeasibilityRoute: AppFeasibilityRoute,
