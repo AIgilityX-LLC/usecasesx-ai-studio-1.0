@@ -9,9 +9,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
-const bodySchema = z
-  .object({ limit: z.number().int().min(1).max(2000).optional() })
-  .default({});
+const bodySchema = z.object({ limit: z.number().int().min(1).max(2000).optional() }).default({});
 
 function unauthorized() {
   return new Response(JSON.stringify({ error: "Unauthorized" }), {

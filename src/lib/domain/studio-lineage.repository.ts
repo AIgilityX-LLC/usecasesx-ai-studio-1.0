@@ -62,7 +62,7 @@ function statusRank(status: string | null): number {
 }
 
 function time(value: string | null): number {
-  return value ? (Date.parse(value) || 0) : 0;
+  return value ? Date.parse(value) || 0 : 0;
 }
 
 /** Deterministic ordering: status, then completeness, then recency, then id. */

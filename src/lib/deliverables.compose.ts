@@ -508,7 +508,9 @@ export function benefitSections(benefits: Benefit[]): ExportSection[] {
     rows: benefits.map((b) => [
       b.name,
       ERP_VERIFICATION_LABELS[b.erpVerificationStatus],
-      b.erpSystem ? `${b.erpSystem}${b.erpReference ? ` · ${b.erpReference}` : ""}` : "Not connected",
+      b.erpSystem
+        ? `${b.erpSystem}${b.erpReference ? ` · ${b.erpReference}` : ""}`
+        : "Not connected",
       b.erpLastVerifiedAt ? new Date(b.erpLastVerifiedAt).toLocaleDateString() : "Never",
       formatEvidence(b),
     ]),

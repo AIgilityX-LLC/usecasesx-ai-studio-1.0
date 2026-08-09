@@ -140,7 +140,8 @@ export async function reconcileBenefits(
   const changes: ReconciliationChange[] = [];
 
   for (const row of rows) {
-    const previousStatus = (row.erp_verification_status ?? "not_configured") as ErpVerificationStatus;
+    const previousStatus = (row.erp_verification_status ??
+      "not_configured") as ErpVerificationStatus;
     const decision = enabled
       ? decideStatus({
           state: row.state,
