@@ -108,7 +108,6 @@ test.describe("handoffs smoke", () => {
       expect(auditRow, `audit_events row ${auditEventId} was never readable`).not.toBeNull();
       expect(String(auditRow?.event_type ?? "")).toContain("export");
       expect(auditRow?.workspace_id, "the audit row must carry workspace tenancy").toBeTruthy();
-
     } finally {
       await close();
     }
