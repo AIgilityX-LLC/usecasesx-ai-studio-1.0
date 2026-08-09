@@ -52,7 +52,9 @@ export async function listPortfolioAuditEvents(
   const id = parseInput(uuidSchema, portfolioId);
   const result = await supabase
     .from("audit_events")
-    .select("id, created_at, event_type, entity_type, severity, previous_value, new_value")
+    .select(
+      "id, created_at, event_type, entity_type, severity, actor_id, previous_value, new_value",
+    )
     .eq("entity_id", id)
     .in("entity_type", ["portfolio", "portfolio_item"])
     .order("created_at", { ascending: false })
@@ -74,6 +76,7 @@ export async function listPortfolioAuditEvents(
       eventType: row.event_type,
       entityType: row.entity_type,
       severity: row.severity,
+      actorId: row.actor_id,
       previous,
       next,
       useCaseId,
