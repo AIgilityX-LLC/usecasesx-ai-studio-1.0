@@ -17,6 +17,7 @@ import {
 } from "@/lib/telemetry";
 import {
   buildGuardedNarrative,
+  buildProvenanceSummary,
   buildPortfolioReport,
   PROVENANCE_HELP,
   PROVENANCE_LABELS,
@@ -30,6 +31,7 @@ import {
 } from "@/lib/reports/report-access";
 import { useWorkspaceContext } from "@/hooks/useWorkspaceContext";
 
+import { ExportReceipt, type ExportReceiptData } from "@/components/reports/ExportReceipt";
 import { ReportDocument } from "@/components/reports/ReportDocument";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
