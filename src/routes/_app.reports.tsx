@@ -494,6 +494,9 @@ function ReportsPage() {
             </p>
           )}
 
+          {receipt && <ExportReceipt receipt={receipt} />}
+
+
           {generated && (
             <Card>
               <CardHeader className="pb-3">
