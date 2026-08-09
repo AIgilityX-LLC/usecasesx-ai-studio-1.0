@@ -237,6 +237,7 @@ export type Database = {
           current_state: string | null
           current_step: string | null
           data_sources: Json | null
+          demo_template_key: string | null
           expected_benefits: Json | null
           future_state: string | null
           id: string
@@ -274,6 +275,7 @@ export type Database = {
           current_state?: string | null
           current_step?: string | null
           data_sources?: Json | null
+          demo_template_key?: string | null
           expected_benefits?: Json | null
           future_state?: string | null
           id?: string
@@ -311,6 +313,7 @@ export type Database = {
           current_state?: string | null
           current_step?: string | null
           data_sources?: Json | null
+          demo_template_key?: string | null
           expected_benefits?: Json | null
           future_state?: string | null
           id?: string
@@ -854,6 +857,50 @@ export type Database = {
           },
         ]
       }
+      demo_sample_copies: {
+        Row: {
+          created_at: string
+          entity_counts: Json
+          id: string
+          organization_id: string | null
+          scenario_key: string
+          scenario_label: string
+          template_version: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity_counts?: Json
+          id?: string
+          organization_id?: string | null
+          scenario_key: string
+          scenario_label: string
+          template_version?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          entity_counts?: Json
+          id?: string
+          organization_id?: string | null
+          scenario_key?: string
+          scenario_label?: string
+          template_version?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demo_sample_copies_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       entitlements: {
         Row: {
           created_at: string
@@ -1250,6 +1297,7 @@ export type Database = {
           converted_use_case_id: string | null
           created_at: string
           created_by: string
+          demo_template_key: string | null
           desired_outcome: string | null
           evidence: Json
           id: string
@@ -1282,6 +1330,7 @@ export type Database = {
           converted_use_case_id?: string | null
           created_at?: string
           created_by: string
+          demo_template_key?: string | null
           desired_outcome?: string | null
           evidence?: Json
           id?: string
@@ -1314,6 +1363,7 @@ export type Database = {
           converted_use_case_id?: string | null
           created_at?: string
           created_by?: string
+          demo_template_key?: string | null
           desired_outcome?: string | null
           evidence?: Json
           id?: string
@@ -1495,6 +1545,7 @@ export type Database = {
           created_at: string
           id: string
           industry: string | null
+          is_demo: boolean
           name: string
           plan: string
           type: string | null
@@ -1505,6 +1556,7 @@ export type Database = {
           created_at?: string
           id?: string
           industry?: string | null
+          is_demo?: boolean
           name: string
           plan?: string
           type?: string | null
@@ -1515,6 +1567,7 @@ export type Database = {
           created_at?: string
           id?: string
           industry?: string | null
+          is_demo?: boolean
           name?: string
           plan?: string
           type?: string | null
@@ -1721,6 +1774,7 @@ export type Database = {
       portfolios: {
         Row: {
           created_at: string
+          demo_template_key: string | null
           id: string
           last_reviewed_at: string | null
           name: string
@@ -1741,6 +1795,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          demo_template_key?: string | null
           id?: string
           last_reviewed_at?: string | null
           name: string
@@ -1761,6 +1816,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          demo_template_key?: string | null
           id?: string
           last_reviewed_at?: string | null
           name?: string
@@ -4207,8 +4263,11 @@ export type Database = {
         Row: {
           created_at: string
           created_by: string
+          demo_scenario_key: string | null
           description: string | null
           id: string
+          is_demo: boolean
+          is_demo_template: boolean
           name: string
           organization_id: string
           updated_at: string
@@ -4217,8 +4276,11 @@ export type Database = {
         Insert: {
           created_at?: string
           created_by: string
+          demo_scenario_key?: string | null
           description?: string | null
           id?: string
+          is_demo?: boolean
+          is_demo_template?: boolean
           name: string
           organization_id: string
           updated_at?: string
@@ -4227,8 +4289,11 @@ export type Database = {
         Update: {
           created_at?: string
           created_by?: string
+          demo_scenario_key?: string | null
           description?: string | null
           id?: string
+          is_demo?: boolean
+          is_demo_template?: boolean
           name?: string
           organization_id?: string
           updated_at?: string

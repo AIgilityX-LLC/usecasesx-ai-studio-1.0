@@ -87,6 +87,7 @@ const CORE: Item[] = [
   },
   { to: "/submit", label: "Submit a Use Case", icon: Send },
   { to: "/patterns", label: "Pattern Library", icon: BookOpen },
+  { to: "/demo-scenarios", label: "Demo Scenarios", icon: Lightbulb },
 ];
 
 const STUDIO_PRO: Item[] = [{ to: "/roadmap", label: "Portfolio Roadmap", icon: Map, pro: true }];
