@@ -118,7 +118,6 @@ async function sectionLuminance(page: Page, index: number): Promise<number | nul
   );
 }
 
-
 test.describe("page hero tone + main landmark", () => {
   const HERO_PAGES = ["/", "/resources", "/pricing", "/insights", "/patterns"];
 
