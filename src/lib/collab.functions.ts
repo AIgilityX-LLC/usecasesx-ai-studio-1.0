@@ -51,7 +51,7 @@ export const addCommentFn = createServerFn({ method: "POST" })
     const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
     const result = await addComment(context.supabase, context.userId, data);
     await writeAuditEvent(
-      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId: result.workspaceId } },
+      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId: result.workspaceId, organizationId: null } },
       {
         event: "collab.comment.added",
         entity: { type: data.entityType, id: data.entityId },
@@ -69,7 +69,7 @@ export const resolveCommentFn = createServerFn({ method: "POST" })
     const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
     const row = await setCommentResolved(context.supabase, context.userId, data.id, data.resolved);
     await writeAuditEvent(
-      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId: row.workspace_id } },
+      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId: row.workspace_id, organizationId: null } },
       {
         event: data.resolved ? "collab.comment.resolved" : "collab.comment.reopened",
         entity: { type: row.entity_type, id: row.entity_id },
@@ -105,7 +105,7 @@ export const unassignCollaboratorFn = createServerFn({ method: "POST" })
     const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
     const row = await unassign(context.supabase, data.id);
     await writeAuditEvent(
-      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId: row.workspace_id } },
+      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId: row.workspace_id, organizationId: null } },
       {
         event: "collab.assignment.removed",
         entity: { type: row.entity_type, id: row.entity_id },
@@ -162,7 +162,7 @@ export const inviteMemberFn = createServerFn({ method: "POST" })
       expiresInDays: data.expiresInDays,
     });
     await writeAuditEvent(
-      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId: invite.workspaceId } },
+      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId: invite.workspaceId, organizationId: null } },
       {
         event: AUDIT_EVENTS.memberInvited,
         entity: { type: "workspace", id: invite.workspaceId },
@@ -180,7 +180,7 @@ export const revokeInvitationFn = createServerFn({ method: "POST" })
     const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
     const row = await revokeInvitation(context.supabase, data.id);
     await writeAuditEvent(
-      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId: row.workspace_id } },
+      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId: row.workspace_id, organizationId: null } },
       {
         event: "membership.invitation_revoked",
         entity: { type: "workspace", id: row.workspace_id },
@@ -199,7 +199,7 @@ export const removeMemberFn = createServerFn({ method: "POST" })
     const { AUDIT_EVENTS } = await import("@/lib/telemetry/events");
     const result = await removeMember(context.supabase, context.userId, data.userId);
     await writeAuditEvent(
-      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId: result.workspaceId } },
+      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId: result.workspaceId, organizationId: null } },
       {
         event: AUDIT_EVENTS.memberRemoved,
         entity: { type: "workspace", id: result.workspaceId },
@@ -221,7 +221,7 @@ export const changeMemberRoleFn = createServerFn({ method: "POST" })
     const { AUDIT_EVENTS } = await import("@/lib/telemetry/events");
     const result = await changeMemberRole(context.supabase, context.userId, data.userId, data.role);
     await writeAuditEvent(
-      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId: result.workspaceId } },
+      { supabase: context.supabase, userId: context.userId, tenant: { workspaceId: result.workspaceId, organizationId: null } },
       {
         event: AUDIT_EVENTS.roleChanged,
         entity: { type: "workspace", id: result.workspaceId },
