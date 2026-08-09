@@ -24,7 +24,6 @@ test.describe("handoffs smoke", () => {
       .from("suite_handoff_requests")
       .insert({
         workspace_id: workspaceId,
-        created_by: operator.userId,
         target: "sarpi",
         request_type: "readiness_assessment",
         status: "queued",
