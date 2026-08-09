@@ -63,7 +63,7 @@ test("raises a SARPI request, captures consent, and shows it in the queue with p
     const admin = adminClient();
     const { data } = await admin
       .from("suite_handoff_requests")
-      .select("target, request_type, status, consent, source_version, source_refs, payload")
+      .select("target, request_type, status, consent, source_version, subject_refs, payload")
       .eq("title", title)
       .maybeSingle();
 
