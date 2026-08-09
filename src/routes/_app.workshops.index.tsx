@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { STAGE_META, WORKSHOP_STATUS_LABEL } from "@/lib/workshops";
 import { createWorkshopFn, listWorkshopsFn } from "@/lib/workshops.functions";
 
-export const Route = createFileRoute("/_app/workshops")({
+export const Route = createFileRoute("/_app/workshops/")({
   head: () => ({
     meta: [
       { title: "Workshops — AI Discovery & Value Design" },
