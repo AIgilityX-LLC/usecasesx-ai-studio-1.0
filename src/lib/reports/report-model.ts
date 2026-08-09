@@ -861,3 +861,39 @@ export function buildGuardedNarrative(
   const text = gaps.length > 0 ? `${body} ${gaps.join(" ")}` : body;
   return { status: "ok", text, gaps, citations };
 }
+
+/* ------------------------------------------------- export provenance summary */
+
+/**
+ * A one-line-per-source summary of what actually backed an export. It is shown
+ * on the export receipt so the person holding the file can say where each
+ * figure came from, and it is written into the audit record verbatim.
+ */
+export type ProvenanceSummary = {
+  useCases: number;
+  /** How many use cases carry each provenance source. */
+  counts: Record<ProvenanceSource, number>;
+  /** Rendered lines, e.g. "Scoring workspace — 2 of 3 use cases". */
+  lines: string[];
+  /** Gap statements attached to the same selection. */
+  gaps: string[];
+};
+
+export function buildProvenanceSummary(
+  report: PortfolioReport,
+  items: ReportItemInput[],
+): ProvenanceSummary {
+  const citations = buildNarrativeCitations(report, items);
+  const counts = { repository: 0, score: 0, portfolio: 0, studio_value: 0 } as Record<
+    ProvenanceSource,
+    number
+  >;
+  for (const citation of citations) {
+    for (const source of citation.sources) counts[source] += 1;
+  }
+  const total = citations.length;
+  const lines = (Object.keys(counts) as ProvenanceSource[])
+    .filter((source) => counts[source] > 0)
+    .map((source) => `${PROVENANCE_LABELS[source]} — ${counts[source]} of ${total} use cases`);
+  return { useCases: total, counts, lines, gaps: buildNarrativeGaps(report) };
+}

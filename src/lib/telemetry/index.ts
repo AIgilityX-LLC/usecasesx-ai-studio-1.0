@@ -7,6 +7,8 @@
 export * from "./events";
 export {
   recordAuditEvent,
+  recordAuditEventDetailed,
+  type AuditEventReceipt,
   recordProductEvent,
   logAppError,
   setTelemetryTenant,
