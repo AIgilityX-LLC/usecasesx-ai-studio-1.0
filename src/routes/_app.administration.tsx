@@ -19,6 +19,8 @@ import {
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import { RequireRoles } from "@/components/RequireRoles";
 import { useRoles } from "@/lib/usecasex.roles";
+import { PLATFORM_ADMIN_ROLES } from "@/lib/admin/platform-admin";
+import { CsvImportPanel } from "@/components/admin/CsvImportPanel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -100,18 +102,7 @@ export const Route = createFileRoute("/_app/administration")({
 
 function AdminPage() {
   return (
-    <RequireRoles
-      anyOf={[
-        "admin",
-        "moderator",
-        "super_admin",
-        "ai_hub_admin",
-        "usecasex_admin",
-        "content_manager",
-        "reviewer",
-      ]}
-      action="open the UseCasesX admin"
-    >
+    <RequireRoles anyOf={PLATFORM_ADMIN_ROLES} action="open the UseCasesX platform admin">
       <AdminPageInner />
     </RequireRoles>
   );
@@ -151,6 +142,7 @@ function AdminPageInner() {
             <TabsTrigger value="integrations">Integrations</TabsTrigger>
             <TabsTrigger value="report-templates">Report Templates</TabsTrigger>
             <TabsTrigger value="taxonomy">Taxonomy</TabsTrigger>
+            <TabsTrigger value="import">Import</TabsTrigger>
             <TabsTrigger value="platforms">Platform Mapping</TabsTrigger>
             <TabsTrigger value="leads">Leads</TabsTrigger>
             <TabsTrigger value="cta">CTA Analytics</TabsTrigger>
@@ -185,6 +177,9 @@ function AdminPageInner() {
           </TabsContent>
           <TabsContent value="report-templates" className="mt-6">
             <ReportTemplatesAdminTab />
+          </TabsContent>
+          <TabsContent value="import" className="mt-6">
+            <CsvImportPanel />
           </TabsContent>
           <TabsContent value="taxonomy" className="mt-6">
             <TaxonomyTab />

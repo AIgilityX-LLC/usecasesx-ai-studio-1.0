@@ -444,3 +444,121 @@ export async function deleteTaxonomyRow(table: string, id: string): Promise<void
     .eq("id", id);
   if (error) throw normalizeError(error);
 }
+
+/* ---------------- global catalogue: slugs, references, import ---------------- */
+
+/** slug → use case id for every global catalogue record (admin-only read). */
+export async function fetchUseCaseSlugMap(): Promise<Record<string, string>> {
+  const result = await supabase.from("use_cases").select("id, slug");
+  const rows = (unwrapResult(result, { allowNull: true }) ?? []) as Array<{
+    id: string;
+    slug: string;
+  }>;
+  const map: Record<string, string> = {};
+  for (const row of rows) map[row.slug] = row.id;
+  return map;
+}
+
+/** Known taxonomy slugs used to keep imports referentially valid. */
+export async function fetchTaxonomySlugSets(): Promise<{
+  industries: string[];
+  functions: string[];
+  capabilities: string[];
+}> {
+  const maps = await fetchTaxonomyMaps();
+  return {
+    industries: Object.keys(maps.industries.bySlug),
+    functions: Object.keys(maps.functions.bySlug),
+    capabilities: Object.keys(maps.aiTypes.bySlug),
+  };
+}
+
+const TAXONOMY_REFERENCE_TABLES: Record<string, { table: string; column: string }[]> = {
+  industries: [{ table: "use_case_industries", column: "industry_id" }],
+  business_functions: [{ table: "use_case_business_functions", column: "business_function_id" }],
+  ai_capabilities: [{ table: "use_case_capabilities", column: "capability_id" }],
+  business_objectives: [{ table: "use_case_business_objectives", column: "objective_id" }],
+};
+
+/**
+ * Counts catalogue rows still pointing at a taxonomy value. Callers must block
+ * deletion when this is greater than zero so taxonomy edits preserve references.
+ */
+export async function countTaxonomyReferences(table: string, id: string): Promise<number> {
+  const links = TAXONOMY_REFERENCE_TABLES[table];
+  if (!links) return 0;
+  let total = 0;
+  for (const link of links) {
+    const { count, error } = await (supabase as any)
+      .from(link.table)
+      .select("use_case_id", { count: "exact", head: true })
+      .eq(link.column, id);
+    if (error) throw normalizeError(error);
+    total += count ?? 0;
+  }
+  return total;
+}
+
+export interface ImportRowValues {
+  title: string;
+  slug: string;
+  summary: string;
+  businessProblem: string;
+  aiSolution: string;
+  industry: string;
+  businessFunction: string;
+  aiType: string;
+  valuePotential: string;
+  complexity: string;
+  riskLevel: string;
+  sourceStatus: string;
+  qualityStatus: string;
+  provenance: string;
+}
+
+function importPatch(values: ImportRowValues): Record<string, unknown> {
+  return {
+    title: values.title.trim(),
+    slug: values.slug.trim(),
+    summary: values.summary.trim(),
+    business_problem: values.businessProblem || null,
+    ai_solution_concept: values.aiSolution || null,
+    value_potential: values.valuePotential || null,
+    complexity: values.complexity || null,
+    risk_level: values.riskLevel || null,
+    content_status: values.qualityStatus || "unverified",
+    organization: values.provenance || null,
+    // Imports always land unpublished; publishing stays a deliberate admin act.
+    status: "draft",
+    visibility: "hidden",
+  };
+}
+
+/** Applies one planned import row. Never publishes; always writes an audit entry. */
+export async function applyImportRow(
+  action: "create" | "update",
+  values: ImportRowValues,
+  existingId?: string,
+): Promise<string> {
+  const patch = importPatch(values);
+  let id = existingId ?? "";
+  if (action === "update" && existingId) {
+    await updateUseCase(existingId, patch);
+  } else {
+    id = await insertUseCase(patch);
+  }
+  await syncTaxonomyJoins(id, {
+    industry: values.industry,
+    businessFunction: values.businessFunction,
+    aiType: values.aiType,
+    businessObjective: "",
+  });
+  await writeUseCaseAudit(
+    id,
+    action === "update" ? "import.updated" : "import.created",
+    `CSV import · source=${values.sourceStatus} · quality=${values.qualityStatus}${
+      values.provenance ? ` · provenance=${values.provenance}` : ""
+    }`,
+  );
+  return id;
+}
