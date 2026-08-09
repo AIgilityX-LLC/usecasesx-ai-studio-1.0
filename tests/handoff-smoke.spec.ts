@@ -26,8 +26,10 @@ test.describe("handoffs smoke", () => {
         workspace_id: workspaceId,
         created_by: operator.userId,
         target: "sarpi",
-        status: "draft",
-        subject_title: subject,
+        request_type: "readiness_assessment",
+        status: "queued",
+        title: subject,
+        requested_by: operator.userId,
       })
       .select("id, status")
       .single();
@@ -65,7 +67,7 @@ test.describe("handoffs smoke", () => {
           .select("status")
           .eq("id", requestId)
           .maybeSingle();
-        expect(after?.status, "queue action must persist a status move").not.toBe("draft");
+        expect(after?.status, "queue action must persist a status move").not.toBe("queued");
       }
 
       /* ---- export receipt --------------------------------------------- */
