@@ -422,6 +422,8 @@ export function useUseCaseXPro() {
       // Data
       saved: data.saved,
       useCaseContent: data.useCaseContent,
+      /** repository slug → repository use_cases.id (value/Studio lineage). */
+      slugToId: data.slugToId,
       portfolios: data.portfolios,
       isLoading: query.isLoading,
       isAuthenticated: !!userId,
