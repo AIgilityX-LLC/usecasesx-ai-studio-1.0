@@ -2564,6 +2564,56 @@ export type Database = {
           },
         ];
       };
+      use_case_deliverable_versions: {
+        Row: {
+          content: Json;
+          created_at: string;
+          created_by: string | null;
+          deliverable_id: string;
+          deliverable_type: string;
+          id: string;
+          origin: string;
+          status: string;
+          summary: string | null;
+          use_case_id: string;
+          version: number;
+        };
+        Insert: {
+          content?: Json;
+          created_at?: string;
+          created_by?: string | null;
+          deliverable_id: string;
+          deliverable_type: string;
+          id?: string;
+          origin?: string;
+          status?: string;
+          summary?: string | null;
+          use_case_id: string;
+          version: number;
+        };
+        Update: {
+          content?: Json;
+          created_at?: string;
+          created_by?: string | null;
+          deliverable_id?: string;
+          deliverable_type?: string;
+          id?: string;
+          origin?: string;
+          status?: string;
+          summary?: string | null;
+          use_case_id?: string;
+          version?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "use_case_deliverable_versions_deliverable_id_fkey";
+            columns: ["deliverable_id"];
+            isOneToOne: false;
+            referencedRelation: "use_case_deliverables";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       use_case_deliverables: {
         Row: {
           content: Json;
