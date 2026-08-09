@@ -28,6 +28,10 @@ export const AUDIT_EVENTS = {
   // outputs
   exportGenerated: "export.generated",
   reportGenerated: "report.generated",
+  // suite handoffs
+  handoffRequested: "handoff.requested",
+  handoffStatusChanged: "handoff.status_changed",
+  handoffCancelled: "handoff.cancelled",
   // ai
   aiAssistUsed: "ai.assist.used",
   aiAssistDenied: "ai.assist.denied",
@@ -77,6 +81,8 @@ export const PRODUCT_EVENTS = {
   reportExported: "report.exported",
   workshopStarted: "workshop.started",
   advisoryRequested: "advisory.requested",
+  handoffRequested: "handoff.requested",
+  handoffCompleted: "handoff.completed",
 
   // journey funnel (dashboard next-action surface)
   journeyStageViewed: "journey.stage_viewed",

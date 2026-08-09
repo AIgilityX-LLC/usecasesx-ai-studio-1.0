@@ -37,6 +37,8 @@ export const SIDEBAR_NAV_TARGETS = [
   "/sarpi",
   "/advisorx",
   "/cyberx/c3g/intake",
+  "/handoffs",
+
   "/reports",
   "/administration",
   "/admin-submissions",
