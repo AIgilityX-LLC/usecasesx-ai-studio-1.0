@@ -28,8 +28,14 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import {
+import {
+  ACTIVITY_CATEGORIES,
+  ACTIVITY_CATEGORY_LABELS,
+  ACTIVITY_PAGE_SIZE,
+  activityCategory,
   ASSIGNMENT_ROLES,
   ASSIGNMENT_ROLE_LABELS,
+  type ActivityCategory,
   REVIEW_STATUSES,
   REVIEW_STATUS_META,
   type AssignmentRole,
