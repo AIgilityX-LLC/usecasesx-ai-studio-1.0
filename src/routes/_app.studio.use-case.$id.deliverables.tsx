@@ -592,7 +592,9 @@ function DeliverablesHub() {
         onOpenChange={(open) => !open && setHistoryType(null)}
         useCaseId={id}
         type={historyType}
-        onReverted={refresh}
+        onReverted={async () => {
+          await refresh();
+        }}
       />
 
       <SampleDataDisclaimer />
