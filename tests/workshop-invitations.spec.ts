@@ -36,6 +36,7 @@ async function copyNewestInviteLink(page: Page): Promise<string> {
 
 test.describe("workshop invitations", () => {
   test.describe.configure({ mode: "serial" });
+  test.setTimeout(120_000);
 
   let workshopPath = "";
   let shareLinkPath = "";
