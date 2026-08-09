@@ -130,6 +130,9 @@ export const listUseCases = createServerFn({ method: "GET" })
     if (data.deploymentModel.length) query = query.in("deployment_model", data.deploymentModel);
     if (data.securityClassification.length)
       query = query.in("security_classification", data.securityClassification);
+    if (data.provenance.length) query = query.in("provenance", data.provenance);
+    if (data.qualityStatus.length) query = query.in("quality_status", data.qualityStatus);
+
 
     if (data.sort === "impact")
       query = query.order("impact_score", { ascending: false, nullsFirst: false });
