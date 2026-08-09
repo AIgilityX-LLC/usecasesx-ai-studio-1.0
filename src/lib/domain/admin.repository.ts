@@ -562,3 +562,200 @@ export async function applyImportRow(
   );
   return id;
 }
+
+/* ---------------- global content lifecycle ---------------- */
+
+/**
+ * Editorial columns captured in a published snapshot. Tenancy, identity and
+ * timestamp columns are deliberately excluded so a rollback can never move a
+ * record between owners.
+ */
+const SNAPSHOT_FIELDS = [
+  "title",
+  "slug",
+  "summary",
+  "business_value",
+  "problem",
+  "solution",
+  "business_problem",
+  "ai_solution_concept",
+  "data_required",
+  "kpis",
+  "roi_areas",
+  "value_potential",
+  "complexity",
+  "risk_level",
+  "time_to_value",
+  "maturity_level",
+  "governance_notes",
+  "cybersecurity_notes",
+  "privacy_notes",
+  "governance_required",
+  "privacy_review_required",
+  "cyber_review_required",
+  "assurance_review_required",
+  "recommended_platforms",
+  "display_order",
+  "visibility",
+  "outcomes",
+] as const;
+
+function pickSnapshot(row: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const field of SNAPSHOT_FIELDS) {
+    if (field in row) out[field] = (row as any)[field];
+  }
+  return out;
+}
+
+async function writeAuditWithMetadata(
+  useCaseId: string,
+  action: string,
+  detail: string | null,
+  metadata: Record<string, unknown> | null,
+): Promise<void> {
+  const actorId = await currentUserId();
+  if (!actorId) return;
+  const { error } = await (supabase as any).from("use_case_audit_log").insert({
+    use_case_id: useCaseId,
+    actor_id: actorId,
+    action,
+    detail,
+    metadata,
+  });
+  if (error) throw normalizeError(error);
+}
+
+/** Publishes a global use case and stores a restorable snapshot in the audit trail. */
+export async function publishGlobalUseCase(id: string, note?: string): Promise<void> {
+  const row = await getUseCase(id);
+  await updateUseCase(id, {
+    content_status: "published",
+    status: "published",
+    published_at: new Date().toISOString(),
+  });
+  await writeAuditWithMetadata(id, "Published", note ?? null, {
+    snapshot: pickSnapshot({ ...row, content_status: "published" }),
+  });
+}
+
+export async function unpublishGlobalUseCase(id: string, note?: string): Promise<void> {
+  await updateUseCase(id, { content_status: "unpublished", status: "draft", published_at: null });
+  await writeAuditWithMetadata(id, "Unpublished", note ?? null, null);
+}
+
+export async function archiveGlobalUseCase(id: string, note?: string): Promise<void> {
+  await updateUseCase(id, { content_status: "archived", status: "archived", published_at: null });
+  await writeAuditWithMetadata(id, "Archived", note ?? null, null);
+}
+
+export async function restoreGlobalUseCase(id: string, note?: string): Promise<void> {
+  await updateUseCase(id, { content_status: "draft", status: "draft" });
+  await writeAuditWithMetadata(id, "Restored to draft", note ?? null, null);
+}
+
+export async function setGlobalUseCaseFeatured(id: string, featured: boolean): Promise<void> {
+  await updateUseCase(id, { is_featured: featured });
+  await writeAuditWithMetadata(id, featured ? "Featured" : "Unfeatured", null, null);
+}
+
+export interface PublishedSnapshot {
+  createdAt: string;
+  actorId: string | null;
+  values: Record<string, unknown>;
+}
+
+/** Most recent published snapshot for a use case, or null when never published. */
+export async function getLastPublishedSnapshot(id: string): Promise<PublishedSnapshot | null> {
+  const result = await (supabase as any)
+    .from("use_case_audit_log")
+    .select("created_at, actor_id, metadata")
+    .eq("use_case_id", id)
+    .eq("action", "Published")
+    .order("created_at", { ascending: false })
+    .limit(5);
+  const rows = (unwrapResult(result, { allowNull: true }) ?? []) as Array<{
+    created_at: string;
+    actor_id: string | null;
+    metadata: { snapshot?: Record<string, unknown> } | null;
+  }>;
+  for (const row of rows) {
+    const values = row.metadata?.snapshot;
+    if (values && Object.keys(values).length > 0) {
+      return { createdAt: row.created_at, actorId: row.actor_id, values };
+    }
+  }
+  return null;
+}
+
+/**
+ * One-click rollback: restores the editorial content of the last published
+ * snapshot and takes the record out of public circulation (unpublished, not
+ * deleted) so the change is always reversible.
+ */
+export async function rollbackToLastPublished(id: string): Promise<PublishedSnapshot> {
+  const snapshot = await getLastPublishedSnapshot(id);
+  if (!snapshot) {
+    throw new DomainError(
+      "not_found",
+      "This use case has no published version to roll back to yet.",
+    );
+  }
+  await updateUseCase(id, {
+    ...snapshot.values,
+    content_status: "unpublished",
+    status: "draft",
+    published_at: null,
+  });
+  await writeAuditWithMetadata(
+    id,
+    "Rolled back",
+    `Restored the version published on ${new Date(snapshot.createdAt).toLocaleString()} and unpublished it for review.`,
+    null,
+  );
+  return snapshot;
+}
+
+/* ---------------- global content audit viewer ---------------- */
+
+export interface GlobalAuditEntry {
+  id: string;
+  useCaseId: string | null;
+  title: string;
+  slug: string;
+  action: string;
+  detail: string | null;
+  actorId: string | null;
+  createdAt: string;
+  restorable: boolean;
+}
+
+export async function listGlobalContentAudit(limit = 200): Promise<GlobalAuditEntry[]> {
+  const result = await (supabase as any)
+    .from("use_case_audit_log")
+    .select("id, use_case_id, action, detail, actor_id, created_at, metadata")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  const rows = (unwrapResult(result, { allowNull: true }) ?? []) as Array<Record<string, any>>;
+  const ids = Array.from(
+    new Set(rows.map((r) => r.use_case_id).filter((v): v is string => typeof v === "string")),
+  );
+  const titles: Record<string, { title: string; slug: string }> = {};
+  if (ids.length > 0) {
+    const meta = await supabase.from("use_cases").select("id, title, slug").in("id", ids);
+    for (const row of (meta.data ?? []) as Array<{ id: string; title: string; slug: string }>) {
+      titles[row.id] = { title: row.title, slug: row.slug };
+    }
+  }
+  return rows.map((r) => ({
+    id: r.id as string,
+    useCaseId: (r.use_case_id as string | null) ?? null,
+    title: titles[r.use_case_id]?.title ?? "Deleted record",
+    slug: titles[r.use_case_id]?.slug ?? "",
+    action: r.action as string,
+    detail: (r.detail as string | null) ?? null,
+    actorId: (r.actor_id as string | null) ?? null,
+    createdAt: r.created_at as string,
+    restorable: Boolean(r.metadata?.snapshot),
+  }));
+}

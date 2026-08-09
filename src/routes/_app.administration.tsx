@@ -21,6 +21,8 @@ import { RequireRoles } from "@/components/RequireRoles";
 import { useRoles } from "@/lib/usecasex.roles";
 import { PLATFORM_ADMIN_ROLES } from "@/lib/admin/platform-admin";
 import { CsvImportPanel } from "@/components/admin/CsvImportPanel";
+import { GlobalLifecyclePanel } from "@/components/admin/GlobalLifecyclePanel";
+import { GlobalAuditViewer } from "@/components/admin/GlobalAuditViewer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -143,6 +145,7 @@ function AdminPageInner() {
             <TabsTrigger value="report-templates">Report Templates</TabsTrigger>
             <TabsTrigger value="taxonomy">Taxonomy</TabsTrigger>
             <TabsTrigger value="import">Import</TabsTrigger>
+            <TabsTrigger value="audit">Audit</TabsTrigger>
             <TabsTrigger value="platforms">Platform Mapping</TabsTrigger>
             <TabsTrigger value="leads">Leads</TabsTrigger>
             <TabsTrigger value="cta">CTA Analytics</TabsTrigger>
@@ -177,6 +180,9 @@ function AdminPageInner() {
           </TabsContent>
           <TabsContent value="report-templates" className="mt-6">
             <ReportTemplatesAdminTab />
+          </TabsContent>
+          <TabsContent value="audit" className="mt-6">
+            <GlobalAuditViewer />
           </TabsContent>
           <TabsContent value="import" className="mt-6">
             <CsvImportPanel />
@@ -248,7 +254,7 @@ function StatCard({ label, value }: { label: string; value: number }) {
 
 function UseCasesTab() {
   const store = useAdminStore();
-  const { canDelete, canPublish } = useRoles();
+  // Lifecycle transitions now live in GlobalLifecyclePanel, gated on canPublishGlobal.
   const [query, setQuery] = useState("");
   const [statusF, setStatusF] = useState<string>("all");
   const [visF, setVisF] = useState<string>("all");
@@ -417,51 +423,13 @@ function UseCasesTab() {
                     >
                       <Copy className="w-4 h-4" />
                     </Button>
-                    {u.status !== "Published" && canPublish && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        title="Publish"
-                        onClick={() => {
-                          store.setStatus(u.id, "Published", "Published");
-                          trackCTAEvent("admin_published", { id: u.id });
-                        }}
-                      >
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      </Button>
-                    )}
-                    {u.status === "Published" && canPublish && (
-                      <ConfirmAction
-                        title="Unpublish use case?"
-                        desc="It will no longer appear in the public catalogue."
-                        action="Unpublish"
-                        onConfirm={() => {
-                          store.setStatus(u.id, "Unpublished", "Unpublished");
-                          trackCTAEvent("admin_unpublished", { id: u.id });
-                        }}
-                        trigger={
-                          <Button variant="ghost" size="icon" title="Unpublish">
-                            <XCircle className="w-4 h-4 text-amber-600" />
-                          </Button>
-                        }
-                      />
-                    )}
-                    {canDelete && (
-                      <ConfirmAction
-                        title="Archive use case?"
-                        desc="It will be hidden from authors and users. Reversible by editing status."
-                        action="Archive"
-                        onConfirm={() => {
-                          store.setStatus(u.id, "Archived", "Archived");
-                          trackCTAEvent("admin_archived", { id: u.id });
-                        }}
-                        trigger={
-                          <Button variant="ghost" size="icon" title="Archive (admin only)">
-                            <Archive className="w-4 h-4 text-destructive" />
-                          </Button>
-                        }
-                      />
-                    )}
+                    <GlobalLifecyclePanel
+                      useCase={u}
+                      onChanged={() => {
+                        trackCTAEvent("admin_lifecycle_changed", { id: u.id });
+                        return store.reload();
+                      }}
+                    />
                   </div>
                 </td>
               </tr>
@@ -1502,9 +1470,20 @@ function TaxonomyEditor({ table, title }: { table: string; title: string }) {
     }
   };
 
-  const remove = async (id: string) => {
+  const [blocked, setBlocked] = useState<{ name: string; count: number } | null>(null);
+
+  /**
+   * Reference integrity: never delete a taxonomy value that catalogue records
+   * still point at, and always show the admin the exact orphan risk.
+   */
+  const remove = async (row: TaxRow) => {
     try {
-      await adminRepo.deleteTaxonomyRow(table, id);
+      const references = await adminRepo.countTaxonomyReferences(table, row.id);
+      if (references > 0) {
+        setBlocked({ name: row.name, count: references });
+        return;
+      }
+      await adminRepo.deleteTaxonomyRow(table, row.id);
       load();
     } catch (e) {
       alert(toUserMessage(e, "We could not remove this entry."));
@@ -1560,12 +1539,28 @@ function TaxonomyEditor({ table, title }: { table: string; title: string }) {
                 />
                 {r.is_published ? "Pub" : "Draft"}
               </label>
-              <Button size="icon" variant="ghost" onClick={() => remove(r.id)} title="Delete">
+              <Button size="icon" variant="ghost" onClick={() => void remove(r)} title="Delete">
                 <XCircle className="w-4 h-4 text-destructive" />
               </Button>
             </li>
           ))}
         </ul>
+        {blocked && (
+          <div
+            role="alert"
+            className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-xs text-destructive"
+          >
+            <p className="font-medium">“{blocked.name}” cannot be deleted.</p>
+            <p className="mt-1 text-destructive/90">
+              {blocked.count} catalogue{" "}
+              {blocked.count === 1 ? "record references" : "records reference"} this value. Re-tag
+              those records first, or unpublish this entry instead of deleting it.
+            </p>
+            <Button size="sm" variant="outline" className="mt-2" onClick={() => setBlocked(null)}>
+              Dismiss
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
