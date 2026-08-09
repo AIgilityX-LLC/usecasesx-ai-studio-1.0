@@ -28,7 +28,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import {
-import {
   ACTIVITY_CATEGORIES,
   ACTIVITY_CATEGORY_LABELS,
   ACTIVITY_PAGE_SIZE,
