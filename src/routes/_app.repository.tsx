@@ -57,6 +57,8 @@ const searchSchema = z.object({
   roiRange: z.array(z.string()).optional(),
   deploymentModel: z.array(z.string()).optional(),
   securityClassification: z.array(z.string()).optional(),
+  provenance: z.array(z.string()).optional(),
+  qualityStatus: z.array(z.string()).optional(),
   sort: z.enum(sortValues).optional(),
   gov: z.boolean().optional(),
 });
@@ -89,6 +91,8 @@ const FACET_LABELS: Record<string, string> = {
   roiRange: "ROI Range",
   deploymentModel: "Deployment",
   securityClassification: "Security",
+  provenance: "Provenance",
+  qualityStatus: "Quality status",
 };
 
 const taxQ = queryOptions({
@@ -135,6 +139,8 @@ function buildListInput(search: Search) {
     timeToValue: search.timeToValue ?? [],
     deploymentModel: search.deploymentModel ?? [],
     securityClassification: search.securityClassification ?? [],
+    provenance: search.provenance ?? [],
+    qualityStatus: search.qualityStatus ?? [],
     sort: mapSort(search.sort as SortKey | undefined),
     limit: Math.min(PAGE_SIZE * page, 120),
     page: 1,
