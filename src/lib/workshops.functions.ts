@@ -122,7 +122,7 @@ export const updateWorkshopFn = createServerFn({ method: "POST" })
 
     const { data: row, error } = await supabase
       .from("workshops")
-      .update(patch)
+      .update(patch as never)
       .eq("id", data.id)
       .select("*")
       .single();
@@ -249,7 +249,7 @@ export const updateWorkshopItemFn = createServerFn({ method: "POST" })
 
     const { data: row, error } = await context.supabase
       .from("workshop_items")
-      .update(patch)
+      .update(patch as never)
       .eq("id", data.id)
       .select("*")
       .single();

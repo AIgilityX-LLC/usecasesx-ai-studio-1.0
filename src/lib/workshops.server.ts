@@ -337,7 +337,7 @@ export async function convertItem(
 
   const { data: updated, error: updateError } = await supabase
     .from("workshop_items")
-    .update(patch)
+    .update(patch as never)
     .eq("id", item.id)
     .select(ITEM_SELECT)
     .single();
