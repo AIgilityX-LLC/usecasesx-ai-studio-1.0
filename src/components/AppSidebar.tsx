@@ -89,9 +89,6 @@ const CORE: Item[] = [
 ];
 
 const STUDIO_PRO: Item[] = [
-  { to: "/feasibility", label: "Feasibility Scoring", icon: Gauge, pro: true },
-  { to: "/data-readiness", label: "Data Readiness", icon: Database, pro: true },
-  { to: "/blueprint", label: "Blueprint Builder", icon: Hammer, pro: true },
   { to: "/roadmap", label: "Portfolio Roadmap", icon: Map, pro: true },
 ];
 
