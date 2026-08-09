@@ -10,7 +10,7 @@
 import {
   benefitsToCsv,
   reportFileName,
-  useCasesToCsv,
+  buildUseCasesCsv,
   type ReportItemInput,
 } from "@/lib/reports/report-model";
 
@@ -28,7 +28,7 @@ function downloadText(filename: string, mime: string, text: string) {
 
 export function downloadUseCaseCsv(items: ReportItemInput[], kind: string): string {
   const filename = `${reportFileName(kind)}.csv`;
-  downloadText(filename, "text/csv", useCasesToCsv(items));
+  downloadText(filename, "text/csv", buildUseCasesCsv(items));
   return filename;
 }
 

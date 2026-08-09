@@ -622,7 +622,7 @@ function bandFor(total: number | null | undefined): string {
   return def ? `${def.range} ${def.label}` : "";
 }
 
-export function useCaseCsvRow(
+export function buildUseCaseCsvRow(
   report: UseCaseReport,
   item: ReportItemInput,
 ): Record<UseCaseCsvColumnKey, string> {
@@ -665,10 +665,10 @@ export function useCaseCsvRow(
   };
 }
 
-export function useCasesToCsv(items: ReportItemInput[]): string {
+export function buildUseCasesCsv(items: ReportItemInput[]): string {
   const header = USE_CASE_CSV_COLUMNS.map((c) => toCsvCell(c.label)).join(",");
   const lines = items.map((item) => {
-    const row = useCaseCsvRow(buildUseCaseReport(item), item);
+    const row = buildUseCaseCsvRow(buildUseCaseReport(item), item);
     return USE_CASE_CSV_COLUMNS.map((c) => toCsvCell(row[c.key])).join(",");
   });
   return [header, ...lines].join("\r\n");

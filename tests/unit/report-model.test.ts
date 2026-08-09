@@ -4,7 +4,7 @@ import {
   buildExecutiveNarrative,
   buildPortfolioReport,
   buildUseCaseReport,
-  useCasesToCsv,
+  buildUseCasesCsv,
   USE_CASE_CSV_COLUMNS,
   type ReportItemInput,
 } from "@/lib/reports/report-model";
@@ -186,7 +186,7 @@ describe("buildPortfolioReport", () => {
   });
 
   it("exports a stable CSV contract with quoted values", () => {
-    const csv = useCasesToCsv([
+    const csv = buildUseCasesCsv([
       {
         useCaseId: "uc-1",
         content: content({ summary: 'Has "quotes", and commas' }),
