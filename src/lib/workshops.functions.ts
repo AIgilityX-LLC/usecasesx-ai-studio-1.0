@@ -410,3 +410,123 @@ export const generateWorkshopOutcomeFn = createServerFn({ method: "POST" })
     );
     return summary;
   });
+
+/* ------------------------------------------------------- invitations & audit */
+
+export const listWorkshopInvitationsFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ workshopId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { assertFacilitator } = await import("@/lib/workshops.server");
+    const { listInvitations } = await import("@/lib/workshops.collab.server");
+    await assertFacilitator(context.supabase, data.workshopId, context.userId);
+    return listInvitations(context.supabase, data.workshopId);
+  });
+
+export const createWorkshopInvitationFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        workshopId: z.string().uuid(),
+        email: z.string().trim().email().max(200).optional().or(z.literal("")),
+        displayName: z.string().trim().max(120).optional(),
+        role: z.enum(["facilitator", "participant", "observer"]).default("participant"),
+        expiresInDays: z.number().int().min(1).max(90).default(30),
+        maxUses: z.number().int().min(1).max(200).default(1),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { assertFacilitator } = await import("@/lib/workshops.server");
+    const { createInvitation } = await import("@/lib/workshops.collab.server");
+    const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
+    const { AUDIT_EVENTS } = await import("@/lib/telemetry/events");
+    await assertFacilitator(supabase, data.workshopId, userId);
+
+    const invitation = await createInvitation(supabase, {
+      workshopId: data.workshopId,
+      userId,
+      email: data.email ? data.email.toLowerCase() : null,
+      displayName: data.displayName || null,
+      role: data.role,
+      expiresInDays: data.expiresInDays,
+      maxUses: data.email ? 1 : data.maxUses,
+    });
+
+    await writeAuditEvent(
+      { supabase, userId, tenant: { organizationId: null, workspaceId: null } },
+      {
+        event: AUDIT_EVENTS.entityCreated,
+        entity: { type: "workshop_invitation", id: invitation.id },
+        // The token itself is never written to the audit stream.
+        next: {
+          workshop_id: data.workshopId,
+          role: invitation.role,
+          invited: invitation.email ? "email" : "share_link",
+        },
+      },
+    );
+    return invitation;
+  });
+
+export const revokeWorkshopInvitationFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ workshopId: z.string().uuid(), id: z.string().uuid() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { assertFacilitator } = await import("@/lib/workshops.server");
+    const { revokeInvitation } = await import("@/lib/workshops.collab.server");
+    await assertFacilitator(context.supabase, data.workshopId, context.userId);
+    await revokeInvitation(context.supabase, data.id);
+    return { ok: true };
+  });
+
+export const acceptWorkshopInvitationFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ token: z.string().trim().min(10).max(200) }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { acceptInvitation } = await import("@/lib/workshops.collab.server");
+    const workshopId = await acceptInvitation(context.supabase, data.token);
+    return { workshopId };
+  });
+
+export const getWorkshopAuditFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ workshopId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { buildAuditTrail } = await import("@/lib/workshops.collab.server");
+    // RLS restricts these rows to workshop members; observers may read them.
+    return buildAuditTrail(context.supabase, data.workshopId);
+  });
+
+export const publishWorkshopOutcomeFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ workshopId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { assertFacilitator, composeOutcome } = await import("@/lib/workshops.server");
+    const { publishOutcome } = await import("@/lib/workshops.collab.server");
+    const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
+    const { AUDIT_EVENTS } = await import("@/lib/telemetry/events");
+    await assertFacilitator(supabase, data.workshopId, userId);
+
+    const summary = await composeOutcome(supabase, data.workshopId, userId);
+    const published = await publishOutcome(supabase, data.workshopId, userId, summary);
+
+    await writeAuditEvent(
+      { supabase, userId, tenant: { organizationId: null, workspaceId: null } },
+      {
+        event: AUDIT_EVENTS.reportGenerated,
+        entity: { type: "workshop_outcome", id: data.workshopId },
+        next: {
+          portfolio_id: published.portfolioId,
+          report_id: published.reportId,
+          opportunities: published.opportunityIds.length,
+        },
+      },
+    );
+    return { summary, ...published };
+  });
