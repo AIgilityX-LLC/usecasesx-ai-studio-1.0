@@ -329,7 +329,7 @@ export function WorkshopBoardView({ id }: { id: string }) {
 
       {viewer.isFacilitator && active === "context" && <WorkshopInvitePanel workshopId={id} />}
 
-      <WorkshopAuditTrail workshopId={id} stage={active} />
+      <WorkshopAuditTrail workshopId={id} stage={active} workshopTitle={workshop.title} />
     </div>
 
   );
