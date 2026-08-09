@@ -111,3 +111,17 @@ describe("roadmap export", () => {
     expect(json.items[0].stage).toBe("now");
   });
 });
+
+describe("roadmap export columns", () => {
+  test("normalizes and orders selected columns", () => {
+    expect(normalizeColumns(["stage", "use_case", "bogus"])).toEqual(["use_case", "stage"]);
+    expect(normalizeColumns([])).toEqual(DEFAULT_ROADMAP_COLUMNS);
+    expect(normalizeColumns(["bogus"])).toEqual(DEFAULT_ROADMAP_COLUMNS);
+  });
+
+  test("CSV honours the selected columns", () => {
+    const items = buildRoadmapItems(entries, new Date("2026-01-15T00:00:00Z"));
+    const csv = roadmapToCsv(items, ["use_case", "stage"]);
+    expect(csv.split("\r\n")[0]).toBe("Use case,Stage");
+  });
+});
