@@ -1,12 +1,43 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Download, Loader2, RotateCcw, ShieldCheck } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/SiteShell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { listDemoArtifactsFn, resetDemoTenantsFn } from "@/lib/demo/demo.functions";
+import { DEMO_WALKTHROUGH, type DemoEdition } from "@/lib/demo/demo-content";
+
+type DemoArtifact = Awaited<ReturnType<typeof listDemoArtifactsFn>>[number];
+
+function download(filename: string, mime: string, contents: string) {
+  const url = URL.createObjectURL(new Blob([contents], { type: mime }));
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+function csvCell(value: string) {
+  return /[",\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
+}
+
+function artifactCsv(artifact: DemoArtifact) {
+  const rows = [
+    ["report_title", "portfolio", "use_case_title", "decision", "audit_event_id"],
+    ...artifact.useCases.map((uc) => [
+      artifact.reportTitle,
+      artifact.portfolio,
+      uc.title,
+      uc.decision,
+      artifact.auditEventId ?? "",
+    ]),
+  ];
+  return rows.map((row) => row.map(csvCell).join(",")).join("\n");
+}
 
 /**
  * Demonstration sign-in. The personas below hold no production data and exist
@@ -99,6 +130,9 @@ function DemoLoginPage() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [artifacts, setArtifacts] = useState<DemoArtifact[]>([]);
+  const [resetting, setResetting] = useState(false);
+  const [resetMessage, setResetMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -106,6 +140,18 @@ function DemoLoginPage() {
     });
     return () => data.subscription.unsubscribe();
   }, [navigate]);
+
+  const loadArtifacts = useCallback(async () => {
+    try {
+      setArtifacts(await listDemoArtifactsFn());
+    } catch {
+      setArtifacts([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadArtifacts();
+  }, [loadArtifacts]);
 
   const signIn = async (email: string) => {
     setError(null);
@@ -119,6 +165,26 @@ function DemoLoginPage() {
         `${signInError.message} — demo personas may not be provisioned in this environment yet.`,
       );
       setBusy(null);
+    }
+  };
+
+  const resetDemo = async () => {
+    setError(null);
+    setResetMessage(null);
+    setResetting(true);
+    try {
+      const result = await resetDemoTenantsFn({ data: { password: DEMO_PASSWORD } });
+      const summary = result.results
+        .map((r) => `${r.edition}: ${r.status.replace("_", " ")}`)
+        .join(" · ");
+      setResetMessage(
+        `Demo tenants reset ${new Date(result.resetAt).toLocaleTimeString()} — ${summary}`,
+      );
+      await loadArtifacts();
+    } catch (resetError) {
+      setError(resetError instanceof Error ? resetError.message : "Demo reset failed.");
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -137,6 +203,116 @@ function DemoLoginPage() {
             <code className="rounded bg-muted px-1.5 py-0.5">{DEMO_PASSWORD}</code>
           </p>
         </header>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Clean demo state</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <p className="text-muted-foreground">
+              Wipes the Pro and Enterprise demonstration workspaces and re-seeds the opportunities,
+              use cases, portfolio, sample report and export receipt. Other tenants are untouched.
+            </p>
+            <Button
+              variant="outline"
+              onClick={() => void resetDemo()}
+              disabled={resetting}
+              data-testid="demo-reset"
+            >
+              {resetting ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <RotateCcw className="mr-2 h-4 w-4" />
+              )}
+              Reset &amp; re-seed demo tenants
+            </Button>
+            {resetMessage && (
+              <p role="status" className="text-xs text-muted-foreground">
+                {resetMessage}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        {artifacts.length > 0 && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Seeded report &amp; export files</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              {artifacts.map((artifact) => (
+                <div
+                  key={artifact.edition}
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-3"
+                >
+                  <div>
+                    <p className="font-medium">{artifact.reportTitle}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {artifact.portfolio} · export receipt{" "}
+                      <span className="font-mono">{artifact.auditEventId ?? "pending"}</span>
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        download(
+                          `${artifact.edition}-demo-report.json`,
+                          "application/json",
+                          JSON.stringify(artifact, null, 2),
+                        )
+                      }
+                    >
+                      <Download className="mr-2 h-4 w-4" /> JSON
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        download(
+                          `${artifact.edition}-demo-export.csv`,
+                          "text/csv",
+                          artifactCsv(artifact),
+                        )
+                      }
+                    >
+                      <Download className="mr-2 h-4 w-4" /> CSV
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Guided walkthrough</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 text-sm sm:grid-cols-2">
+            {(["pro", "enterprise"] as DemoEdition[]).map((edition) => (
+              <div key={edition} className="space-y-2">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {edition === "pro" ? "Pro journey" : "Enterprise journey"}
+                </h3>
+                <ol className="space-y-2">
+                  {DEMO_WALKTHROUGH[edition].map((step) => (
+                    <li key={step.title} className="rounded-md border p-2">
+                      <Link
+                        to={step.to}
+                        className="text-sm font-medium underline-offset-2 hover:underline"
+                      >
+                        {step.title}
+                      </Link>
+                      <p className="text-xs text-muted-foreground">{step.detail}</p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
 
         {error && (
           <p
