@@ -133,7 +133,6 @@ export const listUseCases = createServerFn({ method: "GET" })
     if (data.provenance.length) query = query.in("provenance", data.provenance);
     if (data.qualityStatus.length) query = query.in("quality_status", data.qualityStatus);
 
-
     if (data.sort === "impact")
       query = query.order("impact_score", { ascending: false, nullsFirst: false });
     else if (data.sort === "maturity")
