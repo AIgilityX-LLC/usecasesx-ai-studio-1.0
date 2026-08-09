@@ -38,6 +38,7 @@ const PERSONAS = [
     blurb: "Platform administration, taxonomy governance and tenant oversight.",
     plan: "Enterprise",
     tenant: "UseCasesX Demo Platform",
+    featured: false,
   },
   {
     email: "tenantadmin@demo.usecasex.app",
@@ -45,6 +46,7 @@ const PERSONAS = [
     blurb: "Workspace owner — members, entitlements, portfolios and reporting.",
     plan: "Enterprise",
     tenant: "Northwind Group (Demo Tenant)",
+    featured: false,
   },
   {
     email: "facilitator@demo.usecasex.app",
@@ -52,6 +54,7 @@ const PERSONAS = [
     blurb: "Runs Discovery & Value Design workshops end to end.",
     plan: "Pro",
     tenant: "Workshop Academy (Demo)",
+    featured: false,
   },
   {
     email: "participant1@demo.usecasex.app",
@@ -59,6 +62,7 @@ const PERSONAS = [
     blurb: "Submits pain points and opportunities, scores candidates.",
     plan: "Pro",
     tenant: "Workshop Academy (Demo)",
+    featured: false,
   },
   {
     email: "participant2@demo.usecasex.app",
@@ -66,6 +70,7 @@ const PERSONAS = [
     blurb: "Second voice in the room — proves scoping and traceability.",
     plan: "Pro",
     tenant: "Workshop Academy (Demo)",
+    featured: false,
   },
 ];
 
