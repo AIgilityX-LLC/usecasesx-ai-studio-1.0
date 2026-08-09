@@ -2,7 +2,17 @@ import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowRight, Check, GitMerge, Loader2, Plus, Trash2, Users } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Download,
+  GitMerge,
+  Loader2,
+  Plus,
+  Trash2,
+  Users,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -44,11 +54,16 @@ import {
   generateWorkshopOutcomeFn,
   getWorkshopBoardFn,
   mergeWorkshopItemsFn,
+  publishWorkshopOutcomeFn,
   removeParticipantFn,
   submitWorkshopItemFn,
   updateWorkshopFn,
   updateWorkshopItemFn,
 } from "@/lib/workshops.functions";
+import { downloadWorkshopOutcomePDF } from "@/lib/workshops.collab";
+import { WorkshopInvitePanel } from "@/components/workshop/WorkshopInvitePanel";
+import { WorkshopAuditTrail } from "@/components/workshop/WorkshopAuditTrail";
+
 
 const KIND_FOR_STAGE: Partial<Record<WorkshopStage, WorkshopItemKind>> = {
   context: "context",
@@ -111,6 +126,12 @@ export function WorkshopBoardView({ id }: { id: string }) {
     () => generateWorkshopOutcomeFn({ data: { workshopId: id } }),
     "Outcome summary generated",
   );
+  const publish = mutate(
+    () => publishWorkshopOutcomeFn({ data: { workshopId: id } }),
+    "Outcome attached to the portfolio and Opportunity Map",
+  );
+  const publishedPortfolioId = publish.data?.portfolioId ?? null;
+
   const addParticipant = mutate(
     (participant: {
       displayName: string;
@@ -296,12 +317,21 @@ export function WorkshopBoardView({ id }: { id: string }) {
               outcome={outcome}
               canGenerate={viewer.isFacilitator}
               busy={generate.isPending}
+              publishing={publish.isPending}
               onGenerate={() => generate.mutate(undefined)}
+              onPublish={() => publish.mutate(undefined)}
+              onExport={() => outcome && downloadWorkshopOutcomePDF(outcome.summary)}
+              publishedPortfolioId={publishedPortfolioId}
             />
           )}
         </CardContent>
       </Card>
+
+      {viewer.isFacilitator && active === "context" && <WorkshopInvitePanel workshopId={id} />}
+
+      <WorkshopAuditTrail workshopId={id} stage={active} />
     </div>
+
   );
 }
 
@@ -863,21 +893,48 @@ function OutcomeStage({
   outcome,
   canGenerate,
   busy,
+  publishing,
   onGenerate,
+  onPublish,
+  onExport,
+  publishedPortfolioId,
 }: {
   outcome: { summary: import("@/lib/workshops").OutcomeSummary; generatedAt: string } | null;
   canGenerate: boolean;
   busy: boolean;
+  publishing: boolean;
   onGenerate: () => void;
+  onPublish: () => void;
+  onExport: () => void;
+  publishedPortfolioId: string | null;
 }) {
   return (
     <div className="space-y-5">
-      {canGenerate && (
-        <Button onClick={onGenerate} disabled={busy}>
-          {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {outcome ? "Regenerate outcome summary" : "Generate outcome summary"}
-        </Button>
-      )}
+      <div className="flex flex-wrap gap-2">
+        {canGenerate && (
+          <Button onClick={onGenerate} disabled={busy}>
+            {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {outcome ? "Regenerate outcome summary" : "Generate outcome summary"}
+          </Button>
+        )}
+        {outcome && (
+          <Button variant="outline" onClick={onExport}>
+            <Download className="mr-2 h-4 w-4" /> Export summary (PDF)
+          </Button>
+        )}
+        {canGenerate && (
+          <Button variant="outline" onClick={onPublish} disabled={publishing}>
+            {publishing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Publish to portfolio & Opportunity Map
+          </Button>
+        )}
+        {publishedPortfolioId && (
+          <Button asChild variant="ghost">
+            <Link to="/portfoliox">Open portfolio</Link>
+          </Button>
+        )}
+      </div>
+
       {!outcome ? (
         <EmptyState
           title="No outcome summary yet"

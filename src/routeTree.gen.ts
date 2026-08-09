@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as DemoLoginRouteImport } from './routes/demo-login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -70,6 +71,7 @@ import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$sl
 import { Route as AppWorkshopsIndexRouteImport } from './routes/_app.workshops.index'
 import { Route as AppWorkshopsIdRouteImport } from './routes/_app.workshops.$id'
 import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
+import { Route as AppWorkshopsJoinTokenRouteImport } from './routes/_app.workshops.join.$token'
 import { Route as ApiPublicHooksErpReconciliationRouteImport } from './routes/api/public/hooks/erp-reconciliation'
 import { Route as ApiPublicHooksEvidenceCleanupRouteImport } from './routes/api/public/hooks/evidence-cleanup'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
@@ -101,6 +103,11 @@ const AppRoute = AppRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoLoginRoute = DemoLoginRouteImport.update({
+  id: '/demo-login',
+  path: '/demo-login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -393,6 +400,11 @@ const AppCyberxC3gIntakeRoute = AppCyberxC3gIntakeRouteImport.update({
   path: '/cyberx/c3g/intake',
   getParentRoute: () => AppRoute,
 } as any)
+const AppWorkshopsJoinTokenRoute = AppWorkshopsJoinTokenRouteImport.update({
+  id: '/workshops/join/$token',
+  path: '/workshops/join/$token',
+  getParentRoute: () => AppRoute,
+} as any)
 const ApiPublicHooksErpReconciliationRoute =
   ApiPublicHooksErpReconciliationRouteImport.update({
     id: '/api/public/hooks/erp-reconciliation',
@@ -502,6 +514,7 @@ const AppStudioUseCaseIdDeliverableTypeRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/demo-login': typeof DemoLoginRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -560,6 +573,7 @@ export interface FileRoutesByFullPath {
   '/opportunities/': typeof AppOpportunitiesIndexRoute
   '/workshops/': typeof AppWorkshopsIndexRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
+  '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
@@ -582,6 +596,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/demo-login': typeof DemoLoginRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -638,6 +653,7 @@ export interface FileRoutesByTo {
   '/opportunities': typeof AppOpportunitiesIndexRoute
   '/workshops': typeof AppWorkshopsIndexRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
+  '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
@@ -662,6 +678,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/demo-login': typeof DemoLoginRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -720,6 +737,7 @@ export interface FileRoutesById {
   '/_app/opportunities/': typeof AppOpportunitiesIndexRoute
   '/_app/workshops/': typeof AppWorkshopsIndexRoute
   '/_app/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
+  '/_app/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
@@ -744,6 +762,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/demo-login'
     | '/forgot-password'
     | '/reset-password'
     | '/sitemap.xml'
@@ -802,6 +821,7 @@ export interface FileRouteTypes {
     | '/opportunities/'
     | '/workshops/'
     | '/cyberx/c3g/intake'
+    | '/workshops/join/$token'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
     | '/api/public/usecasex/taxonomy'
@@ -824,6 +844,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/demo-login'
     | '/forgot-password'
     | '/reset-password'
     | '/sitemap.xml'
@@ -880,6 +901,7 @@ export interface FileRouteTypes {
     | '/opportunities'
     | '/workshops'
     | '/cyberx/c3g/intake'
+    | '/workshops/join/$token'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
     | '/api/public/usecasex/taxonomy'
@@ -903,6 +925,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_app'
     | '/auth'
+    | '/demo-login'
     | '/forgot-password'
     | '/reset-password'
     | '/sitemap.xml'
@@ -961,6 +984,7 @@ export interface FileRouteTypes {
     | '/_app/opportunities/'
     | '/_app/workshops/'
     | '/_app/cyberx/c3g/intake'
+    | '/_app/workshops/join/$token'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
     | '/api/public/usecasex/taxonomy'
@@ -985,6 +1009,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
+  DemoLoginRoute: typeof DemoLoginRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -1018,6 +1043,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo-login': {
+      id: '/demo-login'
+      path: '/demo-login'
+      fullPath: '/demo-login'
+      preLoaderRoute: typeof DemoLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -1426,6 +1458,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCyberxC3gIntakeRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/workshops/join/$token': {
+      id: '/_app/workshops/join/$token'
+      path: '/workshops/join/$token'
+      fullPath: '/workshops/join/$token'
+      preLoaderRoute: typeof AppWorkshopsJoinTokenRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/api/public/hooks/erp-reconciliation': {
       id: '/api/public/hooks/erp-reconciliation'
       path: '/api/public/hooks/erp-reconciliation'
@@ -1671,6 +1710,7 @@ interface AppRouteChildren {
   AppOpportunitiesIndexRoute: typeof AppOpportunitiesIndexRoute
   AppWorkshopsIndexRoute: typeof AppWorkshopsIndexRoute
   AppCyberxC3gIntakeRoute: typeof AppCyberxC3gIntakeRoute
+  AppWorkshopsJoinTokenRoute: typeof AppWorkshopsJoinTokenRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -1720,6 +1760,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppOpportunitiesIndexRoute: AppOpportunitiesIndexRoute,
   AppWorkshopsIndexRoute: AppWorkshopsIndexRoute,
   AppCyberxC3gIntakeRoute: AppCyberxC3gIntakeRoute,
+  AppWorkshopsJoinTokenRoute: AppWorkshopsJoinTokenRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
@@ -1742,6 +1783,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
+  DemoLoginRoute: DemoLoginRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
@@ -1756,3 +1798,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
