@@ -487,12 +487,27 @@ export function benefitSections(benefits: Benefit[]): ExportSection[] {
     });
   }
 
+  // Inline evidence and verification, so a reader of the exported pack can see
+  // what backs each number without opening the application.
+  sections.push({
+    heading: "Evidence and verification by benefit",
+    kind: "table",
+    columns: ["Benefit", "Verification", "ERP source", "Last checked", "Evidence"],
+    rows: benefits.map((b) => [
+      b.name,
+      ERP_VERIFICATION_LABELS[b.erpVerificationStatus],
+      b.erpSystem ? `${b.erpSystem}${b.erpReference ? ` · ${b.erpReference}` : ""}` : "Not connected",
+      b.erpLastVerifiedAt ? new Date(b.erpLastVerifiedAt).toLocaleDateString() : "Never",
+      formatEvidence(b),
+    ]),
+  });
+
   sections.push({
     heading: "Verification basis",
     kind: "text",
     body: benefits.some((b) => b.erpVerificationStatus === "verified")
-      ? "Some benefits are reconciled against a connected ERP source; the remainder are asserted by the named benefit owner and evidenced manually."
-      : "All benefits are asserted by the named benefit owner and evidenced manually. No automated system verification has been applied.",
+      ? "Some benefits are reconciled against a connected ERP source; the remainder are asserted by the named benefit owner and evidenced manually. Uploaded evidence is listed by document name and remains in the private evidence store — it is not embedded in this pack."
+      : "All benefits are asserted by the named benefit owner and evidenced manually. No automated system verification has been applied. Uploaded evidence is listed by document name and remains in the private evidence store.",
   });
 
   return sections;
