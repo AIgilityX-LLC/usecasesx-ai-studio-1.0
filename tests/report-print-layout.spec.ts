@@ -1,17 +1,21 @@
 /**
- * Real-browser E2E: the printed report must not clip on A4 or Letter.
+ * Paper-fit checks for the generated reports, run in Chromium, Firefox and
+ * WebKit (see the `*-print` projects in playwright.config.ts).
  *
  * Clipping is a horizontal-overflow problem: the print pipeline scales the
- * page to the paper width, and anything wider than the report container gets
- * cut off. So the spec renders the report at the CSS pixel width of each paper
- * size, applies the print media emulation, and asserts that no element inside
- * the report document overflows its container. It then produces a real PDF and
- * checks the magic bytes plus a plausible page count.
+ * page to the paper width and cuts anything wider than the printable area. So
+ * each engine renders the report at the CSS pixel width of A4 and Letter under
+ * print media emulation, and the spec asserts nothing inside the report
+ * document exceeds its container. Line breaking and text metrics differ per
+ * engine, which is exactly why this runs three times.
+ *
+ * `page.pdf()` is Chromium-only, so the real PDF byte check additionally runs
+ * there.
  *
  * Run: bunx playwright test tests/report-print-layout.spec.ts
  *
- * Env: as tests/pdf-export.spec.ts (SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY,
- * E2E_EMAIL, E2E_PASSWORD, E2E_BASE_URL).
+ * Env: SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, E2E_EMAIL, E2E_PASSWORD,
+ * E2E_BASE_URL (default http://localhost:8080).
  */
 import { test, expect, type Page } from "@playwright/test";
 
@@ -21,11 +25,16 @@ const SUPABASE_URL = process.env.SUPABASE_URL!;
 const SUPABASE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY!;
 const BASE = process.env.E2E_BASE_URL ?? "http://localhost:8080";
 
-/** CSS pixel width of the printable area at 96dpi, less 12mm margins. */
+/** Printable width in CSS px at 96dpi, less 12mm margins on each side. */
 const PAPERS = [
   { name: "A4", format: "A4" as const, cssWidth: 794 - 91 },
   { name: "Letter", format: "Letter" as const, cssWidth: 816 - 91 },
 ];
+
+const LONG_NARRATIVE =
+  `${"Sustained multi-year transformation across every operating region and shared service centre. ".repeat(
+    40,
+  )}Supercalifragilisticexpialidocious-benefit-realisation-workstream-identifier-000000001`;
 
 async function signIn(page: Page) {
   const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
@@ -43,7 +52,6 @@ async function signIn(page: Page) {
   });
 }
 
-/** Generates the report currently selected on /reports and waits for the document. */
 async function generateReport(page: Page) {
   await page.goto(`${BASE}/reports`, { waitUntil: "domcontentloaded" });
   const generate = page.getByRole("button", { name: /generate report/i });
@@ -64,11 +72,11 @@ async function overflowingElements(page: Page) {
       if (style.display === "none" || style.visibility === "hidden") continue;
       const rect = el.getBoundingClientRect();
       if (rect.width === 0) continue;
-      // A scroll container is allowed to be wider inside; on paper it clips.
+      // A horizontally scrollable box looks fine on screen and clips on paper.
       const overflow = Math.max(rect.right - limit, el.scrollWidth - el.clientWidth - 1);
       if (overflow > 1) {
         bad.push({
-          tag: `${el.tagName.toLowerCase()}.${el.className?.toString().slice(0, 60)}`,
+          tag: `${el.tagName.toLowerCase()}.${String(el.className).slice(0, 60)}`,
           text: (el.textContent ?? "").trim().slice(0, 60),
           overflow: Math.round(overflow),
         });
@@ -79,7 +87,7 @@ async function overflowingElements(page: Page) {
 }
 
 for (const paper of PAPERS) {
-  test(`use case report fits ${paper.name} without clipping`, async ({ page }) => {
+  test(`report fits ${paper.name} without clipping`, async ({ page, browserName }) => {
     await signIn(page);
     await page.setViewportSize({ width: paper.cssWidth, height: 1400 });
     await generateReport(page);
@@ -87,6 +95,7 @@ for (const paper of PAPERS) {
 
     expect(await overflowingElements(page)).toEqual([]);
 
+    if (browserName !== "chromium") return; // page.pdf() is Chromium-only
     const pdf = await page.pdf({
       format: paper.format,
       printBackground: true,
@@ -95,38 +104,41 @@ for (const paper of PAPERS) {
     expect(pdf.subarray(0, 5).toString("latin1")).toBe("%PDF-");
     expect(pdf.byteLength).toBeGreaterThan(2000);
   });
+
+  test(`long narrative and table-heavy portfolio still fit ${paper.name}`, async ({
+    page,
+    browserName,
+  }) => {
+    await signIn(page);
+    await page.setViewportSize({ width: paper.cssWidth, height: 1400 });
+    await page.goto(`${BASE}/reports`, { waitUntil: "domcontentloaded" });
+
+    // Prefer the portfolio-led report: it carries the matrix and the widest tables.
+    const typeSelect = page.getByLabel(/report type/i);
+    if (await typeSelect.isVisible().catch(() => false)) {
+      await typeSelect.click();
+      const option = page.getByRole("option", { name: /portfolio/i }).first();
+      if (await option.isVisible().catch(() => false)) await option.click();
+    }
+
+    // Select every available use case so the tables are as long as the data allows.
+    const selectAll = page.getByRole("button", { name: /select all/i }).first();
+    if (await selectAll.isVisible().catch(() => false)) await selectAll.click();
+
+    const generate = page.getByRole("button", { name: /generate report/i });
+    await expect(generate).toBeVisible({ timeout: 20_000 });
+    await generate.click();
+    await expect(page.locator("#usecasex-report")).toBeVisible({ timeout: 20_000 });
+
+    // Unbroken prose and a very long token must wrap, not widen the page.
+    const narrative = page.getByLabel("Executive narrative");
+    if (await narrative.isVisible().catch(() => false)) await narrative.fill(LONG_NARRATIVE);
+
+    await page.emulateMedia({ media: "print" });
+    expect(await overflowingElements(page)).toEqual([]);
+
+    if (browserName !== "chromium") return;
+    const pdf = await page.pdf({ format: paper.format, printBackground: true });
+    expect(pdf.subarray(0, 5).toString("latin1")).toBe("%PDF-");
+  });
 }
-
-test("portfolio report with a long narrative and many rows still fits A4", async ({ page }) => {
-  await signIn(page);
-  await page.setViewportSize({ width: PAPERS[0]!.cssWidth, height: 1400 });
-  await page.goto(`${BASE}/reports`, { waitUntil: "domcontentloaded" });
-
-  // Switch to the portfolio-led report, which carries the matrix and tables.
-  const typeSelect = page.getByLabel(/report type/i);
-  if (await typeSelect.isVisible().catch(() => false)) {
-    await typeSelect.click();
-    const option = page.getByRole("option", { name: /portfolio/i }).first();
-    if (await option.isVisible().catch(() => false)) await option.click();
-  }
-
-  const generate = page.getByRole("button", { name: /generate report/i });
-  await expect(generate).toBeVisible({ timeout: 20_000 });
-  await generate.click();
-  await expect(page.locator("#usecasex-report")).toBeVisible({ timeout: 20_000 });
-
-  // Stress the narrative: long unbroken prose must wrap, not push the page wide.
-  const narrative = page.getByLabel("Executive narrative");
-  if (await narrative.isVisible().catch(() => false)) {
-    await narrative.fill(
-      `${"Sustained multi-year transformation across every operating region. ".repeat(40)}` +
-        "Supercalifragilisticexpialidocious-benefit-realisation-workstream-identifier-0001",
-    );
-  }
-
-  await page.emulateMedia({ media: "print" });
-  expect(await overflowingElements(page)).toEqual([]);
-
-  const pdf = await page.pdf({ format: "A4", printBackground: true });
-  expect(pdf.subarray(0, 5).toString("latin1")).toBe("%PDF-");
-});
