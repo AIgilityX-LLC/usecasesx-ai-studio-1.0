@@ -297,9 +297,9 @@ function RoadmapSurface() {
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" disabled={items.length === 0}>
+                <Button variant="outline" disabled={items.length === 0 || streaming}>
                   <Download className="mr-2 h-4 w-4" />
-                  Export
+                  {streaming ? "Preparing…" : "Export"}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -312,12 +312,30 @@ function RoadmapSurface() {
                 <DropdownMenuItem onSelect={() => exportRoadmap("json")}>
                   Download JSON
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel>Large sets (streamed)</DropdownMenuLabel>
+                <DropdownMenuItem onSelect={() => void exportViaServer("csv")}>
+                  Streamed CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => void exportViaServer("json")}>
+                  Streamed JSON
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => setSettingsOpen(true)}>
+                  <Settings2 className="mr-2 h-4 w-4" />
+                  Export settings
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <Button variant="outline" onClick={() => void copyShareLink()}>
+              <Link2 className="mr-2 h-4 w-4" />
+              Copy share link
+            </Button>
             <Button variant="outline" asChild>
               <Link to="/portfoliox">Manage portfolio</Link>
             </Button>
           </div>
+
 
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <SummaryCard label="On the roadmap" value={summary.total} />
