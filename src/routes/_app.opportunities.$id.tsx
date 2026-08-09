@@ -171,6 +171,9 @@ function OpportunityDetailPage() {
         onSaved={() => void query.refetch()}
       />
 
+      <CollaborationPanel entityType="opportunity" entityId={opp.id} />
+
+
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
