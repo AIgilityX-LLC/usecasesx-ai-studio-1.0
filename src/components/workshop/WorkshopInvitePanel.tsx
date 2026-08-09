@@ -83,8 +83,8 @@ export function WorkshopInvitePanel({ workshopId }: { workshopId: string }) {
         <Link2 className="h-4 w-4" /> Invitations
       </h3>
       <p className="text-xs text-muted-foreground">
-        A share link works for anyone already in this workspace. Invite by email to bring in a
-        named guest — they get access to this workspace only, after they sign in.
+        A share link works for anyone already in this workspace. Invite by email to bring in a named
+        guest — they get access to this workspace only, after they sign in.
       </p>
 
       <form

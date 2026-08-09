@@ -18,6 +18,7 @@ const TABS: { to: string; label: string }[] = [
   { to: "/account", label: "Profile" },
   { to: "/account/security", label: "Security" },
   { to: "/account/organization", label: "Organization" },
+  { to: "/account/team", label: "Team" },
   { to: "/entitlement", label: "My Plan" },
   { to: "/module-analytics", label: "Module Analytics" },
 ];

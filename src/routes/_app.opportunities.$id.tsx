@@ -1,3 +1,4 @@
+import { CollaborationPanel } from "@/components/collab/CollaborationPanel";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -170,6 +171,8 @@ function OpportunityDetailPage() {
         serverUpdatedAt={opp.updatedAt ?? null}
         onSaved={() => void query.refetch()}
       />
+
+      <CollaborationPanel entityType="opportunity" entityId={opp.id} />
 
       <ConfirmDialog
         open={deleteOpen}

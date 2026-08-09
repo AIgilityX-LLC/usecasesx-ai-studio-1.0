@@ -58,9 +58,11 @@ import { Route as PTokenRouteImport } from './routes/p.$token'
 import { Route as AppAccountIndexRouteImport } from './routes/_app.account.index'
 import { Route as AppAccountOrganizationRouteImport } from './routes/_app.account.organization'
 import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.security'
+import { Route as AppAccountTeamRouteImport } from './routes/_app.account.team'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
 import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
+import { Route as AppInviteTokenRouteImport } from './routes/_app.invite.$token'
 import { Route as AppOpportunitiesIndexRouteImport } from './routes/_app.opportunities.index'
 import { Route as AppOpportunitiesIdRouteImport } from './routes/_app.opportunities.$id'
 import { Route as AppOpportunitiesNewRouteImport } from './routes/_app.opportunities.new'
@@ -335,6 +337,11 @@ const AppAccountSecurityRoute = AppAccountSecurityRouteImport.update({
   path: '/security',
   getParentRoute: () => AppAccountRoute,
 } as any)
+const AppAccountTeamRoute = AppAccountTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => AppAccountRoute,
+} as any)
 const AppBoardsIndexRoute = AppBoardsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -349,6 +356,11 @@ const AppBoardsCollectionsRoute = AppBoardsCollectionsRouteImport.update({
   id: '/collections',
   path: '/collections',
   getParentRoute: () => AppBoardsRoute,
+} as any)
+const AppInviteTokenRoute = AppInviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppOpportunitiesIndexRoute = AppOpportunitiesIndexRouteImport.update({
   id: '/opportunities/',
@@ -559,8 +571,10 @@ export interface FileRoutesByFullPath {
   '/p/$token': typeof PTokenRoute
   '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
+  '/account/team': typeof AppAccountTeamRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
+  '/invite/$token': typeof AppInviteTokenRoute
   '/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/opportunities/new': typeof AppOpportunitiesNewRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
@@ -639,8 +653,10 @@ export interface FileRoutesByTo {
   '/p/$token': typeof PTokenRoute
   '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
+  '/account/team': typeof AppAccountTeamRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
+  '/invite/$token': typeof AppInviteTokenRoute
   '/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/opportunities/new': typeof AppOpportunitiesNewRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
@@ -723,8 +739,10 @@ export interface FileRoutesById {
   '/p/$token': typeof PTokenRoute
   '/_app/account/organization': typeof AppAccountOrganizationRoute
   '/_app/account/security': typeof AppAccountSecurityRoute
+  '/_app/account/team': typeof AppAccountTeamRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/boards/collections': typeof AppBoardsCollectionsRoute
+  '/_app/invite/$token': typeof AppInviteTokenRoute
   '/_app/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/_app/opportunities/new': typeof AppOpportunitiesNewRoute
   '/_app/sectors/$sector': typeof AppSectorsSectorRoute
@@ -807,8 +825,10 @@ export interface FileRouteTypes {
     | '/p/$token'
     | '/account/organization'
     | '/account/security'
+    | '/account/team'
     | '/boards/$boardId'
     | '/boards/collections'
+    | '/invite/$token'
     | '/opportunities/$id'
     | '/opportunities/new'
     | '/sectors/$sector'
@@ -887,8 +907,10 @@ export interface FileRouteTypes {
     | '/p/$token'
     | '/account/organization'
     | '/account/security'
+    | '/account/team'
     | '/boards/$boardId'
     | '/boards/collections'
+    | '/invite/$token'
     | '/opportunities/$id'
     | '/opportunities/new'
     | '/sectors/$sector'
@@ -970,8 +992,10 @@ export interface FileRouteTypes {
     | '/p/$token'
     | '/_app/account/organization'
     | '/_app/account/security'
+    | '/_app/account/team'
     | '/_app/boards/$boardId'
     | '/_app/boards/collections'
+    | '/_app/invite/$token'
     | '/_app/opportunities/$id'
     | '/_app/opportunities/new'
     | '/_app/sectors/$sector'
@@ -1367,6 +1391,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAccountSecurityRouteImport
       parentRoute: typeof AppAccountRoute
     }
+    '/_app/account/team': {
+      id: '/_app/account/team'
+      path: '/team'
+      fullPath: '/account/team'
+      preLoaderRoute: typeof AppAccountTeamRouteImport
+      parentRoute: typeof AppAccountRoute
+    }
     '/_app/boards/': {
       id: '/_app/boards/'
       path: '/'
@@ -1387,6 +1418,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/boards/collections'
       preLoaderRoute: typeof AppBoardsCollectionsRouteImport
       parentRoute: typeof AppBoardsRoute
+    }
+    '/_app/invite/$token': {
+      id: '/_app/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof AppInviteTokenRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/opportunities/': {
       id: '/_app/opportunities/'
@@ -1597,12 +1635,14 @@ declare module '@tanstack/react-router' {
 interface AppAccountRouteChildren {
   AppAccountOrganizationRoute: typeof AppAccountOrganizationRoute
   AppAccountSecurityRoute: typeof AppAccountSecurityRoute
+  AppAccountTeamRoute: typeof AppAccountTeamRoute
   AppAccountIndexRoute: typeof AppAccountIndexRoute
 }
 
 const AppAccountRouteChildren: AppAccountRouteChildren = {
   AppAccountOrganizationRoute: AppAccountOrganizationRoute,
   AppAccountSecurityRoute: AppAccountSecurityRoute,
+  AppAccountTeamRoute: AppAccountTeamRoute,
   AppAccountIndexRoute: AppAccountIndexRoute,
 }
 
@@ -1701,6 +1741,7 @@ interface AppRouteChildren {
   AppSarpiRoute: typeof AppSarpiRoute
   AppStudioRoute: typeof AppStudioRouteWithChildren
   AppSubmitRoute: typeof AppSubmitRoute
+  AppInviteTokenRoute: typeof AppInviteTokenRoute
   AppOpportunitiesIdRoute: typeof AppOpportunitiesIdRoute
   AppOpportunitiesNewRoute: typeof AppOpportunitiesNewRoute
   AppSectorsSectorRoute: typeof AppSectorsSectorRoute
@@ -1751,6 +1792,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSarpiRoute: AppSarpiRoute,
   AppStudioRoute: AppStudioRouteWithChildren,
   AppSubmitRoute: AppSubmitRoute,
+  AppInviteTokenRoute: AppInviteTokenRoute,
   AppOpportunitiesIdRoute: AppOpportunitiesIdRoute,
   AppOpportunitiesNewRoute: AppOpportunitiesNewRoute,
   AppSectorsSectorRoute: AppSectorsSectorRoute,

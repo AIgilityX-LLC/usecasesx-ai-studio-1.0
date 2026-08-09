@@ -516,6 +516,144 @@ export type Database = {
         }
         Relationships: []
       }
+      collab_assignments: {
+        Row: {
+          assigned_by: string
+          assignment_role: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          updated_at: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          assigned_by: string
+          assignment_role: string
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          assigned_by?: string
+          assignment_role?: string
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collab_assignments_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collab_comments: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          organization_id: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          organization_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          organization_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collab_comments_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collab_review_states: {
+        Row: {
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          note: string | null
+          status: string
+          updated_at: string
+          updated_by: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          note?: string | null
+          status?: string
+          updated_at?: string
+          updated_by: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          note?: string | null
+          status?: string
+          updated_at?: string
+          updated_by?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collab_review_states_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collection_items: {
         Row: {
           collection_id: string
@@ -3861,6 +3999,71 @@ export type Database = {
           },
         ]
       }
+      workspace_invitations: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          created_at: string
+          email: string | null
+          expires_at: string
+          id: string
+          invited_by: string
+          max_uses: number
+          message: string | null
+          organization_id: string | null
+          revoked_at: string | null
+          role: string
+          token: string
+          updated_at: string
+          use_count: number
+          workspace_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          id?: string
+          invited_by: string
+          max_uses?: number
+          message?: string | null
+          organization_id?: string | null
+          revoked_at?: string | null
+          role?: string
+          token: string
+          updated_at?: string
+          use_count?: number
+          workspace_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          max_uses?: number
+          message?: string | null
+          organization_id?: string | null
+          revoked_at?: string | null
+          role?: string
+          token?: string
+          updated_at?: string
+          use_count?: number
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_invitations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workspace_members: {
         Row: {
           added_by: string | null
@@ -3967,6 +4170,11 @@ export type Database = {
     }
     Functions: {
       accept_workshop_invitation: { Args: { _token: string }; Returns: string }
+      accept_workspace_invitation: { Args: { _token: string }; Returns: string }
+      collab_entity_workspace: {
+        Args: { _entity_id: string; _entity_type: string }
+        Returns: string
+      }
       collection_is_accessible: {
         Args: { _collection_id: string; _user_id: string }
         Returns: boolean
@@ -4025,6 +4233,31 @@ export type Database = {
       workshop_is_member: {
         Args: { _user_id: string; _workshop_id: string }
         Returns: boolean
+      }
+      workspace_can_edit: {
+        Args: { _user_id: string; _workspace_id: string }
+        Returns: boolean
+      }
+      workspace_can_manage: {
+        Args: { _user_id: string; _workspace_id: string }
+        Returns: boolean
+      }
+      workspace_display_names: {
+        Args: { _user_ids: string[]; _workspace_id: string }
+        Returns: {
+          full_name: string
+          user_id: string
+        }[]
+      }
+      workspace_member_directory: {
+        Args: { _workspace_id: string }
+        Returns: {
+          email: string
+          full_name: string
+          joined_at: string
+          role: string
+          user_id: string
+        }[]
       }
       workspace_org: { Args: { _workspace_id: string }; Returns: string }
       workspace_role: {

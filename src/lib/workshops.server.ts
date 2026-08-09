@@ -172,7 +172,6 @@ async function isOrgManager(supabase: Db, workshop: Workshop, userId: string): P
   return data === "owner" || data === "admin";
 }
 
-
 /** RLS already blocks writes; this yields a readable message instead of a 403. */
 export async function assertFacilitator(
   supabase: Db,

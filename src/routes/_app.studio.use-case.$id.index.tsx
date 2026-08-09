@@ -1,3 +1,4 @@
+import { CollaborationPanel } from "@/components/collab/CollaborationPanel";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
 import { useEffect, useState } from "react";
@@ -130,6 +131,8 @@ function UseCaseDetailPage() {
 
               <DecisionHistory useCaseId={id} />
             </div>
+
+            <CollaborationPanel entityType="use_case" entityId={id} />
           </>
         )}
 
