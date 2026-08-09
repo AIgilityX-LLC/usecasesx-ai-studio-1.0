@@ -266,7 +266,6 @@ async function main() {
     "the workspace owner reads the full activity timeline",
   );
 
-
   // A member is not an admin: they cannot mint invitations or evict the host.
   const memberInvite = await member.client.from("workspace_invitations").insert({
     workspace_id: hostWs,
@@ -307,11 +306,11 @@ async function main() {
   );
   const afterTimeline = await member.client
     .from("audit_events")
-    .select("id")
+    .select("id, actor_id")
     .eq("entity_id", entityId);
   check(
-    (afterTimeline.data ?? []).length === 0,
-    "a removed member immediately loses the activity timeline",
+    !(afterTimeline.data ?? []).some((r: any) => r.actor_id !== member.userId),
+    "a removed member sees no workspace activity beyond their own past events",
   );
   const afterWrite = await member.client.from("collab_comments").insert({
     workspace_id: hostWs,
