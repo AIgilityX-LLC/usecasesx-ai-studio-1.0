@@ -69,6 +69,7 @@ import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.por
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
 import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
 import { Route as ApiPublicHooksErpReconciliationRouteImport } from './routes/api/public/hooks/erp-reconciliation'
+import { Route as ApiPublicHooksEvidenceCleanupRouteImport } from './routes/api/public/hooks/evidence-cleanup'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
 import { Route as AppStudioUseCaseIdIndexRouteImport } from './routes/_app.studio.use-case.$id.index'
@@ -386,6 +387,12 @@ const ApiPublicHooksErpReconciliationRoute =
     path: '/api/public/hooks/erp-reconciliation',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksEvidenceCleanupRoute =
+  ApiPublicHooksEvidenceCleanupRouteImport.update({
+    id: '/api/public/hooks/evidence-cleanup',
+    path: '/api/public/hooks/evidence-cleanup',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicUsecasexTaxonomyRoute =
   ApiPublicUsecasexTaxonomyRouteImport.update({
     id: '/api/public/usecasex/taxonomy',
@@ -540,6 +547,7 @@ export interface FileRoutesByFullPath {
   '/opportunities/': typeof AppOpportunitiesIndexRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
+  '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
@@ -615,6 +623,7 @@ export interface FileRoutesByTo {
   '/opportunities': typeof AppOpportunitiesIndexRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
+  '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
@@ -694,6 +703,7 @@ export interface FileRoutesById {
   '/_app/opportunities/': typeof AppOpportunitiesIndexRoute
   '/_app/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
+  '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/_app/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
@@ -773,6 +783,7 @@ export interface FileRouteTypes {
     | '/opportunities/'
     | '/cyberx/c3g/intake'
     | '/api/public/hooks/erp-reconciliation'
+    | '/api/public/hooks/evidence-cleanup'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/studio/use-case/$id/advisorx'
@@ -848,6 +859,7 @@ export interface FileRouteTypes {
     | '/opportunities'
     | '/cyberx/c3g/intake'
     | '/api/public/hooks/erp-reconciliation'
+    | '/api/public/hooks/evidence-cleanup'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/studio/use-case/$id/advisorx'
@@ -926,6 +938,7 @@ export interface FileRouteTypes {
     | '/_app/opportunities/'
     | '/_app/cyberx/c3g/intake'
     | '/api/public/hooks/erp-reconciliation'
+    | '/api/public/hooks/evidence-cleanup'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/_app/studio/use-case/$id/advisorx'
@@ -954,6 +967,7 @@ export interface RootRouteChildren {
   CTokenRoute: typeof CTokenRoute
   PTokenRoute: typeof PTokenRoute
   ApiPublicHooksErpReconciliationRoute: typeof ApiPublicHooksErpReconciliationRoute
+  ApiPublicHooksEvidenceCleanupRoute: typeof ApiPublicHooksEvidenceCleanupRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
   ApiPublicUsecasexRoadmapExportRoute: typeof ApiPublicUsecasexRoadmapExportRoute
@@ -1381,6 +1395,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksErpReconciliationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/evidence-cleanup': {
+      id: '/api/public/hooks/evidence-cleanup'
+      path: '/api/public/hooks/evidence-cleanup'
+      fullPath: '/api/public/hooks/evidence-cleanup'
+      preLoaderRoute: typeof ApiPublicHooksEvidenceCleanupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/usecasex/taxonomy': {
       id: '/api/public/usecasex/taxonomy'
       path: '/api/public/usecasex/taxonomy'
@@ -1685,6 +1706,7 @@ const rootRouteChildren: RootRouteChildren = {
   CTokenRoute: CTokenRoute,
   PTokenRoute: PTokenRoute,
   ApiPublicHooksErpReconciliationRoute: ApiPublicHooksErpReconciliationRoute,
+  ApiPublicHooksEvidenceCleanupRoute: ApiPublicHooksEvidenceCleanupRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
   ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRouteWithChildren,
   ApiPublicUsecasexRoadmapExportRoute: ApiPublicUsecasexRoadmapExportRoute,
