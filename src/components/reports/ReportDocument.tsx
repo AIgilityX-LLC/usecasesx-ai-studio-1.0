@@ -367,8 +367,8 @@ function UseCaseBlock({ report }: { report: UseCaseReport }) {
         ) : (
           <p className="text-xs text-slate-700">
             {report.value.benefits.length} benefit
-            {report.value.benefits.length === 1 ? "" : "s"} recorded ·{" "}
-            {report.value.evidencedCount} evidenced
+            {report.value.benefits.length === 1 ? "" : "s"} recorded · {report.value.evidencedCount}{" "}
+            evidenced
             {report.value.ownerGaps > 0 ? ` · ${report.value.ownerGaps} without an owner` : ""}
           </p>
         )}

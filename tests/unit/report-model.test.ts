@@ -187,7 +187,11 @@ describe("buildPortfolioReport", () => {
 
   it("exports a stable CSV contract with quoted values", () => {
     const csv = useCasesToCsv([
-      { useCaseId: "uc-1", content: content({ summary: 'Has "quotes", and commas' }), score: score() },
+      {
+        useCaseId: "uc-1",
+        content: content({ summary: 'Has "quotes", and commas' }),
+        score: score(),
+      },
     ]);
     const [header, row] = csv.split("\r\n");
     expect(header?.split(",")).toHaveLength(USE_CASE_CSV_COLUMNS.length);

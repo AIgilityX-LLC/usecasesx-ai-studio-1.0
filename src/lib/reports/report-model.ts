@@ -206,7 +206,8 @@ export function buildUseCaseReport(item: ReportItemInput): UseCaseReport {
         interpretation: interpretScore(total).label,
       }
     : null;
-  if (!scoreBlock) gaps.push("No score recorded — the composite score and priority band are blank.");
+  if (!scoreBlock)
+    gaps.push("No score recorded — the composite score and priority band are blank.");
 
   const feasibility: ReportField[] = [
     {
@@ -245,9 +246,7 @@ export function buildUseCaseReport(item: ReportItemInput): UseCaseReport {
     { label: "Delivery owner", value: orGap(ownerName), source: "portfolio" },
     {
       label: "Decision",
-      value: entry
-        ? (PORTFOLIO_ITEM_DECISION_LABELS[entry.decision] ?? entry.decision)
-        : EM_DASH,
+      value: entry ? (PORTFOLIO_ITEM_DECISION_LABELS[entry.decision] ?? entry.decision) : EM_DASH,
       source: "portfolio",
     },
     {
@@ -264,7 +263,11 @@ export function buildUseCaseReport(item: ReportItemInput): UseCaseReport {
   if (entry && isGap(ownerName)) gaps.push("No delivery owner named on the portfolio item.");
 
   const roadmap: ReportField[] = [
-    { label: "Target period", value: entry ? orGap(entry.targetPeriod) : EM_DASH, source: "portfolio" },
+    {
+      label: "Target period",
+      value: entry ? orGap(entry.targetPeriod) : EM_DASH,
+      source: "portfolio",
+    },
     {
       label: "Planned start",
       value: entry ? orGap(entry.plannedStartDate) : EM_DASH,
@@ -351,13 +354,18 @@ export interface PortfolioReport {
   recommendations: string[];
 }
 
-const BAND_DEFS: Array<{ key: PriorityBand["key"]; label: string; range: string; min: number; max: number }> =
-  [
-    { key: "quick_win", label: "Quick wins / strategic", range: "80–100", min: 80, max: 101 },
-    { key: "candidate", label: "Strong candidate — plan", range: "60–79", min: 60, max: 80 },
-    { key: "readiness", label: "Readiness improvement", range: "40–59", min: 40, max: 60 },
-    { key: "low", label: "Low priority / not ready", range: "0–39", min: 0, max: 40 },
-  ];
+const BAND_DEFS: Array<{
+  key: PriorityBand["key"];
+  label: string;
+  range: string;
+  min: number;
+  max: number;
+}> = [
+  { key: "quick_win", label: "Quick wins / strategic", range: "80–100", min: 80, max: 101 },
+  { key: "candidate", label: "Strong candidate — plan", range: "60–79", min: 60, max: 80 },
+  { key: "readiness", label: "Readiness improvement", range: "40–59", min: 40, max: 60 },
+  { key: "low", label: "Low priority / not ready", range: "0–39", min: 0, max: 40 },
+];
 
 export function buildPortfolioReport(
   items: ReportItemInput[],
@@ -502,7 +510,9 @@ export function buildRecommendations(
     );
   }
   if (totals.benefits === 0) {
-    out.push("Capture benefits in the Studio value register so this portfolio carries a value case.");
+    out.push(
+      "Capture benefits in the Studio value register so this portfolio carries a value case.",
+    );
   } else if (totals.evidencedBenefits < totals.benefits) {
     out.push(
       `Move ${pluralise(totals.benefits - totals.evidencedBenefits, "benefit")} from owner-asserted to evidenced.`,
@@ -529,7 +539,9 @@ export function buildExecutiveNarrative(
     `${org} has ${pluralise(t.useCases, "AI use case")} in scope for this report, of which ${t.scored} ${t.scored === 1 ? "has" : "have"} a recorded score.`,
   );
   if (t.averageScore !== null) {
-    sentences.push(`The average composite score across scored items is ${t.averageScore} out of 100.`);
+    sentences.push(
+      `The average composite score across scored items is ${t.averageScore} out of 100.`,
+    );
   }
   const quickWins = report.bands.find((b) => b.key === "quick_win")?.slugs.length ?? 0;
   const readiness = report.bands.find((b) => b.key === "readiness")?.slugs.length ?? 0;

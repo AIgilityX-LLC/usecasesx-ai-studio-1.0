@@ -8,7 +8,12 @@ import { useUseCaseXPro } from "@/hooks/usecasex-pro";
 import { useBenefitsBySlug } from "@/hooks/useBenefits";
 import { ValueSummary } from "@/components/value/ValueSummary";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
-import { AUDIT_EVENTS, PRODUCT_EVENTS, recordAuditEvent, recordProductEvent } from "@/lib/telemetry";
+import {
+  AUDIT_EVENTS,
+  PRODUCT_EVENTS,
+  recordAuditEvent,
+  recordProductEvent,
+} from "@/lib/telemetry";
 import {
   buildExecutiveNarrative,
   buildPortfolioReport,
