@@ -1,4 +1,11 @@
-import { test, expect, pageAs, openTeam, createInvitation, captureOpportunity } from "./fixtures/workspace";
+import {
+  test,
+  expect,
+  pageAs,
+  openTeam,
+  createInvitation,
+  captureOpportunity,
+} from "./fixtures/workspace";
 import { ACTIVITY_PAGE_SIZE } from "../src/lib/collab";
 
 /**
@@ -14,7 +21,10 @@ test.describe("collaboration activity timeline", () => {
     const mate = await users.create("tlmate");
 
     const hostSession = await pageAs(browser, host);
-    const opportunityPath = await captureOpportunity(hostSession.page, `Timeline probe ${Date.now()}`);
+    const opportunityPath = await captureOpportunity(
+      hostSession.page,
+      `Timeline probe ${Date.now()}`,
+    );
 
     // Bring the teammate into the workspace so both can write.
     await openTeam(hostSession.page);

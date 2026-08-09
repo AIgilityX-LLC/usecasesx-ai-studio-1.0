@@ -1,4 +1,11 @@
-import { test, expect, pageAs, openTeam, createInvitation, captureOpportunity } from "./fixtures/workspace";
+import {
+  test,
+  expect,
+  pageAs,
+  openTeam,
+  createInvitation,
+  captureOpportunity,
+} from "./fixtures/workspace";
 
 /**
  * End-to-end coverage of lightweight Pro collaboration.
@@ -69,7 +76,10 @@ test.describe("workspace collaboration", () => {
 
     const hostSession = await pageAs(browser, host);
     const noteBody = `Share link note ${Date.now()}`;
-    const opportunityPath = await captureOpportunity(hostSession.page, `Share link probe ${Date.now()}`);
+    const opportunityPath = await captureOpportunity(
+      hostSession.page,
+      `Share link probe ${Date.now()}`,
+    );
     await hostSession.page.getByLabel("Review note").fill(noteBody);
     await hostSession.page.getByRole("button", { name: "Add note" }).click();
     await expect(hostSession.page.getByText(noteBody)).toBeVisible({ timeout: 45_000 });
@@ -94,9 +104,9 @@ test.describe("workspace collaboration", () => {
 
     // A joiner is not an admin of the host workspace: no invitation controls.
     await openTeam(joinerSession.page);
-    await expect(
-      joinerSession.page.getByRole("button", { name: "Create invitation" }),
-    ).toHaveCount(0);
+    await expect(joinerSession.page.getByRole("button", { name: "Create invitation" })).toHaveCount(
+      0,
+    );
     await joinerSession.close();
   });
 
@@ -107,7 +117,10 @@ test.describe("workspace collaboration", () => {
 
     const hostSession = await pageAs(browser, host);
     const noteBody = `Email invite note ${Date.now()}`;
-    const opportunityPath = await captureOpportunity(hostSession.page, `Email invite probe ${Date.now()}`);
+    const opportunityPath = await captureOpportunity(
+      hostSession.page,
+      `Email invite probe ${Date.now()}`,
+    );
     await hostSession.page.getByLabel("Review note").fill(noteBody);
     await hostSession.page.getByRole("button", { name: "Add note" }).click();
     await expect(hostSession.page.getByText(noteBody)).toBeVisible({ timeout: 45_000 });
@@ -142,7 +155,10 @@ test.describe("workspace collaboration", () => {
 
     const hostSession = await pageAs(browser, host);
     const noteBody = `Removal note ${Date.now()}`;
-    const opportunityPath = await captureOpportunity(hostSession.page, `Removal probe ${Date.now()}`);
+    const opportunityPath = await captureOpportunity(
+      hostSession.page,
+      `Removal probe ${Date.now()}`,
+    );
     await hostSession.page.getByLabel("Review note").fill(noteBody);
     await hostSession.page.getByRole("button", { name: "Add note" }).click();
     await expect(hostSession.page.getByText(noteBody)).toBeVisible({ timeout: 45_000 });
@@ -193,7 +209,9 @@ test.describe("workspace collaboration", () => {
     }
 
     await expect(capNotice).toBeVisible({ timeout: 45_000 });
-    await expect(page.getByText(/Enterprise Design Partner engagement for larger teams/)).toBeVisible();
+    await expect(
+      page.getByText(/Enterprise Design Partner engagement for larger teams/),
+    ).toBeVisible();
     const cta = page.getByRole("link", { name: "Talk to us about Enterprise" });
     await expect(cta).toBeVisible();
     await expect(cta).toHaveAttribute("href", "/pricing");

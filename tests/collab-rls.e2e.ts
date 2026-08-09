@@ -154,10 +154,7 @@ async function main() {
   );
 
   const anonReadsInvites = await anon.from("workspace_invitations").select("id").limit(5);
-  check(
-    (anonReadsInvites.data ?? []).length === 0,
-    "anonymous cannot read invitations",
-  );
+  check((anonReadsInvites.data ?? []).length === 0, "anonymous cannot read invitations");
 
   const anonAccept = await anon.rpc("accept_workspace_invitation", { _token: shareToken });
   check(Boolean(anonAccept.error), "anonymous cannot redeem an invitation");
@@ -246,10 +243,7 @@ async function main() {
     expires_at: expiresAt,
     invited_by: member.userId,
   });
-  check(
-    Boolean(memberInvite.error),
-    "a plain member cannot create invitations for the workspace",
-  );
+  check(Boolean(memberInvite.error), "a plain member cannot create invitations for the workspace");
   const memberEvictsHost = await member.client
     .from("workspace_members")
     .delete()
