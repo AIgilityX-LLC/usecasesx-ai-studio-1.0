@@ -79,6 +79,7 @@ type Profile = {
 export const Route = createFileRoute("/_app/reports")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "AI Opportunity Reports — UseCasesX™ Pro" },
       {
         name: "description",

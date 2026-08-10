@@ -5,6 +5,7 @@ import { UseCaseWizard } from "@/components/studio/UseCaseWizard";
 export const Route = createFileRoute("/_app/studio/use-case/$id/wizard")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Design a use case — AI Use Case Studio™" },
       {
         name: "description",

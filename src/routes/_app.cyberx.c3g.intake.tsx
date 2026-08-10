@@ -3,6 +3,7 @@ import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 export const Route = createFileRoute("/_app/cyberx/c3g/intake")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "CyberX C3G Intake — Coming Soon" },
       {
         name: "description",

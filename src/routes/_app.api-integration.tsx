@@ -6,6 +6,7 @@ import { trackCTAEvent } from "@/lib/usecasex.tracking";
 export const Route = createFileRoute("/_app/api-integration")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "UseCasesX™ API Integration Preview — AIgilityX Ecosystem" },
       {
         name: "description",

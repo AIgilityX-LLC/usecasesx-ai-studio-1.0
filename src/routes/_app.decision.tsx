@@ -4,6 +4,7 @@ import { ComingSoonGate } from "@/components/ComingSoonGate";
 export const Route = createFileRoute("/_app/decision")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "DecisionX™ — UseCasesX™" },
       { name: "description", content: "Capture and audit every AI investment decision." },
     ],

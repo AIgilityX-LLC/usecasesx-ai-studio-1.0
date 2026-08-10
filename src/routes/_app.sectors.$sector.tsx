@@ -15,6 +15,7 @@ export const Route = createFileRoute("/_app/sectors/$sector")({
     const desc = sec?.blurb ?? "AI use cases by sector.";
     return {
       meta: [
+      { name: "robots", content: "noindex, nofollow" },
         { title },
         { name: "description", content: desc },
         { property: "og:title", content: title },

@@ -40,6 +40,7 @@ import {
 export const Route = createFileRoute("/_app/studio/use-case/$id/deliverables")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Deliverables — AI Use Case Studio" },
       {
         name: "description",

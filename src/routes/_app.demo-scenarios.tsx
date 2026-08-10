@@ -27,6 +27,7 @@ import {
 export const Route = createFileRoute("/_app/demo-scenarios")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Demo Scenarios — UseCasesX™" },
       {
         name: "description",

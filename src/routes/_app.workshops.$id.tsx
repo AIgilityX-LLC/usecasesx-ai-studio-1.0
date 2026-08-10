@@ -5,6 +5,7 @@ import { WorkshopBoardView } from "@/components/workshop/WorkshopBoardView";
 export const Route = createFileRoute("/_app/workshops/$id")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Workshop session — UseCasesX™" },
       {
         name: "description",

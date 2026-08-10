@@ -17,6 +17,7 @@ import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 export const Route = createFileRoute("/_app/workshops/")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Workshops — AI Discovery & Value Design" },
       {
         name: "description",

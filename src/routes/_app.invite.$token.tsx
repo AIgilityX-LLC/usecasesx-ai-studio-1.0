@@ -11,6 +11,7 @@ import { acceptInvitationFn } from "@/lib/collab.functions";
 export const Route = createFileRoute("/_app/invite/$token")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Join a workspace — UseCasesX™" },
       {
         name: "description",

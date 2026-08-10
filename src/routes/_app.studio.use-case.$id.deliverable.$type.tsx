@@ -52,7 +52,8 @@ export const Route = createFileRoute("/_app/studio/use-case/$id/deliverable/$typ
       });
     }
   },
-  head: () => ({ meta: [{ title: "Deliverable — AI Use Case Studio" }] }),
+  head: () => ({ meta: [
+      { name: "robots", content: "noindex, nofollow" },{ title: "Deliverable — AI Use Case Studio" }] }),
   component: () => (
     <RequirePlan min="pro" feature="Enterprise Deliverables">
       <DeliverableEditor />

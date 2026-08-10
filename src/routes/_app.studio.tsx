@@ -31,6 +31,7 @@ import { BlankDraftButton } from "@/components/studio/BlankDraftButton";
 export const Route = createFileRoute("/_app/studio")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Use Case Development Studio — UseCasesX™ Pro" },
       {
         name: "description",

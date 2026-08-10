@@ -48,6 +48,7 @@ import {
 export const Route = createFileRoute("/_app/handoffs")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Suite handoffs — Request queue | UseCasesX™" },
       {
         name: "description",

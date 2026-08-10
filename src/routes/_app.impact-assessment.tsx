@@ -4,6 +4,7 @@ import { ModuleStub } from "@/components/ModuleStub";
 export const Route = createFileRoute("/_app/impact-assessment")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "ImpactAssessmentX™ — UseCasesX™" },
       { name: "description", content: "Quantify the expected impact of every AI use case." },
     ],

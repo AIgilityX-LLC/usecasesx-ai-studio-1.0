@@ -34,6 +34,7 @@ import {
 export const Route = createFileRoute("/_app/submit")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Submit an AI Use Case — UseCasesX™" },
       {
         name: "description",
