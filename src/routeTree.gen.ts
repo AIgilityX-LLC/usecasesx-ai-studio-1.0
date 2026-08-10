@@ -28,6 +28,7 @@ import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integra
 import { Route as AppBlueprintRouteImport } from './routes/_app.blueprint'
 import { Route as AppBoardsRouteImport } from './routes/_app.boards'
 import { Route as AppCompareRouteImport } from './routes/_app.compare'
+import { Route as AppContactRouteImport } from './routes/_app.contact'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppDataReadinessRouteImport } from './routes/_app.data-readiness'
 import { Route as AppDecisionRouteImport } from './routes/_app.decision'
@@ -192,6 +193,11 @@ const AppBoardsRoute = AppBoardsRouteImport.update({
 const AppCompareRoute = AppCompareRouteImport.update({
   id: '/compare',
   path: '/compare',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppContactRoute = AppContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => AppRoute,
 } as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
@@ -584,6 +590,7 @@ export interface FileRoutesByFullPath {
   '/blueprint': typeof AppBlueprintRoute
   '/boards': typeof AppBoardsRouteWithChildren
   '/compare': typeof AppCompareRoute
+  '/contact': typeof AppContactRoute
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
   '/decision': typeof AppDecisionRoute
@@ -673,6 +680,7 @@ export interface FileRoutesByTo {
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
   '/compare': typeof AppCompareRoute
+  '/contact': typeof AppContactRoute
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
   '/decision': typeof AppDecisionRoute
@@ -766,6 +774,7 @@ export interface FileRoutesById {
   '/_app/blueprint': typeof AppBlueprintRoute
   '/_app/boards': typeof AppBoardsRouteWithChildren
   '/_app/compare': typeof AppCompareRoute
+  '/_app/contact': typeof AppContactRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/data-readiness': typeof AppDataReadinessRoute
   '/_app/decision': typeof AppDecisionRoute
@@ -859,6 +868,7 @@ export interface FileRouteTypes {
     | '/blueprint'
     | '/boards'
     | '/compare'
+    | '/contact'
     | '/dashboard'
     | '/data-readiness'
     | '/decision'
@@ -948,6 +958,7 @@ export interface FileRouteTypes {
     | '/api-integration'
     | '/blueprint'
     | '/compare'
+    | '/contact'
     | '/dashboard'
     | '/data-readiness'
     | '/decision'
@@ -1040,6 +1051,7 @@ export interface FileRouteTypes {
     | '/_app/blueprint'
     | '/_app/boards'
     | '/_app/compare'
+    | '/_app/contact'
     | '/_app/dashboard'
     | '/_app/data-readiness'
     | '/_app/decision'
@@ -1263,6 +1275,13 @@ declare module '@tanstack/react-router' {
       path: '/compare'
       fullPath: '/compare'
       preLoaderRoute: typeof AppCompareRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/contact': {
+      id: '/_app/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof AppContactRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/dashboard': {
@@ -1849,6 +1868,7 @@ interface AppRouteChildren {
   AppBlueprintRoute: typeof AppBlueprintRoute
   AppBoardsRoute: typeof AppBoardsRouteWithChildren
   AppCompareRoute: typeof AppCompareRoute
+  AppContactRoute: typeof AppContactRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppDataReadinessRoute: typeof AppDataReadinessRoute
   AppDecisionRoute: typeof AppDecisionRoute
@@ -1907,6 +1927,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppBlueprintRoute: AppBlueprintRoute,
   AppBoardsRoute: AppBoardsRouteWithChildren,
   AppCompareRoute: AppCompareRoute,
+  AppContactRoute: AppContactRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppDataReadinessRoute: AppDataReadinessRoute,
   AppDecisionRoute: AppDecisionRoute,
