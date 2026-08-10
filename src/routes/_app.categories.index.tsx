@@ -62,7 +62,7 @@ function CategoriesIndex() {
       <PageHero
         eyebrow="Repository"
         title="AI use case categories"
-        subtitle="Every category is a shareable, indexable page listing published use cases only."
+        description="Every category is a shareable, indexable page listing published use cases only."
       />
       <div className="mx-auto w-full max-w-6xl space-y-8 px-4 py-10">
         <Card>
