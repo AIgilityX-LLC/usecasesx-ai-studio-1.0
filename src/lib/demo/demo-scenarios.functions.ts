@@ -143,9 +143,7 @@ export const recordDemoStoryExportFn = createServerFn({ method: "POST" })
 export const listDemoActivityFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
-    z
-      .object({ limit: z.number().int().min(1).max(100).optional() })
-      .parse(data ?? {}),
+    z.object({ limit: z.number().int().min(1).max(100).optional() }).parse(data ?? {}),
   )
   .handler(async ({ data, context }) => {
     const { data: profile } = await context.supabase

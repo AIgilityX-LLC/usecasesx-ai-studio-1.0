@@ -28,7 +28,10 @@ function templateKeys(row: ActivityRow) {
   if (row.scenario_key) return [row.scenario_key];
   if (row.scope === "all") return DEMO_SCENARIOS.map((s) => s.key);
   if (row.scope === "templates") return DEMO_SCENARIOS.map((s) => s.key);
-  return row.scope.split(",").map((s) => s.trim()).filter(Boolean);
+  return row.scope
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 export function DemoActivityLog() {
@@ -70,9 +73,7 @@ export function DemoActivityLog() {
       key: "actor",
       header: "Actor",
       width: "20%",
-      render: (row) => (
-        <span className="text-xs">{row.actor_label ?? "system / credential"}</span>
-      ),
+      render: (row) => <span className="text-xs">{row.actor_label ?? "system / credential"}</span>,
     },
     {
       key: "scope",

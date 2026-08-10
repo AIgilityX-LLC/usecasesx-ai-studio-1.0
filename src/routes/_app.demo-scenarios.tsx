@@ -148,7 +148,9 @@ function ScenarioCard({
             ) : (
               <FileDown className="mr-2 h-4 w-4" />
             )}
-            {exportJob.phase === "failed" ? "Retry guided story export" : "Export guided story (PDF)"}
+            {exportJob.phase === "failed"
+              ? "Retry guided story export"
+              : "Export guided story (PDF)"}
           </Button>
 
           {exportJob.phase !== "idle" && (
@@ -182,13 +184,12 @@ function DemoScenariosPage() {
   const queryClient = useQueryClient();
   const [pendingKey, setPendingKey] = useState<string | null>(null);
 
-  const storyExport = useDemoStoryExport([]);
-  const jobsRef = { current: null as unknown };
-
   const copiesQuery = useQuery({
     queryKey: ["demo-sample-copies"],
     queryFn: async () => (await listCopies()) as SampleCopy[],
   });
+
+  const storyExport = useDemoStoryExport((copiesQuery.data ?? []) as LineageEntry[]);
 
   const copyMutation = useMutation({
     mutationFn: (scenarioKey: string) => copyScenario({ data: { scenarioKey } }),
@@ -203,10 +204,7 @@ function DemoScenariosPage() {
   });
 
   const handleExport = (scenario: DemoScenario) => {
-    void storyExport.start(scenario).then(() => {
-      const job = jobsRef.current;
-      void job;
-    });
+    void storyExport.start(scenario);
     toast.info(`Building the ${scenario.label} guided story in the background…`);
   };
 

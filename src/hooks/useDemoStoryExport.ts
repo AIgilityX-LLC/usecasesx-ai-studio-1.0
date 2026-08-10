@@ -12,7 +12,14 @@ import { DEMO_TEMPLATE_VERSION, type DemoScenario } from "@/lib/demo/demo-scenar
 import { exportDemoStoryPDF, type LineageEntry } from "@/lib/demo/demo-story-export";
 import { recordDemoStoryExportFn } from "@/lib/demo/demo-scenarios.functions";
 
-export type StoryExportPhase = "idle" | "queued" | "collecting" | "composing" | "rendering" | "done" | "failed";
+export type StoryExportPhase =
+  | "idle"
+  | "queued"
+  | "collecting"
+  | "composing"
+  | "rendering"
+  | "done"
+  | "failed";
 
 export interface StoryExportJob {
   phase: StoryExportPhase;
@@ -34,7 +41,9 @@ const PHASE_LABEL: Record<StoryExportPhase, string> = {
 };
 
 export function storyExportLabel(job: StoryExportJob) {
-  return job.phase === "failed" && job.error ? `${PHASE_LABEL.failed} — ${job.error}` : PHASE_LABEL[job.phase];
+  return job.phase === "failed" && job.error
+    ? `${PHASE_LABEL.failed} — ${job.error}`
+    : PHASE_LABEL[job.phase];
 }
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
