@@ -38,6 +38,8 @@ export function UseCasesXFooter() {
           title="Discover"
           items={[
             { l: "Explore Use Cases", to: "/repository" },
+            { l: "Browse categories", to: "/categories" },
+            { l: "Curated collections", to: "/collections" },
             { l: "Use Case Boards", to: "/boards" },
             { l: "FeasibilityX™", to: "/feasibility" },
             { l: "DataReadinessX™", to: "/data-readiness" },
