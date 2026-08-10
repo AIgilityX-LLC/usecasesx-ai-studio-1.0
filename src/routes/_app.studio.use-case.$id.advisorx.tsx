@@ -19,8 +19,10 @@ import {
   Loader2,
   ScanSearch,
 } from "lucide-react";
+import { privateHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/advisorx")({
+  head: () => privateHead("AdvisorX"),
   component: () => (
     <RequirePlan min="pro" feature="AdvisorX™">
       <AdvisorXPage />

@@ -19,8 +19,10 @@ import {
   Plus,
   Loader2,
 } from "lucide-react";
+import { privateHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/c3g-governance")({
+  head: () => privateHead("Use case governance"),
   component: () => (
     <RequirePlan min="pro" feature="C3G™ governance">
       <C3GGovernancePage />

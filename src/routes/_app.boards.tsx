@@ -1,7 +1,9 @@
 import { createFileRoute, Outlet, Link, useRouterState } from "@tanstack/react-router";
 import { KanbanSquare, Star } from "lucide-react";
+import { privateHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_app/boards")({
+  head: () => privateHead("Boards"),
   component: BoardsLayout,
 });
 

@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
+import { privateHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_app/account/security")({
+  head: () => privateHead("Account security"),
   component: SecurityPage,
 });
 

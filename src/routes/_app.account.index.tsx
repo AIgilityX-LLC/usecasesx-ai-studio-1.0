@@ -2,8 +2,10 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
+import { privateHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_app/account/")({
+  head: () => privateHead("Account"),
   component: AccountProfilePage,
 });
 
