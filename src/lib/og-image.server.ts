@@ -147,9 +147,8 @@ async function loadResvg(origin: string) {
   if (!resvgReady) {
     resvgReady = (async () => {
       const mod = await import("@resvg/resvg-wasm");
-      const wasmUrl = (await import("@resvg/resvg-wasm/index_bg.wasm?url")).default as string;
-      const absolute = wasmUrl.startsWith("http") ? wasmUrl : `${origin}${wasmUrl}`;
-      await mod.initWasm(fetch(absolute));
+      // Served as a static asset from public/wasm — never imported into the bundle.
+      await mod.initWasm(fetch(`${origin}/wasm/resvg.wasm`));
       return mod;
     })();
   }
