@@ -72,6 +72,7 @@ import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boar
 import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
 import { Route as AppCategoriesIndexRouteImport } from './routes/_app.categories.index'
 import { Route as AppCollectionsIndexRouteImport } from './routes/_app.collections.index'
+import { Route as AppCollectionsSlugRouteImport } from './routes/_app.collections.$slug'
 import { Route as AppInviteTokenRouteImport } from './routes/_app.invite.$token'
 import { Route as AppOpportunitiesIndexRouteImport } from './routes/_app.opportunities.index'
 import { Route as AppOpportunitiesIdRouteImport } from './routes/_app.opportunities.$id'
@@ -419,6 +420,11 @@ const AppCollectionsIndexRoute = AppCollectionsIndexRouteImport.update({
   path: '/collections/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCollectionsSlugRoute = AppCollectionsSlugRouteImport.update({
+  id: '/collections/$slug',
+  path: '/collections/$slug',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppInviteTokenRoute = AppInviteTokenRouteImport.update({
   id: '/invite/$token',
   path: '/invite/$token',
@@ -654,6 +660,7 @@ export interface FileRoutesByFullPath {
   '/account/team': typeof AppAccountTeamRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
+  '/collections/$slug': typeof AppCollectionsSlugRoute
   '/invite/$token': typeof AppInviteTokenRoute
   '/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/opportunities/new': typeof AppOpportunitiesNewRoute
@@ -748,6 +755,7 @@ export interface FileRoutesByTo {
   '/account/team': typeof AppAccountTeamRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
+  '/collections/$slug': typeof AppCollectionsSlugRoute
   '/invite/$token': typeof AppInviteTokenRoute
   '/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/opportunities/new': typeof AppOpportunitiesNewRoute
@@ -846,6 +854,7 @@ export interface FileRoutesById {
   '/_app/account/team': typeof AppAccountTeamRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/boards/collections': typeof AppBoardsCollectionsRoute
+  '/_app/collections/$slug': typeof AppCollectionsSlugRoute
   '/_app/invite/$token': typeof AppInviteTokenRoute
   '/_app/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/_app/opportunities/new': typeof AppOpportunitiesNewRoute
@@ -944,6 +953,7 @@ export interface FileRouteTypes {
     | '/account/team'
     | '/boards/$boardId'
     | '/boards/collections'
+    | '/collections/$slug'
     | '/invite/$token'
     | '/opportunities/$id'
     | '/opportunities/new'
@@ -1038,6 +1048,7 @@ export interface FileRouteTypes {
     | '/account/team'
     | '/boards/$boardId'
     | '/boards/collections'
+    | '/collections/$slug'
     | '/invite/$token'
     | '/opportunities/$id'
     | '/opportunities/new'
@@ -1135,6 +1146,7 @@ export interface FileRouteTypes {
     | '/_app/account/team'
     | '/_app/boards/$boardId'
     | '/_app/boards/collections'
+    | '/_app/collections/$slug'
     | '/_app/invite/$token'
     | '/_app/opportunities/$id'
     | '/_app/opportunities/new'
@@ -1634,6 +1646,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCollectionsIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/collections/$slug': {
+      id: '/_app/collections/$slug'
+      path: '/collections/$slug'
+      fullPath: '/collections/$slug'
+      preLoaderRoute: typeof AppCollectionsSlugRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/invite/$token': {
       id: '/_app/invite/$token'
       path: '/invite/$token'
@@ -1978,6 +1997,7 @@ interface AppRouteChildren {
   AppSarpiRoute: typeof AppSarpiRoute
   AppStudioRoute: typeof AppStudioRouteWithChildren
   AppSubmitRoute: typeof AppSubmitRoute
+  AppCollectionsSlugRoute: typeof AppCollectionsSlugRoute
   AppInviteTokenRoute: typeof AppInviteTokenRoute
   AppOpportunitiesIdRoute: typeof AppOpportunitiesIdRoute
   AppOpportunitiesNewRoute: typeof AppOpportunitiesNewRoute
@@ -2040,6 +2060,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSarpiRoute: AppSarpiRoute,
   AppStudioRoute: AppStudioRouteWithChildren,
   AppSubmitRoute: AppSubmitRoute,
+  AppCollectionsSlugRoute: AppCollectionsSlugRoute,
   AppInviteTokenRoute: AppInviteTokenRoute,
   AppOpportunitiesIdRoute: AppOpportunitiesIdRoute,
   AppOpportunitiesNewRoute: AppOpportunitiesNewRoute,
