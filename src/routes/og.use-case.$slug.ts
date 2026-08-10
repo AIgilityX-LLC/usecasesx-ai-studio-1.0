@@ -12,8 +12,12 @@ export const Route = createFileRoute("/og/use-case/$slug")({
   server: {
     handlers: {
       GET: async ({ params, request }) => {
-        const { renderOgImage } = await import("@/lib/og-image.server");
-        return renderOgImage(params.slug, new URL(request.url).origin);
+        try {
+          const { renderOgImage } = await import("@/lib/og-image.server");
+          return await renderOgImage(params.slug, new URL(request.url).origin);
+        } catch (e) {
+          return new Response(String(e instanceof Error ? e.stack : e), { status: 500 });
+        }
       },
     },
   },
