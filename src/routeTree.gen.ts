@@ -36,6 +36,7 @@ import { Route as AppEntitlementRouteImport } from './routes/_app.entitlement'
 import { Route as AppFeasibilityRouteImport } from './routes/_app.feasibility'
 import { Route as AppGovernanceRouteImport } from './routes/_app.governance'
 import { Route as AppHandoffsRouteImport } from './routes/_app.handoffs'
+import { Route as AppHowItWorksRouteImport } from './routes/_app.how-it-works'
 import { Route as AppImpactAssessmentRouteImport } from './routes/_app.impact-assessment'
 import { Route as AppInsightsRouteImport } from './routes/_app.insights'
 import { Route as AppModuleAnalyticsRouteImport } from './routes/_app.module-analytics'
@@ -228,6 +229,11 @@ const AppGovernanceRoute = AppGovernanceRouteImport.update({
 const AppHandoffsRoute = AppHandoffsRouteImport.update({
   id: '/handoffs',
   path: '/handoffs',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHowItWorksRoute = AppHowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
   getParentRoute: () => AppRoute,
 } as any)
 const AppImpactAssessmentRoute = AppImpactAssessmentRouteImport.update({
@@ -568,6 +574,7 @@ export interface FileRoutesByFullPath {
   '/feasibility': typeof AppFeasibilityRoute
   '/governance': typeof AppGovernanceRoute
   '/handoffs': typeof AppHandoffsRoute
+  '/how-it-works': typeof AppHowItWorksRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
   '/insights': typeof AppInsightsRoute
   '/module-analytics': typeof AppModuleAnalyticsRoute
@@ -653,6 +660,7 @@ export interface FileRoutesByTo {
   '/feasibility': typeof AppFeasibilityRoute
   '/governance': typeof AppGovernanceRoute
   '/handoffs': typeof AppHandoffsRoute
+  '/how-it-works': typeof AppHowItWorksRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
   '/insights': typeof AppInsightsRoute
   '/module-analytics': typeof AppModuleAnalyticsRoute
@@ -742,6 +750,7 @@ export interface FileRoutesById {
   '/_app/feasibility': typeof AppFeasibilityRoute
   '/_app/governance': typeof AppGovernanceRoute
   '/_app/handoffs': typeof AppHandoffsRoute
+  '/_app/how-it-works': typeof AppHowItWorksRoute
   '/_app/impact-assessment': typeof AppImpactAssessmentRoute
   '/_app/insights': typeof AppInsightsRoute
   '/_app/module-analytics': typeof AppModuleAnalyticsRoute
@@ -831,6 +840,7 @@ export interface FileRouteTypes {
     | '/feasibility'
     | '/governance'
     | '/handoffs'
+    | '/how-it-works'
     | '/impact-assessment'
     | '/insights'
     | '/module-analytics'
@@ -916,6 +926,7 @@ export interface FileRouteTypes {
     | '/feasibility'
     | '/governance'
     | '/handoffs'
+    | '/how-it-works'
     | '/impact-assessment'
     | '/insights'
     | '/module-analytics'
@@ -1004,6 +1015,7 @@ export interface FileRouteTypes {
     | '/_app/feasibility'
     | '/_app/governance'
     | '/_app/handoffs'
+    | '/_app/how-it-works'
     | '/_app/impact-assessment'
     | '/_app/insights'
     | '/_app/module-analytics'
@@ -1271,6 +1283,13 @@ declare module '@tanstack/react-router' {
       path: '/handoffs'
       fullPath: '/handoffs'
       preLoaderRoute: typeof AppHandoffsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/how-it-works': {
+      id: '/_app/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof AppHowItWorksRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/impact-assessment': {
@@ -1781,6 +1800,7 @@ interface AppRouteChildren {
   AppFeasibilityRoute: typeof AppFeasibilityRoute
   AppGovernanceRoute: typeof AppGovernanceRoute
   AppHandoffsRoute: typeof AppHandoffsRoute
+  AppHowItWorksRoute: typeof AppHowItWorksRoute
   AppImpactAssessmentRoute: typeof AppImpactAssessmentRoute
   AppInsightsRoute: typeof AppInsightsRoute
   AppModuleAnalyticsRoute: typeof AppModuleAnalyticsRoute
@@ -1835,6 +1855,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppFeasibilityRoute: AppFeasibilityRoute,
   AppGovernanceRoute: AppGovernanceRoute,
   AppHandoffsRoute: AppHandoffsRoute,
+  AppHowItWorksRoute: AppHowItWorksRoute,
   AppImpactAssessmentRoute: AppImpactAssessmentRoute,
   AppInsightsRoute: AppInsightsRoute,
   AppModuleAnalyticsRoute: AppModuleAnalyticsRoute,
