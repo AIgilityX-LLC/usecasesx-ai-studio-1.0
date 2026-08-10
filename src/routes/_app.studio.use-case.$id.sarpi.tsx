@@ -9,8 +9,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Gauge, TrendingUp, Activity, Target, Plus, Loader2 } from "lucide-react";
+import { privateHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/sarpi")({
+  head: () => privateHead("Use case SARPI"),
   component: () => (
     <RequirePlan min="pro" feature="SARPI™ assessment">
       <SarpiPage />

@@ -70,6 +70,7 @@ export const Route = createFileRoute("/_app/roadmap")({
   validateSearch: zodValidator(roadmapSearchSchema),
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "RoadmapX™ — Delivery sequence | UseCasesX™" },
       {
         name: "description",

@@ -7,6 +7,7 @@ import { trackCTAEvent } from "@/lib/usecasex.tracking";
 export const Route = createFileRoute("/_app/pro")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "UseCasesX™ Pro — Free with Registration" },
       {
         name: "description",

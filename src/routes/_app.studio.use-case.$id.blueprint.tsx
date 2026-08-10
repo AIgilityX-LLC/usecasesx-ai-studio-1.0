@@ -13,8 +13,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Sparkles, FileDown, FileText, Send, ShieldCheck, Bot, Save } from "lucide-react";
+import { privateHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/blueprint")({
+  head: () => privateHead("Use case blueprint"),
   component: () => (
     <RequirePlan min="pro" feature="Blueprint Builder">
       <BlueprintPage />

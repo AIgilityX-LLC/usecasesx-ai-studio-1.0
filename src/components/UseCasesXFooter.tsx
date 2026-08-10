@@ -46,12 +46,14 @@ export function UseCasesXFooter() {
           ]}
         />
         <FooterCol
-          title="Integrations"
+          title="Company"
           items={[
-            { l: "SARPI™", to: "/sarpi" },
-            { l: "AdvisorX™", to: "/advisorx" },
-            { l: "CyberX C3G™", to: "/cyberx/c3g/intake" },
-            { l: "API Integration", to: "/api-integration" },
+            { l: "How it works", to: "/how-it-works" },
+            { l: "Editions & pricing", to: "/editions" },
+            { l: "Workshops & advisory", to: "/advisory" },
+            { l: "Enterprise Design Partner", to: "/enterprise" },
+            { l: "About & trust", to: "/about" },
+            { l: "Contact & demo", to: "/contact" },
           ]}
         />
       </div>
@@ -62,13 +64,19 @@ export function UseCasesXFooter() {
             Development Studio.
           </span>
           <div className="flex flex-wrap items-center gap-4">
+            <Link to="/editions" className="hover:text-foreground">
+              Editions
+            </Link>
             <Link to="/pricing" className="hover:text-foreground">
               Pricing
             </Link>
-            <Link to="/insights" className="hover:text-foreground">
-              Insights
+            <Link to="/about" className="hover:text-foreground">
+              Trust
             </Link>
-            <span className="hidden sm:inline">Discover · Design · Validate · Govern · Scale.</span>
+            <Link to="/contact" className="hover:text-foreground">
+              Contact
+            </Link>
+            <span className="hidden sm:inline">Discover · Design · Prioritize · Manage.</span>
           </div>
         </div>
       </div>

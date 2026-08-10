@@ -16,6 +16,7 @@ type Profile = {
 export const Route = createFileRoute("/_app/dashboard")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Your AI Opportunity Portfolio — UseCasesX™ Pro" },
       {
         name: "description",

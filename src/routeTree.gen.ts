@@ -16,25 +16,31 @@ import { Route as DemoLoginRouteImport } from './routes/demo-login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as AppAboutRouteImport } from './routes/_app.about'
 import { Route as AppAccountRouteImport } from './routes/_app.account'
 import { Route as AppAdminSubmissionsRouteImport } from './routes/_app.admin-submissions'
 import { Route as AppAdminWaitlistRouteImport } from './routes/_app.admin-waitlist'
 import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
 import { Route as AppAdvisorxRouteImport } from './routes/_app.advisorx'
+import { Route as AppAdvisoryRouteImport } from './routes/_app.advisory'
 import { Route as AppAiUseCaseStudioRouteImport } from './routes/_app.ai-use-case-studio'
 import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integration'
 import { Route as AppBlueprintRouteImport } from './routes/_app.blueprint'
 import { Route as AppBoardsRouteImport } from './routes/_app.boards'
 import { Route as AppCompareRouteImport } from './routes/_app.compare'
+import { Route as AppContactRouteImport } from './routes/_app.contact'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppDataReadinessRouteImport } from './routes/_app.data-readiness'
 import { Route as AppDecisionRouteImport } from './routes/_app.decision'
 import { Route as AppDemoScenariosRouteImport } from './routes/_app.demo-scenarios'
 import { Route as AppDiscoverRouteImport } from './routes/_app.discover'
+import { Route as AppEditionsRouteImport } from './routes/_app.editions'
+import { Route as AppEnterpriseRouteImport } from './routes/_app.enterprise'
 import { Route as AppEntitlementRouteImport } from './routes/_app.entitlement'
 import { Route as AppFeasibilityRouteImport } from './routes/_app.feasibility'
 import { Route as AppGovernanceRouteImport } from './routes/_app.governance'
 import { Route as AppHandoffsRouteImport } from './routes/_app.handoffs'
+import { Route as AppHowItWorksRouteImport } from './routes/_app.how-it-works'
 import { Route as AppImpactAssessmentRouteImport } from './routes/_app.impact-assessment'
 import { Route as AppInsightsRouteImport } from './routes/_app.insights'
 import { Route as AppModuleAnalyticsRouteImport } from './routes/_app.module-analytics'
@@ -129,6 +135,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppAboutRoute = AppAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAccountRoute = AppAccountRouteImport.update({
   id: '/account',
   path: '/account',
@@ -152,6 +163,11 @@ const AppAdministrationRoute = AppAdministrationRouteImport.update({
 const AppAdvisorxRoute = AppAdvisorxRouteImport.update({
   id: '/advisorx',
   path: '/advisorx',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdvisoryRoute = AppAdvisoryRouteImport.update({
+  id: '/advisory',
+  path: '/advisory',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAiUseCaseStudioRoute = AppAiUseCaseStudioRouteImport.update({
@@ -179,6 +195,11 @@ const AppCompareRoute = AppCompareRouteImport.update({
   path: '/compare',
   getParentRoute: () => AppRoute,
 } as any)
+const AppContactRoute = AppContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -204,6 +225,16 @@ const AppDiscoverRoute = AppDiscoverRouteImport.update({
   path: '/discover',
   getParentRoute: () => AppRoute,
 } as any)
+const AppEditionsRoute = AppEditionsRouteImport.update({
+  id: '/editions',
+  path: '/editions',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEnterpriseRoute = AppEnterpriseRouteImport.update({
+  id: '/enterprise',
+  path: '/enterprise',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppEntitlementRoute = AppEntitlementRouteImport.update({
   id: '/entitlement',
   path: '/entitlement',
@@ -222,6 +253,11 @@ const AppGovernanceRoute = AppGovernanceRouteImport.update({
 const AppHandoffsRoute = AppHandoffsRouteImport.update({
   id: '/handoffs',
   path: '/handoffs',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHowItWorksRoute = AppHowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
   getParentRoute: () => AppRoute,
 } as any)
 const AppImpactAssessmentRoute = AppImpactAssessmentRouteImport.update({
@@ -542,25 +578,31 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/about': typeof AppAboutRoute
   '/account': typeof AppAccountRouteWithChildren
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
   '/advisorx': typeof AppAdvisorxRoute
+  '/advisory': typeof AppAdvisoryRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
   '/boards': typeof AppBoardsRouteWithChildren
   '/compare': typeof AppCompareRoute
+  '/contact': typeof AppContactRoute
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
   '/decision': typeof AppDecisionRoute
   '/demo-scenarios': typeof AppDemoScenariosRoute
   '/discover': typeof AppDiscoverRoute
+  '/editions': typeof AppEditionsRoute
+  '/enterprise': typeof AppEnterpriseRoute
   '/entitlement': typeof AppEntitlementRoute
   '/feasibility': typeof AppFeasibilityRoute
   '/governance': typeof AppGovernanceRoute
   '/handoffs': typeof AppHandoffsRoute
+  '/how-it-works': typeof AppHowItWorksRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
   '/insights': typeof AppInsightsRoute
   '/module-analytics': typeof AppModuleAnalyticsRoute
@@ -628,23 +670,29 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/about': typeof AppAboutRoute
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
   '/advisorx': typeof AppAdvisorxRoute
+  '/advisory': typeof AppAdvisoryRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
   '/compare': typeof AppCompareRoute
+  '/contact': typeof AppContactRoute
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
   '/decision': typeof AppDecisionRoute
   '/demo-scenarios': typeof AppDemoScenariosRoute
   '/discover': typeof AppDiscoverRoute
+  '/editions': typeof AppEditionsRoute
+  '/enterprise': typeof AppEnterpriseRoute
   '/entitlement': typeof AppEntitlementRoute
   '/feasibility': typeof AppFeasibilityRoute
   '/governance': typeof AppGovernanceRoute
   '/handoffs': typeof AppHandoffsRoute
+  '/how-it-works': typeof AppHowItWorksRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
   '/insights': typeof AppInsightsRoute
   '/module-analytics': typeof AppModuleAnalyticsRoute
@@ -714,25 +762,31 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_app/about': typeof AppAboutRoute
   '/_app/account': typeof AppAccountRouteWithChildren
   '/_app/admin-submissions': typeof AppAdminSubmissionsRoute
   '/_app/admin-waitlist': typeof AppAdminWaitlistRoute
   '/_app/administration': typeof AppAdministrationRoute
   '/_app/advisorx': typeof AppAdvisorxRoute
+  '/_app/advisory': typeof AppAdvisoryRoute
   '/_app/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/_app/api-integration': typeof AppApiIntegrationRoute
   '/_app/blueprint': typeof AppBlueprintRoute
   '/_app/boards': typeof AppBoardsRouteWithChildren
   '/_app/compare': typeof AppCompareRoute
+  '/_app/contact': typeof AppContactRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/data-readiness': typeof AppDataReadinessRoute
   '/_app/decision': typeof AppDecisionRoute
   '/_app/demo-scenarios': typeof AppDemoScenariosRoute
   '/_app/discover': typeof AppDiscoverRoute
+  '/_app/editions': typeof AppEditionsRoute
+  '/_app/enterprise': typeof AppEnterpriseRoute
   '/_app/entitlement': typeof AppEntitlementRoute
   '/_app/feasibility': typeof AppFeasibilityRoute
   '/_app/governance': typeof AppGovernanceRoute
   '/_app/handoffs': typeof AppHandoffsRoute
+  '/_app/how-it-works': typeof AppHowItWorksRoute
   '/_app/impact-assessment': typeof AppImpactAssessmentRoute
   '/_app/insights': typeof AppInsightsRoute
   '/_app/module-analytics': typeof AppModuleAnalyticsRoute
@@ -802,25 +856,31 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/about'
     | '/account'
     | '/admin-submissions'
     | '/admin-waitlist'
     | '/administration'
     | '/advisorx'
+    | '/advisory'
     | '/ai-use-case-studio'
     | '/api-integration'
     | '/blueprint'
     | '/boards'
     | '/compare'
+    | '/contact'
     | '/dashboard'
     | '/data-readiness'
     | '/decision'
     | '/demo-scenarios'
     | '/discover'
+    | '/editions'
+    | '/enterprise'
     | '/entitlement'
     | '/feasibility'
     | '/governance'
     | '/handoffs'
+    | '/how-it-works'
     | '/impact-assessment'
     | '/insights'
     | '/module-analytics'
@@ -888,23 +948,29 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/about'
     | '/admin-submissions'
     | '/admin-waitlist'
     | '/administration'
     | '/advisorx'
+    | '/advisory'
     | '/ai-use-case-studio'
     | '/api-integration'
     | '/blueprint'
     | '/compare'
+    | '/contact'
     | '/dashboard'
     | '/data-readiness'
     | '/decision'
     | '/demo-scenarios'
     | '/discover'
+    | '/editions'
+    | '/enterprise'
     | '/entitlement'
     | '/feasibility'
     | '/governance'
     | '/handoffs'
+    | '/how-it-works'
     | '/impact-assessment'
     | '/insights'
     | '/module-analytics'
@@ -973,25 +1039,31 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/_app/about'
     | '/_app/account'
     | '/_app/admin-submissions'
     | '/_app/admin-waitlist'
     | '/_app/administration'
     | '/_app/advisorx'
+    | '/_app/advisory'
     | '/_app/ai-use-case-studio'
     | '/_app/api-integration'
     | '/_app/blueprint'
     | '/_app/boards'
     | '/_app/compare'
+    | '/_app/contact'
     | '/_app/dashboard'
     | '/_app/data-readiness'
     | '/_app/decision'
     | '/_app/demo-scenarios'
     | '/_app/discover'
+    | '/_app/editions'
+    | '/_app/enterprise'
     | '/_app/entitlement'
     | '/_app/feasibility'
     | '/_app/governance'
     | '/_app/handoffs'
+    | '/_app/how-it-works'
     | '/_app/impact-assessment'
     | '/_app/insights'
     | '/_app/module-analytics'
@@ -1121,6 +1193,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/about': {
+      id: '/_app/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AppAboutRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/account': {
       id: '/_app/account'
       path: '/account'
@@ -1154,6 +1233,13 @@ declare module '@tanstack/react-router' {
       path: '/advisorx'
       fullPath: '/advisorx'
       preLoaderRoute: typeof AppAdvisorxRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/advisory': {
+      id: '/_app/advisory'
+      path: '/advisory'
+      fullPath: '/advisory'
+      preLoaderRoute: typeof AppAdvisoryRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/ai-use-case-studio': {
@@ -1191,6 +1277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCompareRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/contact': {
+      id: '/_app/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof AppContactRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/dashboard': {
       id: '/_app/dashboard'
       path: '/dashboard'
@@ -1226,6 +1319,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDiscoverRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/editions': {
+      id: '/_app/editions'
+      path: '/editions'
+      fullPath: '/editions'
+      preLoaderRoute: typeof AppEditionsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/enterprise': {
+      id: '/_app/enterprise'
+      path: '/enterprise'
+      fullPath: '/enterprise'
+      preLoaderRoute: typeof AppEnterpriseRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/entitlement': {
       id: '/_app/entitlement'
       path: '/entitlement'
@@ -1252,6 +1359,13 @@ declare module '@tanstack/react-router' {
       path: '/handoffs'
       fullPath: '/handoffs'
       preLoaderRoute: typeof AppHandoffsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/how-it-works': {
+      id: '/_app/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof AppHowItWorksRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/impact-assessment': {
@@ -1742,25 +1856,31 @@ const AppStudioRouteWithChildren = AppStudioRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
+  AppAboutRoute: typeof AppAboutRoute
   AppAccountRoute: typeof AppAccountRouteWithChildren
   AppAdminSubmissionsRoute: typeof AppAdminSubmissionsRoute
   AppAdminWaitlistRoute: typeof AppAdminWaitlistRoute
   AppAdministrationRoute: typeof AppAdministrationRoute
   AppAdvisorxRoute: typeof AppAdvisorxRoute
+  AppAdvisoryRoute: typeof AppAdvisoryRoute
   AppAiUseCaseStudioRoute: typeof AppAiUseCaseStudioRoute
   AppApiIntegrationRoute: typeof AppApiIntegrationRoute
   AppBlueprintRoute: typeof AppBlueprintRoute
   AppBoardsRoute: typeof AppBoardsRouteWithChildren
   AppCompareRoute: typeof AppCompareRoute
+  AppContactRoute: typeof AppContactRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppDataReadinessRoute: typeof AppDataReadinessRoute
   AppDecisionRoute: typeof AppDecisionRoute
   AppDemoScenariosRoute: typeof AppDemoScenariosRoute
   AppDiscoverRoute: typeof AppDiscoverRoute
+  AppEditionsRoute: typeof AppEditionsRoute
+  AppEnterpriseRoute: typeof AppEnterpriseRoute
   AppEntitlementRoute: typeof AppEntitlementRoute
   AppFeasibilityRoute: typeof AppFeasibilityRoute
   AppGovernanceRoute: typeof AppGovernanceRoute
   AppHandoffsRoute: typeof AppHandoffsRoute
+  AppHowItWorksRoute: typeof AppHowItWorksRoute
   AppImpactAssessmentRoute: typeof AppImpactAssessmentRoute
   AppInsightsRoute: typeof AppInsightsRoute
   AppModuleAnalyticsRoute: typeof AppModuleAnalyticsRoute
@@ -1795,25 +1915,31 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAboutRoute: AppAboutRoute,
   AppAccountRoute: AppAccountRouteWithChildren,
   AppAdminSubmissionsRoute: AppAdminSubmissionsRoute,
   AppAdminWaitlistRoute: AppAdminWaitlistRoute,
   AppAdministrationRoute: AppAdministrationRoute,
   AppAdvisorxRoute: AppAdvisorxRoute,
+  AppAdvisoryRoute: AppAdvisoryRoute,
   AppAiUseCaseStudioRoute: AppAiUseCaseStudioRoute,
   AppApiIntegrationRoute: AppApiIntegrationRoute,
   AppBlueprintRoute: AppBlueprintRoute,
   AppBoardsRoute: AppBoardsRouteWithChildren,
   AppCompareRoute: AppCompareRoute,
+  AppContactRoute: AppContactRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppDataReadinessRoute: AppDataReadinessRoute,
   AppDecisionRoute: AppDecisionRoute,
   AppDemoScenariosRoute: AppDemoScenariosRoute,
   AppDiscoverRoute: AppDiscoverRoute,
+  AppEditionsRoute: AppEditionsRoute,
+  AppEnterpriseRoute: AppEnterpriseRoute,
   AppEntitlementRoute: AppEntitlementRoute,
   AppFeasibilityRoute: AppFeasibilityRoute,
   AppGovernanceRoute: AppGovernanceRoute,
   AppHandoffsRoute: AppHandoffsRoute,
+  AppHowItWorksRoute: AppHowItWorksRoute,
   AppImpactAssessmentRoute: AppImpactAssessmentRoute,
   AppInsightsRoute: AppInsightsRoute,
   AppModuleAnalyticsRoute: AppModuleAnalyticsRoute,

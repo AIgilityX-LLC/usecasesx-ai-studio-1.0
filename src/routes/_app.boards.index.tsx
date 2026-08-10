@@ -40,6 +40,7 @@ const WINDOW_MS: Record<Exclude<UpdatedWindow, "all">, number> = {
 export const Route = createFileRoute("/_app/boards/")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Use Case Boards — UseCasesX™" },
       { name: "description", content: "Create, save, and open AI Use Case Boards for your team." },
     ],

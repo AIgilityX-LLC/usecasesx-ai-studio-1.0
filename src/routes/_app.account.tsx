@@ -4,6 +4,7 @@ import { PageHero } from "@/components/usecasex/PageHero";
 export const Route = createFileRoute("/_app/account")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Account Settings — UseCasesX™" },
       {
         name: "description",

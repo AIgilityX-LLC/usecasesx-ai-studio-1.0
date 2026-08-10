@@ -21,6 +21,7 @@ import { OPPORTUNITY_STATUSES, STATUS_META, type OpportunityStatus } from "@/lib
 export const Route = createFileRoute("/_app/opportunities/")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Opportunity Capture — UseCasesX™" },
       {
         name: "description",

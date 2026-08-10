@@ -69,6 +69,7 @@ import {
 export const Route = createFileRoute("/_app/boards/$boardId")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Use Case Board — UseCasesX™" },
       { name: "description", content: "View and manage AI use cases on this board." },
     ],

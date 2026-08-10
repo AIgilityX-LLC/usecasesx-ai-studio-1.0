@@ -9,6 +9,7 @@ import { CLIENT_CAPABILITY_FLAGS, ENTERPRISE_VALUE_FEATURES } from "@/lib/featur
 export const Route = createFileRoute("/_app/studio/use-case/$id/value")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Value Realization — AI Use Case Studio" },
       {
         name: "description",

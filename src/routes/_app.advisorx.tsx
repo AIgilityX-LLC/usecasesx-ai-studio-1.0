@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 export const Route = createFileRoute("/_app/advisorx")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "AdvisorX™ — Coming Soon" },
       {
         name: "description",

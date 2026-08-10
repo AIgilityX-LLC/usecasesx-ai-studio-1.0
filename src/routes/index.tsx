@@ -4,6 +4,7 @@ import { Crown } from "lucide-react";
 import { SiteShell } from "@/components/SiteShell";
 import { getInsights } from "@/lib/insights.functions";
 import { SEGMENTS } from "@/lib/segments";
+import { TRUST_FACTS, FOUNDING_ACCESS_END } from "@/lib/founding-access";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import heroImg from "@/assets/landing-hero.jpg";
 import repositoryImg from "@/assets/landing-repository.jpg";
@@ -12,39 +13,39 @@ import sovereignImg from "@/assets/landing-sovereign.jpg";
 import aboutImg from "@/assets/landing-about.jpg";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "AIgilityX AI Use Case Studio™ — Build a Validated AI Use Case" },
-      {
-        name: "description",
-        content:
-          "Build a validated AI use case before you spend a dollar. Discover, design, validate, govern, and scale AI initiatives with AIgilityX.",
-      },
-      {
-        property: "og:title",
-        content: "AIgilityX AI Use Case Studio™ — Build a Validated AI Use Case",
-      },
-      {
-        property: "og:description",
-        content:
-          "Build a validated AI use case before you spend a dollar. Discover, design, validate, govern, and scale AI initiatives with AIgilityX.",
-      },
-      { property: "og:url", content: "https://usecasesx.aigilityx.com/" },
-      { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "UseCasesX™ by AIgilityX™" },
-      { name: "twitter:card", content: "summary_large_image" },
-      {
-        name: "twitter:title",
-        content: "AIgilityX AI Use Case Studio™ — Build a Validated AI Use Case",
-      },
-      {
-        name: "twitter:description",
-        content:
-          "Build a validated AI use case before you spend a dollar. Discover, design, validate, govern, and scale AI initiatives with AIgilityX.",
-      },
-    ],
-    links: [{ rel: "canonical", href: "https://usecasesx.aigilityx.com/" }],
-  }),
+  head: () => {
+    const title = "UseCasesX™ — Discover, Design & Prioritize AI Use Cases";
+    const description =
+      "Discover 180 provenance-labelled AI use cases, design and score them, and manage a board-ready AI portfolio. Pro Founding Access free until 31 Dec 2026.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { name: "robots", content: "index, follow" },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: "https://usecasesx.aigilityx.com/" },
+        { property: "og:type", content: "website" },
+        { property: "og:site_name", content: "UseCasesX™ by AIgilityX™" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+      ],
+      links: [{ rel: "canonical", href: "https://usecasesx.aigilityx.com/" }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "UseCasesX™ by AIgilityX™",
+            url: "https://usecasesx.aigilityx.com/",
+            description,
+          }),
+        },
+      ],
+    };
+  },
   component: LandingPage,
 });
 
@@ -65,7 +66,7 @@ function LandingPage() {
       <PortfolioRoadmapSection />
       <PlansSection />
       <SovereignSection />
-      <TestimonialsSection />
+      <TrustSection />
     </SiteShell>
   );
 }
@@ -113,7 +114,7 @@ function HowItWorks() {
     {
       n: "01",
       t: "Explore & Discover",
-      d: "Search 1,000+ curated AI use cases and the live Deployment Intelligence layer to find high-value, low-risk opportunities for your sector.",
+      d: "Search 180 curated AI use cases and the live Deployment Intelligence layer to find high-value, low-risk opportunities for your sector.",
     },
     {
       n: "02",
@@ -255,17 +256,24 @@ function Hero() {
           AI USE CASE STUDIO™ BY AIGILITYX™
         </div>
         <h1 className="max-w-5xl text-balance text-3xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
-          <span className="block">Build a Validated AI Use Case</span>
-          <span className="mt-2 block text-xl font-semibold tracking-tight text-white/90 sm:mt-3 sm:whitespace-nowrap sm:text-3xl lg:text-4xl">
-            Before You Spend a&nbsp; Dollar Building It
+          <span className="block">Turn AI ideas into a portfolio you can defend</span>
+          <span className="mt-2 block text-xl font-semibold tracking-tight text-white/90 sm:mt-3 sm:text-3xl lg:text-4xl">
+            Discover · Design · Prioritize · Manage
           </span>
         </h1>
         <p className="mt-5 max-w-3xl text-lg text-white/85 sm:text-xl">
-          Discover, design, validate, govern, prioritize, and scale AI use cases using an
-          enterprise-grade and sovereign-ready platform.
+          <strong className="font-semibold text-white">Discover</strong> proven use cases in a
+          provenance-labelled repository.{" "}
+          <strong className="font-semibold text-white">Design</strong> them into defined use cases
+          in AI Use Case Studio™. <strong className="font-semibold text-white">Prioritize</strong>{" "}
+          on feasibility, data readiness and value.{" "}
+          <strong className="font-semibold text-white">Manage</strong> the funded portfolio,
+          roadmap, benefits and board-ready exports.
         </p>
-        <p className="mt-3 max-w-3xl text-base font-semibold uppercase tracking-[0.22em] text-primary">
-          Discover · Design · Validate · Govern · Scale
+        <p className="mt-4 max-w-3xl text-sm text-white/70">
+          Lite is free and open. Pro Founding Access is complimentary through {FOUNDING_ACCESS_END},
+          subject to published fair-use limits. Enterprise is delivered through a paid Design
+          Partner engagement.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
@@ -283,24 +291,46 @@ function Hero() {
             className="inline-flex items-center justify-center gap-1.5 rounded-md bg-primary px-6 py-3 text-center text-sm font-bold text-primary-foreground shadow-lg hover:brightness-110"
           >
             <Crown className="h-4 w-4 shrink-0" aria-hidden />
-            Join the Waitlist — Early Gratis (Free) Access
+            Get Pro Founding Access — free until 2027
           </Link>
           <Link
             to="/repository"
+            onClick={() =>
+              trackCTAEvent("cta_clicked", {
+                source_page: "/",
+                target_route: "/repository",
+                location: "landing_hero_repository",
+              })
+            }
+            data-analytics-id="cta-landing-hero-repository"
             className="rounded-md border border-white/30 bg-white/10 px-6 py-3 text-sm font-bold text-white backdrop-blur hover:bg-white/15"
           >
-            Explore Repository →
+            Explore the repository →
+          </Link>
+          <Link
+            to="/how-it-works"
+            onClick={() =>
+              trackCTAEvent("cta_clicked", {
+                source_page: "/",
+                target_route: "/how-it-works",
+                location: "landing_hero_how",
+              })
+            }
+            data-analytics-id="cta-landing-hero-how"
+            className="rounded-md border border-white/20 px-6 py-3 text-sm font-bold text-white/90 hover:bg-white/10"
+          >
+            How it works
           </Link>
         </div>
 
         <div className="mt-14 grid max-w-5xl grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {[
-            { v: "1,000+", l: "AI Use Cases" },
-            { v: "18+", l: "Industries" },
-            { v: "12+", l: "Government Domains" },
-            { v: "500+", l: "Blueprints Generated" },
-            { v: "120+", l: "Organizations" },
-            { v: "40+", l: "Countries" },
+            { v: "180", l: "Published Use Cases" },
+            { v: "18", l: "Industries" },
+            { v: "9", l: "Journey Stages" },
+            { v: "12", l: "Export Deliverables" },
+            { v: "100%", l: "Provenance Labelled" },
+            { v: "Free", l: "Until 31 Dec 2026" },
           ].map((s) => (
             <div
               key={s.l}
@@ -321,7 +351,7 @@ function Hero() {
 /* 2 — ABOUT / WHY USECASESX */
 function AboutUseCasesX() {
   const points = [
-    "A curated, governed repository of 1,000+ enterprise and sovereign AI use cases.",
+    "A curated, governed repository of 180 enterprise and sovereign AI use cases.",
     "Built for governments, regulators, banks, healthcare, defense and critical infrastructure.",
     "Lifecycle workflows — discover, design, validate, govern, prioritize and scale.",
     "Sovereign-ready by design, from public SaaS to air-gapped deployments.",
@@ -392,7 +422,7 @@ function RepositorySection() {
             Global Repository
           </div>
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            1,000+ curated AI use cases across 18+ industries.
+            180 curated AI use cases across 18+ industries.
           </h2>
           <p className="mt-4 text-muted-foreground">
             Browse, search, and filter by industry, business function, AI type, value potential,
@@ -760,7 +790,7 @@ function PlansSection() {
       name: "UseCasesX Lite™",
       tag: "Free · No login required",
       features: [
-        "Browse, search, filter 1,000+ use cases",
+        "Browse, search, filter 180 curated use cases",
         "View full use case detail pages",
         "Industry &amp; AI-type taxonomy filters",
         "Download Lite PDF after lead capture",
@@ -903,45 +933,41 @@ function SovereignSection() {
   );
 }
 
-/* 11 — TESTIMONIALS */
-function TestimonialsSection() {
-  const items = [
-    {
-      quote:
-        "UseCasesX™ became our single source of truth for AI opportunities across the ministry.",
-      who: "Director of AI · Government Digital Agency",
-    },
-    {
-      quote: "We replaced six PowerPoint backlogs with one scored portfolio in PortfolioX™.",
-      who: "CDO · Tier-1 Bank",
-    },
-    {
-      quote:
-        "The sovereign deployment model let us run UseCasesX™ inside our air-gapped environment.",
-      who: "CIO · Critical Infrastructure Operator",
-    },
-  ];
+/* 11 — TRUST SIGNALS (verifiable statements only) */
+function TrustSection() {
   return (
     <section className="border-b border-border bg-background">
       <div className="mx-auto max-w-[1400px] px-6 py-20">
         <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
-          Customer voices
+          What we can evidence
         </div>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          Trusted across regulated industries.
+          Claims you can check inside the product.
         </h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Placeholder testimonials — to be replaced with named reference customers post-beta.
+        <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
+          We are pre-launch, so there are no customer logos, certifications or adoption numbers to
+          show — and we will not invent any. These are statements you can verify by using the
+          platform.
         </p>
         <div className="mt-10 grid gap-4 lg:grid-cols-3">
-          {items.map((i) => (
-            <figure key={i.who} className="rounded-xl border border-border bg-card p-6">
-              <blockquote className="text-base text-foreground">“{i.quote}”</blockquote>
-              <figcaption className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                — {i.who}
-              </figcaption>
-            </figure>
+          {TRUST_FACTS.slice(0, 6).map((fact) => (
+            <article key={fact.title} className="rounded-xl border border-border bg-card p-6">
+              <h3 className="text-base font-bold text-foreground">{fact.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{fact.body}</p>
+            </article>
           ))}
+        </div>
+        <div className="mt-8">
+          <Link
+            to="/about"
+            data-analytics-id="cta-landing-trust"
+            onClick={() =>
+              trackCTAEvent("cta_clicked", { location: "landing-trust", target_route: "/about" })
+            }
+            className="inline-flex items-center rounded-md border border-border px-5 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
+          >
+            Read about & trust →
+          </Link>
         </div>
       </div>
     </section>

@@ -31,6 +31,7 @@ import {
 export const Route = createFileRoute("/_app/account/team")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Team & invitations — UseCasesX™" },
       {
         name: "description",

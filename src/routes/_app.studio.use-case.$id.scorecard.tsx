@@ -5,6 +5,7 @@ import { UseCaseScorecard } from "@/components/scoring/UseCaseScorecard";
 export const Route = createFileRoute("/_app/studio/use-case/$id/scorecard")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Scorecard — AI Use Case Studio™" },
       {
         name: "description",

@@ -36,6 +36,7 @@ import { trackModuleEvent } from "@/lib/module-analytics";
 export const Route = createFileRoute("/_app/boards/collections")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "My Collections — UseCasesX™" },
       {
         name: "description",

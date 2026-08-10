@@ -117,6 +117,7 @@ function recommendation(total: number): { label: string; tone: string; next: str
 export const Route = createFileRoute("/_app/studio/use-case/$id/feasibility")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Feasibility Scoring — AI Use Case Studio" },
       {
         name: "description",

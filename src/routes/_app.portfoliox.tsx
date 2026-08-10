@@ -81,6 +81,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 export const Route = createFileRoute("/_app/portfoliox")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "AI Opportunity Portfolios | UseCasesX" },
       {
         name: "description",

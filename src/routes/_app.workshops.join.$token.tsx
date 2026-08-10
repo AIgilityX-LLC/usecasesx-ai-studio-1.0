@@ -10,6 +10,7 @@ import { acceptWorkshopInvitationFn } from "@/lib/workshops.functions";
 export const Route = createFileRoute("/_app/workshops/join/$token")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Join a workshop — UseCasesX™" },
       {
         name: "description",

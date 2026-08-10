@@ -10,6 +10,7 @@ import { FoundingAccessBanner } from "@/components/FoundingAccessBanner";
 export const Route = createFileRoute("/_app/onboarding")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Get started — UseCasesX™" },
       {
         name: "description",

@@ -16,11 +16,11 @@ import { useNavLinkIntegrityCheck } from "@/lib/nav-integrity";
 const TOP_NAV: { to: string; label: string }[] = [
   { to: "/", label: "Home" },
   { to: "/repository", label: "Explore" },
-  { to: "/insights", label: "Insights" },
-  { to: "/patterns", label: "Patterns" },
-  { to: "/ai-use-case-studio", label: "Studio" },
-  { to: "/resources", label: "Resources" },
-  { to: "/pricing", label: "Pricing" },
+  { to: "/how-it-works", label: "How it works" },
+  { to: "/editions", label: "Editions" },
+  { to: "/advisory", label: "Workshops" },
+  { to: "/enterprise", label: "Enterprise" },
+  { to: "/contact", label: "Contact" },
 ];
 
 export function SiteShell({ children }: { children: ReactNode }) {
@@ -79,7 +79,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
               to={item.to as never}
               activeOptions={{ exact: item.to === "/" }}
               activeProps={{ className: "bg-primary/10 text-primary" }}
-              className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="whitespace-nowrap rounded-md px-2.5 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               {item.label}
             </Link>

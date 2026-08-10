@@ -24,6 +24,7 @@ import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer
 export const Route = createFileRoute("/_app/ai-use-case-studio")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "AIgilityX AI Use Case Studio™ — UseCasesX" },
       {
         name: "description",

@@ -37,6 +37,7 @@ import {
 export const Route = createFileRoute("/_app/opportunities/$id")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Opportunity Detail — UseCasesX™" },
       {
         name: "description",

@@ -15,6 +15,7 @@ export const Route = createFileRoute("/_app/opportunities/new")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Capture an Opportunity — UseCasesX™" },
       {
         name: "description",

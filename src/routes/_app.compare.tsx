@@ -23,6 +23,7 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/_app/compare")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "Compare AI Use Cases — UseCasesX™" },
       {
         name: "description",

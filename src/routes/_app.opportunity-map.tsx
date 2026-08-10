@@ -48,6 +48,7 @@ import {
 export const Route = createFileRoute("/_app/opportunity-map")({
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex, nofollow" },
       { title: "AI Opportunity Map | AIgilityX UseCasesX" },
       {
         name: "description",

@@ -14,8 +14,10 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { Loader2, Plus, Trash2, Save, ArrowRight } from "lucide-react";
+import { privateHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/data-readiness")({
+  head: () => privateHead("Use case data readiness"),
   component: () => (
     <RequirePlan min="pro" feature="Data Readiness">
       <DataReadinessPage />
