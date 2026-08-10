@@ -82,6 +82,7 @@ import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$sl
 import { Route as AppWorkshopsIndexRouteImport } from './routes/_app.workshops.index'
 import { Route as AppWorkshopsIdRouteImport } from './routes/_app.workshops.$id'
 import { Route as OgUseCaseSlugRouteImport } from './routes/og.use-case.$slug'
+import { Route as AppCategoriesTypeSlugRouteImport } from './routes/_app.categories.$type.$slug'
 import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
 import { Route as AppWorkshopsJoinTokenRouteImport } from './routes/_app.workshops.join.$token'
 import { Route as ApiPublicHooksErpReconciliationRouteImport } from './routes/api/public/hooks/erp-reconciliation'
@@ -467,6 +468,11 @@ const OgUseCaseSlugRoute = OgUseCaseSlugRouteImport.update({
   path: '/og/use-case/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppCategoriesTypeSlugRoute = AppCategoriesTypeSlugRouteImport.update({
+  id: '/categories/$type/$slug',
+  path: '/categories/$type/$slug',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCyberxC3gIntakeRoute = AppCyberxC3gIntakeRouteImport.update({
   id: '/cyberx/c3g/intake',
   path: '/cyberx/c3g/intake',
@@ -656,6 +662,7 @@ export interface FileRoutesByFullPath {
   '/categories/': typeof AppCategoriesIndexRoute
   '/opportunities/': typeof AppOpportunitiesIndexRoute
   '/workshops/': typeof AppWorkshopsIndexRoute
+  '/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
@@ -748,6 +755,7 @@ export interface FileRoutesByTo {
   '/categories': typeof AppCategoriesIndexRoute
   '/opportunities': typeof AppOpportunitiesIndexRoute
   '/workshops': typeof AppWorkshopsIndexRoute
+  '/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
@@ -844,6 +852,7 @@ export interface FileRoutesById {
   '/_app/categories/': typeof AppCategoriesIndexRoute
   '/_app/opportunities/': typeof AppOpportunitiesIndexRoute
   '/_app/workshops/': typeof AppWorkshopsIndexRoute
+  '/_app/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/_app/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/_app/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
@@ -940,6 +949,7 @@ export interface FileRouteTypes {
     | '/categories/'
     | '/opportunities/'
     | '/workshops/'
+    | '/categories/$type/$slug'
     | '/cyberx/c3g/intake'
     | '/workshops/join/$token'
     | '/api/public/hooks/erp-reconciliation'
@@ -1032,6 +1042,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/opportunities'
     | '/workshops'
+    | '/categories/$type/$slug'
     | '/cyberx/c3g/intake'
     | '/workshops/join/$token'
     | '/api/public/hooks/erp-reconciliation'
@@ -1127,6 +1138,7 @@ export interface FileRouteTypes {
     | '/_app/categories/'
     | '/_app/opportunities/'
     | '/_app/workshops/'
+    | '/_app/categories/$type/$slug'
     | '/_app/cyberx/c3g/intake'
     | '/_app/workshops/join/$token'
     | '/api/public/hooks/erp-reconciliation'
@@ -1680,6 +1692,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OgUseCaseSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/categories/$type/$slug': {
+      id: '/_app/categories/$type/$slug'
+      path: '/categories/$type/$slug'
+      fullPath: '/categories/$type/$slug'
+      preLoaderRoute: typeof AppCategoriesTypeSlugRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/cyberx/c3g/intake': {
       id: '/_app/cyberx/c3g/intake'
       path: '/cyberx/c3g/intake'
@@ -1950,6 +1969,7 @@ interface AppRouteChildren {
   AppCategoriesIndexRoute: typeof AppCategoriesIndexRoute
   AppOpportunitiesIndexRoute: typeof AppOpportunitiesIndexRoute
   AppWorkshopsIndexRoute: typeof AppWorkshopsIndexRoute
+  AppCategoriesTypeSlugRoute: typeof AppCategoriesTypeSlugRoute
   AppCyberxC3gIntakeRoute: typeof AppCyberxC3gIntakeRoute
   AppWorkshopsJoinTokenRoute: typeof AppWorkshopsJoinTokenRoute
 }
@@ -2010,6 +2030,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppCategoriesIndexRoute: AppCategoriesIndexRoute,
   AppOpportunitiesIndexRoute: AppOpportunitiesIndexRoute,
   AppWorkshopsIndexRoute: AppWorkshopsIndexRoute,
+  AppCategoriesTypeSlugRoute: AppCategoriesTypeSlugRoute,
   AppCyberxC3gIntakeRoute: AppCyberxC3gIntakeRoute,
   AppWorkshopsJoinTokenRoute: AppWorkshopsJoinTokenRoute,
 }
