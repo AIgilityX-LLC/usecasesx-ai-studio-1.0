@@ -143,15 +143,13 @@ async function loadFonts(origin: string) {
   return fontCache;
 }
 
-async function loadResvg() {
+async function loadResvg(origin: string) {
   if (!resvgReady) {
     resvgReady = (async () => {
       const mod = await import("@resvg/resvg-wasm");
       const wasmUrl = (await import("@resvg/resvg-wasm/index_bg.wasm?url")).default as string;
-      const response = await fetch(wasmUrl.startsWith("http") ? wasmUrl : `file://${wasmUrl}`).catch(
-        () => null,
-      );
-      await mod.initWasm(response ?? fetch(wasmUrl));
+      const absolute = wasmUrl.startsWith("http") ? wasmUrl : `${origin}${wasmUrl}`;
+      await mod.initWasm(fetch(absolute));
       return mod;
     })();
   }
@@ -180,7 +178,7 @@ export async function renderOgImage(slug: string, origin: string): Promise<Respo
     },
   );
 
-  const { Resvg } = await loadResvg();
+  const { Resvg } = await loadResvg(origin);
   const png = new Resvg(svg, { fitTo: { mode: "width", value: CARD_WIDTH } })
     .render()
     .asPng();
