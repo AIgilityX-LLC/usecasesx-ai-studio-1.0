@@ -53,7 +53,7 @@ export function IndustryFocusedSection({
               <div className="grid grid-cols-3 gap-4">
                 {[
                   { v: "18+", l: "Industries" },
-                  { v: "1000+", l: "Use Cases" },
+                  { v: "180", l: "Use Cases" },
                   { v: "20+", l: "AI Types" },
                 ].map((s) => (
                   <div key={s.l}>

@@ -113,7 +113,7 @@ function HowItWorks() {
     {
       n: "01",
       t: "Explore & Discover",
-      d: "Search 1,000+ curated AI use cases and the live Deployment Intelligence layer to find high-value, low-risk opportunities for your sector.",
+      d: "Search 180 curated AI use cases and the live Deployment Intelligence layer to find high-value, low-risk opportunities for your sector.",
     },
     {
       n: "02",
@@ -321,7 +321,7 @@ function Hero() {
 /* 2 — ABOUT / WHY USECASESX */
 function AboutUseCasesX() {
   const points = [
-    "A curated, governed repository of 1,000+ enterprise and sovereign AI use cases.",
+    "A curated, governed repository of 180 enterprise and sovereign AI use cases.",
     "Built for governments, regulators, banks, healthcare, defense and critical infrastructure.",
     "Lifecycle workflows — discover, design, validate, govern, prioritize and scale.",
     "Sovereign-ready by design, from public SaaS to air-gapped deployments.",
@@ -392,7 +392,7 @@ function RepositorySection() {
             Global Repository
           </div>
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            1,000+ curated AI use cases across 18+ industries.
+            180 curated AI use cases across 18+ industries.
           </h2>
           <p className="mt-4 text-muted-foreground">
             Browse, search, and filter by industry, business function, AI type, value potential,
@@ -760,7 +760,7 @@ function PlansSection() {
       name: "UseCasesX Lite™",
       tag: "Free · No login required",
       features: [
-        "Browse, search, filter 1,000+ use cases",
+        "Browse, search, filter 180 curated use cases",
         "View full use case detail pages",
         "Industry &amp; AI-type taxonomy filters",
         "Download Lite PDF after lead capture",
