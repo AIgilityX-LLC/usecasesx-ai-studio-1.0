@@ -70,6 +70,7 @@ import { Route as AppAccountTeamRouteImport } from './routes/_app.account.team'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
 import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
+import { Route as AppCategoriesIndexRouteImport } from './routes/_app.categories.index'
 import { Route as AppInviteTokenRouteImport } from './routes/_app.invite.$token'
 import { Route as AppOpportunitiesIndexRouteImport } from './routes/_app.opportunities.index'
 import { Route as AppOpportunitiesIdRouteImport } from './routes/_app.opportunities.$id'
@@ -406,6 +407,11 @@ const AppBoardsCollectionsRoute = AppBoardsCollectionsRouteImport.update({
   path: '/collections',
   getParentRoute: () => AppBoardsRoute,
 } as any)
+const AppCategoriesIndexRoute = AppCategoriesIndexRouteImport.update({
+  id: '/categories/',
+  path: '/categories/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppInviteTokenRoute = AppInviteTokenRouteImport.update({
   id: '/invite/$token',
   path: '/invite/$token',
@@ -647,6 +653,7 @@ export interface FileRoutesByFullPath {
   '/og/use-case/$slug': typeof OgUseCaseSlugRoute
   '/account/': typeof AppAccountIndexRoute
   '/boards/': typeof AppBoardsIndexRoute
+  '/categories/': typeof AppCategoriesIndexRoute
   '/opportunities/': typeof AppOpportunitiesIndexRoute
   '/workshops/': typeof AppWorkshopsIndexRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
@@ -738,6 +745,7 @@ export interface FileRoutesByTo {
   '/og/use-case/$slug': typeof OgUseCaseSlugRoute
   '/account': typeof AppAccountIndexRoute
   '/boards': typeof AppBoardsIndexRoute
+  '/categories': typeof AppCategoriesIndexRoute
   '/opportunities': typeof AppOpportunitiesIndexRoute
   '/workshops': typeof AppWorkshopsIndexRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
@@ -833,6 +841,7 @@ export interface FileRoutesById {
   '/og/use-case/$slug': typeof OgUseCaseSlugRoute
   '/_app/account/': typeof AppAccountIndexRoute
   '/_app/boards/': typeof AppBoardsIndexRoute
+  '/_app/categories/': typeof AppCategoriesIndexRoute
   '/_app/opportunities/': typeof AppOpportunitiesIndexRoute
   '/_app/workshops/': typeof AppWorkshopsIndexRoute
   '/_app/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
@@ -928,6 +937,7 @@ export interface FileRouteTypes {
     | '/og/use-case/$slug'
     | '/account/'
     | '/boards/'
+    | '/categories/'
     | '/opportunities/'
     | '/workshops/'
     | '/cyberx/c3g/intake'
@@ -1019,6 +1029,7 @@ export interface FileRouteTypes {
     | '/og/use-case/$slug'
     | '/account'
     | '/boards'
+    | '/categories'
     | '/opportunities'
     | '/workshops'
     | '/cyberx/c3g/intake'
@@ -1113,6 +1124,7 @@ export interface FileRouteTypes {
     | '/og/use-case/$slug'
     | '/_app/account/'
     | '/_app/boards/'
+    | '/_app/categories/'
     | '/_app/opportunities/'
     | '/_app/workshops/'
     | '/_app/cyberx/c3g/intake'
@@ -1584,6 +1596,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBoardsCollectionsRouteImport
       parentRoute: typeof AppBoardsRoute
     }
+    '/_app/categories/': {
+      id: '/_app/categories/'
+      path: '/categories'
+      fullPath: '/categories/'
+      preLoaderRoute: typeof AppCategoriesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/invite/$token': {
       id: '/_app/invite/$token'
       path: '/invite/$token'
@@ -1928,6 +1947,7 @@ interface AppRouteChildren {
   AppSegmentsSegmentRoute: typeof AppSegmentsSegmentRoute
   AppUseCasesSlugRoute: typeof AppUseCasesSlugRoute
   AppWorkshopsIdRoute: typeof AppWorkshopsIdRoute
+  AppCategoriesIndexRoute: typeof AppCategoriesIndexRoute
   AppOpportunitiesIndexRoute: typeof AppOpportunitiesIndexRoute
   AppWorkshopsIndexRoute: typeof AppWorkshopsIndexRoute
   AppCyberxC3gIntakeRoute: typeof AppCyberxC3gIntakeRoute
@@ -1987,6 +2007,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSegmentsSegmentRoute: AppSegmentsSegmentRoute,
   AppUseCasesSlugRoute: AppUseCasesSlugRoute,
   AppWorkshopsIdRoute: AppWorkshopsIdRoute,
+  AppCategoriesIndexRoute: AppCategoriesIndexRoute,
   AppOpportunitiesIndexRoute: AppOpportunitiesIndexRoute,
   AppWorkshopsIndexRoute: AppWorkshopsIndexRoute,
   AppCyberxC3gIntakeRoute: AppCyberxC3gIntakeRoute,
