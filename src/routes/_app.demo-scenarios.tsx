@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ArrowRight, Copy, Info, Loader2 } from "lucide-react";
+import { ArrowRight, Copy, FileDown, Info, Loader2 } from "lucide-react";
 
 import { PageHeader, EmptyState, ErrorState, LoadingSkeleton } from "@/components/ui-kit";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -14,6 +14,8 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DEMO_DISCLAIMER, DEMO_SCENARIOS, type DemoScenario } from "@/lib/demo/demo-scenarios";
 import { copyDemoScenarioFn, listMySampleCopiesFn } from "@/lib/demo/demo-scenarios.functions";
+import { exportDemoStoryPDF, type LineageEntry } from "@/lib/demo/demo-story-export";
+import { DemoResetControl } from "@/components/demo/DemoResetControl";
 
 export const Route = createFileRoute("/_app/demo-scenarios")({
   head: () => ({
@@ -49,10 +51,12 @@ type SampleCopy = {
 function ScenarioCard({
   scenario,
   onCopy,
+  onExport,
   copying,
 }: {
   scenario: DemoScenario;
   onCopy: (key: string) => void;
+  onExport: (scenario: DemoScenario) => void;
   copying: boolean;
 }) {
   return (
@@ -120,6 +124,15 @@ function ScenarioCard({
             )}
             Copy sample into my workspace
           </Button>
+          <Button
+            variant="outline"
+            className="mt-2 w-full"
+            onClick={() => onExport(scenario)}
+            aria-label={`Export the ${scenario.label} guided story as PDF`}
+          >
+            <FileDown className="mr-2 h-4 w-4" />
+            Export guided story (PDF)
+          </Button>
           <p className="mt-2 text-xs text-muted-foreground">
             Creates records you own, suffixed “(Sample)” and tagged with template lineage.
           </p>
@@ -152,6 +165,11 @@ function DemoScenariosPage() {
     onSettled: () => setPendingKey(null),
   });
 
+  const handleExport = (scenario: DemoScenario) => {
+    exportDemoStoryPDF(scenario, (copiesQuery.data ?? []) as LineageEntry[]);
+    toast.success(`Exported the ${scenario.label} guided story`);
+  };
+
   const handleCopy = (key: string) => {
     setPendingKey(key);
     copyMutation.mutate(key);
@@ -173,6 +191,8 @@ function DemoScenariosPage() {
         </AlertDescription>
       </Alert>
 
+      <DemoResetControl />
+
       <Tabs defaultValue="scenarios">
         <TabsList>
           <TabsTrigger value="scenarios">Scenarios</TabsTrigger>
@@ -186,6 +206,7 @@ function DemoScenariosPage() {
                 key={scenario.key}
                 scenario={scenario}
                 onCopy={handleCopy}
+                onExport={handleExport}
                 copying={copyMutation.isPending && pendingKey === scenario.key}
               />
             ))}

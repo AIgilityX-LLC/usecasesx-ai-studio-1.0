@@ -317,7 +317,7 @@ export async function updateLeadWaitlistStatus(id: string, waitlistStatus: strin
 
 export async function listCtaEvents<T>(limit = 500): Promise<T[]> {
   const result = await supabase
-    .from("cta_events")
+    .from("cta_events_reportable" as never)
     .select("id, cta, target_platform, target_route, source_page, created_at")
     .order("created_at", { ascending: false })
     .limit(limit);

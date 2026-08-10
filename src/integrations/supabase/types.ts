@@ -857,6 +857,42 @@ export type Database = {
           },
         ]
       }
+      demo_reset_log: {
+        Row: {
+          actor_id: string | null
+          actor_label: string | null
+          created_at: string
+          id: string
+          result: Json
+          scenario_key: string | null
+          scope: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          actor_id?: string | null
+          actor_label?: string | null
+          created_at?: string
+          id?: string
+          result?: Json
+          scenario_key?: string | null
+          scope?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          actor_id?: string | null
+          actor_label?: string | null
+          created_at?: string
+          id?: string
+          result?: Json
+          scenario_key?: string | null
+          scope?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       demo_sample_copies: {
         Row: {
           created_at: string
@@ -4322,6 +4358,171 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_usage_events_reportable: {
+        Row: {
+          completion_tokens: number | null
+          created_at: string | null
+          duration_ms: number | null
+          entity_id: string | null
+          entity_type: string | null
+          error_kind: string | null
+          id: string | null
+          model: string | null
+          organization_id: string | null
+          prompt_tokens: number | null
+          prompt_version: string | null
+          provider_alias: string | null
+          status: string | null
+          task: string | null
+          total_tokens: number | null
+          user_id: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          completion_tokens?: number | null
+          created_at?: string | null
+          duration_ms?: number | null
+          entity_id?: string | null
+          entity_type?: string | null
+          error_kind?: string | null
+          id?: string | null
+          model?: string | null
+          organization_id?: string | null
+          prompt_tokens?: number | null
+          prompt_version?: string | null
+          provider_alias?: string | null
+          status?: string | null
+          task?: string | null
+          total_tokens?: number | null
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          completion_tokens?: number | null
+          created_at?: string | null
+          duration_ms?: number | null
+          entity_id?: string | null
+          entity_type?: string | null
+          error_kind?: string | null
+          id?: string | null
+          model?: string | null
+          organization_id?: string | null
+          prompt_tokens?: number | null
+          prompt_version?: string | null
+          provider_alias?: string | null
+          status?: string | null
+          task?: string | null
+          total_tokens?: number | null
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
+      cta_events_reportable: {
+        Row: {
+          created_at: string | null
+          cta: string | null
+          id: string | null
+          session_id: string | null
+          source_page: string | null
+          target_platform: string | null
+          target_route: string | null
+          use_case_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          cta?: string | null
+          id?: string | null
+          session_id?: string | null
+          source_page?: string | null
+          target_platform?: string | null
+          target_route?: string | null
+          use_case_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          cta?: string | null
+          id?: string | null
+          session_id?: string | null
+          source_page?: string | null
+          target_platform?: string | null
+          target_route?: string | null
+          use_case_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      module_events_reportable: {
+        Row: {
+          created_at: string | null
+          event_type: string | null
+          id: string | null
+          metadata: Json | null
+          module_key: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_type?: string | null
+          id?: string | null
+          metadata?: Json | null
+          module_key?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string | null
+          id?: string | null
+          metadata?: Json | null
+          module_key?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      product_events_reportable: {
+        Row: {
+          created_at: string | null
+          entity_id: string | null
+          entity_type: string | null
+          event_name: string | null
+          id: string | null
+          occurred_at: string | null
+          organization_id: string | null
+          properties: Json | null
+          request_id: string | null
+          user_id: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          event_name?: string | null
+          id?: string | null
+          occurred_at?: string | null
+          organization_id?: string | null
+          properties?: Json | null
+          request_id?: string | null
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          event_name?: string | null
+          id?: string | null
+          occurred_at?: string | null
+          organization_id?: string | null
+          properties?: Json | null
+          request_id?: string | null
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
       use_case_rating_aggregates: {
         Row: {
           avg_rating: number | null
@@ -4362,6 +4563,14 @@ export type Database = {
         Returns: boolean
       }
       is_admin_tier: { Args: { _user_id: string }; Returns: boolean }
+      is_demo_activity: {
+        Args: {
+          _organization_id: string
+          _user_id: string
+          _workspace_id: string
+        }
+        Returns: boolean
+      }
       is_editor_tier: { Args: { _user_id: string }; Returns: boolean }
       is_org_member: {
         Args: { _org_id: string; _user_id: string }

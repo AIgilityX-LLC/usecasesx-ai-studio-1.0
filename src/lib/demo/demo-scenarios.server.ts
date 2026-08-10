@@ -126,8 +126,18 @@ async function purgeWorkspace(workspaceId: string) {
   await supabaseAdmin.from("generated_reports").delete().eq("workspace_id", workspaceId);
 }
 
-/** Idempotent reset of every labelled demo template workspace. */
-export async function resetDemoScenarioTemplates() {
+export interface ResetScenarioOptions {
+  /** Restrict the reset to these `demo_scenario_key` values. Empty = all. */
+  scenarioKeys?: string[];
+}
+
+/**
+ * Idempotent reset of the labelled demo template workspaces.
+ *
+ * Scope is always a workspace resolved by `demo_scenario_key` and flagged
+ * `is_demo_template`, so no tenant workspace can ever be touched.
+ */
+export async function resetDemoScenarioTemplates(options: ResetScenarioOptions = {}) {
   const ownerId = await resolveTemplateOwner();
   if (!ownerId) {
     return {
@@ -137,9 +147,13 @@ export async function resetDemoScenarioTemplates() {
     };
   }
 
+  const wanted = new Set((options.scenarioKeys ?? []).filter(Boolean));
+  const scenarios = wanted.size ? DEMO_SCENARIOS.filter((s) => wanted.has(s.key)) : DEMO_SCENARIOS;
+  if (!scenarios.length) throw new Error("No matching demonstration scenario.");
+
   const results: Array<{ key: string; label: string; status: string; useCases: number }> = [];
 
-  for (const scenario of DEMO_SCENARIOS) {
+  for (const scenario of scenarios) {
     const orgId = await ensureDemoOrg(scenario);
     const workspaceId = await ensureTemplateWorkspace(scenario, orgId, ownerId);
     await purgeWorkspace(workspaceId);
@@ -194,4 +208,124 @@ export async function copyScenarioForUser(db: Db, userId: string, scenarioKey: s
   fail("record sample lineage", lineageError);
 
   return { scenarioKey: scenario.key, label: scenario.label, counts: written.counts };
+}
+
+/* ------------------------- reset control / audit -------------------------- */
+
+const RESET_COOLDOWN_SECONDS = 60;
+
+/**
+ * Ad-hoc reset throttle. The backend has no shared rate-limiting primitive, so
+ * this uses the durable `demo_reset_log` as the cooldown record — good enough
+ * to stop repeated destructive re-seeds, not a general-purpose rate limiter.
+ */
+export async function assertResetAllowed(scope: string) {
+  const since = new Date(Date.now() - RESET_COOLDOWN_SECONDS * 1000).toISOString();
+  const { data } = await supabaseAdmin
+    .from("demo_reset_log")
+    .select("created_at")
+    .eq("status", "ok")
+    .gte("created_at", since)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (data) {
+    const waited = Math.round((Date.now() - new Date(data.created_at).getTime()) / 1000);
+    throw new Error(
+      `A demo reset ran ${waited}s ago. Please wait ${RESET_COOLDOWN_SECONDS - waited}s (scope: ${scope}).`,
+    );
+  }
+}
+
+export async function logDemoReset(entry: {
+  actorId?: string | null;
+  actorLabel?: string | null;
+  scope: string;
+  scenarioKey?: string | null;
+  status?: string;
+  result?: Record<string, unknown>;
+}) {
+  await supabaseAdmin.from("demo_reset_log").insert({
+    actor_id: entry.actorId ?? null,
+    actor_label: entry.actorLabel ?? null,
+    scope: entry.scope,
+    scenario_key: entry.scenarioKey ?? null,
+    status: entry.status ?? "ok",
+    result: (entry.result ?? {}) as never,
+  });
+}
+
+/**
+ * Delete the caller's own sample copies for the given scenarios.
+ * Runs on the caller's RLS-scoped client and is filtered by both
+ * `demo_template_key` and the caller's workspace — never other tenants.
+ */
+export async function deleteSampleCopiesForUser(db: Db, userId: string, scenarioKeys?: string[]) {
+  const keys = scenarioKeys?.length ? scenarioKeys : DEMO_SCENARIOS.map((s) => s.key);
+
+  const { data: workspaceId, error: wsError } = await db.rpc("ensure_user_workspace");
+  fail("resolve workspace", wsError);
+  if (!workspaceId) throw new Error("Could not resolve your workspace.");
+  const ws = workspaceId as string;
+
+  const { data: useCases } = await db
+    .from("ai_use_cases")
+    .select("id")
+    .eq("workspace_id", ws)
+    .in("demo_template_key", keys);
+  const useCaseIds = (useCases ?? []).map((u: { id: string }) => u.id);
+
+  const { data: portfolios } = await db
+    .from("portfolios")
+    .select("id")
+    .eq("workspace_id", ws)
+    .in("demo_template_key", keys);
+  const portfolioIds = (portfolios ?? []).map((p: { id: string }) => p.id);
+
+  for (const id of portfolioIds) {
+    await db.from("portfolio_items").delete().eq("portfolio_id", id);
+  }
+  if (useCaseIds.length) {
+    await db.from("use_case_benefits").delete().in("use_case_id", useCaseIds);
+    await db.from("use_case_scores").delete().in("use_case_id", useCaseIds);
+  }
+  if (portfolioIds.length) await db.from("portfolios").delete().in("id", portfolioIds);
+  if (useCaseIds.length) await db.from("ai_use_cases").delete().in("id", useCaseIds);
+  await db.from("opportunities").delete().eq("workspace_id", ws).in("demo_template_key", keys);
+
+  for (const key of keys) {
+    await db
+      .from("generated_reports")
+      .delete()
+      .eq("workspace_id", ws)
+      .contains("payload", { demo_template_key: key });
+  }
+
+  const { data: removed } = await db
+    .from("demo_sample_copies")
+    .delete()
+    .eq("user_id", userId)
+    .eq("workspace_id", ws)
+    .in("scenario_key", keys)
+    .select("id");
+
+  return {
+    scenarioKeys: keys,
+    removed: {
+      opportunities: 0,
+      useCases: useCaseIds.length,
+      portfolios: portfolioIds.length,
+      lineageRecords: (removed ?? []).length,
+    },
+  };
+}
+
+export async function listDemoResetLog(db: Db, limit = 10) {
+  const { data, error } = await db
+    .from("demo_reset_log")
+    .select("id, actor_label, scope, scenario_key, status, result, created_at")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(error.message);
+  return data ?? [];
 }

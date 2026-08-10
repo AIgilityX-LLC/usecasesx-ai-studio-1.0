@@ -45,7 +45,7 @@ function ModuleAnalyticsPage() {
   const load = async () => {
     setLoading(true);
     const { data } = await supabase
-      .from("module_events")
+      .from("module_events_reportable" as never)
       .select("module_key, event_type, created_at, metadata")
       .order("created_at", { ascending: false })
       .limit(5000);
