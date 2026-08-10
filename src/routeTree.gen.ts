@@ -71,6 +71,7 @@ import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
 import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
 import { Route as AppCategoriesIndexRouteImport } from './routes/_app.categories.index'
+import { Route as AppCollectionsIndexRouteImport } from './routes/_app.collections.index'
 import { Route as AppInviteTokenRouteImport } from './routes/_app.invite.$token'
 import { Route as AppOpportunitiesIndexRouteImport } from './routes/_app.opportunities.index'
 import { Route as AppOpportunitiesIdRouteImport } from './routes/_app.opportunities.$id'
@@ -413,6 +414,11 @@ const AppCategoriesIndexRoute = AppCategoriesIndexRouteImport.update({
   path: '/categories/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCollectionsIndexRoute = AppCollectionsIndexRouteImport.update({
+  id: '/collections/',
+  path: '/collections/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppInviteTokenRoute = AppInviteTokenRouteImport.update({
   id: '/invite/$token',
   path: '/invite/$token',
@@ -660,6 +666,7 @@ export interface FileRoutesByFullPath {
   '/account/': typeof AppAccountIndexRoute
   '/boards/': typeof AppBoardsIndexRoute
   '/categories/': typeof AppCategoriesIndexRoute
+  '/collections/': typeof AppCollectionsIndexRoute
   '/opportunities/': typeof AppOpportunitiesIndexRoute
   '/workshops/': typeof AppWorkshopsIndexRoute
   '/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
@@ -753,6 +760,7 @@ export interface FileRoutesByTo {
   '/account': typeof AppAccountIndexRoute
   '/boards': typeof AppBoardsIndexRoute
   '/categories': typeof AppCategoriesIndexRoute
+  '/collections': typeof AppCollectionsIndexRoute
   '/opportunities': typeof AppOpportunitiesIndexRoute
   '/workshops': typeof AppWorkshopsIndexRoute
   '/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
@@ -850,6 +858,7 @@ export interface FileRoutesById {
   '/_app/account/': typeof AppAccountIndexRoute
   '/_app/boards/': typeof AppBoardsIndexRoute
   '/_app/categories/': typeof AppCategoriesIndexRoute
+  '/_app/collections/': typeof AppCollectionsIndexRoute
   '/_app/opportunities/': typeof AppOpportunitiesIndexRoute
   '/_app/workshops/': typeof AppWorkshopsIndexRoute
   '/_app/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
@@ -947,6 +956,7 @@ export interface FileRouteTypes {
     | '/account/'
     | '/boards/'
     | '/categories/'
+    | '/collections/'
     | '/opportunities/'
     | '/workshops/'
     | '/categories/$type/$slug'
@@ -1040,6 +1050,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/boards'
     | '/categories'
+    | '/collections'
     | '/opportunities'
     | '/workshops'
     | '/categories/$type/$slug'
@@ -1136,6 +1147,7 @@ export interface FileRouteTypes {
     | '/_app/account/'
     | '/_app/boards/'
     | '/_app/categories/'
+    | '/_app/collections/'
     | '/_app/opportunities/'
     | '/_app/workshops/'
     | '/_app/categories/$type/$slug'
@@ -1615,6 +1627,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCategoriesIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/collections/': {
+      id: '/_app/collections/'
+      path: '/collections'
+      fullPath: '/collections/'
+      preLoaderRoute: typeof AppCollectionsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/invite/$token': {
       id: '/_app/invite/$token'
       path: '/invite/$token'
@@ -1967,6 +1986,7 @@ interface AppRouteChildren {
   AppUseCasesSlugRoute: typeof AppUseCasesSlugRoute
   AppWorkshopsIdRoute: typeof AppWorkshopsIdRoute
   AppCategoriesIndexRoute: typeof AppCategoriesIndexRoute
+  AppCollectionsIndexRoute: typeof AppCollectionsIndexRoute
   AppOpportunitiesIndexRoute: typeof AppOpportunitiesIndexRoute
   AppWorkshopsIndexRoute: typeof AppWorkshopsIndexRoute
   AppCategoriesTypeSlugRoute: typeof AppCategoriesTypeSlugRoute
@@ -2028,6 +2048,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppUseCasesSlugRoute: AppUseCasesSlugRoute,
   AppWorkshopsIdRoute: AppWorkshopsIdRoute,
   AppCategoriesIndexRoute: AppCategoriesIndexRoute,
+  AppCollectionsIndexRoute: AppCollectionsIndexRoute,
   AppOpportunitiesIndexRoute: AppOpportunitiesIndexRoute,
   AppWorkshopsIndexRoute: AppWorkshopsIndexRoute,
   AppCategoriesTypeSlugRoute: AppCategoriesTypeSlugRoute,
