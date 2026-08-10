@@ -26,6 +26,13 @@ export function trackCTAEvent(cta: string, payload?: Record<string, unknown>): v
   void persistEvent(cta, payload);
 }
 
+/** Coarse device class derived from viewport width and touch capability. */
+export function detectDevice(width: number, coarsePointer: boolean): "desktop" | "tablet" | "mobile" {
+  if (width < 640) return "mobile";
+  if (width < 1024 || coarsePointer) return "tablet";
+  return "desktop";
+}
+
 async function persistEvent(cta: string, payload: Record<string, unknown> = {}): Promise<void> {
   if (!PUBLIC_LAUNCH_FEATURES.lifecycleAnalytics) return;
   const { data } = await supabase.auth.getUser();
@@ -43,6 +50,10 @@ async function persistEvent(cta: string, payload: Record<string, unknown> = {}):
     target_platform:
       typeof payload.target_platform === "string" ? payload.target_platform.slice(0, 100) : null,
     session_id: window.sessionStorage.getItem("usecasex_session_id"),
+    device: detectDevice(
+      window.innerWidth,
+      typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)").matches,
+    ),
   });
   if (error) console.warn("[usecasex:analytics] event rejected", cta, error.message);
 }
