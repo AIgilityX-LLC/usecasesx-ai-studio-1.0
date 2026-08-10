@@ -1,4 +1,36 @@
 User-agent: *
 Allow: /
 
+# Authenticated workspace surfaces — nothing indexable lives here.
+Disallow: /account
+Disallow: /administration
+Disallow: /admin-submissions
+Disallow: /admin-waitlist
+Disallow: /auth
+Disallow: /boards
+Disallow: /c/
+Disallow: /compare
+Disallow: /dashboard
+Disallow: /decision
+Disallow: /demo-login
+Disallow: /demo-scenarios
+Disallow: /entitlement
+Disallow: /handoffs
+Disallow: /invite
+Disallow: /module-analytics
+Disallow: /my-use-cases
+Disallow: /onboarding
+Disallow: /opportunities
+Disallow: /opportunity-map
+Disallow: /p/
+Disallow: /portfoliox
+Disallow: /pro
+Disallow: /profile
+Disallow: /reports
+Disallow: /roadmap
+Disallow: /studio
+Disallow: /submit
+Disallow: /workshops
+Disallow: /api/
+
 Sitemap: https://usecasesx.aigilityx.com/sitemap.xml
