@@ -708,6 +708,7 @@ export type Database = {
           name: string
           organization_id: string | null
           share_token: string
+          slug: string | null
           updated_at: string
           user_id: string
           workspace_id: string | null
@@ -720,6 +721,7 @@ export type Database = {
           name: string
           organization_id?: string | null
           share_token?: string
+          slug?: string | null
           updated_at?: string
           user_id: string
           workspace_id?: string | null
@@ -732,6 +734,7 @@ export type Database = {
           name?: string
           organization_id?: string | null
           share_token?: string
+          slug?: string | null
           updated_at?: string
           user_id?: string
           workspace_id?: string | null
@@ -763,6 +766,7 @@ export type Database = {
         Row: {
           created_at: string
           cta: string
+          device: string | null
           id: string
           session_id: string | null
           source_page: string | null
@@ -774,6 +778,7 @@ export type Database = {
         Insert: {
           created_at?: string
           cta: string
+          device?: string | null
           id?: string
           session_id?: string | null
           source_page?: string | null
@@ -785,6 +790,7 @@ export type Database = {
         Update: {
           created_at?: string
           cta?: string
+          device?: string | null
           id?: string
           session_id?: string | null
           source_page?: string | null

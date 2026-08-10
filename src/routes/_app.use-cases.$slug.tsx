@@ -147,6 +147,8 @@ export const Route = createFileRoute("/_app/use-cases/$slug")({
       "AI use case detail — business problem, AI solution, value, data, KPIs, implementation, governance and risk."
     ).slice(0, 158);
     const url = `https://usecasesx.aigilityx.com/use-cases/${params.slug}`;
+    // Template-only share card rendered on demand by /og/use-case/$slug.
+    const image = `https://usecasesx.aigilityx.com/og/use-case/${params.slug}`;
     return {
       meta: [
         { title },
@@ -156,6 +158,10 @@ export const Route = createFileRoute("/_app/use-cases/$slug")({
         { property: "og:type", content: "article" },
         { property: "og:url", content: url },
         { name: "twitter:card", content: "summary_large_image" },
+        { property: "og:image", content: image },
+        { property: "og:image:width", content: "1200" },
+        { property: "og:image:height", content: "630" },
+        { name: "twitter:image", content: image },
       ],
       links: [{ rel: "canonical", href: url }],
     };

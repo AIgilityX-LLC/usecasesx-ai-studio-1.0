@@ -67,9 +67,13 @@ import { Route as AppAccountIndexRouteImport } from './routes/_app.account.index
 import { Route as AppAccountOrganizationRouteImport } from './routes/_app.account.organization'
 import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.security'
 import { Route as AppAccountTeamRouteImport } from './routes/_app.account.team'
+import { Route as AppAdministrationAnalyticsRouteImport } from './routes/_app.administration.analytics'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
 import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
+import { Route as AppCategoriesIndexRouteImport } from './routes/_app.categories.index'
+import { Route as AppCollectionsIndexRouteImport } from './routes/_app.collections.index'
+import { Route as AppCollectionsSlugRouteImport } from './routes/_app.collections.$slug'
 import { Route as AppInviteTokenRouteImport } from './routes/_app.invite.$token'
 import { Route as AppOpportunitiesIndexRouteImport } from './routes/_app.opportunities.index'
 import { Route as AppOpportunitiesIdRouteImport } from './routes/_app.opportunities.$id'
@@ -80,6 +84,8 @@ import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.por
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
 import { Route as AppWorkshopsIndexRouteImport } from './routes/_app.workshops.index'
 import { Route as AppWorkshopsIdRouteImport } from './routes/_app.workshops.$id'
+import { Route as OgUseCaseSlugRouteImport } from './routes/og.use-case.$slug'
+import { Route as AppCategoriesTypeSlugRouteImport } from './routes/_app.categories.$type.$slug'
 import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
 import { Route as AppWorkshopsJoinTokenRouteImport } from './routes/_app.workshops.join.$token'
 import { Route as ApiPublicHooksErpReconciliationRouteImport } from './routes/api/public/hooks/erp-reconciliation'
@@ -390,6 +396,12 @@ const AppAccountTeamRoute = AppAccountTeamRouteImport.update({
   path: '/team',
   getParentRoute: () => AppAccountRoute,
 } as any)
+const AppAdministrationAnalyticsRoute =
+  AppAdministrationAnalyticsRouteImport.update({
+    id: '/analytics',
+    path: '/analytics',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
 const AppBoardsIndexRoute = AppBoardsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -404,6 +416,21 @@ const AppBoardsCollectionsRoute = AppBoardsCollectionsRouteImport.update({
   id: '/collections',
   path: '/collections',
   getParentRoute: () => AppBoardsRoute,
+} as any)
+const AppCategoriesIndexRoute = AppCategoriesIndexRouteImport.update({
+  id: '/categories/',
+  path: '/categories/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCollectionsIndexRoute = AppCollectionsIndexRouteImport.update({
+  id: '/collections/',
+  path: '/collections/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCollectionsSlugRoute = AppCollectionsSlugRouteImport.update({
+  id: '/collections/$slug',
+  path: '/collections/$slug',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppInviteTokenRoute = AppInviteTokenRouteImport.update({
   id: '/invite/$token',
@@ -453,6 +480,16 @@ const AppWorkshopsIndexRoute = AppWorkshopsIndexRouteImport.update({
 const AppWorkshopsIdRoute = AppWorkshopsIdRouteImport.update({
   id: '/workshops/$id',
   path: '/workshops/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const OgUseCaseSlugRoute = OgUseCaseSlugRouteImport.update({
+  id: '/og/use-case/$slug',
+  path: '/og/use-case/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppCategoriesTypeSlugRoute = AppCategoriesTypeSlugRouteImport.update({
+  id: '/categories/$type/$slug',
+  path: '/categories/$type/$slug',
   getParentRoute: () => AppRoute,
 } as any)
 const AppCyberxC3gIntakeRoute = AppCyberxC3gIntakeRouteImport.update({
@@ -582,7 +619,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AppAccountRouteWithChildren
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
-  '/administration': typeof AppAdministrationRoute
+  '/administration': typeof AppAdministrationRouteWithChildren
   '/advisorx': typeof AppAdvisorxRoute
   '/advisory': typeof AppAdvisoryRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
@@ -628,8 +665,10 @@ export interface FileRoutesByFullPath {
   '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
   '/account/team': typeof AppAccountTeamRoute
+  '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
+  '/collections/$slug': typeof AppCollectionsSlugRoute
   '/invite/$token': typeof AppInviteTokenRoute
   '/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/opportunities/new': typeof AppOpportunitiesNewRoute
@@ -638,10 +677,14 @@ export interface FileRoutesByFullPath {
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/workshops/$id': typeof AppWorkshopsIdRoute
+  '/og/use-case/$slug': typeof OgUseCaseSlugRoute
   '/account/': typeof AppAccountIndexRoute
   '/boards/': typeof AppBoardsIndexRoute
+  '/categories/': typeof AppCategoriesIndexRoute
+  '/collections/': typeof AppCollectionsIndexRoute
   '/opportunities/': typeof AppOpportunitiesIndexRoute
   '/workshops/': typeof AppWorkshopsIndexRoute
+  '/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
@@ -673,7 +716,7 @@ export interface FileRoutesByTo {
   '/about': typeof AppAboutRoute
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
-  '/administration': typeof AppAdministrationRoute
+  '/administration': typeof AppAdministrationRouteWithChildren
   '/advisorx': typeof AppAdvisorxRoute
   '/advisory': typeof AppAdvisoryRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
@@ -718,8 +761,10 @@ export interface FileRoutesByTo {
   '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
   '/account/team': typeof AppAccountTeamRoute
+  '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
+  '/collections/$slug': typeof AppCollectionsSlugRoute
   '/invite/$token': typeof AppInviteTokenRoute
   '/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/opportunities/new': typeof AppOpportunitiesNewRoute
@@ -728,10 +773,14 @@ export interface FileRoutesByTo {
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/workshops/$id': typeof AppWorkshopsIdRoute
+  '/og/use-case/$slug': typeof OgUseCaseSlugRoute
   '/account': typeof AppAccountIndexRoute
   '/boards': typeof AppBoardsIndexRoute
+  '/categories': typeof AppCategoriesIndexRoute
+  '/collections': typeof AppCollectionsIndexRoute
   '/opportunities': typeof AppOpportunitiesIndexRoute
   '/workshops': typeof AppWorkshopsIndexRoute
+  '/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
@@ -766,7 +815,7 @@ export interface FileRoutesById {
   '/_app/account': typeof AppAccountRouteWithChildren
   '/_app/admin-submissions': typeof AppAdminSubmissionsRoute
   '/_app/admin-waitlist': typeof AppAdminWaitlistRoute
-  '/_app/administration': typeof AppAdministrationRoute
+  '/_app/administration': typeof AppAdministrationRouteWithChildren
   '/_app/advisorx': typeof AppAdvisorxRoute
   '/_app/advisory': typeof AppAdvisoryRoute
   '/_app/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
@@ -812,8 +861,10 @@ export interface FileRoutesById {
   '/_app/account/organization': typeof AppAccountOrganizationRoute
   '/_app/account/security': typeof AppAccountSecurityRoute
   '/_app/account/team': typeof AppAccountTeamRoute
+  '/_app/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/boards/collections': typeof AppBoardsCollectionsRoute
+  '/_app/collections/$slug': typeof AppCollectionsSlugRoute
   '/_app/invite/$token': typeof AppInviteTokenRoute
   '/_app/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/_app/opportunities/new': typeof AppOpportunitiesNewRoute
@@ -822,10 +873,14 @@ export interface FileRoutesById {
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/_app/workshops/$id': typeof AppWorkshopsIdRoute
+  '/og/use-case/$slug': typeof OgUseCaseSlugRoute
   '/_app/account/': typeof AppAccountIndexRoute
   '/_app/boards/': typeof AppBoardsIndexRoute
+  '/_app/categories/': typeof AppCategoriesIndexRoute
+  '/_app/collections/': typeof AppCollectionsIndexRoute
   '/_app/opportunities/': typeof AppOpportunitiesIndexRoute
   '/_app/workshops/': typeof AppWorkshopsIndexRoute
+  '/_app/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/_app/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/_app/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
@@ -906,8 +961,10 @@ export interface FileRouteTypes {
     | '/account/organization'
     | '/account/security'
     | '/account/team'
+    | '/administration/analytics'
     | '/boards/$boardId'
     | '/boards/collections'
+    | '/collections/$slug'
     | '/invite/$token'
     | '/opportunities/$id'
     | '/opportunities/new'
@@ -916,10 +973,14 @@ export interface FileRouteTypes {
     | '/studio/portfolio'
     | '/use-cases/$slug'
     | '/workshops/$id'
+    | '/og/use-case/$slug'
     | '/account/'
     | '/boards/'
+    | '/categories/'
+    | '/collections/'
     | '/opportunities/'
     | '/workshops/'
+    | '/categories/$type/$slug'
     | '/cyberx/c3g/intake'
     | '/workshops/join/$token'
     | '/api/public/hooks/erp-reconciliation'
@@ -996,8 +1057,10 @@ export interface FileRouteTypes {
     | '/account/organization'
     | '/account/security'
     | '/account/team'
+    | '/administration/analytics'
     | '/boards/$boardId'
     | '/boards/collections'
+    | '/collections/$slug'
     | '/invite/$token'
     | '/opportunities/$id'
     | '/opportunities/new'
@@ -1006,10 +1069,14 @@ export interface FileRouteTypes {
     | '/studio/portfolio'
     | '/use-cases/$slug'
     | '/workshops/$id'
+    | '/og/use-case/$slug'
     | '/account'
     | '/boards'
+    | '/categories'
+    | '/collections'
     | '/opportunities'
     | '/workshops'
+    | '/categories/$type/$slug'
     | '/cyberx/c3g/intake'
     | '/workshops/join/$token'
     | '/api/public/hooks/erp-reconciliation'
@@ -1089,8 +1156,10 @@ export interface FileRouteTypes {
     | '/_app/account/organization'
     | '/_app/account/security'
     | '/_app/account/team'
+    | '/_app/administration/analytics'
     | '/_app/boards/$boardId'
     | '/_app/boards/collections'
+    | '/_app/collections/$slug'
     | '/_app/invite/$token'
     | '/_app/opportunities/$id'
     | '/_app/opportunities/new'
@@ -1099,10 +1168,14 @@ export interface FileRouteTypes {
     | '/_app/studio/portfolio'
     | '/_app/use-cases/$slug'
     | '/_app/workshops/$id'
+    | '/og/use-case/$slug'
     | '/_app/account/'
     | '/_app/boards/'
+    | '/_app/categories/'
+    | '/_app/collections/'
     | '/_app/opportunities/'
     | '/_app/workshops/'
+    | '/_app/categories/$type/$slug'
     | '/_app/cyberx/c3g/intake'
     | '/_app/workshops/join/$token'
     | '/api/public/hooks/erp-reconciliation'
@@ -1135,6 +1208,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   CTokenRoute: typeof CTokenRoute
   PTokenRoute: typeof PTokenRoute
+  OgUseCaseSlugRoute: typeof OgUseCaseSlugRoute
   ApiPublicHooksErpReconciliationRoute: typeof ApiPublicHooksErpReconciliationRoute
   ApiPublicHooksEvidenceCleanupRoute: typeof ApiPublicHooksEvidenceCleanupRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
@@ -1550,6 +1624,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAccountTeamRouteImport
       parentRoute: typeof AppAccountRoute
     }
+    '/_app/administration/analytics': {
+      id: '/_app/administration/analytics'
+      path: '/analytics'
+      fullPath: '/administration/analytics'
+      preLoaderRoute: typeof AppAdministrationAnalyticsRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/boards/': {
       id: '/_app/boards/'
       path: '/'
@@ -1570,6 +1651,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/boards/collections'
       preLoaderRoute: typeof AppBoardsCollectionsRouteImport
       parentRoute: typeof AppBoardsRoute
+    }
+    '/_app/categories/': {
+      id: '/_app/categories/'
+      path: '/categories'
+      fullPath: '/categories/'
+      preLoaderRoute: typeof AppCategoriesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/collections/': {
+      id: '/_app/collections/'
+      path: '/collections'
+      fullPath: '/collections/'
+      preLoaderRoute: typeof AppCollectionsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/collections/$slug': {
+      id: '/_app/collections/$slug'
+      path: '/collections/$slug'
+      fullPath: '/collections/$slug'
+      preLoaderRoute: typeof AppCollectionsSlugRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/invite/$token': {
       id: '/_app/invite/$token'
@@ -1639,6 +1741,20 @@ declare module '@tanstack/react-router' {
       path: '/workshops/$id'
       fullPath: '/workshops/$id'
       preLoaderRoute: typeof AppWorkshopsIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/og/use-case/$slug': {
+      id: '/og/use-case/$slug'
+      path: '/og/use-case/$slug'
+      fullPath: '/og/use-case/$slug'
+      preLoaderRoute: typeof OgUseCaseSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/categories/$type/$slug': {
+      id: '/_app/categories/$type/$slug'
+      path: '/categories/$type/$slug'
+      fullPath: '/categories/$type/$slug'
+      preLoaderRoute: typeof AppCategoriesTypeSlugRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/cyberx/c3g/intake': {
@@ -1802,6 +1918,17 @@ const AppAccountRouteWithChildren = AppAccountRoute._addFileChildren(
   AppAccountRouteChildren,
 )
 
+interface AppAdministrationRouteChildren {
+  AppAdministrationAnalyticsRoute: typeof AppAdministrationAnalyticsRoute
+}
+
+const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
+  AppAdministrationAnalyticsRoute: AppAdministrationAnalyticsRoute,
+}
+
+const AppAdministrationRouteWithChildren =
+  AppAdministrationRoute._addFileChildren(AppAdministrationRouteChildren)
+
 interface AppBoardsRouteChildren {
   AppBoardsBoardIdRoute: typeof AppBoardsBoardIdRoute
   AppBoardsCollectionsRoute: typeof AppBoardsCollectionsRoute
@@ -1860,7 +1987,7 @@ interface AppRouteChildren {
   AppAccountRoute: typeof AppAccountRouteWithChildren
   AppAdminSubmissionsRoute: typeof AppAdminSubmissionsRoute
   AppAdminWaitlistRoute: typeof AppAdminWaitlistRoute
-  AppAdministrationRoute: typeof AppAdministrationRoute
+  AppAdministrationRoute: typeof AppAdministrationRouteWithChildren
   AppAdvisorxRoute: typeof AppAdvisorxRoute
   AppAdvisoryRoute: typeof AppAdvisoryRoute
   AppAiUseCaseStudioRoute: typeof AppAiUseCaseStudioRoute
@@ -1901,6 +2028,7 @@ interface AppRouteChildren {
   AppSarpiRoute: typeof AppSarpiRoute
   AppStudioRoute: typeof AppStudioRouteWithChildren
   AppSubmitRoute: typeof AppSubmitRoute
+  AppCollectionsSlugRoute: typeof AppCollectionsSlugRoute
   AppInviteTokenRoute: typeof AppInviteTokenRoute
   AppOpportunitiesIdRoute: typeof AppOpportunitiesIdRoute
   AppOpportunitiesNewRoute: typeof AppOpportunitiesNewRoute
@@ -1908,8 +2036,11 @@ interface AppRouteChildren {
   AppSegmentsSegmentRoute: typeof AppSegmentsSegmentRoute
   AppUseCasesSlugRoute: typeof AppUseCasesSlugRoute
   AppWorkshopsIdRoute: typeof AppWorkshopsIdRoute
+  AppCategoriesIndexRoute: typeof AppCategoriesIndexRoute
+  AppCollectionsIndexRoute: typeof AppCollectionsIndexRoute
   AppOpportunitiesIndexRoute: typeof AppOpportunitiesIndexRoute
   AppWorkshopsIndexRoute: typeof AppWorkshopsIndexRoute
+  AppCategoriesTypeSlugRoute: typeof AppCategoriesTypeSlugRoute
   AppCyberxC3gIntakeRoute: typeof AppCyberxC3gIntakeRoute
   AppWorkshopsJoinTokenRoute: typeof AppWorkshopsJoinTokenRoute
 }
@@ -1919,7 +2050,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAccountRoute: AppAccountRouteWithChildren,
   AppAdminSubmissionsRoute: AppAdminSubmissionsRoute,
   AppAdminWaitlistRoute: AppAdminWaitlistRoute,
-  AppAdministrationRoute: AppAdministrationRoute,
+  AppAdministrationRoute: AppAdministrationRouteWithChildren,
   AppAdvisorxRoute: AppAdvisorxRoute,
   AppAdvisoryRoute: AppAdvisoryRoute,
   AppAiUseCaseStudioRoute: AppAiUseCaseStudioRoute,
@@ -1960,6 +2091,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSarpiRoute: AppSarpiRoute,
   AppStudioRoute: AppStudioRouteWithChildren,
   AppSubmitRoute: AppSubmitRoute,
+  AppCollectionsSlugRoute: AppCollectionsSlugRoute,
   AppInviteTokenRoute: AppInviteTokenRoute,
   AppOpportunitiesIdRoute: AppOpportunitiesIdRoute,
   AppOpportunitiesNewRoute: AppOpportunitiesNewRoute,
@@ -1967,8 +2099,11 @@ const AppRouteChildren: AppRouteChildren = {
   AppSegmentsSegmentRoute: AppSegmentsSegmentRoute,
   AppUseCasesSlugRoute: AppUseCasesSlugRoute,
   AppWorkshopsIdRoute: AppWorkshopsIdRoute,
+  AppCategoriesIndexRoute: AppCategoriesIndexRoute,
+  AppCollectionsIndexRoute: AppCollectionsIndexRoute,
   AppOpportunitiesIndexRoute: AppOpportunitiesIndexRoute,
   AppWorkshopsIndexRoute: AppWorkshopsIndexRoute,
+  AppCategoriesTypeSlugRoute: AppCategoriesTypeSlugRoute,
   AppCyberxC3gIntakeRoute: AppCyberxC3gIntakeRoute,
   AppWorkshopsJoinTokenRoute: AppWorkshopsJoinTokenRoute,
 }
@@ -1999,6 +2134,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   CTokenRoute: CTokenRoute,
   PTokenRoute: PTokenRoute,
+  OgUseCaseSlugRoute: OgUseCaseSlugRoute,
   ApiPublicHooksErpReconciliationRoute: ApiPublicHooksErpReconciliationRoute,
   ApiPublicHooksEvidenceCleanupRoute: ApiPublicHooksEvidenceCleanupRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
@@ -2008,3 +2144,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

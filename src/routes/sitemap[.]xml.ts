@@ -47,6 +47,40 @@ export const Route = createFileRoute("/sitemap.xml")({
           console.warn("[sitemap] dynamic use-case entries unavailable", error);
         }
 
+        // Category and public-collection hubs are indexable landing pages.
+        try {
+          const { readCategories, readPublicCollections } =
+            await import("@/lib/public-catalog.server");
+          const [industries, capabilities, collections] = await Promise.all([
+            readCategories("industry"),
+            readCategories("capability"),
+            readPublicCollections(),
+          ]);
+          for (const item of industries) {
+            entries.push({
+              path: `/categories/industry/${item.slug}`,
+              changefreq: "weekly",
+              priority: "0.7",
+            });
+          }
+          for (const item of capabilities) {
+            entries.push({
+              path: `/categories/capability/${item.slug}`,
+              changefreq: "weekly",
+              priority: "0.7",
+            });
+          }
+          for (const item of collections) {
+            entries.push({
+              path: `/collections/${item.slug}`,
+              changefreq: "weekly",
+              priority: "0.6",
+            });
+          }
+        } catch (error) {
+          console.warn("[sitemap] category/collection entries unavailable", error);
+        }
+
         const urls = entries.map((e) =>
           [
             `  <url>`,
