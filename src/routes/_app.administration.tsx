@@ -40,6 +40,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DemoResetControl } from "@/components/demo/DemoResetControl";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -153,8 +154,13 @@ function AdminPageInner() {
             <TabsTrigger value="cta">CTA Analytics</TabsTrigger>
             <TabsTrigger value="journey">Journey Funnel</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
+            <TabsTrigger value="demo">Demo Data</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="demo" className="mt-6">
+            <DemoResetControl />
+          </TabsContent>
 
           <TabsContent value="overview" className="mt-6">
             <OverviewTab />
