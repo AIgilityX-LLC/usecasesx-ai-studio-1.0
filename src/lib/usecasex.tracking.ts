@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { PUBLIC_LAUNCH_FEATURES } from "@/lib/feature-flags";
+import { getAttribution, sanitizeSearchQuery } from "@/lib/analytics/attribution";
 
 export type CtaEvent =
   | "view_use_case"
