@@ -256,17 +256,24 @@ function Hero() {
           AI USE CASE STUDIO™ BY AIGILITYX™
         </div>
         <h1 className="max-w-5xl text-balance text-3xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
-          <span className="block">Build a Validated AI Use Case</span>
-          <span className="mt-2 block text-xl font-semibold tracking-tight text-white/90 sm:mt-3 sm:whitespace-nowrap sm:text-3xl lg:text-4xl">
-            Before You Spend a&nbsp; Dollar Building It
+          <span className="block">Turn AI ideas into a portfolio you can defend</span>
+          <span className="mt-2 block text-xl font-semibold tracking-tight text-white/90 sm:mt-3 sm:text-3xl lg:text-4xl">
+            Discover · Design · Prioritize · Manage
           </span>
         </h1>
         <p className="mt-5 max-w-3xl text-lg text-white/85 sm:text-xl">
-          Discover, design, validate, govern, prioritize, and scale AI use cases using an
-          enterprise-grade and sovereign-ready platform.
+          <strong className="font-semibold text-white">Discover</strong> proven use cases in a
+          provenance-labelled repository.{" "}
+          <strong className="font-semibold text-white">Design</strong> them into defined use cases
+          in AI Use Case Studio™.{" "}
+          <strong className="font-semibold text-white">Prioritize</strong> on feasibility, data
+          readiness and value. <strong className="font-semibold text-white">Manage</strong> the
+          funded portfolio, roadmap, benefits and board-ready exports.
         </p>
-        <p className="mt-3 max-w-3xl text-base font-semibold uppercase tracking-[0.22em] text-primary">
-          Discover · Design · Validate · Govern · Scale
+        <p className="mt-4 max-w-3xl text-sm text-white/70">
+          Lite is free and open. Pro Founding Access is complimentary through{" "}
+          {FOUNDING_ACCESS_END}, subject to published fair-use limits. Enterprise is delivered
+          through a paid Design Partner engagement.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
@@ -284,15 +291,38 @@ function Hero() {
             className="inline-flex items-center justify-center gap-1.5 rounded-md bg-primary px-6 py-3 text-center text-sm font-bold text-primary-foreground shadow-lg hover:brightness-110"
           >
             <Crown className="h-4 w-4 shrink-0" aria-hidden />
-            Join the Waitlist — Early Gratis (Free) Access
+            Get Pro Founding Access — free until 2027
           </Link>
           <Link
             to="/repository"
+            onClick={() =>
+              trackCTAEvent("cta_clicked", {
+                source_page: "/",
+                target_route: "/repository",
+                location: "landing_hero_repository",
+              })
+            }
+            data-analytics-id="cta-landing-hero-repository"
             className="rounded-md border border-white/30 bg-white/10 px-6 py-3 text-sm font-bold text-white backdrop-blur hover:bg-white/15"
           >
-            Explore Repository →
+            Explore the repository →
+          </Link>
+          <Link
+            to="/how-it-works"
+            onClick={() =>
+              trackCTAEvent("cta_clicked", {
+                source_page: "/",
+                target_route: "/how-it-works",
+                location: "landing_hero_how",
+              })
+            }
+            data-analytics-id="cta-landing-hero-how"
+            className="rounded-md border border-white/20 px-6 py-3 text-sm font-bold text-white/90 hover:bg-white/10"
+          >
+            How it works
           </Link>
         </div>
+
 
         <div className="mt-14 grid max-w-5xl grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {[
