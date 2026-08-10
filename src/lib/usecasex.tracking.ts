@@ -13,6 +13,7 @@ export type CtaEvent =
   | "save_to_shortlist"
   | "customize_in_studio"
   | "share_use_case"
+  | "contact_form_submitted"
   | "print_use_case";
 
 export function track(event: CtaEvent, payload?: Record<string, unknown>): void {
