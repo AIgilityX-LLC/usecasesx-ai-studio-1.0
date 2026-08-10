@@ -61,6 +61,7 @@ import { Route as AppRoiCalculatorRouteImport } from './routes/_app.roi-calculat
 import { Route as AppSarpiRouteImport } from './routes/_app.sarpi'
 import { Route as AppStudioRouteImport } from './routes/_app.studio'
 import { Route as AppSubmitRouteImport } from './routes/_app.submit'
+import { Route as AppSupportRouteImport } from './routes/_app.support'
 import { Route as CTokenRouteImport } from './routes/c.$token'
 import { Route as PTokenRouteImport } from './routes/p.$token'
 import { Route as AppAccountIndexRouteImport } from './routes/_app.account.index'
@@ -366,6 +367,11 @@ const AppSubmitRoute = AppSubmitRouteImport.update({
   path: '/submit',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSupportRoute = AppSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => AppRoute,
+} as any)
 const CTokenRoute = CTokenRouteImport.update({
   id: '/c/$token',
   path: '/c/$token',
@@ -660,6 +666,7 @@ export interface FileRoutesByFullPath {
   '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
+  '/support': typeof AppSupportRoute
   '/c/$token': typeof CTokenRoute
   '/p/$token': typeof PTokenRoute
   '/account/organization': typeof AppAccountOrganizationRoute
@@ -756,6 +763,7 @@ export interface FileRoutesByTo {
   '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
+  '/support': typeof AppSupportRoute
   '/c/$token': typeof CTokenRoute
   '/p/$token': typeof PTokenRoute
   '/account/organization': typeof AppAccountOrganizationRoute
@@ -856,6 +864,7 @@ export interface FileRoutesById {
   '/_app/sarpi': typeof AppSarpiRoute
   '/_app/studio': typeof AppStudioRouteWithChildren
   '/_app/submit': typeof AppSubmitRoute
+  '/_app/support': typeof AppSupportRoute
   '/c/$token': typeof CTokenRoute
   '/p/$token': typeof PTokenRoute
   '/_app/account/organization': typeof AppAccountOrganizationRoute
@@ -956,6 +965,7 @@ export interface FileRouteTypes {
     | '/sarpi'
     | '/studio'
     | '/submit'
+    | '/support'
     | '/c/$token'
     | '/p/$token'
     | '/account/organization'
@@ -1052,6 +1062,7 @@ export interface FileRouteTypes {
     | '/sarpi'
     | '/studio'
     | '/submit'
+    | '/support'
     | '/c/$token'
     | '/p/$token'
     | '/account/organization'
@@ -1151,6 +1162,7 @@ export interface FileRouteTypes {
     | '/_app/sarpi'
     | '/_app/studio'
     | '/_app/submit'
+    | '/_app/support'
     | '/c/$token'
     | '/p/$token'
     | '/_app/account/organization'
@@ -1580,6 +1592,13 @@ declare module '@tanstack/react-router' {
       path: '/submit'
       fullPath: '/submit'
       preLoaderRoute: typeof AppSubmitRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/support': {
+      id: '/_app/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof AppSupportRouteImport
       parentRoute: typeof AppRoute
     }
     '/c/$token': {
@@ -2028,6 +2047,7 @@ interface AppRouteChildren {
   AppSarpiRoute: typeof AppSarpiRoute
   AppStudioRoute: typeof AppStudioRouteWithChildren
   AppSubmitRoute: typeof AppSubmitRoute
+  AppSupportRoute: typeof AppSupportRoute
   AppCollectionsSlugRoute: typeof AppCollectionsSlugRoute
   AppInviteTokenRoute: typeof AppInviteTokenRoute
   AppOpportunitiesIdRoute: typeof AppOpportunitiesIdRoute
@@ -2091,6 +2111,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSarpiRoute: AppSarpiRoute,
   AppStudioRoute: AppStudioRouteWithChildren,
   AppSubmitRoute: AppSubmitRoute,
+  AppSupportRoute: AppSupportRoute,
   AppCollectionsSlugRoute: AppCollectionsSlugRoute,
   AppInviteTokenRoute: AppInviteTokenRoute,
   AppOpportunitiesIdRoute: AppOpportunitiesIdRoute,
@@ -2144,13 +2165,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -41,10 +41,10 @@ function SupportPage() {
       <PageHero
         eyebrow="Help & support"
         title="Get help, report an issue, shape the product"
-        description="UseCasesX is in Pro Founding Access. Support is human, direct and deliberately transparent about what we can commit to today."
+        intro="UseCasesX is in Pro Founding Access. Support is human, direct and deliberately transparent about what we can commit to today."
       />
 
-      <Section>
+      <Section title="What to expect">
         <div className="grid gap-6 md:grid-cols-3">
           {SUPPORT_EXPECTATIONS.map((item) => (
             <Card key={item.title}>
@@ -57,10 +57,10 @@ function SupportPage() {
         </div>
       </Section>
 
-      <Section>
+      <Section title="Contact routes">
         <Card>
           <CardHeader>
-            <CardTitle>Contact routes</CardTitle>
+            <CardTitle>Reach the team</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-muted-foreground">
             <p>
@@ -84,10 +84,10 @@ function SupportPage() {
         </Card>
       </Section>
 
-      <Section>
+      <Section title="Your feedback">
         <Card>
           <CardHeader>
-            <CardTitle>Your feedback</CardTitle>
+            <CardTitle>Submitted items</CardTitle>
           </CardHeader>
           <CardContent>
             {mine.isLoading ? (
