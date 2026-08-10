@@ -38,9 +38,7 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         // Published repository records are the bulk of the indexable surface.
         try {
-          const { createPublishableServerClient } = await import(
-            "@/lib/sitemap-sources.server"
-          );
+          const { createPublishableServerClient } = await import("@/lib/sitemap-sources.server");
           const slugs = await createPublishableServerClient();
           for (const slug of slugs) {
             entries.push({ path: `/use-cases/${slug}`, changefreq: "monthly", priority: "0.7" });

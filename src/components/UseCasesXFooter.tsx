@@ -56,7 +56,6 @@ export function UseCasesXFooter() {
             { l: "Contact & demo", to: "/contact" },
           ]}
         />
-
       </div>
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3 px-6 py-4 text-[11px] text-muted-foreground">

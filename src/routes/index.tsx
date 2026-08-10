@@ -265,15 +265,15 @@ function Hero() {
           <strong className="font-semibold text-white">Discover</strong> proven use cases in a
           provenance-labelled repository.{" "}
           <strong className="font-semibold text-white">Design</strong> them into defined use cases
-          in AI Use Case Studio™.{" "}
-          <strong className="font-semibold text-white">Prioritize</strong> on feasibility, data
-          readiness and value. <strong className="font-semibold text-white">Manage</strong> the
-          funded portfolio, roadmap, benefits and board-ready exports.
+          in AI Use Case Studio™. <strong className="font-semibold text-white">Prioritize</strong>{" "}
+          on feasibility, data readiness and value.{" "}
+          <strong className="font-semibold text-white">Manage</strong> the funded portfolio,
+          roadmap, benefits and board-ready exports.
         </p>
         <p className="mt-4 max-w-3xl text-sm text-white/70">
-          Lite is free and open. Pro Founding Access is complimentary through{" "}
-          {FOUNDING_ACCESS_END}, subject to published fair-use limits. Enterprise is delivered
-          through a paid Design Partner engagement.
+          Lite is free and open. Pro Founding Access is complimentary through {FOUNDING_ACCESS_END},
+          subject to published fair-use limits. Enterprise is delivered through a paid Design
+          Partner engagement.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
@@ -322,7 +322,6 @@ function Hero() {
             How it works
           </Link>
         </div>
-
 
         <div className="mt-14 grid max-w-5xl grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {[
@@ -974,4 +973,3 @@ function TrustSection() {
     </section>
   );
 }
-

@@ -12,8 +12,12 @@ import { PriorityScore } from "@/components/scoring/PriorityScore";
 import { useLatestScores } from "@/hooks/useLatestScores";
 
 export const Route = createFileRoute("/_app/studio/use-case/$id/")({
-  head: () => ({ meta: [
-      { name: "robots", content: "noindex, nofollow" },{ title: "Use Case Detail — AI Use Case Studio" }] }),
+  head: () => ({
+    meta: [
+      { name: "robots", content: "noindex, nofollow" },
+      { title: "Use Case Detail — AI Use Case Studio" },
+    ],
+  }),
   component: UseCaseDetailPage,
 });
 

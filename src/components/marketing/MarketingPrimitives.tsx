@@ -119,9 +119,7 @@ export function EditionMatrix({ ctaLocation }: { ctaLocation: string }) {
           key={edition.key}
           className={
             "flex h-full flex-col rounded-2xl border bg-card p-6 " +
-            (edition.key === "pro"
-              ? "border-primary/40 ring-1 ring-primary/20"
-              : "border-border")
+            (edition.key === "pro" ? "border-primary/40 ring-1 ring-primary/20" : "border-border")
           }
         >
           <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
@@ -197,13 +195,22 @@ export function FoundingAccessTerms({ id = "founding-access" }: { id?: string })
           </caption>
           <thead>
             <tr className="border-b border-border text-left">
-              <th scope="col" className="px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
+              <th
+                scope="col"
+                className="px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground"
+              >
                 Edition
               </th>
-              <th scope="col" className="px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
+              <th
+                scope="col"
+                className="px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground"
+              >
                 Per user / day
               </th>
-              <th scope="col" className="px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
+              <th
+                scope="col"
+                className="px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground"
+              >
                 Per workspace / day
               </th>
             </tr>

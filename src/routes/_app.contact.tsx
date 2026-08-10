@@ -109,24 +109,14 @@ function ContactPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="contact-email">Work email</Label>
-                <Input
-                  id="contact-email"
-                  name="email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                />
+                <Input id="contact-email" name="email" type="email" required autoComplete="email" />
               </div>
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="contact-organization">Organisation</Label>
-                <Input
-                  id="contact-organization"
-                  name="organization"
-                  autoComplete="organization"
-                />
+                <Input id="contact-organization" name="organization" autoComplete="organization" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="contact-interest">What are you interested in?</Label>
