@@ -67,6 +67,7 @@ import { Route as AppAccountIndexRouteImport } from './routes/_app.account.index
 import { Route as AppAccountOrganizationRouteImport } from './routes/_app.account.organization'
 import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.security'
 import { Route as AppAccountTeamRouteImport } from './routes/_app.account.team'
+import { Route as AppAdministrationAnalyticsRouteImport } from './routes/_app.administration.analytics'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
 import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
@@ -395,6 +396,12 @@ const AppAccountTeamRoute = AppAccountTeamRouteImport.update({
   path: '/team',
   getParentRoute: () => AppAccountRoute,
 } as any)
+const AppAdministrationAnalyticsRoute =
+  AppAdministrationAnalyticsRouteImport.update({
+    id: '/analytics',
+    path: '/analytics',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
 const AppBoardsIndexRoute = AppBoardsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -612,7 +619,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AppAccountRouteWithChildren
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
-  '/administration': typeof AppAdministrationRoute
+  '/administration': typeof AppAdministrationRouteWithChildren
   '/advisorx': typeof AppAdvisorxRoute
   '/advisory': typeof AppAdvisoryRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
@@ -658,6 +665,7 @@ export interface FileRoutesByFullPath {
   '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
   '/account/team': typeof AppAccountTeamRoute
+  '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
   '/collections/$slug': typeof AppCollectionsSlugRoute
@@ -708,7 +716,7 @@ export interface FileRoutesByTo {
   '/about': typeof AppAboutRoute
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
-  '/administration': typeof AppAdministrationRoute
+  '/administration': typeof AppAdministrationRouteWithChildren
   '/advisorx': typeof AppAdvisorxRoute
   '/advisory': typeof AppAdvisoryRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
@@ -753,6 +761,7 @@ export interface FileRoutesByTo {
   '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
   '/account/team': typeof AppAccountTeamRoute
+  '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
   '/collections/$slug': typeof AppCollectionsSlugRoute
@@ -806,7 +815,7 @@ export interface FileRoutesById {
   '/_app/account': typeof AppAccountRouteWithChildren
   '/_app/admin-submissions': typeof AppAdminSubmissionsRoute
   '/_app/admin-waitlist': typeof AppAdminWaitlistRoute
-  '/_app/administration': typeof AppAdministrationRoute
+  '/_app/administration': typeof AppAdministrationRouteWithChildren
   '/_app/advisorx': typeof AppAdvisorxRoute
   '/_app/advisory': typeof AppAdvisoryRoute
   '/_app/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
@@ -852,6 +861,7 @@ export interface FileRoutesById {
   '/_app/account/organization': typeof AppAccountOrganizationRoute
   '/_app/account/security': typeof AppAccountSecurityRoute
   '/_app/account/team': typeof AppAccountTeamRoute
+  '/_app/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/boards/collections': typeof AppBoardsCollectionsRoute
   '/_app/collections/$slug': typeof AppCollectionsSlugRoute
@@ -951,6 +961,7 @@ export interface FileRouteTypes {
     | '/account/organization'
     | '/account/security'
     | '/account/team'
+    | '/administration/analytics'
     | '/boards/$boardId'
     | '/boards/collections'
     | '/collections/$slug'
@@ -1046,6 +1057,7 @@ export interface FileRouteTypes {
     | '/account/organization'
     | '/account/security'
     | '/account/team'
+    | '/administration/analytics'
     | '/boards/$boardId'
     | '/boards/collections'
     | '/collections/$slug'
@@ -1144,6 +1156,7 @@ export interface FileRouteTypes {
     | '/_app/account/organization'
     | '/_app/account/security'
     | '/_app/account/team'
+    | '/_app/administration/analytics'
     | '/_app/boards/$boardId'
     | '/_app/boards/collections'
     | '/_app/collections/$slug'
@@ -1611,6 +1624,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAccountTeamRouteImport
       parentRoute: typeof AppAccountRoute
     }
+    '/_app/administration/analytics': {
+      id: '/_app/administration/analytics'
+      path: '/analytics'
+      fullPath: '/administration/analytics'
+      preLoaderRoute: typeof AppAdministrationAnalyticsRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/boards/': {
       id: '/_app/boards/'
       path: '/'
@@ -1898,6 +1918,17 @@ const AppAccountRouteWithChildren = AppAccountRoute._addFileChildren(
   AppAccountRouteChildren,
 )
 
+interface AppAdministrationRouteChildren {
+  AppAdministrationAnalyticsRoute: typeof AppAdministrationAnalyticsRoute
+}
+
+const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
+  AppAdministrationAnalyticsRoute: AppAdministrationAnalyticsRoute,
+}
+
+const AppAdministrationRouteWithChildren =
+  AppAdministrationRoute._addFileChildren(AppAdministrationRouteChildren)
+
 interface AppBoardsRouteChildren {
   AppBoardsBoardIdRoute: typeof AppBoardsBoardIdRoute
   AppBoardsCollectionsRoute: typeof AppBoardsCollectionsRoute
@@ -1956,7 +1987,7 @@ interface AppRouteChildren {
   AppAccountRoute: typeof AppAccountRouteWithChildren
   AppAdminSubmissionsRoute: typeof AppAdminSubmissionsRoute
   AppAdminWaitlistRoute: typeof AppAdminWaitlistRoute
-  AppAdministrationRoute: typeof AppAdministrationRoute
+  AppAdministrationRoute: typeof AppAdministrationRouteWithChildren
   AppAdvisorxRoute: typeof AppAdvisorxRoute
   AppAdvisoryRoute: typeof AppAdvisoryRoute
   AppAiUseCaseStudioRoute: typeof AppAiUseCaseStudioRoute
@@ -2019,7 +2050,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAccountRoute: AppAccountRouteWithChildren,
   AppAdminSubmissionsRoute: AppAdminSubmissionsRoute,
   AppAdminWaitlistRoute: AppAdminWaitlistRoute,
-  AppAdministrationRoute: AppAdministrationRoute,
+  AppAdministrationRoute: AppAdministrationRouteWithChildren,
   AppAdvisorxRoute: AppAdvisorxRoute,
   AppAdvisoryRoute: AppAdvisoryRoute,
   AppAiUseCaseStudioRoute: AppAiUseCaseStudioRoute,
