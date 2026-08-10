@@ -65,13 +65,19 @@ export function UseCasesXFooter() {
             Development Studio.
           </span>
           <div className="flex flex-wrap items-center gap-4">
+            <Link to="/editions" className="hover:text-foreground">
+              Editions
+            </Link>
             <Link to="/pricing" className="hover:text-foreground">
               Pricing
             </Link>
-            <Link to="/insights" className="hover:text-foreground">
-              Insights
+            <Link to="/about" className="hover:text-foreground">
+              Trust
             </Link>
-            <span className="hidden sm:inline">Discover · Design · Validate · Govern · Scale.</span>
+            <Link to="/contact" className="hover:text-foreground">
+              Contact
+            </Link>
+            <span className="hidden sm:inline">Discover · Design · Prioritize · Manage.</span>
           </div>
         </div>
       </div>
