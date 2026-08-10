@@ -40,6 +40,7 @@ export function detectDevice(
 async function persistEvent(cta: string, payload: Record<string, unknown> = {}): Promise<void> {
   if (!PUBLIC_LAUNCH_FEATURES.lifecycleAnalytics) return;
   const { data } = await supabase.auth.getUser();
+  const attribution = getAttribution();
   const useCaseId = typeof payload.use_case_id === "string" ? payload.use_case_id : null;
   const { error } = await supabase.from("cta_events").insert({
     cta: cta.slice(0, 100),
