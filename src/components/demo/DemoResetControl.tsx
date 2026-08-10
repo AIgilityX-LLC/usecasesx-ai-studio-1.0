@@ -151,7 +151,9 @@ export function DemoResetControl() {
               <AlertDialogTitle>Reset {scopeLabel}?</AlertDialogTitle>
               <AlertDialogDescription>
                 This deletes and re-creates the demonstration template records for {scopeLabel}
-                {includeSamples ? ", and permanently deletes your own sample copies for that scope" : ""}
+                {includeSamples
+                  ? ", and permanently deletes your own sample copies for that scope"
+                  : ""}
                 . Records in other workspaces are not affected. This cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>

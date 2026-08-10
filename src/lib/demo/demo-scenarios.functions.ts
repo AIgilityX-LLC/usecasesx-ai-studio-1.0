@@ -37,9 +37,8 @@ export const resetDemoScenarioTemplatesFn = createServerFn({ method: "POST" })
     if (!demoResetAuthorized(data.password)) {
       throw new Error("Demo reset is not authorized in this environment.");
     }
-    const { resetDemoScenarioTemplates, assertResetAllowed, logDemoReset } = await import(
-      "@/lib/demo/demo-scenarios.server"
-    );
+    const { resetDemoScenarioTemplates, assertResetAllowed, logDemoReset } =
+      await import("@/lib/demo/demo-scenarios.server");
     await assertResetAllowed("templates");
     const result = await resetDemoScenarioTemplates();
     await logDemoReset({ scope: "templates", actorLabel: "demo credential", result });

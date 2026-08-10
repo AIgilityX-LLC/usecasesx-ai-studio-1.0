@@ -172,7 +172,6 @@ export async function resetDemoScenarioTemplates(options: ResetScenarioOptions =
   }
 
   return { resetAt: new Date().toISOString(), results };
-
 }
 
 /** Copy a scenario into the caller's own workspace as user-owned records. */
