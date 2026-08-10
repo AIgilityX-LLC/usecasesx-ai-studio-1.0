@@ -16,11 +16,13 @@ import { useNavLinkIntegrityCheck } from "@/lib/nav-integrity";
 const TOP_NAV: { to: string; label: string }[] = [
   { to: "/", label: "Home" },
   { to: "/repository", label: "Explore" },
+  { to: "/how-it-works", label: "How it works" },
+  { to: "/editions", label: "Editions" },
+  { to: "/advisory", label: "Workshops" },
+  { to: "/enterprise", label: "Enterprise" },
   { to: "/insights", label: "Insights" },
-  { to: "/patterns", label: "Patterns" },
-  { to: "/ai-use-case-studio", label: "Studio" },
-  { to: "/resources", label: "Resources" },
   { to: "/pricing", label: "Pricing" },
+  { to: "/contact", label: "Contact" },
 ];
 
 export function SiteShell({ children }: { children: ReactNode }) {
