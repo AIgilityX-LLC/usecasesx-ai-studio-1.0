@@ -21,6 +21,7 @@ import { Route as AppAdminSubmissionsRouteImport } from './routes/_app.admin-sub
 import { Route as AppAdminWaitlistRouteImport } from './routes/_app.admin-waitlist'
 import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
 import { Route as AppAdvisorxRouteImport } from './routes/_app.advisorx'
+import { Route as AppAdvisoryRouteImport } from './routes/_app.advisory'
 import { Route as AppAiUseCaseStudioRouteImport } from './routes/_app.ai-use-case-studio'
 import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integration'
 import { Route as AppBlueprintRouteImport } from './routes/_app.blueprint'
@@ -154,6 +155,11 @@ const AppAdministrationRoute = AppAdministrationRouteImport.update({
 const AppAdvisorxRoute = AppAdvisorxRouteImport.update({
   id: '/advisorx',
   path: '/advisorx',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdvisoryRoute = AppAdvisoryRouteImport.update({
+  id: '/advisory',
+  path: '/advisory',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAiUseCaseStudioRoute = AppAiUseCaseStudioRouteImport.update({
@@ -559,6 +565,7 @@ export interface FileRoutesByFullPath {
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
   '/advisorx': typeof AppAdvisorxRoute
+  '/advisory': typeof AppAdvisoryRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
@@ -646,6 +653,7 @@ export interface FileRoutesByTo {
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
   '/advisorx': typeof AppAdvisorxRoute
+  '/advisory': typeof AppAdvisoryRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
@@ -735,6 +743,7 @@ export interface FileRoutesById {
   '/_app/admin-waitlist': typeof AppAdminWaitlistRoute
   '/_app/administration': typeof AppAdministrationRoute
   '/_app/advisorx': typeof AppAdvisorxRoute
+  '/_app/advisory': typeof AppAdvisoryRoute
   '/_app/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/_app/api-integration': typeof AppApiIntegrationRoute
   '/_app/blueprint': typeof AppBlueprintRoute
@@ -825,6 +834,7 @@ export interface FileRouteTypes {
     | '/admin-waitlist'
     | '/administration'
     | '/advisorx'
+    | '/advisory'
     | '/ai-use-case-studio'
     | '/api-integration'
     | '/blueprint'
@@ -912,6 +922,7 @@ export interface FileRouteTypes {
     | '/admin-waitlist'
     | '/administration'
     | '/advisorx'
+    | '/advisory'
     | '/ai-use-case-studio'
     | '/api-integration'
     | '/blueprint'
@@ -1000,6 +1011,7 @@ export interface FileRouteTypes {
     | '/_app/admin-waitlist'
     | '/_app/administration'
     | '/_app/advisorx'
+    | '/_app/advisory'
     | '/_app/ai-use-case-studio'
     | '/_app/api-integration'
     | '/_app/blueprint'
@@ -1178,6 +1190,13 @@ declare module '@tanstack/react-router' {
       path: '/advisorx'
       fullPath: '/advisorx'
       preLoaderRoute: typeof AppAdvisorxRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/advisory': {
+      id: '/_app/advisory'
+      path: '/advisory'
+      fullPath: '/advisory'
+      preLoaderRoute: typeof AppAdvisoryRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/ai-use-case-studio': {
@@ -1785,6 +1804,7 @@ interface AppRouteChildren {
   AppAdminWaitlistRoute: typeof AppAdminWaitlistRoute
   AppAdministrationRoute: typeof AppAdministrationRoute
   AppAdvisorxRoute: typeof AppAdvisorxRoute
+  AppAdvisoryRoute: typeof AppAdvisoryRoute
   AppAiUseCaseStudioRoute: typeof AppAiUseCaseStudioRoute
   AppApiIntegrationRoute: typeof AppApiIntegrationRoute
   AppBlueprintRoute: typeof AppBlueprintRoute
@@ -1840,6 +1860,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminWaitlistRoute: AppAdminWaitlistRoute,
   AppAdministrationRoute: AppAdministrationRoute,
   AppAdvisorxRoute: AppAdvisorxRoute,
+  AppAdvisoryRoute: AppAdvisoryRoute,
   AppAiUseCaseStudioRoute: AppAiUseCaseStudioRoute,
   AppApiIntegrationRoute: AppApiIntegrationRoute,
   AppBlueprintRoute: AppBlueprintRoute,
