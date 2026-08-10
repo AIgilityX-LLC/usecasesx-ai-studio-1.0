@@ -40,7 +40,7 @@ export const Route = createFileRoute("/_app/enterprise")({
       path: "/enterprise",
       title: "Enterprise Design Partner Programme — UseCasesX",
       description:
-        "A paid engagement for organisations standardising AI portfolio governance across entities. See what is live today, what is designed but not yet available, and how to apply.",
+        "A paid engagement for organisations standardising AI portfolio governance across entities. See what is live today, what is designed, and how to apply.",
       jsonLd: [
         breadcrumbJsonLd([
           { name: "Home", path: "/" },

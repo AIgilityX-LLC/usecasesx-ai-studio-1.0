@@ -16,7 +16,7 @@ export const Route = createFileRoute("/")({
   head: () => {
     const title = "UseCasesX™ — Discover, Design & Prioritize AI Use Cases";
     const description =
-      "Discover 180 provenance-labelled AI use cases, design them in AI Use Case Studio™, score feasibility and value, and manage a board-ready AI portfolio. Free Pro Founding Access until 31 Dec 2026.";
+      "Discover 180 provenance-labelled AI use cases, design and score them, and manage a board-ready AI portfolio. Pro Founding Access free until 31 Dec 2026.";
     return {
       meta: [
         { title },

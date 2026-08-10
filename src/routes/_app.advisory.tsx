@@ -52,7 +52,7 @@ export const Route = createFileRoute("/_app/advisory")({
       path: "/advisory",
       title: "AI Use Case Workshops & Advisory — UseCasesX",
       description:
-        "Run a facilitated AI discovery and value design workshop inside UseCasesX: capture opportunities, score them live, vote, decide and leave with a portfolio and an export pack.",
+        "Run a facilitated AI discovery and value design workshop inside UseCasesX: capture opportunities, score and vote live, and leave with a scored portfolio.",
       jsonLd: [
         breadcrumbJsonLd([
           { name: "Home", path: "/" },
