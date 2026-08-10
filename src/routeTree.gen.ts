@@ -16,6 +16,7 @@ import { Route as DemoLoginRouteImport } from './routes/demo-login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as AppAboutRouteImport } from './routes/_app.about'
 import { Route as AppAccountRouteImport } from './routes/_app.account'
 import { Route as AppAdminSubmissionsRouteImport } from './routes/_app.admin-submissions'
 import { Route as AppAdminWaitlistRouteImport } from './routes/_app.admin-waitlist'
@@ -132,6 +133,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppAboutRoute = AppAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppAccountRoute = AppAccountRouteImport.update({
   id: '/account',
@@ -566,6 +572,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/about': typeof AppAboutRoute
   '/account': typeof AppAccountRouteWithChildren
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
@@ -656,6 +663,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/about': typeof AppAboutRoute
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRoute
@@ -746,6 +754,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_app/about': typeof AppAboutRoute
   '/_app/account': typeof AppAccountRouteWithChildren
   '/_app/admin-submissions': typeof AppAdminSubmissionsRoute
   '/_app/admin-waitlist': typeof AppAdminWaitlistRoute
@@ -838,6 +847,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/about'
     | '/account'
     | '/admin-submissions'
     | '/admin-waitlist'
@@ -928,6 +938,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/about'
     | '/admin-submissions'
     | '/admin-waitlist'
     | '/administration'
@@ -1017,6 +1028,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/_app/about'
     | '/_app/account'
     | '/_app/admin-submissions'
     | '/_app/admin-waitlist'
@@ -1168,6 +1180,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_app/about': {
+      id: '/_app/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AppAboutRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/account': {
       id: '/_app/account'
@@ -1818,6 +1837,7 @@ const AppStudioRouteWithChildren = AppStudioRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
+  AppAboutRoute: typeof AppAboutRoute
   AppAccountRoute: typeof AppAccountRouteWithChildren
   AppAdminSubmissionsRoute: typeof AppAdminSubmissionsRoute
   AppAdminWaitlistRoute: typeof AppAdminWaitlistRoute
@@ -1875,6 +1895,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAboutRoute: AppAboutRoute,
   AppAccountRoute: AppAccountRouteWithChildren,
   AppAdminSubmissionsRoute: AppAdminSubmissionsRoute,
   AppAdminWaitlistRoute: AppAdminWaitlistRoute,
