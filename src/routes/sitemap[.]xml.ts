@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-const BASE_URL = "https://usecasesx.aigilityx.com";
+import { PUBLIC_INDEXABLE_PATHS, SITE_URL } from "@/lib/seo";
+
+const BASE_URL = SITE_URL;
 
 interface SitemapEntry {
   path: string;
@@ -9,28 +11,44 @@ interface SitemapEntry {
   priority?: string;
 }
 
-const entries: SitemapEntry[] = [
-  { path: "/", changefreq: "weekly", priority: "1.0" },
-  { path: "/pricing", changefreq: "weekly", priority: "0.9" },
-  { path: "/pro", changefreq: "weekly", priority: "0.9" },
-  { path: "/sarpi", changefreq: "monthly", priority: "0.7" },
-  { path: "/discover", changefreq: "monthly", priority: "0.7" },
-  { path: "/quick-wins", changefreq: "monthly", priority: "0.7" },
-  { path: "/roi-calculator", changefreq: "monthly", priority: "0.7" },
-  { path: "/repository", changefreq: "weekly", priority: "0.8" },
-  { path: "/patterns", changefreq: "monthly", priority: "0.6" },
-  { path: "/resources", changefreq: "monthly", priority: "0.6" },
-  { path: "/segments/sme", changefreq: "monthly", priority: "0.6" },
-  { path: "/segments/enterprise", changefreq: "monthly", priority: "0.6" },
-  { path: "/segments/government", changefreq: "monthly", priority: "0.6" },
-  { path: "/segments/defense", changefreq: "monthly", priority: "0.6" },
-  { path: "/segments/critical-infrastructure", changefreq: "monthly", priority: "0.6" },
-];
+/** Hand-tuned weights for the marketing and hub pages. */
+const PRIORITY: Record<string, { changefreq: SitemapEntry["changefreq"]; priority: string }> = {
+  "/": { changefreq: "weekly", priority: "1.0" },
+  "/repository": { changefreq: "daily", priority: "0.9" },
+  "/how-it-works": { changefreq: "monthly", priority: "0.9" },
+  "/editions": { changefreq: "monthly", priority: "0.9" },
+  "/pricing": { changefreq: "weekly", priority: "0.9" },
+  "/enterprise": { changefreq: "monthly", priority: "0.8" },
+  "/advisory": { changefreq: "monthly", priority: "0.8" },
+  "/contact": { changefreq: "monthly", priority: "0.8" },
+  "/about": { changefreq: "monthly", priority: "0.7" },
+  "/discover": { changefreq: "weekly", priority: "0.7" },
+  "/insights": { changefreq: "weekly", priority: "0.7" },
+};
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
+        const entries: SitemapEntry[] = PUBLIC_INDEXABLE_PATHS.map((path) => ({
+          path,
+          changefreq: PRIORITY[path]?.changefreq ?? "monthly",
+          priority: PRIORITY[path]?.priority ?? "0.6",
+        }));
+
+        // Published repository records are the bulk of the indexable surface.
+        try {
+          const { createPublishableServerClient } = await import(
+            "@/lib/sitemap-sources.server"
+          );
+          const slugs = await createPublishableServerClient();
+          for (const slug of slugs) {
+            entries.push({ path: `/use-cases/${slug}`, changefreq: "monthly", priority: "0.7" });
+          }
+        } catch (error) {
+          console.warn("[sitemap] dynamic use-case entries unavailable", error);
+        }
+
         const urls = entries.map((e) =>
           [
             `  <url>`,
