@@ -108,3 +108,59 @@ export const listDemoResetLogFn = createServerFn({ method: "POST" })
       return [];
     }
   });
+
+/** Record a guided story export attempt in the demo activity trail. */
+export const recordDemoStoryExportFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) =>
+    z
+      .object({
+        scenarioKey: z.string().min(1),
+        scenarioLabel: z.string().min(1),
+        templateVersion: z.string().min(1),
+        lineageCopies: z.number().int().min(0).max(10000),
+        status: z.enum(["exported", "failed"]).optional(),
+        error: z.string().max(500).optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { logDemoStoryExport } = await import("@/lib/demo/demo-scenarios.server");
+    const { data: profile } = await context.supabase
+      .from("profiles")
+      .select("email, full_name")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    await logDemoStoryExport({
+      actorId: context.userId,
+      actorLabel: profile?.full_name ?? profile?.email ?? null,
+      ...data,
+    });
+    return { recorded: true };
+  });
+
+/** Demo activity trail: resets and guided story exports. */
+export const listDemoActivityFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z.object({ limit: z.number().int().min(1).max(100).optional() }).parse(data ?? {}),
+  )
+  .handler(async ({ data, context }) => {
+    const { data: profile } = await context.supabase
+      .from("profiles")
+      .select("email")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    const { data: isAdmin } = await context.supabase.rpc("is_admin_tier", {
+      _user_id: context.userId,
+    });
+    const isDemoPersona = (profile?.email ?? "").toLowerCase().endsWith("@demo.usecasex.app");
+    if (!isAdmin && !isDemoPersona) return [];
+
+    const { listDemoActivity } = await import("@/lib/demo/demo-scenarios.server");
+    try {
+      return await listDemoActivity(data.limit ?? 25);
+    } catch {
+      return [];
+    }
+  });

@@ -14,8 +14,15 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DEMO_DISCLAIMER, DEMO_SCENARIOS, type DemoScenario } from "@/lib/demo/demo-scenarios";
 import { copyDemoScenarioFn, listMySampleCopiesFn } from "@/lib/demo/demo-scenarios.functions";
-import { exportDemoStoryPDF, type LineageEntry } from "@/lib/demo/demo-story-export";
+import { type LineageEntry } from "@/lib/demo/demo-story-export";
 import { DemoResetControl } from "@/components/demo/DemoResetControl";
+import { DemoActivityLog } from "@/components/demo/DemoActivityLog";
+import { Progress } from "@/components/ui/progress";
+import {
+  storyExportLabel,
+  useDemoStoryExport,
+  type StoryExportJob,
+} from "@/hooks/useDemoStoryExport";
 
 export const Route = createFileRoute("/_app/demo-scenarios")({
   head: () => ({
@@ -53,12 +60,16 @@ function ScenarioCard({
   onCopy,
   onExport,
   copying,
+  exportJob,
 }: {
   scenario: DemoScenario;
   onCopy: (key: string) => void;
   onExport: (scenario: DemoScenario) => void;
   copying: boolean;
+  exportJob: StoryExportJob;
 }) {
+  const exporting =
+    exportJob.phase !== "idle" && exportJob.phase !== "done" && exportJob.phase !== "failed";
   return (
     <Card className="flex h-full flex-col">
       <CardHeader>
@@ -128,11 +139,36 @@ function ScenarioCard({
             variant="outline"
             className="mt-2 w-full"
             onClick={() => onExport(scenario)}
+            disabled={exporting}
+            data-testid={`story-export-${scenario.key}`}
             aria-label={`Export the ${scenario.label} guided story as PDF`}
           >
-            <FileDown className="mr-2 h-4 w-4" />
-            Export guided story (PDF)
+            {exporting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <FileDown className="mr-2 h-4 w-4" />
+            )}
+            {exportJob.phase === "failed"
+              ? "Retry guided story export"
+              : "Export guided story (PDF)"}
           </Button>
+
+          {exportJob.phase !== "idle" && (
+            <div className="mt-2 space-y-1" data-testid={`story-export-status-${scenario.key}`}>
+              <Progress value={exportJob.progress} className="h-1.5" />
+              <p
+                role="status"
+                className={
+                  exportJob.phase === "failed"
+                    ? "text-xs text-destructive"
+                    : "text-xs text-muted-foreground"
+                }
+              >
+                {storyExportLabel(exportJob)}
+                {exportJob.attempt > 1 ? ` (attempt ${exportJob.attempt})` : ""}
+              </p>
+            </div>
+          )}
           <p className="mt-2 text-xs text-muted-foreground">
             Creates records you own, suffixed “(Sample)” and tagged with template lineage.
           </p>
@@ -153,6 +189,8 @@ function DemoScenariosPage() {
     queryFn: async () => (await listCopies()) as SampleCopy[],
   });
 
+  const storyExport = useDemoStoryExport((copiesQuery.data ?? []) as LineageEntry[]);
+
   const copyMutation = useMutation({
     mutationFn: (scenarioKey: string) => copyScenario({ data: { scenarioKey } }),
     onSuccess: (result) => {
@@ -166,8 +204,8 @@ function DemoScenariosPage() {
   });
 
   const handleExport = (scenario: DemoScenario) => {
-    exportDemoStoryPDF(scenario, (copiesQuery.data ?? []) as LineageEntry[]);
-    toast.success(`Exported the ${scenario.label} guided story`);
+    void storyExport.start(scenario);
+    toast.info(`Building the ${scenario.label} guided story in the background…`);
   };
 
   const handleCopy = (key: string) => {
@@ -193,6 +231,8 @@ function DemoScenariosPage() {
 
       <DemoResetControl />
 
+      <DemoActivityLog />
+
       <Tabs defaultValue="scenarios">
         <TabsList>
           <TabsTrigger value="scenarios">Scenarios</TabsTrigger>
@@ -208,6 +248,7 @@ function DemoScenariosPage() {
                 onCopy={handleCopy}
                 onExport={handleExport}
                 copying={copyMutation.isPending && pendingKey === scenario.key}
+                exportJob={storyExport.jobFor(scenario.key)}
               />
             ))}
           </div>

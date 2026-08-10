@@ -329,3 +329,44 @@ export async function listDemoResetLog(db: Db, limit = 10) {
   if (error) throw new Error(error.message);
   return data ?? [];
 }
+
+/** Record a guided story export in the demo activity trail. */
+export async function logDemoStoryExport(entry: {
+  actorId?: string | null;
+  actorLabel?: string | null;
+  scenarioKey: string;
+  scenarioLabel: string;
+  templateVersion: string;
+  lineageCopies: number;
+  status?: string;
+  error?: string | null;
+}) {
+  await supabaseAdmin.from("demo_reset_log").insert({
+    actor_id: entry.actorId ?? null,
+    actor_label: entry.actorLabel ?? null,
+    scope: "story_export",
+    scenario_key: entry.scenarioKey,
+    status: entry.status ?? "exported",
+    result: {
+      scenario_label: entry.scenarioLabel,
+      template_version: entry.templateVersion,
+      lineage_copies: entry.lineageCopies,
+      ...(entry.error ? { error: entry.error } : {}),
+    } as never,
+  });
+}
+
+/**
+ * Combined demo activity trail (resets + guided story exports), newest first.
+ * Uses the service-role client because the caller is already authorised in the
+ * server function; the table's RLS keeps it unreadable from the browser.
+ */
+export async function listDemoActivity(limit = 25) {
+  const { data, error } = await supabaseAdmin
+    .from("demo_reset_log")
+    .select("id, actor_label, scope, scenario_key, status, result, created_at")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
