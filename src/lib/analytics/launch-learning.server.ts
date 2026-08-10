@@ -40,10 +40,15 @@ export async function aggregateLaunchLearning(
       "week",
     ),
     inWindow(
-      supabase.from("v_ai_usage_weekly").select("task, status, calls, users, avg_duration_ms, week"),
+      supabase
+        .from("v_ai_usage_weekly")
+        .select("task, status, calls, users, avg_duration_ms, week"),
       "week",
     ),
-    inWindow(supabase.from("v_enterprise_interest_weekly").select("interest_area, leads, week"), "week"),
+    inWindow(
+      supabase.from("v_enterprise_interest_weekly").select("interest_area, leads, week"),
+      "week",
+    ),
     supabase
       .from("v_feedback_queue")
       .select("status, is_real_activity, created_at")
@@ -105,7 +110,10 @@ export async function aggregateLaunchLearning(
     zeroResultSearches: value.zero,
   }));
 
-  const aiTotals = new Map<string, { calls: number; errors: number; users: number; duration: number; weight: number }>();
+  const aiTotals = new Map<
+    string,
+    { calls: number; errors: number; users: number; duration: number; weight: number }
+  >();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   for (const row of (ai.data ?? []) as any[]) {
     const key = String(row.task ?? "unknown");

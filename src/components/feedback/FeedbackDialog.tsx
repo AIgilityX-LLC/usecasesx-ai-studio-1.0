@@ -118,8 +118,7 @@ export function FeedbackDialog({
         <DialogHeader>
           <DialogTitle>Send product feedback</DialogTitle>
           <DialogDescription>
-            Goes to the internal launch queue. We store the page you were on, not your work
-            content.
+            Goes to the internal launch queue. We store the page you were on, not your work content.
           </DialogDescription>
         </DialogHeader>
 

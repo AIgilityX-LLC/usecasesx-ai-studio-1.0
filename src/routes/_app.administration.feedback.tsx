@@ -77,8 +77,8 @@ function FeedbackQueue() {
       <header className="space-y-1">
         <h1 className="text-2xl font-semibold">Product feedback queue</h1>
         <p className="text-sm text-muted-foreground">
-          In-app feedback from Lite and Pro users. Demo and internal activity is excluded unless
-          you include it explicitly.
+          In-app feedback from Lite and Pro users. Demo and internal activity is excluded unless you
+          include it explicitly.
         </p>
       </header>
 

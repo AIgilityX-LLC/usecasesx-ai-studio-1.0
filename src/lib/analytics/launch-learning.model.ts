@@ -86,7 +86,8 @@ export function launchLearningToCsv(data: LaunchLearning): string {
   for (const row of data.funnel) {
     push("funnel", row.stage, "users", row.users);
     push("funnel", row.stage, "events", row.events);
-    if (row.conversionPercent != null) push("funnel", row.stage, "conversion_pct", row.conversionPercent);
+    if (row.conversionPercent != null)
+      push("funnel", row.stage, "conversion_pct", row.conversionPercent);
   }
   for (const row of data.topSearches) push("search_top", row.query, "searches", row.searches);
   for (const row of data.noResultSearches)

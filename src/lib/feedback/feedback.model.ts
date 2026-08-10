@@ -27,13 +27,7 @@ export const FEEDBACK_SEVERITIES = [
 
 export type FeedbackSeverity = (typeof FEEDBACK_SEVERITIES)[number]["value"];
 
-export const FEEDBACK_STATUSES = [
-  "new",
-  "triaged",
-  "in_progress",
-  "resolved",
-  "declined",
-] as const;
+export const FEEDBACK_STATUSES = ["new", "triaged", "in_progress", "resolved", "declined"] as const;
 
 export type FeedbackStatus = (typeof FEEDBACK_STATUSES)[number];
 
