@@ -58,6 +58,28 @@ async function persistEvent(cta: string, payload: Record<string, unknown> = {}):
       window.innerWidth,
       typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)").matches,
     ),
+    utm_source: attribution.utmSource,
+    utm_medium: attribution.utmMedium,
+    utm_campaign: attribution.utmCampaign,
+    referrer_host: attribution.referrerHost,
+    search_query: typeof payload.search_query === "string" ? payload.search_query : null,
+    result_count: typeof payload.result_count === "number" ? payload.result_count : null,
   });
   if (error) console.warn("[usecasex:analytics] event rejected", cta, error.message);
+}
+
+/**
+ * Records a repository search with its result count so the launch-learning
+ * view can surface top queries and no-result queries. The term is sanitized
+ * client-side: anything that could carry personal data is dropped.
+ */
+export function trackSearch(query: string, resultCount: number, sourcePage?: string): void {
+  if (typeof window === "undefined") return;
+  const safe = sanitizeSearchQuery(query);
+  if (!safe) return;
+  void persistEvent("search_used", {
+    search_query: safe,
+    result_count: Math.max(0, Math.trunc(resultCount)),
+    ...(sourcePage ? { source_page: sourcePage } : {}),
+  });
 }
