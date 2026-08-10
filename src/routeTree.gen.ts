@@ -70,6 +70,7 @@ import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.se
 import { Route as AppAccountTeamRouteImport } from './routes/_app.account.team'
 import { Route as AppAdministrationAnalyticsRouteImport } from './routes/_app.administration.analytics'
 import { Route as AppAdministrationFeedbackRouteImport } from './routes/_app.administration.feedback'
+import { Route as AppAdministrationLaunchLearningRouteImport } from './routes/_app.administration.launch-learning'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
 import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
@@ -415,6 +416,12 @@ const AppAdministrationFeedbackRoute =
     path: '/feedback',
     getParentRoute: () => AppAdministrationRoute,
   } as any)
+const AppAdministrationLaunchLearningRoute =
+  AppAdministrationLaunchLearningRouteImport.update({
+    id: '/launch-learning',
+    path: '/launch-learning',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
 const AppBoardsIndexRoute = AppBoardsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -681,6 +688,7 @@ export interface FileRoutesByFullPath {
   '/account/team': typeof AppAccountTeamRoute
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
+  '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
   '/collections/$slug': typeof AppCollectionsSlugRoute
@@ -779,6 +787,7 @@ export interface FileRoutesByTo {
   '/account/team': typeof AppAccountTeamRoute
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
+  '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
   '/collections/$slug': typeof AppCollectionsSlugRoute
@@ -881,6 +890,7 @@ export interface FileRoutesById {
   '/_app/account/team': typeof AppAccountTeamRoute
   '/_app/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/_app/administration/feedback': typeof AppAdministrationFeedbackRoute
+  '/_app/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/boards/collections': typeof AppBoardsCollectionsRoute
   '/_app/collections/$slug': typeof AppCollectionsSlugRoute
@@ -983,6 +993,7 @@ export interface FileRouteTypes {
     | '/account/team'
     | '/administration/analytics'
     | '/administration/feedback'
+    | '/administration/launch-learning'
     | '/boards/$boardId'
     | '/boards/collections'
     | '/collections/$slug'
@@ -1081,6 +1092,7 @@ export interface FileRouteTypes {
     | '/account/team'
     | '/administration/analytics'
     | '/administration/feedback'
+    | '/administration/launch-learning'
     | '/boards/$boardId'
     | '/boards/collections'
     | '/collections/$slug'
@@ -1182,6 +1194,7 @@ export interface FileRouteTypes {
     | '/_app/account/team'
     | '/_app/administration/analytics'
     | '/_app/administration/feedback'
+    | '/_app/administration/launch-learning'
     | '/_app/boards/$boardId'
     | '/_app/boards/collections'
     | '/_app/collections/$slug'
@@ -1670,6 +1683,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdministrationFeedbackRouteImport
       parentRoute: typeof AppAdministrationRoute
     }
+    '/_app/administration/launch-learning': {
+      id: '/_app/administration/launch-learning'
+      path: '/launch-learning'
+      fullPath: '/administration/launch-learning'
+      preLoaderRoute: typeof AppAdministrationLaunchLearningRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/boards/': {
       id: '/_app/boards/'
       path: '/'
@@ -1960,11 +1980,13 @@ const AppAccountRouteWithChildren = AppAccountRoute._addFileChildren(
 interface AppAdministrationRouteChildren {
   AppAdministrationAnalyticsRoute: typeof AppAdministrationAnalyticsRoute
   AppAdministrationFeedbackRoute: typeof AppAdministrationFeedbackRoute
+  AppAdministrationLaunchLearningRoute: typeof AppAdministrationLaunchLearningRoute
 }
 
 const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationAnalyticsRoute: AppAdministrationAnalyticsRoute,
   AppAdministrationFeedbackRoute: AppAdministrationFeedbackRoute,
+  AppAdministrationLaunchLearningRoute: AppAdministrationLaunchLearningRoute,
 }
 
 const AppAdministrationRouteWithChildren =
