@@ -42,18 +42,18 @@ export interface CtaAnalytics {
   byCta: { cta: string; stage: FunnelStage; count: number }[];
 }
 
-function emptyRow(key: string): FunnelRow {
+export function emptyRow(key: string): FunnelRow {
   return { key, awareness: 0, consideration: 0, intent: 0, conversion: 0, total: 0 };
 }
 
-function bump(map: Map<string, FunnelRow>, key: string, stage: FunnelStage) {
+export function bump(map: Map<string, FunnelRow>, key: string, stage: FunnelStage) {
   const row = map.get(key) ?? emptyRow(key);
   row[stage] += 1;
   row.total += 1;
   map.set(key, row);
 }
 
-function sorted(map: Map<string, FunnelRow>, byKey = false): FunnelRow[] {
+export function sorted(map: Map<string, FunnelRow>, byKey = false): FunnelRow[] {
   const rows = Array.from(map.values());
   return byKey
     ? rows.sort((a, b) => a.key.localeCompare(b.key))

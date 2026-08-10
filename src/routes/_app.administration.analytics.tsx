@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getCtaAnalytics } from "@/lib/cta-analytics.functions";
-import { ctaAnalyticsToCsv, type FunnelRow } from "@/lib/cta-analytics.server";
+import { ctaAnalyticsToCsv, type FunnelRow } from "@/lib/cta-analytics.model";
 import { RequireRoles } from "@/components/RequireRoles";
 import { PLATFORM_ADMIN_ROLES } from "@/lib/admin/platform-admin";
 import { Button } from "@/components/ui/button";
