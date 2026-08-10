@@ -20,8 +20,6 @@ const TOP_NAV: { to: string; label: string }[] = [
   { to: "/editions", label: "Editions" },
   { to: "/advisory", label: "Workshops" },
   { to: "/enterprise", label: "Enterprise" },
-  { to: "/insights", label: "Insights" },
-  { to: "/pricing", label: "Pricing" },
   { to: "/contact", label: "Contact" },
 ];
 
