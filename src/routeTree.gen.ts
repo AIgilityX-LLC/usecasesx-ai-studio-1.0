@@ -33,6 +33,7 @@ import { Route as AppDecisionRouteImport } from './routes/_app.decision'
 import { Route as AppDemoScenariosRouteImport } from './routes/_app.demo-scenarios'
 import { Route as AppDiscoverRouteImport } from './routes/_app.discover'
 import { Route as AppEditionsRouteImport } from './routes/_app.editions'
+import { Route as AppEnterpriseRouteImport } from './routes/_app.enterprise'
 import { Route as AppEntitlementRouteImport } from './routes/_app.entitlement'
 import { Route as AppFeasibilityRouteImport } from './routes/_app.feasibility'
 import { Route as AppGovernanceRouteImport } from './routes/_app.governance'
@@ -215,6 +216,11 @@ const AppDiscoverRoute = AppDiscoverRouteImport.update({
 const AppEditionsRoute = AppEditionsRouteImport.update({
   id: '/editions',
   path: '/editions',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEnterpriseRoute = AppEnterpriseRouteImport.update({
+  id: '/enterprise',
+  path: '/enterprise',
   getParentRoute: () => AppRoute,
 } as any)
 const AppEntitlementRoute = AppEntitlementRouteImport.update({
@@ -577,6 +583,7 @@ export interface FileRoutesByFullPath {
   '/demo-scenarios': typeof AppDemoScenariosRoute
   '/discover': typeof AppDiscoverRoute
   '/editions': typeof AppEditionsRoute
+  '/enterprise': typeof AppEnterpriseRoute
   '/entitlement': typeof AppEntitlementRoute
   '/feasibility': typeof AppFeasibilityRoute
   '/governance': typeof AppGovernanceRoute
@@ -664,6 +671,7 @@ export interface FileRoutesByTo {
   '/demo-scenarios': typeof AppDemoScenariosRoute
   '/discover': typeof AppDiscoverRoute
   '/editions': typeof AppEditionsRoute
+  '/enterprise': typeof AppEnterpriseRoute
   '/entitlement': typeof AppEntitlementRoute
   '/feasibility': typeof AppFeasibilityRoute
   '/governance': typeof AppGovernanceRoute
@@ -755,6 +763,7 @@ export interface FileRoutesById {
   '/_app/demo-scenarios': typeof AppDemoScenariosRoute
   '/_app/discover': typeof AppDiscoverRoute
   '/_app/editions': typeof AppEditionsRoute
+  '/_app/enterprise': typeof AppEnterpriseRoute
   '/_app/entitlement': typeof AppEntitlementRoute
   '/_app/feasibility': typeof AppFeasibilityRoute
   '/_app/governance': typeof AppGovernanceRoute
@@ -846,6 +855,7 @@ export interface FileRouteTypes {
     | '/demo-scenarios'
     | '/discover'
     | '/editions'
+    | '/enterprise'
     | '/entitlement'
     | '/feasibility'
     | '/governance'
@@ -933,6 +943,7 @@ export interface FileRouteTypes {
     | '/demo-scenarios'
     | '/discover'
     | '/editions'
+    | '/enterprise'
     | '/entitlement'
     | '/feasibility'
     | '/governance'
@@ -1023,6 +1034,7 @@ export interface FileRouteTypes {
     | '/_app/demo-scenarios'
     | '/_app/discover'
     | '/_app/editions'
+    | '/_app/enterprise'
     | '/_app/entitlement'
     | '/_app/feasibility'
     | '/_app/governance'
@@ -1274,6 +1286,13 @@ declare module '@tanstack/react-router' {
       path: '/editions'
       fullPath: '/editions'
       preLoaderRoute: typeof AppEditionsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/enterprise': {
+      id: '/_app/enterprise'
+      path: '/enterprise'
+      fullPath: '/enterprise'
+      preLoaderRoute: typeof AppEnterpriseRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/entitlement': {
@@ -1816,6 +1835,7 @@ interface AppRouteChildren {
   AppDemoScenariosRoute: typeof AppDemoScenariosRoute
   AppDiscoverRoute: typeof AppDiscoverRoute
   AppEditionsRoute: typeof AppEditionsRoute
+  AppEnterpriseRoute: typeof AppEnterpriseRoute
   AppEntitlementRoute: typeof AppEntitlementRoute
   AppFeasibilityRoute: typeof AppFeasibilityRoute
   AppGovernanceRoute: typeof AppGovernanceRoute
@@ -1872,6 +1892,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDemoScenariosRoute: AppDemoScenariosRoute,
   AppDiscoverRoute: AppDiscoverRoute,
   AppEditionsRoute: AppEditionsRoute,
+  AppEnterpriseRoute: AppEnterpriseRoute,
   AppEntitlementRoute: AppEntitlementRoute,
   AppFeasibilityRoute: AppFeasibilityRoute,
   AppGovernanceRoute: AppGovernanceRoute,
