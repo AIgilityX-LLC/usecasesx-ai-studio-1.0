@@ -11,9 +11,9 @@ import type {} from "@tanstack/react-start";
 export const Route = createFileRoute("/og/use-case/$slug")({
   server: {
     handlers: {
-      GET: async ({ params }) => {
+      GET: async ({ params, request }) => {
         const { renderOgImage } = await import("@/lib/og-image.server");
-        return renderOgImage(params.slug);
+        return renderOgImage(params.slug, new URL(request.url).origin);
       },
     },
   },
