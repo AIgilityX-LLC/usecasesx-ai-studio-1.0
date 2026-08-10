@@ -126,8 +126,18 @@ async function purgeWorkspace(workspaceId: string) {
   await supabaseAdmin.from("generated_reports").delete().eq("workspace_id", workspaceId);
 }
 
-/** Idempotent reset of every labelled demo template workspace. */
-export async function resetDemoScenarioTemplates() {
+export interface ResetScenarioOptions {
+  /** Restrict the reset to these `demo_scenario_key` values. Empty = all. */
+  scenarioKeys?: string[];
+}
+
+/**
+ * Idempotent reset of the labelled demo template workspaces.
+ *
+ * Scope is always a workspace resolved by `demo_scenario_key` and flagged
+ * `is_demo_template`, so no tenant workspace can ever be touched.
+ */
+export async function resetDemoScenarioTemplates(options: ResetScenarioOptions = {}) {
   const ownerId = await resolveTemplateOwner();
   if (!ownerId) {
     return {
@@ -137,9 +147,13 @@ export async function resetDemoScenarioTemplates() {
     };
   }
 
+  const wanted = new Set((options.scenarioKeys ?? []).filter(Boolean));
+  const scenarios = wanted.size ? DEMO_SCENARIOS.filter((s) => wanted.has(s.key)) : DEMO_SCENARIOS;
+  if (!scenarios.length) throw new Error("No matching demonstration scenario.");
+
   const results: Array<{ key: string; label: string; status: string; useCases: number }> = [];
 
-  for (const scenario of DEMO_SCENARIOS) {
+  for (const scenario of scenarios) {
     const orgId = await ensureDemoOrg(scenario);
     const workspaceId = await ensureTemplateWorkspace(scenario, orgId, ownerId);
     await purgeWorkspace(workspaceId);
@@ -158,6 +172,7 @@ export async function resetDemoScenarioTemplates() {
   }
 
   return { resetAt: new Date().toISOString(), results };
+
 }
 
 /** Copy a scenario into the caller's own workspace as user-owned records. */
