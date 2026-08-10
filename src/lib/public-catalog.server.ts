@@ -33,10 +33,10 @@ export interface PublicCollectionPage extends PublicCollectionSummary {
   items: { slug: string; title: string; summary: string | null }[];
 }
 
-const JOIN: Record<CategoryType, { table: string; ref: string }> = {
+const JOIN = {
   industry: { table: "use_case_industries", ref: "industries" },
   capability: { table: "use_case_capabilities", ref: "ai_capabilities" },
-};
+} as const satisfies Record<CategoryType, { table: string; ref: string }>;
 
 function anonClient() {
   const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"]!;
