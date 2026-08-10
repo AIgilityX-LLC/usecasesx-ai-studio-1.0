@@ -80,6 +80,7 @@ import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.por
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
 import { Route as AppWorkshopsIndexRouteImport } from './routes/_app.workshops.index'
 import { Route as AppWorkshopsIdRouteImport } from './routes/_app.workshops.$id'
+import { Route as OgUseCaseSlugRouteImport } from './routes/og.use-case.$slug'
 import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
 import { Route as AppWorkshopsJoinTokenRouteImport } from './routes/_app.workshops.join.$token'
 import { Route as ApiPublicHooksErpReconciliationRouteImport } from './routes/api/public/hooks/erp-reconciliation'
@@ -455,6 +456,11 @@ const AppWorkshopsIdRoute = AppWorkshopsIdRouteImport.update({
   path: '/workshops/$id',
   getParentRoute: () => AppRoute,
 } as any)
+const OgUseCaseSlugRoute = OgUseCaseSlugRouteImport.update({
+  id: '/og/use-case/$slug',
+  path: '/og/use-case/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppCyberxC3gIntakeRoute = AppCyberxC3gIntakeRouteImport.update({
   id: '/cyberx/c3g/intake',
   path: '/cyberx/c3g/intake',
@@ -638,6 +644,7 @@ export interface FileRoutesByFullPath {
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/workshops/$id': typeof AppWorkshopsIdRoute
+  '/og/use-case/$slug': typeof OgUseCaseSlugRoute
   '/account/': typeof AppAccountIndexRoute
   '/boards/': typeof AppBoardsIndexRoute
   '/opportunities/': typeof AppOpportunitiesIndexRoute
@@ -728,6 +735,7 @@ export interface FileRoutesByTo {
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/workshops/$id': typeof AppWorkshopsIdRoute
+  '/og/use-case/$slug': typeof OgUseCaseSlugRoute
   '/account': typeof AppAccountIndexRoute
   '/boards': typeof AppBoardsIndexRoute
   '/opportunities': typeof AppOpportunitiesIndexRoute
@@ -822,6 +830,7 @@ export interface FileRoutesById {
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/_app/workshops/$id': typeof AppWorkshopsIdRoute
+  '/og/use-case/$slug': typeof OgUseCaseSlugRoute
   '/_app/account/': typeof AppAccountIndexRoute
   '/_app/boards/': typeof AppBoardsIndexRoute
   '/_app/opportunities/': typeof AppOpportunitiesIndexRoute
@@ -916,6 +925,7 @@ export interface FileRouteTypes {
     | '/studio/portfolio'
     | '/use-cases/$slug'
     | '/workshops/$id'
+    | '/og/use-case/$slug'
     | '/account/'
     | '/boards/'
     | '/opportunities/'
@@ -1006,6 +1016,7 @@ export interface FileRouteTypes {
     | '/studio/portfolio'
     | '/use-cases/$slug'
     | '/workshops/$id'
+    | '/og/use-case/$slug'
     | '/account'
     | '/boards'
     | '/opportunities'
@@ -1099,6 +1110,7 @@ export interface FileRouteTypes {
     | '/_app/studio/portfolio'
     | '/_app/use-cases/$slug'
     | '/_app/workshops/$id'
+    | '/og/use-case/$slug'
     | '/_app/account/'
     | '/_app/boards/'
     | '/_app/opportunities/'
@@ -1135,6 +1147,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   CTokenRoute: typeof CTokenRoute
   PTokenRoute: typeof PTokenRoute
+  OgUseCaseSlugRoute: typeof OgUseCaseSlugRoute
   ApiPublicHooksErpReconciliationRoute: typeof ApiPublicHooksErpReconciliationRoute
   ApiPublicHooksEvidenceCleanupRoute: typeof ApiPublicHooksEvidenceCleanupRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
@@ -1641,6 +1654,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWorkshopsIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/og/use-case/$slug': {
+      id: '/og/use-case/$slug'
+      path: '/og/use-case/$slug'
+      fullPath: '/og/use-case/$slug'
+      preLoaderRoute: typeof OgUseCaseSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app/cyberx/c3g/intake': {
       id: '/_app/cyberx/c3g/intake'
       path: '/cyberx/c3g/intake'
@@ -1999,6 +2019,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   CTokenRoute: CTokenRoute,
   PTokenRoute: PTokenRoute,
+  OgUseCaseSlugRoute: OgUseCaseSlugRoute,
   ApiPublicHooksErpReconciliationRoute: ApiPublicHooksErpReconciliationRoute,
   ApiPublicHooksEvidenceCleanupRoute: ApiPublicHooksEvidenceCleanupRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
@@ -2008,13 +2029,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
