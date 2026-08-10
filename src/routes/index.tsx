@@ -903,47 +903,44 @@ function SovereignSection() {
   );
 }
 
-/* 11 — TESTIMONIALS */
-function TestimonialsSection() {
-  const items = [
-    {
-      quote:
-        "UseCasesX™ became our single source of truth for AI opportunities across the ministry.",
-      who: "Director of AI · Government Digital Agency",
-    },
-    {
-      quote: "We replaced six PowerPoint backlogs with one scored portfolio in PortfolioX™.",
-      who: "CDO · Tier-1 Bank",
-    },
-    {
-      quote:
-        "The sovereign deployment model let us run UseCasesX™ inside our air-gapped environment.",
-      who: "CIO · Critical Infrastructure Operator",
-    },
-  ];
+/* 11 — TRUST SIGNALS (verifiable statements only) */
+function TrustSection() {
   return (
     <section className="border-b border-border bg-background">
       <div className="mx-auto max-w-[1400px] px-6 py-20">
         <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
-          Customer voices
+          What we can evidence
         </div>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          Trusted across regulated industries.
+          Claims you can check inside the product.
         </h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Placeholder testimonials — to be replaced with named reference customers post-beta.
+        <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
+          We are pre-launch, so there are no customer logos, certifications or adoption numbers to
+          show — and we will not invent any. These are statements you can verify by using the
+          platform.
         </p>
         <div className="mt-10 grid gap-4 lg:grid-cols-3">
-          {items.map((i) => (
-            <figure key={i.who} className="rounded-xl border border-border bg-card p-6">
-              <blockquote className="text-base text-foreground">“{i.quote}”</blockquote>
-              <figcaption className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                — {i.who}
-              </figcaption>
-            </figure>
+          {TRUST_FACTS.slice(0, 6).map((fact) => (
+            <article key={fact.title} className="rounded-xl border border-border bg-card p-6">
+              <h3 className="text-base font-bold text-foreground">{fact.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{fact.body}</p>
+            </article>
           ))}
+        </div>
+        <div className="mt-8">
+          <Link
+            to="/about"
+            data-analytics-id="cta-landing-trust"
+            onClick={() =>
+              trackCTAEvent("cta_clicked", { location: "landing-trust", target_route: "/about" })
+            }
+            className="inline-flex items-center rounded-md border border-border px-5 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
+          >
+            Read about & trust →
+          </Link>
         </div>
       </div>
     </section>
   );
 }
+
