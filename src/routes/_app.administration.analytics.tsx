@@ -209,7 +209,7 @@ function AnalyticsDashboard() {
 
 function AnalyticsRoute() {
   return (
-    <RequireRoles roles={PLATFORM_ADMIN_ROLES}>
+    <RequireRoles anyOf={PLATFORM_ADMIN_ROLES}>
       <AnalyticsDashboard />
     </RequireRoles>
   );
