@@ -166,22 +166,17 @@ export async function renderOgImage(slug: string, origin: string): Promise<Respo
   };
 
   const fonts = await loadFonts(origin);
-  const svg = await satori(
-    ogTemplateTree(data) as unknown as Parameters<typeof satori>[0],
-    {
-      width: CARD_WIDTH,
-      height: CARD_HEIGHT,
-      fonts: [
-        { name: "OgSans", data: fonts.regular, weight: 400, style: "normal" },
-        { name: "OgSans", data: fonts.bold, weight: 700, style: "normal" },
-      ],
-    },
-  );
+  const svg = await satori(ogTemplateTree(data) as unknown as Parameters<typeof satori>[0], {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
+    fonts: [
+      { name: "OgSans", data: fonts.regular, weight: 400, style: "normal" },
+      { name: "OgSans", data: fonts.bold, weight: 700, style: "normal" },
+    ],
+  });
 
   const { Resvg } = await loadResvg(origin);
-  const png = new Resvg(svg, { fitTo: { mode: "width", value: CARD_WIDTH } })
-    .render()
-    .asPng();
+  const png = new Resvg(svg, { fitTo: { mode: "width", value: CARD_WIDTH } }).render().asPng();
 
   return new Response(png as unknown as BodyInit, {
     headers: {

@@ -35,7 +35,10 @@ export const Route = createFileRoute("/_app/categories/$type/$slug")({
     const type = parseType(params.type);
     if (!loaderData || !type) {
       return {
-        meta: [{ title: "Category not found — UseCasesX™" }, { name: "robots", content: "noindex" }],
+        meta: [
+          { title: "Category not found — UseCasesX™" },
+          { name: "robots", content: "noindex" },
+        ],
       };
     }
     const label = LABEL[type];
@@ -68,7 +71,9 @@ export const Route = createFileRoute("/_app/categories/$type/$slug")({
   },
   component: CategoryPage,
   notFoundComponent: () => (
-    <div className="p-12 text-center text-muted-foreground">This category has no published use cases.</div>
+    <div className="p-12 text-center text-muted-foreground">
+      This category has no published use cases.
+    </div>
   ),
 });
 

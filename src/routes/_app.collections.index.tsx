@@ -37,7 +37,9 @@ function CollectionsIndex() {
       />
       <div className="mx-auto w-full max-w-5xl space-y-4 px-4 py-10">
         {data.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No public collections have been published yet.</p>
+          <p className="text-sm text-muted-foreground">
+            No public collections have been published yet.
+          </p>
         ) : (
           data.map((collection) => (
             <Card key={collection.slug}>

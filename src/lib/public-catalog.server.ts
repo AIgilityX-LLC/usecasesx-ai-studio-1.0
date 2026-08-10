@@ -53,8 +53,10 @@ export async function readCategories(type: CategoryType): Promise<CategoryRef[]>
   const sb = anonClient();
   const { data, error } = await sb
     .from(join.table)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .select(`use_case_id, ${join.ref}!inner(slug, name), use_cases!inner(status, visibility)` as any)
+
+    .select(
+      `use_case_id, ${join.ref}!inner(slug, name), use_cases!inner(status, visibility)` as any,
+    )
     .eq("use_cases.status", "published")
     .in("use_cases.visibility", ["free_lite", "both"]);
   if (error) throw new Error(error.message);

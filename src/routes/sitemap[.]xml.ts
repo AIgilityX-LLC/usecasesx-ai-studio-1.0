@@ -49,9 +49,8 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         // Category and public-collection hubs are indexable landing pages.
         try {
-          const { readCategories, readPublicCollections } = await import(
-            "@/lib/public-catalog.server"
-          );
+          const { readCategories, readPublicCollections } =
+            await import("@/lib/public-catalog.server");
           const [industries, capabilities, collections] = await Promise.all([
             readCategories("industry"),
             readCategories("capability"),

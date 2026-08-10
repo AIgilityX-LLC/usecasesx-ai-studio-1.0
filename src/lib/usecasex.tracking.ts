@@ -27,7 +27,10 @@ export function trackCTAEvent(cta: string, payload?: Record<string, unknown>): v
 }
 
 /** Coarse device class derived from viewport width and touch capability. */
-export function detectDevice(width: number, coarsePointer: boolean): "desktop" | "tablet" | "mobile" {
+export function detectDevice(
+  width: number,
+  coarsePointer: boolean,
+): "desktop" | "tablet" | "mobile" {
   if (width < 640) return "mobile";
   if (width < 1024 || coarsePointer) return "tablet";
   return "desktop";
