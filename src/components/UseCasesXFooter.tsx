@@ -46,14 +46,17 @@ export function UseCasesXFooter() {
           ]}
         />
         <FooterCol
-          title="Integrations"
+          title="Company"
           items={[
-            { l: "SARPI™", to: "/sarpi" },
-            { l: "AdvisorX™", to: "/advisorx" },
-            { l: "CyberX C3G™", to: "/cyberx/c3g/intake" },
-            { l: "API Integration", to: "/api-integration" },
+            { l: "How it works", to: "/how-it-works" },
+            { l: "Editions & pricing", to: "/editions" },
+            { l: "Workshops & advisory", to: "/advisory" },
+            { l: "Enterprise Design Partner", to: "/enterprise" },
+            { l: "About & trust", to: "/about" },
+            { l: "Contact & demo", to: "/contact" },
           ]}
         />
+
       </div>
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3 px-6 py-4 text-[11px] text-muted-foreground">
