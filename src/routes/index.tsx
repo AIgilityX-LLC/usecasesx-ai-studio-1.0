@@ -13,39 +13,39 @@ import sovereignImg from "@/assets/landing-sovereign.jpg";
 import aboutImg from "@/assets/landing-about.jpg";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "AIgilityX AI Use Case Studio™ — Build a Validated AI Use Case" },
-      {
-        name: "description",
-        content:
-          "Build a validated AI use case before you spend a dollar. Discover, design, validate, govern, and scale AI initiatives with AIgilityX.",
-      },
-      {
-        property: "og:title",
-        content: "AIgilityX AI Use Case Studio™ — Build a Validated AI Use Case",
-      },
-      {
-        property: "og:description",
-        content:
-          "Build a validated AI use case before you spend a dollar. Discover, design, validate, govern, and scale AI initiatives with AIgilityX.",
-      },
-      { property: "og:url", content: "https://usecasesx.aigilityx.com/" },
-      { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "UseCasesX™ by AIgilityX™" },
-      { name: "twitter:card", content: "summary_large_image" },
-      {
-        name: "twitter:title",
-        content: "AIgilityX AI Use Case Studio™ — Build a Validated AI Use Case",
-      },
-      {
-        name: "twitter:description",
-        content:
-          "Build a validated AI use case before you spend a dollar. Discover, design, validate, govern, and scale AI initiatives with AIgilityX.",
-      },
-    ],
-    links: [{ rel: "canonical", href: "https://usecasesx.aigilityx.com/" }],
-  }),
+  head: () => {
+    const title = "UseCasesX™ — Discover, Design & Prioritize AI Use Cases";
+    const description =
+      "Discover 180 provenance-labelled AI use cases, design them in AI Use Case Studio™, score feasibility and value, and manage a board-ready AI portfolio. Free Pro Founding Access until 31 Dec 2026.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { name: "robots", content: "index, follow" },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: "https://usecasesx.aigilityx.com/" },
+        { property: "og:type", content: "website" },
+        { property: "og:site_name", content: "UseCasesX™ by AIgilityX™" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+      ],
+      links: [{ rel: "canonical", href: "https://usecasesx.aigilityx.com/" }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "UseCasesX™ by AIgilityX™",
+            url: "https://usecasesx.aigilityx.com/",
+            description,
+          }),
+        },
+      ],
+    };
+  },
   component: LandingPage,
 });
 
