@@ -61,6 +61,7 @@ import { Route as AppRoiCalculatorRouteImport } from './routes/_app.roi-calculat
 import { Route as AppSarpiRouteImport } from './routes/_app.sarpi'
 import { Route as AppStudioRouteImport } from './routes/_app.studio'
 import { Route as AppSubmitRouteImport } from './routes/_app.submit'
+import { Route as AppSupportRouteImport } from './routes/_app.support'
 import { Route as CTokenRouteImport } from './routes/c.$token'
 import { Route as PTokenRouteImport } from './routes/p.$token'
 import { Route as AppAccountIndexRouteImport } from './routes/_app.account.index'
@@ -68,6 +69,8 @@ import { Route as AppAccountOrganizationRouteImport } from './routes/_app.accoun
 import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.security'
 import { Route as AppAccountTeamRouteImport } from './routes/_app.account.team'
 import { Route as AppAdministrationAnalyticsRouteImport } from './routes/_app.administration.analytics'
+import { Route as AppAdministrationFeedbackRouteImport } from './routes/_app.administration.feedback'
+import { Route as AppAdministrationLaunchLearningRouteImport } from './routes/_app.administration.launch-learning'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
 import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.collections'
@@ -366,6 +369,11 @@ const AppSubmitRoute = AppSubmitRouteImport.update({
   path: '/submit',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSupportRoute = AppSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => AppRoute,
+} as any)
 const CTokenRoute = CTokenRouteImport.update({
   id: '/c/$token',
   path: '/c/$token',
@@ -400,6 +408,18 @@ const AppAdministrationAnalyticsRoute =
   AppAdministrationAnalyticsRouteImport.update({
     id: '/analytics',
     path: '/analytics',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
+const AppAdministrationFeedbackRoute =
+  AppAdministrationFeedbackRouteImport.update({
+    id: '/feedback',
+    path: '/feedback',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
+const AppAdministrationLaunchLearningRoute =
+  AppAdministrationLaunchLearningRouteImport.update({
+    id: '/launch-learning',
+    path: '/launch-learning',
     getParentRoute: () => AppAdministrationRoute,
   } as any)
 const AppBoardsIndexRoute = AppBoardsIndexRouteImport.update({
@@ -660,12 +680,15 @@ export interface FileRoutesByFullPath {
   '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
+  '/support': typeof AppSupportRoute
   '/c/$token': typeof CTokenRoute
   '/p/$token': typeof PTokenRoute
   '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
   '/account/team': typeof AppAccountTeamRoute
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
+  '/administration/feedback': typeof AppAdministrationFeedbackRoute
+  '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
   '/collections/$slug': typeof AppCollectionsSlugRoute
@@ -756,12 +779,15 @@ export interface FileRoutesByTo {
   '/sarpi': typeof AppSarpiRoute
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
+  '/support': typeof AppSupportRoute
   '/c/$token': typeof CTokenRoute
   '/p/$token': typeof PTokenRoute
   '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
   '/account/team': typeof AppAccountTeamRoute
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
+  '/administration/feedback': typeof AppAdministrationFeedbackRoute
+  '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
   '/collections/$slug': typeof AppCollectionsSlugRoute
@@ -856,12 +882,15 @@ export interface FileRoutesById {
   '/_app/sarpi': typeof AppSarpiRoute
   '/_app/studio': typeof AppStudioRouteWithChildren
   '/_app/submit': typeof AppSubmitRoute
+  '/_app/support': typeof AppSupportRoute
   '/c/$token': typeof CTokenRoute
   '/p/$token': typeof PTokenRoute
   '/_app/account/organization': typeof AppAccountOrganizationRoute
   '/_app/account/security': typeof AppAccountSecurityRoute
   '/_app/account/team': typeof AppAccountTeamRoute
   '/_app/administration/analytics': typeof AppAdministrationAnalyticsRoute
+  '/_app/administration/feedback': typeof AppAdministrationFeedbackRoute
+  '/_app/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/boards/collections': typeof AppBoardsCollectionsRoute
   '/_app/collections/$slug': typeof AppCollectionsSlugRoute
@@ -956,12 +985,15 @@ export interface FileRouteTypes {
     | '/sarpi'
     | '/studio'
     | '/submit'
+    | '/support'
     | '/c/$token'
     | '/p/$token'
     | '/account/organization'
     | '/account/security'
     | '/account/team'
     | '/administration/analytics'
+    | '/administration/feedback'
+    | '/administration/launch-learning'
     | '/boards/$boardId'
     | '/boards/collections'
     | '/collections/$slug'
@@ -1052,12 +1084,15 @@ export interface FileRouteTypes {
     | '/sarpi'
     | '/studio'
     | '/submit'
+    | '/support'
     | '/c/$token'
     | '/p/$token'
     | '/account/organization'
     | '/account/security'
     | '/account/team'
     | '/administration/analytics'
+    | '/administration/feedback'
+    | '/administration/launch-learning'
     | '/boards/$boardId'
     | '/boards/collections'
     | '/collections/$slug'
@@ -1151,12 +1186,15 @@ export interface FileRouteTypes {
     | '/_app/sarpi'
     | '/_app/studio'
     | '/_app/submit'
+    | '/_app/support'
     | '/c/$token'
     | '/p/$token'
     | '/_app/account/organization'
     | '/_app/account/security'
     | '/_app/account/team'
     | '/_app/administration/analytics'
+    | '/_app/administration/feedback'
+    | '/_app/administration/launch-learning'
     | '/_app/boards/$boardId'
     | '/_app/boards/collections'
     | '/_app/collections/$slug'
@@ -1582,6 +1620,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSubmitRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/support': {
+      id: '/_app/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof AppSupportRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/c/$token': {
       id: '/c/$token'
       path: '/c/$token'
@@ -1629,6 +1674,20 @@ declare module '@tanstack/react-router' {
       path: '/analytics'
       fullPath: '/administration/analytics'
       preLoaderRoute: typeof AppAdministrationAnalyticsRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
+    '/_app/administration/feedback': {
+      id: '/_app/administration/feedback'
+      path: '/feedback'
+      fullPath: '/administration/feedback'
+      preLoaderRoute: typeof AppAdministrationFeedbackRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
+    '/_app/administration/launch-learning': {
+      id: '/_app/administration/launch-learning'
+      path: '/launch-learning'
+      fullPath: '/administration/launch-learning'
+      preLoaderRoute: typeof AppAdministrationLaunchLearningRouteImport
       parentRoute: typeof AppAdministrationRoute
     }
     '/_app/boards/': {
@@ -1920,10 +1979,14 @@ const AppAccountRouteWithChildren = AppAccountRoute._addFileChildren(
 
 interface AppAdministrationRouteChildren {
   AppAdministrationAnalyticsRoute: typeof AppAdministrationAnalyticsRoute
+  AppAdministrationFeedbackRoute: typeof AppAdministrationFeedbackRoute
+  AppAdministrationLaunchLearningRoute: typeof AppAdministrationLaunchLearningRoute
 }
 
 const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationAnalyticsRoute: AppAdministrationAnalyticsRoute,
+  AppAdministrationFeedbackRoute: AppAdministrationFeedbackRoute,
+  AppAdministrationLaunchLearningRoute: AppAdministrationLaunchLearningRoute,
 }
 
 const AppAdministrationRouteWithChildren =
@@ -2028,6 +2091,7 @@ interface AppRouteChildren {
   AppSarpiRoute: typeof AppSarpiRoute
   AppStudioRoute: typeof AppStudioRouteWithChildren
   AppSubmitRoute: typeof AppSubmitRoute
+  AppSupportRoute: typeof AppSupportRoute
   AppCollectionsSlugRoute: typeof AppCollectionsSlugRoute
   AppInviteTokenRoute: typeof AppInviteTokenRoute
   AppOpportunitiesIdRoute: typeof AppOpportunitiesIdRoute
@@ -2091,6 +2155,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSarpiRoute: AppSarpiRoute,
   AppStudioRoute: AppStudioRouteWithChildren,
   AppSubmitRoute: AppSubmitRoute,
+  AppSupportRoute: AppSupportRoute,
   AppCollectionsSlugRoute: AppCollectionsSlugRoute,
   AppInviteTokenRoute: AppInviteTokenRoute,
   AppOpportunitiesIdRoute: AppOpportunitiesIdRoute,
@@ -2144,13 +2209,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

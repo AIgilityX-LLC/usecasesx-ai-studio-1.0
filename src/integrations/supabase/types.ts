@@ -768,36 +768,54 @@ export type Database = {
           cta: string
           device: string | null
           id: string
+          referrer_host: string | null
+          result_count: number | null
+          search_query: string | null
           session_id: string | null
           source_page: string | null
           target_platform: string | null
           target_route: string | null
           use_case_id: string | null
           user_id: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
         }
         Insert: {
           created_at?: string
           cta: string
           device?: string | null
           id?: string
+          referrer_host?: string | null
+          result_count?: number | null
+          search_query?: string | null
           session_id?: string | null
           source_page?: string | null
           target_platform?: string | null
           target_route?: string | null
           use_case_id?: string | null
           user_id?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Update: {
           created_at?: string
           cta?: string
           device?: string | null
           id?: string
+          referrer_host?: string | null
+          result_count?: number | null
+          search_query?: string | null
           session_id?: string | null
           source_page?: string | null
           target_platform?: string | null
           target_route?: string | null
           use_case_id?: string | null
           user_id?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Relationships: []
       }
@@ -1932,6 +1950,72 @@ export type Database = {
           properties?: Json
           request_id?: string | null
           user_id?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
+      product_feedback: {
+        Row: {
+          allow_contact: boolean
+          category: string
+          contact_email: string | null
+          context_route: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          evidence_url: string | null
+          id: string
+          message: string
+          organization_id: string | null
+          resolution_note: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          status: string
+          updated_at: string
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          allow_contact?: boolean
+          category: string
+          contact_email?: string | null
+          context_route?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          evidence_url?: string | null
+          id?: string
+          message: string
+          organization_id?: string | null
+          resolution_note?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Update: {
+          allow_contact?: boolean
+          category?: string
+          contact_email?: string | null
+          context_route?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          evidence_url?: string | null
+          id?: string
+          message?: string
+          organization_id?: string | null
+          resolution_note?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
           workspace_id?: string | null
         }
         Relationships: []
@@ -4534,6 +4618,119 @@ export type Database = {
           avg_rating: number | null
           rating_count: number | null
           use_case_slug: string | null
+        }
+        Relationships: []
+      }
+      v_activation_funnel_weekly: {
+        Row: {
+          events: number | null
+          stage: string | null
+          stage_order: number | null
+          users: number | null
+          week: string | null
+        }
+        Relationships: []
+      }
+      v_ai_usage_weekly: {
+        Row: {
+          avg_duration_ms: number | null
+          calls: number | null
+          error_kind: string | null
+          status: string | null
+          task: string | null
+          total_tokens: number | null
+          users: number | null
+          week: string | null
+        }
+        Relationships: []
+      }
+      v_enterprise_interest_weekly: {
+        Row: {
+          cta: string | null
+          interest_area: string | null
+          leads: number | null
+          week: string | null
+        }
+        Relationships: []
+      }
+      v_feedback_queue: {
+        Row: {
+          allow_contact: boolean | null
+          category: string | null
+          context_route: string | null
+          created_at: string | null
+          entity_id: string | null
+          entity_type: string | null
+          evidence_url: string | null
+          id: string | null
+          is_real_activity: boolean | null
+          message: string | null
+          organization_id: string | null
+          resolution_note: string | null
+          resolved_at: string | null
+          severity: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          allow_contact?: boolean | null
+          category?: string | null
+          context_route?: string | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          evidence_url?: string | null
+          id?: string | null
+          is_real_activity?: never
+          message?: string | null
+          organization_id?: string | null
+          resolution_note?: string | null
+          resolved_at?: string | null
+          severity?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          allow_contact?: boolean | null
+          category?: string | null
+          context_route?: string | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          evidence_url?: string | null
+          id?: string | null
+          is_real_activity?: never
+          message?: string | null
+          organization_id?: string | null
+          resolution_note?: string | null
+          resolved_at?: string | null
+          severity?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
+      v_launch_visitors_weekly: {
+        Row: {
+          events: number | null
+          signed_in_users: number | null
+          visitor_sessions: number | null
+          week: string | null
+        }
+        Relationships: []
+      }
+      v_search_insights_weekly: {
+        Row: {
+          search_query: string | null
+          searches: number | null
+          week: string | null
+          zero_result_searches: number | null
         }
         Relationships: []
       }
