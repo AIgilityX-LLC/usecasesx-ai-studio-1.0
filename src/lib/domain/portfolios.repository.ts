@@ -17,6 +17,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { normalizeError, unwrapResult } from "./errors";
 import { requireUserId } from "./ownership";
 import {
+  buildPage,
+  chunkIds,
+  clampPageSize,
+  collectPages,
+  keysetOrFilter,
+  type Page,
+} from "./pagination";
+import {
   parseInput,
   portfolioCreateSchema,
   portfolioEntryPatchSchema,
@@ -72,52 +80,73 @@ type PortfolioItemRow = {
 
 type PortfolioRow = { portfolio_items?: PortfolioItemRow[] | null };
 
+/** Keyset cursor: `created_at` descending with `id` as the tiebreaker. */
+export type PortfolioCursor = { createdAt: string; id: string };
+
+/** Upper bound on portfolios returned by the "everything" convenience readers. */
+export const PORTFOLIO_MAX_ROWS = 200;
+
+/** Rows per keyset page. Portfolios embed their items, so pages stay small. */
+export const PORTFOLIO_PAGE_SIZE = 25;
+
 /**
  * `portfolio_items.use_case_id` intentionally carries no foreign key (the same
  * column can point at a repository entry or a workspace draft), so PostgREST
  * cannot embed the use case. We hydrate the executive-summary fields in a
  * second read instead. Rows the caller cannot see simply stay unhydrated.
  */
+/**
+ * Hydration is chunked: a page of portfolios can reference many use cases, and
+ * an unbounded `.in()` would grow the request URL with the workspace.
+ */
 async function attachUseCases(rows: PortfolioRow[]) {
-  const ids = [
-    ...new Set(rows.flatMap((row) => (row.portfolio_items ?? []).map((i) => i.use_case_id))),
-  ];
-  if (ids.length === 0) return rows;
-  const result = await supabase
-    .from("use_cases")
-    .select("id, slug, title, status, value_potential, complexity, risk_level, time_to_value")
-    .in("id", ids);
-  const useCases = unwrapResult(result, { allowNull: true }) ?? [];
-  const byId = new Map(useCases.map((uc) => [uc.id, uc] as const));
+  const allIds = rows.flatMap((row) => (row.portfolio_items ?? []).map((i) => i.use_case_id));
+  if (allIds.length === 0) return rows;
+  const { chunks } = chunkIds(allIds);
 
-  // Primary business function per use case (many-to-many join table).
-  const fnResult = await supabase
-    .from("use_case_business_functions")
-    .select("use_case_id, business_functions ( name )")
-    .in("use_case_id", ids);
+  const byId = new Map<string, UseCaseMeta & { id: string }>();
   const functionById = new Map<string, string>();
-  for (const row of (unwrapResult(fnResult, { allowNull: true }) ?? []) as {
-    use_case_id: string;
-    business_functions?: { name?: string | null } | null;
-  }[]) {
-    const name = row.business_functions?.name;
-    if (name && !functionById.has(row.use_case_id)) functionById.set(row.use_case_id, name);
-  }
-
-  // Studio drafts derived from these repository entries. Read-only lineage —
-  // RLS keeps drafts from other workspaces out of the result.
-  const studioResult = await supabase
-    .from("ai_use_cases")
-    .select("id, source_use_case_id, updated_at")
-    .in("source_use_case_id", ids)
-    .order("updated_at", { ascending: false });
   const studioBySource = new Map<string, string>();
-  for (const row of (unwrapResult(studioResult, { allowNull: true }) ?? []) as {
-    id: string;
-    source_use_case_id: string | null;
-  }[]) {
-    if (row.source_use_case_id && !studioBySource.has(row.source_use_case_id)) {
-      studioBySource.set(row.source_use_case_id, row.id);
+
+  for (const ids of chunks) {
+    const [result, fnResult, studioResult] = await Promise.all([
+      supabase
+        .from("use_cases")
+        .select("id, slug, title, status, value_potential, complexity, risk_level, time_to_value")
+        .in("id", ids),
+      // Primary business function per use case (many-to-many join table).
+      supabase
+        .from("use_case_business_functions")
+        .select("use_case_id, business_functions ( name )")
+        .in("use_case_id", ids),
+      // Studio drafts derived from these repository entries. Read-only lineage —
+      // RLS keeps drafts from other workspaces out of the result.
+      supabase
+        .from("ai_use_cases")
+        .select("id, source_use_case_id, updated_at")
+        .in("source_use_case_id", ids)
+        .order("updated_at", { ascending: false }),
+    ]);
+
+    for (const uc of (unwrapResult(result, { allowNull: true }) ?? []) as (UseCaseMeta & {
+      id: string;
+    })[]) {
+      byId.set(uc.id, uc);
+    }
+    for (const row of (unwrapResult(fnResult, { allowNull: true }) ?? []) as {
+      use_case_id: string;
+      business_functions?: { name?: string | null } | null;
+    }[]) {
+      const name = row.business_functions?.name;
+      if (name && !functionById.has(row.use_case_id)) functionById.set(row.use_case_id, name);
+    }
+    for (const row of (unwrapResult(studioResult, { allowNull: true }) ?? []) as {
+      id: string;
+      source_use_case_id: string | null;
+    }[]) {
+      if (row.source_use_case_id && !studioBySource.has(row.source_use_case_id)) {
+        studioBySource.set(row.source_use_case_id, row.id);
+      }
     }
   }
 
@@ -133,29 +162,71 @@ async function attachUseCases(rows: PortfolioRow[]) {
   return rows;
 }
 
-export async function listPortfoliosForUser(userId: string | null) {
+/**
+ * One bounded keyset page of the user's own portfolios, newest first, with
+ * items and use-case content hydrated.
+ */
+export async function listPortfoliosPageForUser(
+  userId: string | null,
+  options: { limit?: number; cursor?: PortfolioCursor | null } = {},
+): Promise<Page<PortfolioRow, PortfolioCursor>> {
   const uid = requireUserId(userId);
-  const result = await supabase
+  const pageSize = clampPageSize(options.limit ?? PORTFOLIO_PAGE_SIZE);
+  const cursor = options.cursor ?? null;
+
+  let query = supabase
     .from("portfolios")
     .select(PORTFOLIO_SELECT)
     .eq("user_id", uid)
-    .order("created_at", { ascending: false });
-  const rows = unwrapResult(result, { allowNull: true }) ?? [];
-  return attachUseCases(rows as PortfolioRow[]);
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: true })
+    .limit(pageSize + 1);
+  if (cursor) {
+    query = query.or(keysetOrFilter("created_at", cursor.createdAt, "id", cursor.id));
+  }
+
+  const result = await query;
+  const fetched = (unwrapResult(result, { allowNull: true }) ?? []) as (PortfolioRow & {
+    id: string;
+    created_at: string;
+  })[];
+  const page = buildPage(fetched, pageSize, (row) => ({
+    createdAt: row.created_at,
+    id: row.id,
+  }));
+  if (page.rows.length === 0) return { ...page, rows: [] };
+
+  const hydrated = (await attachUseCases(page.rows as PortfolioRow[])) as PortfolioRow[];
+  return { rows: hydrated, hasMore: page.hasMore, nextCursor: page.nextCursor, pageSize };
+}
+
+/**
+ * Every portfolio the user owns, capped at `PORTFOLIO_MAX_ROWS` and fetched as
+ * bounded keyset pages. Prefer `listPortfoliosPageForUser` for new surfaces.
+ */
+export async function listPortfoliosForUser(userId: string | null) {
+  const uid = requireUserId(userId);
+  const { rows } = await collectPages<PortfolioRow, PortfolioCursor>(
+    (cursor) => listPortfoliosPageForUser(uid, { cursor }),
+    PORTFOLIO_MAX_ROWS,
+  );
+  return rows;
 }
 
 /**
  * Every portfolio the signed-in user is allowed to read — their own plus
  * workspace/organization-visible portfolios owned by colleagues. No client-side
  * filter is applied: RLS on `portfolios` is the authority, so what this returns
- * is exactly what the database permits.
+ * is exactly what the database permits, capped at `PORTFOLIO_MAX_ROWS`.
  */
 export async function listPortfoliosVisibleToUser(userId: string | null) {
   requireUserId(userId);
   const result = await supabase
     .from("portfolios")
     .select(`${PORTFOLIO_SELECT}, user_id, workspace_id`)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: true })
+    .limit(PORTFOLIO_MAX_ROWS);
   const rows = unwrapResult(result, { allowNull: true }) ?? [];
   return attachUseCases(rows as PortfolioRow[]) as unknown as Promise<
     (PortfolioRow & { user_id: string; workspace_id: string | null })[]
