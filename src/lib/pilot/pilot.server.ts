@@ -59,6 +59,9 @@ function mapCheckpoint(row: any): PilotCheckpointResponse {
     comment: row.comment ?? null,
     createdAt: String(row.created_at),
     userId: row.user_id ?? null,
+    missionStep: row.mission_step ?? null,
+    useCaseIds: Array.isArray(row.use_case_ids) ? row.use_case_ids.map(String) : [],
+    portfolioId: row.portfolio_id ?? null,
   };
 }
 
@@ -102,7 +105,15 @@ export async function setInvitationsPaused(
     })
     .eq("id", true);
   if (error) throw new Error(error.message);
-  return getPilotSettings(supabase);
+  const settings = await getPilotSettings(supabase);
+  const { writePilotAudit } = await import("./pilot.audit.server");
+  await writePilotAudit({
+    cohort: settings.cohort,
+    action: input.paused ? "invitations.paused" : "invitations.resumed",
+    reason: input.reason,
+    actorId: input.actorId,
+  });
+  return settings;
 }
 
 /* ---------------------------------------------------------- invitations */
@@ -131,13 +142,36 @@ export async function createInvitation(
     .select("*")
     .single();
   if (error) throw new Error(error.message);
-  return mapInvitation(data);
+  const invitation = mapInvitation(data);
+  const { writePilotAudit } = await import("./pilot.audit.server");
+  await writePilotAudit({
+    cohort: invitation.cohort,
+    invitationId: invitation.id,
+    subjectEmail: invitation.email,
+    action: "invitation.created",
+    toStatus: invitation.status,
+    reason: input.notes,
+    actorId: input.actorId,
+  });
+  return invitation;
 }
 
 export async function setInvitationStatus(
   supabase: Client,
-  input: { id: string; status: PilotStatus; notes?: string | null },
+  input: {
+    id: string;
+    status: PilotStatus;
+    notes?: string | null;
+    reason?: string | null;
+    actorId?: string | null;
+  },
 ): Promise<PilotInvitation> {
+  const { data: before } = await supabase
+    .from("pilot_invitations")
+    .select("status")
+    .eq("id", input.id)
+    .maybeSingle();
+  const fromStatus = (before as { status?: string } | null)?.status ?? null;
   const patch: Record<string, unknown> = { status: input.status };
   if (input.notes !== undefined) patch["notes"] = input.notes;
   if (input.status === "completed") patch["completed_at"] = new Date().toISOString();
@@ -148,7 +182,20 @@ export async function setInvitationStatus(
     .select("*")
     .single();
   if (error) throw new Error(error.message);
-  return mapInvitation(data);
+  const invitation = mapInvitation(data);
+  const { writePilotAudit } = await import("./pilot.audit.server");
+  await writePilotAudit({
+    cohort: invitation.cohort,
+    invitationId: invitation.id,
+    subjectEmail: invitation.email,
+    subjectUserId: invitation.userId,
+    action: input.status === "revoked" ? "invitation.revoked" : "invitation.status_changed",
+    fromStatus,
+    toStatus: invitation.status,
+    reason: input.reason ?? input.notes ?? null,
+    actorId: input.actorId ?? null,
+  });
+  return invitation;
 }
 
 export async function listInvitations(
@@ -210,6 +257,41 @@ export async function countMissionEventsForUsers(
   return byUser;
 }
 
+/**
+ * The concrete work behind the mission: the use cases the participant completed
+ * or scored, and the portfolio they built. Read from their own product events,
+ * so a checkpoint answer can be traced back to the exact artefacts.
+ */
+export async function collectMissionReferences(
+  supabase: Client,
+  userId: string,
+): Promise<{ useCaseIds: string[]; portfolioId: string | null }> {
+  const { data, error } = await supabase
+    .from("product_events")
+    .select("event_name, entity_type, entity_id, occurred_at")
+    .eq("user_id", userId)
+    .in("event_name", MISSION_EVENTS)
+    .not("entity_id", "is", null)
+    .order("occurred_at", { ascending: false })
+    .limit(200);
+  if (error) throw new Error(error.message);
+
+  const useCaseIds: string[] = [];
+  let portfolioId: string | null = null;
+  for (const raw of data ?? []) {
+    const row = raw as { entity_type: string | null; entity_id: string | null };
+    if (!row.entity_id) continue;
+    if (row.entity_type === "use_cases" || row.entity_type === "ai_use_cases") {
+      if (!useCaseIds.includes(row.entity_id) && useCaseIds.length < 10) {
+        useCaseIds.push(row.entity_id);
+      }
+    } else if (row.entity_type === "portfolios" && !portfolioId) {
+      portfolioId = row.entity_id;
+    }
+  }
+  return { useCaseIds, portfolioId };
+}
+
 /* ---------------------------------------------------------- checkpoints */
 
 export async function listMyCheckpoints(
@@ -255,6 +337,9 @@ export async function insertCheckpointResponse(
     advisoryInterest: boolean;
     blocked: boolean;
     comment: string | null;
+    missionStep: string | null;
+    useCaseIds: string[];
+    portfolioId: string | null;
     workspaceId: string | null;
     organizationId: string | null;
   },
@@ -274,6 +359,9 @@ export async function insertCheckpointResponse(
       advisory_interest: input.advisoryInterest,
       blocked: input.blocked,
       comment: input.comment,
+      mission_step: input.missionStep,
+      use_case_ids: input.useCaseIds,
+      portfolio_id: input.portfolioId,
       workspace_id: input.workspaceId,
       organization_id: input.organizationId,
     })
@@ -330,6 +418,18 @@ export async function resolvePilotForUser(
         .select("*")
         .maybeSingle();
       row = linked ? mapInvitation(linked) : mapInvitation(match);
+      const { writePilotAudit } = await import("./pilot.audit.server");
+      await writePilotAudit({
+        cohort: row.cohort,
+        invitationId: row.id,
+        subjectEmail: row.email,
+        subjectUserId: userId,
+        action: "invitation.linked",
+        fromStatus: "invited",
+        toStatus: "registered",
+        actorId: userId,
+        actorKind: "participant",
+      });
     }
   }
 
@@ -363,7 +463,11 @@ export async function resolvePilotForUser(
 export async function buildCohortView(
   supabase: Client,
   cohort: string,
-): Promise<{ rows: PilotCohortRow[]; checkpoints: PilotCheckpointResponse[] }> {
+): Promise<{
+  rows: PilotCohortRow[];
+  checkpoints: PilotCheckpointResponse[];
+  emailByUserId: Record<string, string>;
+}> {
   const invitations = await listInvitations(supabase, cohort);
   const userIds = invitations.map((i) => i.userId).filter((id): id is string => Boolean(id));
   const [eventsByUser, checkpoints] = await Promise.all([
@@ -384,5 +488,10 @@ export async function buildCohortView(
     };
   });
 
-  return { rows, checkpoints };
+  const emailByUserId: Record<string, string> = {};
+  for (const invitation of invitations) {
+    if (invitation.userId) emailByUserId[invitation.userId] = invitation.email;
+  }
+
+  return { rows, checkpoints, emailByUserId };
 }

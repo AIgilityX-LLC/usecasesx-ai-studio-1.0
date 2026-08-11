@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, Circle, Lock, ShieldCheck } from "lucide-react";
+import { BellRing, CheckCircle2, Circle, Lock, ShieldCheck } from "lucide-react";
 
 import { privateHead } from "@/lib/seo";
-import { getMyPilotFn } from "@/lib/pilot/pilot.functions";
+import { dismissPilotReminderFn, getMyPilotFn } from "@/lib/pilot/pilot.functions";
 import {
   PILOT_SEAT_TARGET_MAX,
   PILOT_SEAT_TARGET_MIN,
@@ -28,6 +28,12 @@ export const Route = createFileRoute("/_app/pilot")({
 
 function PilotPage() {
   const load = useServerFn(getMyPilotFn);
+  const dismiss = useServerFn(dismissPilotReminderFn);
+  const queryClient = useQueryClient();
+  const dismissReminder = useMutation({
+    mutationFn: (id: string) => dismiss({ data: { id } }),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["my-pilot"] }),
+  });
   const pilot = useQuery({
     queryKey: ["my-pilot"],
     queryFn: () => load(),
@@ -67,6 +73,8 @@ function PilotPage() {
   const progress = data?.progress;
   const answered = (data?.checkpoints ?? []).map((c) => c.checkpoint);
   const openCheckpoints = progress ? availableCheckpoints(progress, answered) : [];
+  const reminders = data?.reminders ?? [];
+  const references = data?.references;
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 px-6 py-10">
@@ -112,6 +120,47 @@ function PilotPage() {
           use case content.
         </AlertDescription>
       </Alert>
+
+      {reminders.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <BellRing className="h-4 w-4" aria-hidden /> Reminders for you
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Steps you have not finished and checkpoints we have not heard from you on.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {reminders.map((reminder) => (
+              <div
+                key={reminder.id}
+                className="flex flex-wrap items-start justify-between gap-3 rounded-lg border p-3"
+              >
+                <div className="space-y-1">
+                  <p className="text-sm font-medium">{reminder.title}</p>
+                  <p className="text-xs text-muted-foreground">{reminder.body}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  {reminder.targetRoute && (
+                    <Button asChild size="sm" variant="outline">
+                      <Link to={reminder.targetRoute}>Continue</Link>
+                    </Button>
+                  )}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    disabled={dismissReminder.isPending}
+                    onClick={() => dismissReminder.mutate(reminder.id)}
+                  >
+                    Dismiss
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader className="space-y-3">
@@ -211,7 +260,11 @@ function PilotPage() {
           </Card>
         ) : (
           openCheckpoints.map((checkpoint) => (
-            <PilotCheckpointForm key={checkpoint.key} checkpoint={checkpoint} />
+            <PilotCheckpointForm
+              key={checkpoint.key}
+              checkpoint={checkpoint}
+              references={references}
+            />
           ))
         )}
 

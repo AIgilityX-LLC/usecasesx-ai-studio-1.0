@@ -1635,6 +1635,62 @@ export type Database = {
         }
         Relationships: []
       }
+      pilot_audit_events: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_kind: string
+          cohort: string
+          created_at: string
+          from_status: string | null
+          id: string
+          invitation_id: string | null
+          metadata: Json
+          reason: string | null
+          subject_email: string | null
+          subject_user_id: string | null
+          to_status: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_kind?: string
+          cohort?: string
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          invitation_id?: string | null
+          metadata?: Json
+          reason?: string | null
+          subject_email?: string | null
+          subject_user_id?: string | null
+          to_status?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_kind?: string
+          cohort?: string
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          invitation_id?: string | null
+          metadata?: Json
+          reason?: string | null
+          subject_email?: string | null
+          subject_user_id?: string | null
+          to_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pilot_audit_events_invitation_id_fkey"
+            columns: ["invitation_id"]
+            isOneToOne: false
+            referencedRelation: "pilot_invitations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pilot_checkpoint_responses: {
         Row: {
           advisory_interest: boolean
@@ -1646,9 +1702,12 @@ export type Database = {
           effort_rating: number | null
           id: string
           journey_stage: string | null
+          mission_step: string | null
           organization_id: string | null
           pilot_id: string | null
+          portfolio_id: string | null
           rating: number | null
+          use_case_ids: string[]
           user_id: string
           value_rating: number | null
           willingness: string | null
@@ -1664,9 +1723,12 @@ export type Database = {
           effort_rating?: number | null
           id?: string
           journey_stage?: string | null
+          mission_step?: string | null
           organization_id?: string | null
           pilot_id?: string | null
+          portfolio_id?: string | null
           rating?: number | null
+          use_case_ids?: string[]
           user_id?: string
           value_rating?: number | null
           willingness?: string | null
@@ -1682,9 +1744,12 @@ export type Database = {
           effort_rating?: number | null
           id?: string
           journey_stage?: string | null
+          mission_step?: string | null
           organization_id?: string | null
           pilot_id?: string | null
+          portfolio_id?: string | null
           rating?: number | null
+          use_case_ids?: string[]
           user_id?: string
           value_rating?: number | null
           willingness?: string | null
@@ -1756,6 +1821,62 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      pilot_reminders: {
+        Row: {
+          actor_id: string | null
+          body: string
+          checkpoint: string | null
+          created_at: string
+          dismissed_at: string | null
+          id: string
+          invitation_id: string | null
+          kind: string
+          mission_step: string | null
+          read_at: string | null
+          target_route: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          body: string
+          checkpoint?: string | null
+          created_at?: string
+          dismissed_at?: string | null
+          id?: string
+          invitation_id?: string | null
+          kind: string
+          mission_step?: string | null
+          read_at?: string | null
+          target_route?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          body?: string
+          checkpoint?: string | null
+          created_at?: string
+          dismissed_at?: string | null
+          id?: string
+          invitation_id?: string | null
+          kind?: string
+          mission_step?: string | null
+          read_at?: string | null
+          target_route?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pilot_reminders_invitation_id_fkey"
+            columns: ["invitation_id"]
+            isOneToOne: false
+            referencedRelation: "pilot_invitations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pilot_settings: {
         Row: {

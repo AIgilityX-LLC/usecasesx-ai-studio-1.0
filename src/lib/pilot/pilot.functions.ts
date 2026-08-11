@@ -17,6 +17,9 @@ const CheckpointInput = z.object({
   advisoryInterest: z.boolean().default(false),
   blocked: z.boolean().default(false),
   comment: z.string().trim().max(2000).nullable().optional(),
+  missionStep: z.string().trim().max(40).nullable().optional(),
+  useCaseIds: z.array(z.string().uuid()).max(20).default([]),
+  portfolioId: z.string().uuid().nullable().optional(),
   workspaceId: z.string().uuid().nullable().optional(),
   organizationId: z.string().uuid().nullable().optional(),
 });
@@ -37,22 +40,29 @@ const StatusInput = z.object({
   id: z.string().uuid(),
   status: z.enum(PILOT_STATUSES),
   notes: z.string().trim().max(500).nullable().optional(),
+  reason: z.string().trim().max(500).nullable().optional(),
 });
+
+const ReminderIdInput = z.object({ id: z.string().uuid() });
 
 /** Participant view: own invitation, measured mission progress, own answers. */
 export const getMyPilotFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { resolvePilotForUser, listMyCheckpoints } = await import("@/lib/pilot/pilot.server");
+    const { resolvePilotForUser, listMyCheckpoints, collectMissionReferences } =
+      await import("@/lib/pilot/pilot.server");
     const email =
       (context.claims as { email?: string } | undefined)?.email ??
       (await context.supabase.auth.getUser()).data?.user?.email ??
       null;
-    const [{ invitation, progress }, checkpoints] = await Promise.all([
+    const { listMyReminders } = await import("@/lib/pilot/pilot.reminders.server");
+    const [{ invitation, progress }, checkpoints, reminders, references] = await Promise.all([
       resolvePilotForUser(context.supabase, context.userId, email),
       listMyCheckpoints(context.supabase, context.userId),
+      listMyReminders(context.supabase, context.userId),
+      collectMissionReferences(context.supabase, context.userId),
     ]);
-    return { invitation, progress, checkpoints };
+    return { invitation, progress, checkpoints, reminders, references };
   });
 
 export const submitPilotCheckpointFn = createServerFn({ method: "POST" })
@@ -78,6 +88,9 @@ export const submitPilotCheckpointFn = createServerFn({ method: "POST" })
       advisoryInterest: data.advisoryInterest,
       blocked: data.blocked,
       comment: data.comment ?? null,
+      missionStep: data.missionStep ?? null,
+      useCaseIds: data.useCaseIds,
+      portfolioId: data.portfolioId ?? null,
       workspaceId: data.workspaceId ?? null,
       organizationId: data.organizationId ?? null,
     });
@@ -118,9 +131,13 @@ export const getPilotCohortFn = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     await assertPlatformAdmin(context.supabase, context.userId);
     const { getPilotSettings, buildCohortView } = await import("@/lib/pilot/pilot.server");
+    const { listPilotAudit } = await import("@/lib/pilot/pilot.audit.server");
     const settings = await getPilotSettings(context.supabase);
-    const { rows, checkpoints } = await buildCohortView(context.supabase, settings.cohort);
-    return { settings, rows, checkpoints };
+    const [{ rows, checkpoints, emailByUserId }, audit] = await Promise.all([
+      buildCohortView(context.supabase, settings.cohort),
+      listPilotAudit(context.supabase, settings.cohort),
+    ]);
+    return { settings, rows, checkpoints, emailByUserId, audit };
   });
 
 export const invitePilotParticipantFn = createServerFn({ method: "POST" })
@@ -176,6 +193,8 @@ export const setPilotInvitationStatusFn = createServerFn({ method: "POST" })
       id: data.id,
       status: data.status,
       notes: data.notes ?? undefined,
+      reason: data.reason ?? null,
+      actorId: context.userId,
     });
     const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
     await writeAuditEvent(
@@ -213,4 +232,39 @@ export const setPilotInvitationsPausedFn = createServerFn({ method: "POST" })
       },
     );
     return settings;
+  });
+
+/** Participant dismisses one of their own reminders. */
+export const dismissPilotReminderFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => ReminderIdInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { dismissReminder } = await import("@/lib/pilot/pilot.reminders.server");
+    await dismissReminder(context.supabase, { id: data.id, userId: context.userId });
+    return { dismissed: true };
+  });
+
+/** Admin sweep: reminds participants of pending steps and unanswered checkpoints. */
+export const sendPilotRemindersFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { getPilotSettings } = await import("@/lib/pilot/pilot.server");
+    const { sweepCohortReminders } = await import("@/lib/pilot/pilot.reminders.server");
+    const settings = await getPilotSettings(context.supabase);
+    const result = await sweepCohortReminders(context.supabase, {
+      cohort: settings.cohort,
+      actorId: context.userId,
+    });
+    const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
+    await writeAuditEvent(
+      { supabase: context.supabase, userId: context.userId },
+      {
+        event: "admin.action",
+        entity: { type: "pilot_reminders", id: settings.cohort },
+        next: { remindersCreated: result.remindersCreated },
+        severity: "notice",
+      },
+    );
+    return result;
   });

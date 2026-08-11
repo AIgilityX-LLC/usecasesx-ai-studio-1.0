@@ -26,7 +26,17 @@ const SCALE = [1, 2, 3, 4, 5];
  * journey stage of the checkpoint travel with the answer, so feedback is always
  * readable in context rather than as an unattributed comment.
  */
-export function PilotCheckpointForm({ checkpoint }: { checkpoint: PilotCheckpoint }) {
+export function PilotCheckpointForm({
+  checkpoint,
+  missionStep,
+  references,
+}: {
+  checkpoint: PilotCheckpoint;
+  /** Mission step the participant is answering about, for the admin deep link. */
+  missionStep?: string | null;
+  /** The use cases and portfolio this participant actually worked on. */
+  references?: { useCaseIds: string[]; portfolioId: string | null };
+}) {
   const submit = useServerFn(submitPilotCheckpointFn);
   const queryClient = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -46,6 +56,9 @@ export function PilotCheckpointForm({ checkpoint }: { checkpoint: PilotCheckpoin
           checkpoint: checkpoint.key as "welcome" | "scoring" | "final",
           journeyStage: checkpoint.stage,
           contextRoute: pathname,
+          missionStep: missionStep ?? checkpoint.afterStep ?? null,
+          useCaseIds: references?.useCaseIds ?? [],
+          portfolioId: references?.portfolioId ?? null,
           rating,
           effortRating: effort,
           valueRating: checkpoint.asksValue ? value : null,

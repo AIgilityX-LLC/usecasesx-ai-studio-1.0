@@ -3,24 +3,30 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { AlertTriangle, PauseCircle, PlayCircle, UserPlus } from "lucide-react";
+import { AlertTriangle, BellRing, History, PauseCircle, PlayCircle, UserPlus } from "lucide-react";
 
 import { privateHead } from "@/lib/seo";
 import { RequireRoles } from "@/components/RequireRoles";
 import { PLATFORM_ADMIN_ROLES } from "@/lib/admin/platform-admin";
+import { Link } from "@tanstack/react-router";
+
 import {
   getPilotCohortFn,
   invitePilotParticipantFn,
+  sendPilotRemindersFn,
   setPilotInvitationStatusFn,
   setPilotInvitationsPausedFn,
 } from "@/lib/pilot/pilot.functions";
 import {
   PILOT_STATUSES,
+  checkpointDeepLinks,
+  pilotAuditActionLabel,
   pilotStatusLabel,
   summarizeCohort,
   willingnessLabel,
   type PilotStatus,
 } from "@/lib/pilot/pilot.model";
+import { PilotExportMenu } from "@/components/pilot/PilotExportMenu";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -61,12 +67,14 @@ function PilotAdmin() {
   const invite = useServerFn(invitePilotParticipantFn);
   const setStatus = useServerFn(setPilotInvitationStatusFn);
   const setPaused = useServerFn(setPilotInvitationsPausedFn);
+  const sendReminders = useServerFn(sendPilotRemindersFn);
   const queryClient = useQueryClient();
 
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [organization, setOrganization] = useState("");
   const [pauseReason, setPauseReason] = useState("");
+  const [statusReason, setStatusReason] = useState("");
 
   const cohort = useQuery({
     queryKey: ["pilot-cohort"],
@@ -98,8 +106,28 @@ function PilotAdmin() {
       }),
   });
 
+  const remindersMutation = useMutation({
+    mutationFn: () => sendReminders(),
+    onSuccess: (result) => {
+      toast.success(
+        result.remindersCreated > 0
+          ? `${result.remindersCreated} reminder${result.remindersCreated === 1 ? "" : "s"} sent`
+          : "Everyone is already up to date",
+        {
+          description: `${result.participantsConsidered} participants checked · ${result.alreadyPending} already pending`,
+        },
+      );
+      void refresh();
+    },
+    onError: (error: unknown) =>
+      toast.error("Reminders not sent", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      }),
+  });
+
   const statusMutation = useMutation({
-    mutationFn: (input: { id: string; status: PilotStatus }) => setStatus({ data: input }),
+    mutationFn: (input: { id: string; status: PilotStatus }) =>
+      setStatus({ data: { ...input, reason: statusReason.trim() || null } }),
     onSuccess: () => {
       toast.success("Invitation updated");
       void refresh();
@@ -130,6 +158,8 @@ function PilotAdmin() {
     [rows, settings?.seatTarget],
   );
   const checkpoints = cohort.data?.checkpoints ?? [];
+  const audit = cohort.data?.audit ?? [];
+  const emailByUserId = cohort.data?.emailByUserId ?? {};
 
   if (cohort.isLoading) {
     return (
@@ -196,6 +226,36 @@ function PilotAdmin() {
         />
         <Stat label="Advisory interest" value={String(summary.advisoryInterest)} />
       </section>
+
+      <Card>
+        <CardHeader className="gap-3">
+          <CardTitle className="text-base">Evidence and nudges</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Exports carry funnel metrics, checkpoint answers with their mission references, advisory
+            interest and the full audit trail. Reminders only nudge steps and checkpoints a
+            participant has genuinely not completed.
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <PilotExportMenu
+            cohort={settings?.cohort ?? "pilot"}
+            summary={summary}
+            rows={rows}
+            checkpoints={checkpoints}
+            audit={audit}
+            emailByUserId={emailByUserId}
+          />
+          <Button
+            size="sm"
+            variant="secondary"
+            disabled={remindersMutation.isPending || rows.length === 0}
+            onClick={() => remindersMutation.mutate()}
+          >
+            <BellRing className="mr-2 h-4 w-4" aria-hidden />
+            {remindersMutation.isPending ? "Sending…" : "Send pending-step reminders"}
+          </Button>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
@@ -294,8 +354,20 @@ function PilotAdmin() {
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="gap-3">
           <CardTitle className="text-base">Cohort</CardTitle>
+          <div className="space-y-1">
+            <Label htmlFor="status-reason">Reason for the next status change (optional)</Label>
+            <Input
+              id="status-reason"
+              value={statusReason}
+              onChange={(event) => setStatusReason(event.target.value)}
+              placeholder="e.g. withdrew after kickoff call"
+            />
+            <p className="text-xs text-muted-foreground">
+              Recorded with the actor and timestamp in the audit trail below.
+            </p>
+          </div>
         </CardHeader>
         <CardContent>
           {rows.length === 0 ? (
@@ -429,8 +501,104 @@ function PilotAdmin() {
                     : ""}
                 </p>
                 {response.comment && <p className="mt-2">{response.comment}</p>}
+                {(() => {
+                  const links = checkpointDeepLinks(response);
+                  if (links.length === 0) return null;
+                  return (
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <span className="text-xs text-muted-foreground">
+                        Open the work behind it:
+                      </span>
+                      {links.map((link) => (
+                        <Button
+                          key={`${link.kind}-${link.label}`}
+                          asChild
+                          size="sm"
+                          variant="outline"
+                        >
+                          {link.params ? (
+                            <Link to={link.to} params={link.params}>
+                              {link.label}
+                            </Link>
+                          ) : (
+                            <Link to={link.to}>{link.label}</Link>
+                          )}
+                        </Button>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             ))
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <History className="h-4 w-4" aria-hidden /> Audit trail ({audit.length})
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Every invitation and status transition, with who did it, when, and the reason when one
+            was given.
+          </p>
+        </CardHeader>
+        <CardContent>
+          {audit.length === 0 ? (
+            <p className="py-4 text-sm text-muted-foreground">
+              Nothing recorded yet. Invitations and status changes appear here as they happen.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <caption className="sr-only">
+                  Pilot invitation audit trail with actor, timestamp, transition and reason
+                </caption>
+                <thead>
+                  <tr className="border-b text-left text-xs uppercase text-muted-foreground">
+                    <th scope="col" className="py-2 pr-4">
+                      When
+                    </th>
+                    <th scope="col" className="py-2 pr-4">
+                      Action
+                    </th>
+                    <th scope="col" className="py-2 pr-4">
+                      Participant
+                    </th>
+                    <th scope="col" className="py-2 pr-4">
+                      Transition
+                    </th>
+                    <th scope="col" className="py-2 pr-4">
+                      Reason
+                    </th>
+                    <th scope="col" className="py-2">
+                      Actor
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {audit.map((event) => (
+                    <tr key={event.id} className="border-b last:border-0 align-top">
+                      <td className="py-2 pr-4 text-xs text-muted-foreground">
+                        {new Date(event.createdAt).toLocaleString()}
+                      </td>
+                      <td className="py-2 pr-4">{pilotAuditActionLabel(event.action)}</td>
+                      <td className="py-2 pr-4">{event.subjectEmail ?? "—"}</td>
+                      <td className="py-2 pr-4 text-xs">
+                        {event.fromStatus || event.toStatus
+                          ? `${event.fromStatus ? pilotStatusLabel(event.fromStatus) : "—"} → ${
+                              event.toStatus ? pilotStatusLabel(event.toStatus) : "—"
+                            }`
+                          : "—"}
+                      </td>
+                      <td className="py-2 pr-4 text-xs">{event.reason ?? "—"}</td>
+                      <td className="py-2 text-xs text-muted-foreground">{event.actorKind}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </CardContent>
       </Card>
