@@ -87,6 +87,28 @@ export interface FeedbackRecord {
   resolutionNote: string | null;
   resolvedAt: string | null;
   isRealActivity: boolean;
+  /** Admin who owns the request, if one has been assigned. */
+  assignedTo: string | null;
+  assignedBy: string | null;
+  assignedAt: string | null;
+  /** Triage priority (`p1`…`p4`), which also sets the SLA window. */
+  priority: string;
+  /** Deadline derived from priority, or set explicitly by an admin. */
+  dueAt: string | null;
+  firstResponseAt: string | null;
+}
+
+/** One reporter-facing alert row: a request of mine changed status. */
+export interface RequestStatusAlert {
+  id: string;
+  feedbackId: string;
+  fromStatus: string | null;
+  toStatus: string;
+  priority: string | null;
+  dueAt: string | null;
+  note: string | null;
+  readAt: string | null;
+  createdAt: string;
 }
 
 export const FEEDBACK_MESSAGE_MIN = 5;
