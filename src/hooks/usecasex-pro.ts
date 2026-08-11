@@ -129,11 +129,13 @@ function scoreToColumns(s: ScoreDimensions) {
 }
 
 async function fetchProData(userId: string): Promise<ProData> {
-  const [savedRows, scoreRows, portfolioRows] = await Promise.all([
-    listSavedForUser(userId),
+  const [savedResult, scoreRows, portfolioResult] = await Promise.all([
+    listSavedWithMetaForUser(userId),
     listScoresForUser(userId),
-    listPortfoliosForUser(userId),
+    listPortfoliosWithMetaForUser(userId),
   ]);
+  const savedRows = savedResult.rows;
+  const portfolioRows = portfolioResult.rows;
 
   const slugToId: Record<string, string> = {};
   const scoresByUcId = new Map<string, ScoreDimensions | undefined>();
@@ -160,7 +162,14 @@ async function fetchProData(userId: string): Promise<ProData> {
 
   const portfolios: Portfolio[] = (portfolioRows as any[]).map((p) => mapPortfolioRow(p, slugToId));
 
-  return { saved, portfolios, slugToId, useCaseContent };
+  return {
+    saved,
+    portfolios,
+    slugToId,
+    useCaseContent,
+    savedMeta: savedResult.meta,
+    portfolioMeta: portfolioResult.meta,
+  };
 }
 
 /**
