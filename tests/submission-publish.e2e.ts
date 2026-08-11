@@ -98,7 +98,10 @@ async function main() {
   if (publicErr) throw publicErr;
   assert("published row is readable anonymously", Boolean(publicRow));
   assert("status is published", publicRow!.status === "published");
-  assert("provenance is community_contribution", publicRow!.provenance === "community_contribution");
+  assert(
+    "provenance is community_contribution",
+    publicRow!.provenance === "community_contribution",
+  );
   assert("authorship stays with the contributor", publicRow!.submitted_by === contributor.userId);
 
   // Cleanup: drop the test artefacts with the reviewer's privileges.
