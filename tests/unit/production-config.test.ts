@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  AREA_LABEL,
   CANONICAL_HOST,
   CONFIG_AREAS,
   buildProductionConfigMarkdown,
@@ -49,7 +50,7 @@ describe("production config report", () => {
   it("renders every area heading present in the probe set", () => {
     const probes = CONFIG_AREAS.map((area) => probe({ id: area, area }));
     const md = buildProductionConfigMarkdown(report(probes));
-    for (const area of CONFIG_AREAS) expect(md).toContain(area === "domain" ? "Domain" : "");
+    for (const area of CONFIG_AREAS) expect(md).toContain(`## ${AREA_LABEL[area]}`);
     expect(md).toContain("Infrastructure limitations and mitigation");
     expect(md).toContain("Incident contacts");
     expect(md).toContain("presence is reported by name only");
