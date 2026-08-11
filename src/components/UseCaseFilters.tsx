@@ -6,6 +6,10 @@ export interface FacetState {
   businessFunctions: string[];
   objectives: string[];
   processes: string[];
+  /** ISO country codes of deployments/references. */
+  countries: string[];
+  /** Public-sector government functions. */
+  govFunctions: string[];
 
   maturity: string[];
   valuePotential: string[];

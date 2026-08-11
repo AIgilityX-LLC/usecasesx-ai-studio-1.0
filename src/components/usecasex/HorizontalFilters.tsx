@@ -18,6 +18,8 @@ interface Props {
     tags?: { slug: string; name: string }[];
     segments?: { slug: string; name: string }[];
     processes?: { slug: string; name: string }[];
+    countries?: { slug: string; name: string }[];
+    govFunctions?: { slug: string; name: string }[];
   };
   value: Partial<FacetState>;
   onChange: (patch: Partial<FacetState>) => void;
@@ -108,6 +110,18 @@ export function HorizontalFilters({ tax, value, onChange, onClear, activeCount }
     },
     ...(tax.processes && tax.processes.length
       ? [{ key: "processes" as const, label: "Business Process", options: tax.processes }]
+      : []),
+    ...(tax.govFunctions && tax.govFunctions.length
+      ? [
+          {
+            key: "govFunctions" as const,
+            label: "Public-sector function",
+            options: tax.govFunctions,
+          },
+        ]
+      : []),
+    ...(tax.countries && tax.countries.length
+      ? [{ key: "countries" as const, label: "Country", options: tax.countries }]
       : []),
     {
       key: "provenance",
