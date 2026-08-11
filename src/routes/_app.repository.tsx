@@ -172,16 +172,13 @@ const facetsQ = queryOptions({
 });
 
 export const Route = createFileRoute("/_app/repository")({
-  head: () => ({
-    meta: [
-      { title: "Explore 1000+ AI Use Cases — UseCasesX™" },
-      {
-        name: "description",
-        content:
-          "Filter AI, GenAI, Agentic AI and automation use cases by industry, function, value, complexity, risk and readiness.",
-      },
-    ],
-  }),
+  head: () =>
+    publicHead({
+      path: "/repository",
+      title: "AI Use Case Repository — UseCasesX™",
+      description:
+        "Filter AI, GenAI, Agentic AI and automation use cases by industry, function, value, complexity, risk and readiness.",
+    }),
   validateSearch: searchSchema,
   loaderDeps: ({ search }) => ({ search }),
   // Server-render the first page of results so the repository is crawlable.
