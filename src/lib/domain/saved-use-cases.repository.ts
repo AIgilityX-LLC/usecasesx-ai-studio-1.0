@@ -349,6 +349,49 @@ export async function listSavedForUser(userId: string | null): Promise<EnrichedS
   return rows;
 }
 
+/**
+ * Exact number of saved entries for the user. Head-only count, so the row
+ * payload is never transferred just to show a total.
+ *
+ * Returns null rather than throwing when the count cannot be read: a missing
+ * total degrades the "showing N of M" label, it should not break the list.
+ */
+export async function countSavedForUser(userId: string | null): Promise<number | null> {
+  const uid = requireUserId(userId);
+  const { count, error } = await supabase
+    .from("saved_use_cases")
+    .select("use_case_id", { count: "exact", head: true })
+    .eq("user_id", uid);
+  if (error) return null;
+  return typeof count === "number" ? count : null;
+}
+
+/**
+ * `listSavedForUser` plus the completeness metadata the UI needs to be honest
+ * about the `SAVED_MAX_ROWS` cap ("showing the first 500 of 1,240").
+ */
+export async function listSavedWithMetaForUser(
+  userId: string | null,
+): Promise<{ rows: EnrichedSavedRow[]; meta: ListMeta }> {
+  const uid = requireUserId(userId);
+  const [collected, total] = await Promise.all([
+    collectPages<EnrichedSavedRow, SavedCursor>(
+      (cursor) => listSavedPageForUser(uid, { cursor }),
+      SAVED_MAX_ROWS,
+    ),
+    countSavedForUser(uid),
+  ]);
+  return {
+    rows: collected.rows,
+    meta: buildListMeta({
+      loaded: collected.rows.length,
+      total,
+      cap: SAVED_MAX_ROWS,
+      walkTruncated: collected.truncated,
+    }),
+  };
+}
+
 export async function listScoresForUser(userId: string | null) {
   const uid = requireUserId(userId);
   const result = await supabase
