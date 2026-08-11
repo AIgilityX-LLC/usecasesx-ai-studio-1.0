@@ -42,8 +42,10 @@ import { Route as AppDiscoverRouteImport } from './routes/_app.discover'
 import { Route as AppEditionsRouteImport } from './routes/_app.editions'
 import { Route as AppEnterpriseRouteImport } from './routes/_app.enterprise'
 import { Route as AppEntitlementRouteImport } from './routes/_app.entitlement'
+import { Route as AppFaqRouteImport } from './routes/_app.faq'
 import { Route as AppFeasibilityRouteImport } from './routes/_app.feasibility'
 import { Route as AppFoundingAccessTermsRouteImport } from './routes/_app.founding-access-terms'
+import { Route as AppGettingStartedRouteImport } from './routes/_app.getting-started'
 import { Route as AppGovernanceRouteImport } from './routes/_app.governance'
 import { Route as AppHandoffsRouteImport } from './routes/_app.handoffs'
 import { Route as AppHowItWorksRouteImport } from './routes/_app.how-it-works'
@@ -285,6 +287,11 @@ const AppEntitlementRoute = AppEntitlementRouteImport.update({
   path: '/entitlement',
   getParentRoute: () => AppRoute,
 } as any)
+const AppFaqRoute = AppFaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppFeasibilityRoute = AppFeasibilityRouteImport.update({
   id: '/feasibility',
   path: '/feasibility',
@@ -293,6 +300,11 @@ const AppFeasibilityRoute = AppFeasibilityRouteImport.update({
 const AppFoundingAccessTermsRoute = AppFoundingAccessTermsRouteImport.update({
   id: '/founding-access-terms',
   path: '/founding-access-terms',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGettingStartedRoute = AppGettingStartedRouteImport.update({
+  id: '/getting-started',
+  path: '/getting-started',
   getParentRoute: () => AppRoute,
 } as any)
 const AppGovernanceRoute = AppGovernanceRouteImport.update({
@@ -728,8 +740,10 @@ export interface FileRoutesByFullPath {
   '/editions': typeof AppEditionsRoute
   '/enterprise': typeof AppEnterpriseRoute
   '/entitlement': typeof AppEntitlementRoute
+  '/faq': typeof AppFaqRoute
   '/feasibility': typeof AppFeasibilityRoute
   '/founding-access-terms': typeof AppFoundingAccessTermsRoute
+  '/getting-started': typeof AppGettingStartedRoute
   '/governance': typeof AppGovernanceRoute
   '/handoffs': typeof AppHandoffsRoute
   '/how-it-works': typeof AppHowItWorksRoute
@@ -838,8 +852,10 @@ export interface FileRoutesByTo {
   '/editions': typeof AppEditionsRoute
   '/enterprise': typeof AppEnterpriseRoute
   '/entitlement': typeof AppEntitlementRoute
+  '/faq': typeof AppFaqRoute
   '/feasibility': typeof AppFeasibilityRoute
   '/founding-access-terms': typeof AppFoundingAccessTermsRoute
+  '/getting-started': typeof AppGettingStartedRoute
   '/governance': typeof AppGovernanceRoute
   '/handoffs': typeof AppHandoffsRoute
   '/how-it-works': typeof AppHowItWorksRoute
@@ -952,8 +968,10 @@ export interface FileRoutesById {
   '/_app/editions': typeof AppEditionsRoute
   '/_app/enterprise': typeof AppEnterpriseRoute
   '/_app/entitlement': typeof AppEntitlementRoute
+  '/_app/faq': typeof AppFaqRoute
   '/_app/feasibility': typeof AppFeasibilityRoute
   '/_app/founding-access-terms': typeof AppFoundingAccessTermsRoute
+  '/_app/getting-started': typeof AppGettingStartedRoute
   '/_app/governance': typeof AppGovernanceRoute
   '/_app/handoffs': typeof AppHandoffsRoute
   '/_app/how-it-works': typeof AppHowItWorksRoute
@@ -1066,8 +1084,10 @@ export interface FileRouteTypes {
     | '/editions'
     | '/enterprise'
     | '/entitlement'
+    | '/faq'
     | '/feasibility'
     | '/founding-access-terms'
+    | '/getting-started'
     | '/governance'
     | '/handoffs'
     | '/how-it-works'
@@ -1176,8 +1196,10 @@ export interface FileRouteTypes {
     | '/editions'
     | '/enterprise'
     | '/entitlement'
+    | '/faq'
     | '/feasibility'
     | '/founding-access-terms'
+    | '/getting-started'
     | '/governance'
     | '/handoffs'
     | '/how-it-works'
@@ -1289,8 +1311,10 @@ export interface FileRouteTypes {
     | '/_app/editions'
     | '/_app/enterprise'
     | '/_app/entitlement'
+    | '/_app/faq'
     | '/_app/feasibility'
     | '/_app/founding-access-terms'
+    | '/_app/getting-started'
     | '/_app/governance'
     | '/_app/handoffs'
     | '/_app/how-it-works'
@@ -1620,6 +1644,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppEntitlementRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/faq': {
+      id: '/_app/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof AppFaqRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/feasibility': {
       id: '/_app/feasibility'
       path: '/feasibility'
@@ -1632,6 +1663,13 @@ declare module '@tanstack/react-router' {
       path: '/founding-access-terms'
       fullPath: '/founding-access-terms'
       preLoaderRoute: typeof AppFoundingAccessTermsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/getting-started': {
+      id: '/_app/getting-started'
+      path: '/getting-started'
+      fullPath: '/getting-started'
+      preLoaderRoute: typeof AppGettingStartedRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/governance': {
@@ -2286,8 +2324,10 @@ interface AppRouteChildren {
   AppEditionsRoute: typeof AppEditionsRoute
   AppEnterpriseRoute: typeof AppEnterpriseRoute
   AppEntitlementRoute: typeof AppEntitlementRoute
+  AppFaqRoute: typeof AppFaqRoute
   AppFeasibilityRoute: typeof AppFeasibilityRoute
   AppFoundingAccessTermsRoute: typeof AppFoundingAccessTermsRoute
+  AppGettingStartedRoute: typeof AppGettingStartedRoute
   AppGovernanceRoute: typeof AppGovernanceRoute
   AppHandoffsRoute: typeof AppHandoffsRoute
   AppHowItWorksRoute: typeof AppHowItWorksRoute
@@ -2359,8 +2399,10 @@ const AppRouteChildren: AppRouteChildren = {
   AppEditionsRoute: AppEditionsRoute,
   AppEnterpriseRoute: AppEnterpriseRoute,
   AppEntitlementRoute: AppEntitlementRoute,
+  AppFaqRoute: AppFaqRoute,
   AppFeasibilityRoute: AppFeasibilityRoute,
   AppFoundingAccessTermsRoute: AppFoundingAccessTermsRoute,
+  AppGettingStartedRoute: AppGettingStartedRoute,
   AppGovernanceRoute: AppGovernanceRoute,
   AppHandoffsRoute: AppHandoffsRoute,
   AppHowItWorksRoute: AppHowItWorksRoute,
