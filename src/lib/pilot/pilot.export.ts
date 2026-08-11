@@ -14,6 +14,14 @@ import {
   type PilotCohortRow,
   type PilotCohortSummary,
 } from "./pilot.model";
+import {
+  TRIAGE_CLASSES,
+  TRIAGE_CLASS_LABEL,
+  type EvidenceGapAlert,
+  type FreezeRecommendation,
+  type PilotEvidence,
+  type TriageFinding,
+} from "./pilot.triage";
 
 export function toCsvCell(value: string | number | boolean | null | undefined): string {
   if (value === null || value === undefined) return "";
@@ -195,3 +203,101 @@ export const FUNNEL_PDF_COLUMNS = [
   "Answers",
   "Advisory",
 ] as const;
+
+/* ------------------------------------------------------- triage report */
+
+export type TriageReportInput = {
+  cohort: string;
+  windowDays: number;
+  generatedAt: string;
+  evidence: PilotEvidence;
+  findings: readonly TriageFinding[];
+  freeze: FreezeRecommendation;
+  evidenceGap: EvidenceGapAlert;
+};
+
+/** One row per classified finding, with the route holding its evidence. */
+export function triageFindingsToCsv(findings: readonly TriageFinding[]): string {
+  const header = ["Triage", "Source", "Title", "Observations", "Detail", "Action", "Evidence route"];
+  const body = findings.map((finding) => [
+    TRIAGE_CLASS_LABEL[finding.triage],
+    finding.source,
+    finding.title,
+    finding.observations,
+    finding.detail,
+    finding.action,
+    finding.evidenceRoute ?? "",
+  ]);
+  return toCsv([header, ...body]);
+}
+
+/**
+ * Shareable Markdown report: verdict, evidence counts, the evidence-gap state
+ * and every classified finding with its evidence link. Pure text so the same
+ * artifact can be downloaded in-app or written by a script.
+ */
+export function buildTriageReportMarkdown(report: TriageReportInput): string {
+  const { cohort, evidence, findings, freeze, evidenceGap } = report;
+  const lines: string[] = [
+    `# Pilot triage report — cohort ${cohort}`,
+    ``,
+    `Generated ${report.generatedAt} · evidence window ${report.windowDays} days`,
+    ``,
+    `## Verdict`,
+    ``,
+    `**${freeze.headline}** (\`${freeze.verdict}\`)`,
+    ``,
+    freeze.freezeRecommended
+      ? `Recommendation: freeze scope now — P0 fixes only until launch.`
+      : `Recommendation: keep the pilot running to gather evidence before freezing.`,
+    ``,
+    `### Reasons`,
+    ``,
+    ...(freeze.reasons.length === 0
+      ? [`- No blocking reason recorded in the current evidence window.`]
+      : freeze.reasons.map((reason) => `- ${reason}`)),
+    ``,
+    `## Evidence gap watchdog`,
+    ``,
+    `- State: \`${evidenceGap.state}\` · ${evidenceGap.triggered ? "TRIGGERED" : "within window"}`,
+    `- Open ${evidenceGap.daysOpen} day(s), window ${evidenceGap.windowDays} day(s)`,
+    `- ${evidenceGap.detail}`,
+    `- Action: ${evidenceGap.action}`,
+    ``,
+    `## Evidence counts`,
+    ``,
+    ...buildFunnelSummaryLines(evidence.cohort).map((line) => `- ${line}`),
+    `- Open feedback records: ${evidence.feedback.length}`,
+    `- AI task rows: ${evidence.aiUsage.length}`,
+    `- Zero-result search rows: ${evidence.noResultSearches.length}`,
+    `- Security alerts evaluated: ${evidence.securityAlerts.length}`,
+    ``,
+    `## Findings by class`,
+    ``,
+    ...TRIAGE_CLASSES.map((cls) => `- ${TRIAGE_CLASS_LABEL[cls]}: ${freeze.counts[cls]}`),
+    ``,
+    `## Findings`,
+    ``,
+  ];
+
+  if (findings.length === 0) {
+    lines.push(
+      `No classified findings. Findings appear as participants answer checkpoints, send reports, or as AI, search and security signals accumulate.`,
+      ``,
+    );
+  } else {
+    for (const finding of findings) {
+      lines.push(
+        `### ${TRIAGE_CLASS_LABEL[finding.triage]} — ${finding.title}`,
+        ``,
+        `- Source: ${finding.source} · observations: ${finding.observations}`,
+        `- Detail: ${finding.detail}`,
+        `- Action: ${finding.action}`,
+        `- Evidence: ${finding.evidenceRoute ?? "not linked"}`,
+        ``,
+      );
+    }
+  }
+
+  return lines.join("\n");
+}
