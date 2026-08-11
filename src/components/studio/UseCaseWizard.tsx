@@ -22,6 +22,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Check, ChevronLeft, ChevronRight, Loader2, Save, Sparkles } from "lucide-react";
+import { AiSafetyNotice } from "@/components/ai/AiSafetyNotice";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -569,6 +570,7 @@ export function UseCaseWizard({ id }: { id: string }) {
                       Suggest
                     </Button>
                   </div>
+                  <AiSafetyNotice variant="inline" what="Each suggestion" className="mt-2" />
                   {suggestions && suggestions.length > 0 && (
                     <ul className="mt-3 space-y-3">
                       {suggestions.map((s) => (

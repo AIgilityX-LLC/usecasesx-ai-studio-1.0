@@ -741,6 +741,48 @@ export type Database = {
         }
         Relationships: []
       }
+      consent_records: {
+        Row: {
+          analytics: boolean
+          created_at: string
+          decided_at: string
+          id: string
+          marketing: boolean
+          organization_id: string | null
+          policy_version: string
+          source: string
+          updated_at: string
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          analytics?: boolean
+          created_at?: string
+          decided_at?: string
+          id?: string
+          marketing?: boolean
+          organization_id?: string | null
+          policy_version?: string
+          source?: string
+          updated_at?: string
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          analytics?: boolean
+          created_at?: string
+          decided_at?: string
+          id?: string
+          marketing?: boolean
+          organization_id?: string | null
+          policy_version?: string
+          source?: string
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
       countries: {
         Row: {
           code: string
@@ -816,6 +858,114 @@ export type Database = {
           utm_campaign?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+        }
+        Relationships: []
+      }
+      data_deletion_requests: {
+        Row: {
+          cancelled_at: string | null
+          completed_at: string | null
+          created_at: string
+          effective_at: string
+          grace_days: number
+          id: string
+          organization_id: string | null
+          reason: string | null
+          requested_at: string
+          scope: Json
+          status: string
+          updated_at: string
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          cancelled_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          effective_at?: string
+          grace_days?: number
+          id?: string
+          organization_id?: string | null
+          reason?: string | null
+          requested_at?: string
+          scope?: Json
+          status?: string
+          updated_at?: string
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          cancelled_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          effective_at?: string
+          grace_days?: number
+          id?: string
+          organization_id?: string | null
+          reason?: string | null
+          requested_at?: string
+          scope?: Json
+          status?: string
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
+      data_export_requests: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          error_message: string | null
+          expires_at: string
+          id: string
+          organization_id: string | null
+          payload: Json | null
+          payload_bytes: number
+          progress: number
+          requested_at: string
+          row_counts: Json
+          scope: string[]
+          status: string
+          updated_at: string
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          expires_at?: string
+          id?: string
+          organization_id?: string | null
+          payload?: Json | null
+          payload_bytes?: number
+          progress?: number
+          requested_at?: string
+          row_counts?: Json
+          scope?: string[]
+          status?: string
+          updated_at?: string
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          expires_at?: string
+          id?: string
+          organization_id?: string | null
+          payload?: Json | null
+          payload_bytes?: number
+          progress?: number
+          requested_at?: string
+          row_counts?: Json
+          scope?: string[]
+          status?: string
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string | null
         }
         Relationships: []
       }

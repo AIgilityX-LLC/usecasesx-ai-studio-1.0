@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { TRANSPARENCY_LINKS } from "@/lib/legal/legal-content";
+import { openConsentPreferences } from "@/components/legal/ConsentBanner";
 
 export function UseCasesXFooter() {
   return (
@@ -87,6 +88,13 @@ export function UseCasesXFooter() {
             <Link to="/privacy" className="hover:text-foreground">
               Privacy
             </Link>
+            <button
+              type="button"
+              onClick={openConsentPreferences}
+              className="hover:text-foreground"
+            >
+              Cookie preferences
+            </button>
             <Link to="/ai-notice" className="hover:text-foreground">
               AI notice
             </Link>

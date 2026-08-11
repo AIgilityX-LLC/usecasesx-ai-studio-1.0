@@ -51,6 +51,7 @@ export const SIDEBAR_NAV_TARGETS = [
   "/support",
   "/account",
   "/account/security",
+  "/account/data",
   "/entitlement",
   "/module-analytics",
 ] as const;
