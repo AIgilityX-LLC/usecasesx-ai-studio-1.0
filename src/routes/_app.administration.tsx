@@ -97,8 +97,9 @@ const ADMIN_ROLES = [
 export const Route = createFileRoute("/_app/administration")({
   head: () => ({
     meta: [
-      { title: "UseCasesX™ Admin", name: "robots" },
-      { name: "robots", content: "noindex" },
+      { title: "UseCasesX™ Admin" },
+      { name: "robots", content: "noindex, nofollow" },
+      { name: "googlebot", content: "noindex, nofollow" },
     ],
   }),
   component: AdminPage,
