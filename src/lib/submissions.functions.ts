@@ -141,12 +141,17 @@ export const reviewSubmission = createServerFn({ method: "POST" })
 
     if (data.status !== "approved" || !data.publish) return { published: null };
 
+    // Publishing into the global catalogue is a privileged write: the reviewer's
+    // own RLS context cannot insert global rows, so use the service client
+    // AFTER the reviewer role check above.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
     // Publish: derive a unique slug, then link the declared industry when it
     // matches a canonical taxonomy term.
     const base = slugifyTitle(submission.title);
     let slug = base;
     for (let attempt = 2; attempt <= 20; attempt += 1) {
-      const { data: clash } = await supabase
+      const { data: clash } = await supabaseAdmin
         .from("use_cases")
         .select("id")
         .eq("slug", slug)
@@ -155,7 +160,7 @@ export const reviewSubmission = createServerFn({ method: "POST" })
       slug = `${base}-${attempt}`;
     }
 
-    const { data: published, error: pubErr } = await supabase
+    const { data: published, error: pubErr } = await supabaseAdmin
       .from("use_cases")
       .insert({
         slug,
@@ -181,13 +186,13 @@ export const reviewSubmission = createServerFn({ method: "POST" })
     if (pubErr) throw new Error(pubErr.message);
 
     if (submission.industry) {
-      const { data: industry } = await supabase
+      const { data: industry } = await supabaseAdmin
         .from("industries")
         .select("id")
         .or(`slug.eq.${slugifyTitle(submission.industry)},name.eq.${submission.industry}`)
         .maybeSingle();
       if (industry)
-        await supabase
+        await supabaseAdmin
           .from("use_case_industries")
           .insert({ use_case_id: published.id, industry_id: industry.id });
     }
