@@ -574,7 +574,7 @@ function ComparePage() {
           </table>
         </div>
         {totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <span className="text-xs text-muted-foreground">
               Showing rows {safePage * ROWS_PER_PAGE + 1}–
               {Math.min((safePage + 1) * ROWS_PER_PAGE, orderedRows.length)} of {orderedRows.length}
