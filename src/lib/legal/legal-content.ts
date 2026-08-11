@@ -70,7 +70,7 @@ export const LEGAL_DOCUMENTS: LegalDocument[] = [
     title: "Terms of Use",
     metaTitle: "Terms of Use — UseCasesX",
     metaDescription:
-      "The operating terms for UseCasesX Lite, Pro Founding Access and Enterprise Design Partner engagements, including content ownership, AI assistance and account termination.",
+      "Operating terms for UseCasesX Lite, Pro Founding Access and Enterprise engagements: content ownership, AI assistance, acceptable use and account termination.",
     intro:
       "These terms describe the agreement between you and AIgilityX when you browse or use UseCasesX™. They are written to be readable rather than defensive.",
     sections: [
@@ -294,7 +294,7 @@ export const LEGAL_DOCUMENTS: LegalDocument[] = [
     title: "AI notice",
     metaTitle: "AI Notice — How UseCasesX Uses AI",
     metaDescription:
-      "How AI assistance works in UseCasesX: what it drafts, what is sent to providers, what is never used for training, fair-use metering and where human validation is required.",
+      "How AI assistance works in UseCasesX: what it drafts, what is sent to providers, what is never used for training, and where human validation is required.",
     intro: AI_DECISION_SUPPORT,
     sections: [
       {
@@ -390,7 +390,7 @@ export const LEGAL_DOCUMENTS: LegalDocument[] = [
     title: "Export and delete your data",
     metaTitle: "Data Export & Deletion — UseCasesX",
     metaDescription:
-      "How to export your UseCasesX portfolios, roadmaps, scorecards and deliverables, how to delete content or your whole account, and what the audit trail means for deletion.",
+      "How to export your UseCasesX portfolios, roadmaps and deliverables, how to delete content or your account, and what the audit trail means for deletion.",
     intro:
       "You can take your work out of UseCasesX at any time, and you can ask us to delete it. This page states exactly how, and it is honest about the one thing deletion does not remove.",
     sections: [
