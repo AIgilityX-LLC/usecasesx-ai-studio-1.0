@@ -53,9 +53,7 @@ async function persistEvent(cta: string, payload: Record<string, unknown> = {}):
     user_id: data.user?.id ?? null,
     use_case_id: useCaseId,
     source_page:
-      typeof payload.source_page === "string"
-        ? payload.source_page.slice(0, 500)
-        : currentPath,
+      typeof payload.source_page === "string" ? payload.source_page.slice(0, 500) : currentPath,
     target_route:
       typeof payload.target_route === "string" ? payload.target_route.slice(0, 500) : null,
     target_platform:
