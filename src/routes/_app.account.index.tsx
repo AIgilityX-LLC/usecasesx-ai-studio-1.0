@@ -3,6 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { privateHead } from "@/lib/seo";
+import { AVATAR_BUCKET } from "@/lib/storage/buckets";
+import {
+  BUCKET_POLICIES,
+  extensionOf,
+  signedUrlTtl,
+  validateUpload,
+} from "@/lib/storage/storage-policy";
 
 export const Route = createFileRoute("/_app/account/")({
   head: () => privateHead("Account"),
