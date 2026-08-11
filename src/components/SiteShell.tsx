@@ -8,6 +8,7 @@ import { AppBreadcrumb } from "./AppBreadcrumb";
 import { MobileNav } from "./MobileNav";
 
 import { UseCasesXFooter } from "./UseCasesXFooter";
+import brandMark from "@/assets/usecasesx-logo.png";
 import { EmailVerificationBanner } from "./EmailVerificationBanner";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { supabase } from "@/integrations/supabase/client";
