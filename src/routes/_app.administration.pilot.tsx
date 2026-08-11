@@ -19,6 +19,11 @@ import {
   setPilotInvitationsPausedFn,
 } from "@/lib/pilot/pilot.functions";
 import {
+  ROSTER_MAX_ROWS,
+  parseParticipantRoster,
+  type RosterParseResult,
+} from "@/lib/pilot/pilot.roster";
+import {
   PILOT_STATUSES,
   checkpointDeepLinks,
   pilotAuditActionLabel,
@@ -29,6 +34,7 @@ import {
 } from "@/lib/pilot/pilot.model";
 import { PilotExportMenu } from "@/components/pilot/PilotExportMenu";
 import { PilotTriagePanel } from "@/components/pilot/PilotTriagePanel";
+import { PilotLaunchGovernanceCard } from "@/components/pilot/PilotLaunchGovernanceCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -81,6 +87,8 @@ function PilotAdmin() {
   const [statusReason, setStatusReason] = useState("");
   const [bulkEmails, setBulkEmails] = useState("");
   const [bulkOrganization, setBulkOrganization] = useState("");
+  const [roster, setRoster] = useState<RosterParseResult | null>(null);
+  const [rosterFileName, setRosterFileName] = useState<string | null>(null);
 
   const parsedBulkEmails = useMemo(
     () =>
@@ -170,6 +178,54 @@ function PilotAdmin() {
         description: error instanceof Error ? error.message : "Please try again.",
       }),
   });
+
+  /** CSV/TSV roster upload: parsed in the browser, enrolled in one action. */
+  const rosterMutation = useMutation({
+    mutationFn: () =>
+      inviteCohort({
+        data: {
+          participants: roster?.participants ?? [],
+          organization: bulkOrganization.trim() || null,
+        },
+      }),
+    onSuccess: (result) => {
+      toast.success(
+        `${result.created.length} seat${result.created.length === 1 ? "" : "s"} provisioned from the file`,
+        {
+          description:
+            result.skipped.length > 0
+              ? `${result.seatsUsed}/${result.seatTarget} seats used · ${result.skipped.length} skipped (${result.skipped[0]!.reason})`
+              : `${result.seatsUsed}/${result.seatTarget} seats used`,
+        },
+      );
+      setRoster(null);
+      setRosterFileName(null);
+      void refresh();
+    },
+    onError: (error: unknown) =>
+      toast.error("Roster not enrolled", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      }),
+  });
+
+  const onRosterFile = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = parseParticipantRoster(text, { maxRows: ROSTER_MAX_ROWS });
+      setRoster(parsed);
+      setRosterFileName(file.name);
+      if (parsed.participants.length === 0) {
+        toast.error("No usable rows in that file", {
+          description: parsed.issues[0]?.reason ?? "Expected an email column or one email per line.",
+        });
+      }
+    } catch (error) {
+      toast.error("File could not be read", {
+        description: error instanceof Error ? error.message : "Please upload a CSV or text file.",
+      });
+    }
+  };
 
   const statusMutation = useMutation({
     mutationFn: (input: { id: string; status: PilotStatus }) =>
