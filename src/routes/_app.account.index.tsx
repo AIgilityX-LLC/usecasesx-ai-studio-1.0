@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { privateHead } from "@/lib/seo";
 import { AVATAR_BUCKET } from "@/lib/storage/buckets";
+import { UploadConstraints, UploadError } from "@/components/storage/UploadConstraints";
 import {
   BUCKET_POLICIES,
   extensionOf,
