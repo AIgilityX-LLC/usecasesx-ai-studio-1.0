@@ -21,6 +21,8 @@ export const Route = createFileRoute("/auth")({
         name: "description",
         content: "Sign in to UseCasesX™ — Global AI Use Cases Repository & Development Studio.",
       },
+      { name: "robots", content: "noindex, nofollow" },
+      { name: "googlebot", content: "noindex, nofollow" },
     ],
   }),
   component: AuthPage,

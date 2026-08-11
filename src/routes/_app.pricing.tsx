@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Fragment, useState } from "react";
+import { publicHead } from "@/lib/seo";
 import { Check, Minus, Sparkles, Shield, Crown, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,20 +23,13 @@ import {
 const FREE_UNTIL = "31 Dec 2026";
 
 export const Route = createFileRoute("/_app/pricing")({
-  head: () => ({
-    meta: [
-      { title: "Pricing — UseCasesX™" },
-      {
-        name: "description",
-        content: "Choose the right plan: Lite, Pro, or Enterprise Sovereign AI System.",
-      },
-      { property: "og:title", content: "UseCasesX™ Pricing" },
-      {
-        property: "og:description",
-        content: "Lite, Pro, and Enterprise plans for AI use case discovery and governance.",
-      },
-    ],
-  }),
+  head: () =>
+    publicHead({
+      path: "/pricing",
+      title: "Pricing — UseCasesX™",
+      description:
+        "Lite, Pro Founding Access and Enterprise plans for AI use case discovery, scoring, portfolios and governance.",
+    }),
   component: PricingPage,
 });
 
