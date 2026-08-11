@@ -23,6 +23,13 @@ import {
   uploadEvidenceFile,
 } from "@/lib/domain/benefit-evidence.repository";
 import type { BenefitEvidenceItem } from "@/lib/value/benefits.model";
+import { EVIDENCE_BUCKET } from "@/lib/storage/buckets";
+import { acceptAttribute, validateUpload } from "@/lib/storage/storage-policy";
+import {
+  UploadConstraints,
+  UploadError,
+  uploadConstraintsText,
+} from "@/components/storage/UploadConstraints";
 
 export function BenefitEvidenceEditor({
   useCaseId,
@@ -38,6 +45,7 @@ export function BenefitEvidenceEditor({
   const [label, setLabel] = useState("");
   const [url, setUrl] = useState("");
   const [busy, setBusy] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [opening, setOpening] = useState<string | null>(null);
 
   const addLink = () => {
