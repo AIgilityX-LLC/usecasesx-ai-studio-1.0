@@ -106,4 +106,4 @@ console.log(
     ? "\nRelease candidate integrity: PASS"
     : `\nRelease candidate integrity: FAIL (${failures.length})`,
 );
-process.exit(failures.length === 0 ? 1 * 0 + (failures.length ? 1 : 0) : 0);
+process.exit(failures.length === 0 ? 0 : 1);
