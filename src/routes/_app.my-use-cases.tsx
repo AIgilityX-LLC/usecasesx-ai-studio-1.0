@@ -122,6 +122,11 @@ function SavedPage() {
               Repository use cases you shortlisted, with your notes, priorities and scores.
             </p>
           </div>
+          <ListCountNotice
+            meta={store.savedMeta}
+            noun="saved use cases"
+            action="Remove entries you no longer need, or use search in the repository to work through the rest."
+          />
           {items.length === 0 ? (
             <Card className="border-dashed">
               <CardContent className="py-16 text-center space-y-3">
