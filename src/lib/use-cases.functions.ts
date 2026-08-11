@@ -16,6 +16,10 @@ const ListInput = z.object({
   businessFunctions: z.array(z.string()).optional().default([]),
   objectives: z.array(z.string()).optional().default([]),
   processes: z.array(z.string()).optional().default([]),
+  /** ISO country codes (see `countries.code`). */
+  countries: z.array(z.string()).optional().default([]),
+  /** Public-sector government function slugs (see `gov_functions.slug`). */
+  govFunctions: z.array(z.string()).optional().default([]),
   maturity: z.array(z.string()).optional().default([]),
   valuePotential: z.array(z.string()).optional().default([]),
   complexity: z.array(z.string()).optional().default([]),
@@ -44,15 +48,23 @@ const SELECT = `id, slug, title, summary, organization, organization_type, regio
   use_case_industries ( industries ( slug, name ) ),
   use_case_capabilities ( ai_capabilities ( slug, name ) ),
   use_case_business_functions ( business_functions ( slug, name ) ),
-  use_case_business_objectives ( business_objectives ( slug, name ) )` as string;
+  use_case_business_objectives ( business_objectives ( slug, name ) ),
+  use_case_countries ( countries ( code, name, region ) ),
+  use_case_gov_functions ( gov_functions ( slug, name ) )` as string;
 
 /** Link tables that map a use case to a taxonomy term, keyed by facet name. */
 const TAXONOMY_JOINS = {
-  industries: { table: "use_case_industries", ref: "industries" },
-  capabilities: { table: "use_case_capabilities", ref: "ai_capabilities" },
-  businessFunctions: { table: "use_case_business_functions", ref: "business_functions" },
-  objectives: { table: "use_case_business_objectives", ref: "business_objectives" },
-  processes: { table: "use_case_processes", ref: "taxonomy_processes" },
+  industries: { table: "use_case_industries", ref: "industries", key: "slug" },
+  capabilities: { table: "use_case_capabilities", ref: "ai_capabilities", key: "slug" },
+  businessFunctions: {
+    table: "use_case_business_functions",
+    ref: "business_functions",
+    key: "slug",
+  },
+  objectives: { table: "use_case_business_objectives", ref: "business_objectives", key: "slug" },
+  processes: { table: "use_case_processes", ref: "taxonomy_processes", key: "slug" },
+  countries: { table: "use_case_countries", ref: "countries", key: "code" },
+  govFunctions: { table: "use_case_gov_functions", ref: "gov_functions", key: "slug" },
 } as const;
 
 type TaxonomyFacet = keyof typeof TAXONOMY_JOINS;
@@ -71,8 +83,8 @@ async function idsForFacet(
   const join = TAXONOMY_JOINS[facet];
   const { data, error } = await sb
     .from(join.table)
-    .select(`use_case_id, ${join.ref}!inner(slug)`)
-    .in(`${join.ref}.slug`, slugs);
+    .select(`use_case_id, ${join.ref}!inner(${join.key})`)
+    .in(`${join.ref}.${join.key}`, slugs);
   if (error) throw new Error(error.message);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return Array.from(new Set((data ?? []).map((r: any) => r.use_case_id as string)));
@@ -132,7 +144,6 @@ export const listUseCases = createServerFn({ method: "GET" })
       query = query.in("security_classification", data.securityClassification);
     if (data.provenance.length) query = query.in("provenance", data.provenance);
     if (data.qualityStatus.length) query = query.in("quality_status", data.qualityStatus);
-
     if (data.sort === "impact")
       query = query.order("impact_score", { ascending: false, nullsFirst: false });
     else if (data.sort === "maturity")
@@ -169,7 +180,7 @@ export const listRepositoryFacets = createServerFn({ method: "GET" }).handler(as
     const join = TAXONOMY_JOINS[facet];
     const { data, error } = await sb
       .from(join.table)
-      .select(`use_case_id, ${join.ref}!inner(slug, name), use_cases!inner(visibility)`)
+      .select(`use_case_id, ${join.ref}!inner(${join.key}, name), use_cases!inner(visibility)`)
       .in("use_cases.visibility", ["free_lite", "both"]);
     if (error) throw new Error(error.message);
 
@@ -177,29 +188,41 @@ export const listRepositoryFacets = createServerFn({ method: "GET" }).handler(as
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     for (const row of (data ?? []) as any[]) {
       const ref = row[join.ref];
-      if (!ref?.slug) continue;
-      const entry = bySlug.get(ref.slug) ?? {
-        slug: ref.slug,
-        name: ref.name ?? ref.slug,
+      const slug = ref?.[join.key] as string | undefined;
+      if (!slug) continue;
+      const entry = bySlug.get(slug) ?? {
+        slug,
+        name: ref.name ?? slug,
         count: 0,
       };
       entry.count += 1;
-      bySlug.set(ref.slug, entry);
+      bySlug.set(slug, entry);
     }
     return Array.from(bySlug.values()).sort(
       (a, b) => b.count - a.count || a.name.localeCompare(b.name),
     );
   }
 
-  const [industries, capabilities, businessFunctions, objectives, processes] = await Promise.all([
-    countsFor("industries"),
-    countsFor("capabilities"),
-    countsFor("businessFunctions"),
-    countsFor("objectives"),
-    countsFor("processes"),
-  ]);
+  const [industries, capabilities, businessFunctions, objectives, processes, countries, govFunctions] =
+    await Promise.all([
+      countsFor("industries"),
+      countsFor("capabilities"),
+      countsFor("businessFunctions"),
+      countsFor("objectives"),
+      countsFor("processes"),
+      countsFor("countries"),
+      countsFor("govFunctions"),
+    ]);
 
-  return { industries, capabilities, businessFunctions, objectives, processes };
+  return {
+    industries,
+    capabilities,
+    businessFunctions,
+    objectives,
+    processes,
+    countries,
+    govFunctions,
+  };
 });
 
 export const getUseCase = createServerFn({ method: "GET" })
@@ -214,6 +237,8 @@ export const getUseCase = createServerFn({ method: "GET" })
          use_case_capabilities ( ai_capabilities ( slug, name ) ),
          use_case_business_functions ( business_functions ( slug, name ) ),
          use_case_business_objectives ( business_objectives ( slug, name ) ),
+         use_case_countries ( countries ( code, name, region ) ),
+         use_case_gov_functions ( gov_functions ( slug, name ) ),
          use_case_metrics ( id, label, value, unit, sort_order ),
          use_case_links ( id, label, url, kind )`,
       )
@@ -227,17 +252,25 @@ export const getUseCase = createServerFn({ method: "GET" })
 
 export const listTaxonomies = createServerFn({ method: "GET" }).handler(async () => {
   const sb = publicClient();
-  const [ind, cap, bfn, obj] = await Promise.all([
+  const [ind, cap, bfn, obj, ctry, gov] = await Promise.all([
     sb.from("industries").select("slug,name").order("name"),
     sb.from("ai_capabilities").select("slug,name").order("name"),
     sb.from("business_functions").select("slug,name").order("name"),
     sb.from("business_objectives").select("slug,name").order("name"),
+    sb.from("countries").select("code,name,region").order("name"),
+    sb.from("gov_functions").select("slug,name").order("name"),
   ]);
   return {
     industries: ind.data ?? [],
     capabilities: cap.data ?? [],
     businessFunctions: bfn.data ?? [],
     objectives: obj.data ?? [],
+    countries: (ctry.data ?? []).map((c) => ({
+      slug: c.code,
+      name: c.name,
+      region: c.region ?? null,
+    })),
+    govFunctions: gov.data ?? [],
   };
 });
 

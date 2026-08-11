@@ -1,4 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
+import brandMark from "@/assets/usecasesx-logo.png";
 import {
   LayoutDashboard,
   Library,
@@ -169,9 +170,11 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
         <Link to="/" className="flex items-center gap-2 px-2 py-1.5">
-          <div className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-primary/15 ring-1 ring-primary/40">
-            <span className="font-mono text-[12px] font-black text-primary">UX</span>
-          </div>
+          <img
+            src={brandMark}
+            alt="UseCasesX brand mark"
+            className="h-8 w-8 shrink-0 rounded-md ring-1 ring-primary/40"
+          />
           {!collapsed && (
             <div className="leading-tight">
               <div className="text-[13px] font-bold tracking-tight">UseCasesX™</div>

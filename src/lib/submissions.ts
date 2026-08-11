@@ -1,4 +1,7 @@
 // Shared constants/helpers for user use-case submissions.
+import { z } from "zod";
+import type { Database } from "@/integrations/supabase/types";
+
 export const SUBMISSION_STATUSES = [
   "draft",
   "submitted",
@@ -51,4 +54,58 @@ export function parseList(raw: string): string[] {
     .split(",")
     .map((x) => x.trim())
     .filter(Boolean);
+}
+
+/** Roles allowed to review and publish community submissions. */
+export const REVIEW_ROLES = [
+  "admin",
+  "moderator",
+  "super_admin",
+  "usecasex_admin",
+  "content_manager",
+  "reviewer",
+] as const satisfies readonly Database["public"]["Enums"]["app_role"][];
+
+/** Validation contract shared by the submit form and the server function. */
+export const SubmissionInput = z.object({
+  title: z.string().trim().min(8, "Give the use case a descriptive title.").max(200),
+  summary: z
+    .string()
+    .trim()
+    .min(30, "Write at least a sentence or two summarising the use case.")
+    .max(1000),
+  businessProblem: z
+    .string()
+    .trim()
+    .min(30, "Describe the business or public-service problem.")
+    .max(4000),
+  aiSolution: z.string().trim().min(30, "Describe the AI solution approach.").max(4000),
+  industry: z.string().trim().max(120).optional(),
+  sector: z.string().trim().max(120).optional(),
+  tags: z.array(z.string().trim().min(1).max(60)).max(12),
+  sources: z.array(z.string().trim().min(1).max(500)).max(12),
+  status: z.enum(["draft", "submitted"]),
+});
+export type SubmissionInputValue = z.infer<typeof SubmissionInput>;
+
+export const SubmissionIdInput = z.object({ id: z.string().uuid() });
+
+export const ReviewInput = z.object({
+  id: z.string().uuid(),
+  status: z.enum(["submitted", "in_review", "approved", "rejected"]),
+  reviewNotes: z.string().trim().max(2000).nullable(),
+  /** Approving with `publish` also creates the public repository record. */
+  publish: z.boolean().optional().default(true),
+});
+
+/** URL-safe slug for a published repository record. */
+export function slugifyTitle(title: string): string {
+  return (
+    title
+      .toLowerCase()
+      .normalize("NFKD")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 90) || "use-case"
+  );
 }
