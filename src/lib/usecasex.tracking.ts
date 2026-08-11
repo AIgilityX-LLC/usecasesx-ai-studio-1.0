@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { PUBLIC_LAUNCH_FEATURES } from "@/lib/feature-flags";
 import { getAttribution, sanitizeSearchQuery } from "@/lib/analytics/attribution";
+import { ensureAnalyticsSession } from "@/lib/analytics/session";
 
 export type CtaEvent =
   | "view_use_case"
@@ -39,8 +40,13 @@ export function detectDevice(
 
 async function persistEvent(cta: string, payload: Record<string, unknown> = {}): Promise<void> {
   if (!PUBLIC_LAUNCH_FEATURES.lifecycleAnalytics) return;
-  const { data } = await supabase.auth.getUser();
+  // Read location-derived context BEFORE any await: a CTA click usually starts
+  // a client-side navigation, so awaiting first would lose the campaign
+  // parameters and the originating path of the click.
   const attribution = getAttribution();
+  const sessionId = ensureAnalyticsSession();
+  const currentPath = window.location.pathname;
+  const { data } = await supabase.auth.getUser();
   const useCaseId = typeof payload.use_case_id === "string" ? payload.use_case_id : null;
   const { error } = await supabase.from("cta_events").insert({
     cta: cta.slice(0, 100),
@@ -49,12 +55,12 @@ async function persistEvent(cta: string, payload: Record<string, unknown> = {}):
     source_page:
       typeof payload.source_page === "string"
         ? payload.source_page.slice(0, 500)
-        : window.location.pathname,
+        : currentPath,
     target_route:
       typeof payload.target_route === "string" ? payload.target_route.slice(0, 500) : null,
     target_platform:
       typeof payload.target_platform === "string" ? payload.target_platform.slice(0, 100) : null,
-    session_id: window.sessionStorage.getItem("usecasex_session_id"),
+    session_id: sessionId,
     device: detectDevice(
       window.innerWidth,
       typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)").matches,
