@@ -331,6 +331,14 @@ function PilotAdmin() {
 
       <PilotTriagePanel />
 
+      <PilotLaunchGovernanceCard
+        cohort={settings?.cohort ?? "pilot"}
+        rows={rows}
+        checkpoints={checkpoints}
+        audit={audit}
+        emailByUserId={emailByUserId}
+      />
+
       <Card>
         <CardHeader className="gap-3">
           <CardTitle className="text-base">Evidence and nudges</CardTitle>
@@ -453,6 +461,88 @@ function PilotAdmin() {
                     ? "No valid email addresses detected yet — max 25 per batch."
                     : `${parsedBulkEmails.length} valid address${parsedBulkEmails.length === 1 ? "" : "es"} detected. Duplicates and full-cohort overflow are skipped and reported.`}
                 </p>
+              </div>
+
+              <div className="space-y-2 border-t pt-3">
+                <Label htmlFor="pilot-roster-file">Or upload a roster file (CSV/TSV)</Label>
+                <Input
+                  id="pilot-roster-file"
+                  type="file"
+                  accept=".csv,.tsv,.txt,text/csv,text/plain"
+                  disabled={settings?.invitationsPaused}
+                  aria-describedby="pilot-roster-help"
+                  onChange={(event) => {
+                    void onRosterFile(event.target.files?.[0]);
+                    event.target.value = "";
+                  }}
+                />
+                <p id="pilot-roster-help" className="text-xs text-muted-foreground">
+                  Columns <code>email</code>, <code>name</code>, <code>organisation</code>,{" "}
+                  <code>notes</code> — header optional, or one email per line. Up to{" "}
+                  {ROSTER_MAX_ROWS} seats per upload.
+                </p>
+                {roster && (
+                  <div className="space-y-2 rounded-md border p-3 text-xs">
+                    <p className="font-medium">
+                      {rosterFileName}: {roster.participants.length} seat
+                      {roster.participants.length === 1 ? "" : "s"} ready
+                      {roster.truncated
+                        ? ` · ${roster.usableRows - roster.participants.length} row(s) over the ${ROSTER_MAX_ROWS}-seat limit`
+                        : ""}
+                    </p>
+                    {roster.participants.length > 0 && (
+                      <ul className="max-h-32 space-y-1 overflow-y-auto text-muted-foreground">
+                        {roster.participants.map((participant) => (
+                          <li key={participant.email}>
+                            {participant.email}
+                            {participant.fullName ? ` · ${participant.fullName}` : ""}
+                            {participant.organization ? ` · ${participant.organization}` : ""}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {roster.issues.length > 0 && (
+                      <details>
+                        <summary className="cursor-pointer text-destructive">
+                          {roster.issues.length} row(s) skipped
+                        </summary>
+                        <ul className="mt-1 space-y-1 text-muted-foreground">
+                          {roster.issues.slice(0, 10).map((issue, index) => (
+                            <li key={`${issue.value}-${index}`}>
+                              {issue.line > 0 ? `Line ${issue.line}: ` : ""}
+                              {issue.value || "(empty)"} — {issue.reason}
+                            </li>
+                          ))}
+                        </ul>
+                      </details>
+                    )}
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Button
+                        size="sm"
+                        onClick={() => rosterMutation.mutate()}
+                        disabled={
+                          rosterMutation.isPending ||
+                          roster.participants.length === 0 ||
+                          Boolean(settings?.invitationsPaused)
+                        }
+                      >
+                        {rosterMutation.isPending
+                          ? "Provisioning…"
+                          : `Provision ${roster.participants.length} seat${roster.participants.length === 1 ? "" : "s"}`}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setRoster(null);
+                          setRosterFileName(null);
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>

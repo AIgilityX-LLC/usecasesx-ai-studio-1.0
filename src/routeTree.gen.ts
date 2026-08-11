@@ -82,6 +82,7 @@ import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.se
 import { Route as AppAccountTeamRouteImport } from './routes/_app.account.team'
 import { Route as AppAdministrationAnalyticsRouteImport } from './routes/_app.administration.analytics'
 import { Route as AppAdministrationFeedbackRouteImport } from './routes/_app.administration.feedback'
+import { Route as AppAdministrationLaunchChecksRouteImport } from './routes/_app.administration.launch-checks'
 import { Route as AppAdministrationLaunchLearningRouteImport } from './routes/_app.administration.launch-learning'
 import { Route as AppAdministrationPilotRouteImport } from './routes/_app.administration.pilot'
 import { Route as AppAdministrationRequestsRouteImport } from './routes/_app.administration.requests'
@@ -491,6 +492,12 @@ const AppAdministrationFeedbackRoute =
     path: '/feedback',
     getParentRoute: () => AppAdministrationRoute,
   } as any)
+const AppAdministrationLaunchChecksRoute =
+  AppAdministrationLaunchChecksRouteImport.update({
+    id: '/launch-checks',
+    path: '/launch-checks',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
 const AppAdministrationLaunchLearningRoute =
   AppAdministrationLaunchLearningRouteImport.update({
     id: '/launch-learning',
@@ -792,6 +799,7 @@ export interface FileRoutesByFullPath {
   '/account/team': typeof AppAccountTeamRoute
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
+  '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/administration/pilot': typeof AppAdministrationPilotRoute
   '/administration/requests': typeof AppAdministrationRequestsRoute
@@ -906,6 +914,7 @@ export interface FileRoutesByTo {
   '/account/team': typeof AppAccountTeamRoute
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
+  '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/administration/pilot': typeof AppAdministrationPilotRoute
   '/administration/requests': typeof AppAdministrationRequestsRoute
@@ -1024,6 +1033,7 @@ export interface FileRoutesById {
   '/_app/account/team': typeof AppAccountTeamRoute
   '/_app/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/_app/administration/feedback': typeof AppAdministrationFeedbackRoute
+  '/_app/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/_app/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/_app/administration/pilot': typeof AppAdministrationPilotRoute
   '/_app/administration/requests': typeof AppAdministrationRequestsRoute
@@ -1142,6 +1152,7 @@ export interface FileRouteTypes {
     | '/account/team'
     | '/administration/analytics'
     | '/administration/feedback'
+    | '/administration/launch-checks'
     | '/administration/launch-learning'
     | '/administration/pilot'
     | '/administration/requests'
@@ -1256,6 +1267,7 @@ export interface FileRouteTypes {
     | '/account/team'
     | '/administration/analytics'
     | '/administration/feedback'
+    | '/administration/launch-checks'
     | '/administration/launch-learning'
     | '/administration/pilot'
     | '/administration/requests'
@@ -1373,6 +1385,7 @@ export interface FileRouteTypes {
     | '/_app/account/team'
     | '/_app/administration/analytics'
     | '/_app/administration/feedback'
+    | '/_app/administration/launch-checks'
     | '/_app/administration/launch-learning'
     | '/_app/administration/pilot'
     | '/_app/administration/requests'
@@ -1950,6 +1963,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdministrationFeedbackRouteImport
       parentRoute: typeof AppAdministrationRoute
     }
+    '/_app/administration/launch-checks': {
+      id: '/_app/administration/launch-checks'
+      path: '/launch-checks'
+      fullPath: '/administration/launch-checks'
+      preLoaderRoute: typeof AppAdministrationLaunchChecksRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/administration/launch-learning': {
       id: '/_app/administration/launch-learning'
       path: '/launch-learning'
@@ -2270,6 +2290,7 @@ const AppAccountRouteWithChildren = AppAccountRoute._addFileChildren(
 interface AppAdministrationRouteChildren {
   AppAdministrationAnalyticsRoute: typeof AppAdministrationAnalyticsRoute
   AppAdministrationFeedbackRoute: typeof AppAdministrationFeedbackRoute
+  AppAdministrationLaunchChecksRoute: typeof AppAdministrationLaunchChecksRoute
   AppAdministrationLaunchLearningRoute: typeof AppAdministrationLaunchLearningRoute
   AppAdministrationPilotRoute: typeof AppAdministrationPilotRoute
   AppAdministrationRequestsRoute: typeof AppAdministrationRequestsRoute
@@ -2278,6 +2299,7 @@ interface AppAdministrationRouteChildren {
 const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationAnalyticsRoute: AppAdministrationAnalyticsRoute,
   AppAdministrationFeedbackRoute: AppAdministrationFeedbackRoute,
+  AppAdministrationLaunchChecksRoute: AppAdministrationLaunchChecksRoute,
   AppAdministrationLaunchLearningRoute: AppAdministrationLaunchLearningRoute,
   AppAdministrationPilotRoute: AppAdministrationPilotRoute,
   AppAdministrationRequestsRoute: AppAdministrationRequestsRoute,
@@ -2527,3 +2549,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
