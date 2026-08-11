@@ -4792,6 +4792,10 @@ export type Database = {
         Args: { _portfolio_id: string; _user_id: string }
         Returns: boolean
       }
+      publish_use_case_submission: {
+        Args: { _review_notes?: string; _submission_id: string }
+        Returns: Json
+      }
       user_can_access_use_case: {
         Args: { _use_case_id: string; _user_id: string }
         Returns: boolean
