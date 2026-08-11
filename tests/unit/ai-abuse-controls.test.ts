@@ -77,6 +77,7 @@ describe("prompt-injection sanitisation", () => {
   });
 
   it("strips control characters", () => {
+    // eslint-disable-next-line no-control-regex -- matching control characters is the point
     expect(sanitizeUntrusted("a\u0000b\u0007c")).not.toMatch(/[\u0000-\u0008]/);
   });
 

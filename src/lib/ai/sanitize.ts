@@ -13,6 +13,7 @@
  * Applied at a single choke point (`AIService.run`) so no task can forget it.
  */
 
+// eslint-disable-next-line no-control-regex -- matching control characters is the point
 const CONTROL_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
 
 const NEUTRALISE: Array<[RegExp, string]> = [
