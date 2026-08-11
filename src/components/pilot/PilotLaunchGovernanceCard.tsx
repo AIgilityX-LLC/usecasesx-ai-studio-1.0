@@ -23,11 +23,17 @@ import { DISPATCH_STATUS_LABEL, activeWaiver, isWaiverActive } from "@/lib/pilot
 import {
   buildPilotTimeline,
   buildTimelineMarkdown,
+  buildTimelinePdfRows,
+  buildTimelineSummaryLines,
   countTimeline,
   pilotTimelineToCsv,
+  TIMELINE_PDF_COLUMNS,
   TIMELINE_CATEGORIES,
   TIMELINE_CATEGORY_LABEL,
 } from "@/lib/pilot/pilot.timeline";
+import { listLaunchCheckRunsFn, runAndRecordLaunchChecksFn } from "@/lib/qa/qa.functions";
+import { describeRun, RUN_TRIGGER_LABEL, runVerdict } from "@/lib/qa/launch-runs";
+import type { RunTrigger } from "@/lib/qa/launch-runs";
 import type {
   PilotAuditEvent,
   PilotCheckpointResponse,
@@ -82,6 +88,8 @@ export function PilotLaunchGovernanceCard({
   const revoke = useServerFn(revokeLaunchWaiverFn);
   const recordVerdict = useServerFn(recordPilotVerdictFn);
   const runGapEmails = useServerFn(runEvidenceGapEmailsFn);
+  const runChecks = useServerFn(runAndRecordLaunchChecksFn);
+  const loadCheckRuns = useServerFn(listLaunchCheckRunsFn);
   const queryClient = useQueryClient();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -90,6 +98,7 @@ export function PilotLaunchGovernanceCard({
   const [approverRole, setApproverRole] = useState("");
   const [expiresAt, setExpiresAt] = useState("");
   const [revokeReason, setRevokeReason] = useState("");
+  const [pdfBusy, setPdfBusy] = useState(false);
 
   const governance = useQuery({
     queryKey: ["pilot-governance"],
@@ -97,10 +106,40 @@ export function PilotLaunchGovernanceCard({
     retry: false,
   });
 
+  const checkRuns = useQuery({
+    queryKey: ["pilot-launch-check-runs", cohort],
+    queryFn: () => loadCheckRuns({ data: { cohort, limit: 25 } }),
+    retry: false,
+  });
+
   const refresh = () => {
     void queryClient.invalidateQueries({ queryKey: ["pilot-governance"] });
     void queryClient.invalidateQueries({ queryKey: ["pilot-triage"] });
     void queryClient.invalidateQueries({ queryKey: ["pilot-cohort"] });
+    void queryClient.invalidateQueries({ queryKey: ["pilot-launch-check-runs"] });
+  };
+
+  /**
+   * Re-runs the signed-in P0/P1 launch checks and records the pass, so the
+   * evidence timeline shows the checks that were green at the moment a waiver
+   * was approved or revoked.
+   */
+  const rerunChecks = async (trigger: RunTrigger, triggerDetail: string) => {
+    try {
+      const { run } = await runChecks({ data: { cohort, trigger, triggerDetail } });
+      const verdict = run.summary.verdict;
+      const description = `${run.summary.passed}/${run.summary.total} passed · P0 failures ${run.summary.p0Failures}`;
+      if (verdict === "pass") toast.success("Launch checks re-run — pass", { description });
+      else if (verdict === "attention")
+        toast.warning("Launch checks re-run — needs attention", { description });
+      else toast.error("Launch checks re-run — P0 failure", { description });
+    } catch (error) {
+      toast.error("Launch checks could not be re-run", {
+        description: error instanceof Error ? error.message : "Run them from Launch checks.",
+      });
+    } finally {
+      void queryClient.invalidateQueries({ queryKey: ["pilot-launch-check-runs"] });
+    }
   };
 
   const waivers = governance.data?.waivers ?? [];
@@ -119,11 +158,79 @@ export function PilotLaunchGovernanceCard({
         dispatches,
         snapshots,
         waivers,
+        launchCheckRuns: checkRuns.data ?? [],
       }),
-    [cohort, rows, checkpoints, audit, emailByUserId, dispatches, snapshots, waivers],
+    [
+      cohort,
+      rows,
+      checkpoints,
+      audit,
+      emailByUserId,
+      dispatches,
+      snapshots,
+      waivers,
+      checkRuns.data,
+    ],
   );
   const counts = useMemo(() => countTimeline(timeline), [timeline]);
   const stamp = new Date().toISOString().slice(0, 10);
+
+  /** Paginated PDF rendering of the same timeline rows the CSV exports. */
+  const exportTimelinePdf = async () => {
+    setPdfBusy(true);
+    try {
+      const { default: JsPDF } = await import("jspdf");
+      const doc = new JsPDF({ unit: "pt", format: "a4" });
+      const margin = 48;
+      let y = margin;
+
+      doc.setFontSize(16);
+      doc.text(`Pilot evidence timeline — cohort ${cohort}`, margin, y);
+      y += 20;
+      doc.setFontSize(10);
+      doc.text(`Generated ${new Date().toLocaleString()}`, margin, y);
+      y += 22;
+
+      doc.setFontSize(12);
+      doc.text("Summary", margin, y);
+      y += 16;
+      doc.setFontSize(10);
+      for (const line of buildTimelineSummaryLines({ cohort, events: timeline })) {
+        doc.text(line, margin, y);
+        y += 14;
+      }
+
+      y += 12;
+      doc.setFontSize(12);
+      doc.text("Trail", margin, y);
+      y += 16;
+      doc.setFontSize(9);
+      const columnX = [margin, margin + 120, margin + 200, margin + 400];
+      TIMELINE_PDF_COLUMNS.forEach((column, index) => {
+        doc.text(column, columnX[index] ?? margin, y);
+      });
+      y += 12;
+      for (const row of buildTimelinePdfRows(timeline)) {
+        if (y > 780) {
+          doc.addPage();
+          y = margin;
+        }
+        row.forEach((cell, index) => {
+          doc.text(String(cell).slice(0, index === 2 ? 42 : 34), columnX[index] ?? margin, y);
+        });
+        y += 13;
+      }
+
+      doc.save(`pilot-timeline-${cohort}-${stamp}.pdf`);
+      toast.success("Evidence timeline PDF exported");
+    } catch (error) {
+      toast.error("PDF export failed", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    } finally {
+      setPdfBusy(false);
+    }
+  };
 
   const grantMutation = useMutation({
     mutationFn: () =>
@@ -140,6 +247,7 @@ export function PilotLaunchGovernanceCard({
         description: "The verdict now shows as a conditional go under an explicit override.",
       });
       setDialogOpen(false);
+      void rerunChecks("waiver_granted", `Waiver approved by ${approverName.trim() || "an admin"}`);
       setReason("");
       setExpiresAt("");
       refresh();
@@ -154,6 +262,7 @@ export function PilotLaunchGovernanceCard({
     mutationFn: (id: string) => revoke({ data: { id, reason: revokeReason.trim() || null } }),
     onSuccess: () => {
       toast.success("Launch waiver revoked");
+      void rerunChecks("waiver_revoked", revokeReason.trim() || "Waiver revoked");
       setRevokeReason("");
       refresh();
     },
@@ -167,6 +276,7 @@ export function PilotLaunchGovernanceCard({
     mutationFn: () => recordVerdict(),
     onSuccess: (snapshot) => {
       toast.success("Verdict recorded", { description: snapshot.headline });
+      void rerunChecks("verdict_recorded", snapshot.headline);
       refresh();
     },
     onError: (error: unknown) =>
@@ -411,6 +521,67 @@ export function PilotLaunchGovernanceCard({
             }
           >
             <FileText className="mr-2 h-4 w-4" aria-hidden /> Evidence timeline report
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={timeline.length === 0 || pdfBusy}
+            onClick={() => void exportTimelinePdf()}
+          >
+            <FileText className="mr-2 h-4 w-4" aria-hidden />
+            {pdfBusy ? "Building…" : "Evidence timeline PDF"}
+          </Button>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-medium">Signed-in launch checks</h3>
+          <p className="text-xs text-muted-foreground">
+            Re-run automatically whenever a waiver is approved or revoked, a verdict is recorded, or
+            a participant's pilot status changes. Every pass is part of the timeline above.
+          </p>
+          {checkRuns.isLoading ? (
+            <p className="mt-2 text-xs text-muted-foreground">Loading recorded runs…</p>
+          ) : checkRuns.isError ? (
+            <p className="mt-2 text-xs text-destructive">
+              {checkRuns.error instanceof Error
+                ? checkRuns.error.message
+                : "Recorded runs could not be loaded."}
+            </p>
+          ) : (checkRuns.data ?? []).length === 0 ? (
+            <p className="mt-2 text-xs text-muted-foreground">
+              No run recorded yet — approve a waiver or use the button below to record one.
+            </p>
+          ) : (
+            <ul className="mt-2 space-y-1.5">
+              {(checkRuns.data ?? []).slice(0, 5).map((run) => (
+                <li
+                  key={run.id}
+                  className="flex flex-wrap items-baseline gap-x-2 gap-y-1 rounded-md border px-3 py-2 text-xs"
+                >
+                  <Badge
+                    variant={runVerdict(run) === "pass" ? "secondary" : "destructive"}
+                    className="uppercase"
+                  >
+                    {runVerdict(run)}
+                  </Badge>
+                  <span className="font-medium">
+                    {RUN_TRIGGER_LABEL[run.trigger] ?? run.trigger}
+                  </span>
+                  <span className="min-w-0 flex-1 text-muted-foreground">{describeRun(run)}</span>
+                  <time dateTime={run.createdAt} className="tabular-nums text-muted-foreground">
+                    {new Date(run.createdAt).toLocaleString()}
+                  </time>
+                </li>
+              ))}
+            </ul>
+          )}
+          <Button
+            className="mt-2"
+            size="sm"
+            variant="outline"
+            onClick={() => void rerunChecks("manual", "Run from launch governance")}
+          >
+            <BadgeCheck className="mr-2 h-4 w-4" aria-hidden /> Re-run launch checks now
           </Button>
         </div>
 
