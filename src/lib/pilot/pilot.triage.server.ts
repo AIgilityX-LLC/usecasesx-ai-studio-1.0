@@ -74,7 +74,7 @@ export async function buildPilotTriageReport(
     freeze: recommendFreeze(evidence, findings),
     evidenceGap: evaluateEvidenceGap(evidence, {
       cohortStartedAt: invitedAts[0] ?? null,
-      cohortOpenedAt: settings.pausedAt ?? null,
+      cohortOpenedAt: settings.updatedAt ?? settings.pausedAt ?? null,
       now: to,
     }),
     generatedAt: to.toISOString(),
