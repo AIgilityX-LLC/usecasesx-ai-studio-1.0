@@ -175,7 +175,7 @@ function StudioPage() {
           <CardContent className="space-y-5">
             <div>
               <Label className="mb-2 block">Research engine</Label>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 {STUDIO_PROVIDERS.map((p) => {
                   const meta = PROVIDER_META[p];
                   const active = provider === p;
