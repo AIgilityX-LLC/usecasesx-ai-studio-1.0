@@ -21,12 +21,12 @@ Source of truth: `src/lib/reports/report-model.ts`
 
 ## Stable identifiers
 
-| Column               | Meaning                                                     |
-| -------------------- | ----------------------------------------------------------- |
+| Column               | Meaning                                                         |
+| -------------------- | --------------------------------------------------------------- |
 | `use_case_id`        | Repository use case UUID. Empty when the slug has not resolved. |
-| `slug`               | Repository slug. Always present; the stable human key.      |
-| `studio_use_case_id` | Linked AI Use Case Studio™ draft UUID, via studio lineage.   |
-| `benefit_id`         | Benefit row UUID from the Studio value register.             |
+| `slug`               | Repository slug. Always present; the stable human key.          |
+| `studio_use_case_id` | Linked AI Use Case Studio™ draft UUID, via studio lineage.      |
+| `benefit_id`         | Benefit row UUID from the Studio value register.                |
 
 ## Escaping rules
 
@@ -53,7 +53,7 @@ delivery_stage, target_period, planned_start, planned_end, milestone, owner,
 blocked_reason, next_action, benefit_count, benefits_evidenced, gaps
 ```
 
-`gaps` is a ` | `-joined list of the data gaps detected at generation time.
+`gaps` is a `|`-joined list of the data gaps detected at generation time.
 
 ## Benefits export — column order
 

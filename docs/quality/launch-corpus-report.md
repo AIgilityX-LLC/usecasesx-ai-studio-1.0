@@ -8,21 +8,21 @@ was produced, and the checks it must pass before anything becomes publicly visib
 ## 1. Provenance policy
 
 Every published record carries a `provenance` label and a plain-language
-`provenance_note` shown to readers in the *Source & provenance* panel on the use
+`provenance_note` shown to readers in the _Source & provenance_ panel on the use
 case detail page.
 
-| Label | Meaning |
-| --- | --- |
-| `aigilityx_editorial` | Authored by the AIgilityX editorial team with AI assistance and human review. |
-| `community_contribution` | Submitted by a member and reviewed before publication. |
-| `partner_contribution` | Supplied by a named delivery or technology partner. |
-| `external_sourced` | Derived from an identified external source, which must be linked. |
-| `workspace_authored` | Private tenant content; never part of the global corpus. |
-| `unspecified` | Default. Cannot be published — blocked at database level. |
+| Label                    | Meaning                                                                       |
+| ------------------------ | ----------------------------------------------------------------------------- |
+| `aigilityx_editorial`    | Authored by the AIgilityX editorial team with AI assistance and human review. |
+| `community_contribution` | Submitted by a member and reviewed before publication.                        |
+| `partner_contribution`   | Supplied by a named delivery or technology partner.                           |
+| `external_sourced`       | Derived from an identified external source, which must be linked.             |
+| `workspace_authored`     | Private tenant content; never part of the global corpus.                      |
+| `unspecified`            | Default. Cannot be published — blocked at database level.                     |
 
 **The launch corpus is 100% `aigilityx_editorial`.** No third-party study, vendor
 benchmark, customer outcome or named reference organisation is claimed anywhere in
-the corpus. KPI and ROI entries are stated as *targets to validate*, not as
+the corpus. KPI and ROI entries are stated as _targets to validate_, not as
 measured results. `organization` is deliberately left empty so no implied customer
 attribution exists.
 
@@ -60,22 +60,22 @@ Regulators & Compliance Bodies · Retail & Consumer · Transport & Travel
 
 **Business functions — 20 covered**
 
-| Function | Use cases | Function | Use cases |
-| --- | --- | --- | --- |
-| Operations | 33 | Product Management | 6 |
-| Marketing & Sales | 22 | Logistics | 5 |
-| Customer Service | 14 | Procurement | 3 |
-| Risk & Compliance | 13 | IT & Security | 2 |
-| Supply Chain | 12 | Public Services | 2 |
-| Field Operations | 10 | Human Resources | 1 |
-| Finance | 10 | | |
-| Quality Assurance | 8 | | |
-| Data & Analytics | 7 | | |
-| Research & Development | 7 | | |
-| Strategy & Planning | 7 | | |
-| Clinical Operations | 6 | | |
-| Legal | 6 | | |
-| Maintenance | 6 | | |
+| Function               | Use cases | Function           | Use cases |
+| ---------------------- | --------- | ------------------ | --------- |
+| Operations             | 33        | Product Management | 6         |
+| Marketing & Sales      | 22        | Logistics          | 5         |
+| Customer Service       | 14        | Procurement        | 3         |
+| Risk & Compliance      | 13        | IT & Security      | 2         |
+| Supply Chain           | 12        | Public Services    | 2         |
+| Field Operations       | 10        | Human Resources    | 1         |
+| Finance                | 10        |                    |           |
+| Quality Assurance      | 8         |                    |           |
+| Data & Analytics       | 7         |                    |           |
+| Research & Development | 7         |                    |           |
+| Strategy & Planning    | 7         |                    |           |
+| Clinical Operations    | 6         |                    |           |
+| Legal                  | 6         |                    |           |
+| Maintenance            | 6         |                    |           |
 
 Known thinness: Human Resources, IT & Security, Public Services and Procurement
 are under-represented. These are the first backlog items for the next editorial
@@ -89,12 +89,12 @@ Four public collections are owned by the platform account and visible to
 unauthenticated visitors. Their first three members are also flagged
 `is_featured` / `show_on_landing`.
 
-| Collection | Members | Purpose |
-| --- | --- | --- |
-| GCC national priorities | 18 | Sovereign-relevant government, security, regulatory and national-infrastructure use cases. |
-| Enterprise cost & efficiency | 18 | Operating-cost and productivity plays with short paths to measurable savings. |
-| Enterprise risk, compliance & trust | 18 | Detection, assurance and reporting for regulated enterprises. |
-| Customer & citizen experience at scale | 18 | Service, personalisation and self-service patterns. |
+| Collection                             | Members | Purpose                                                                                    |
+| -------------------------------------- | ------- | ------------------------------------------------------------------------------------------ |
+| GCC national priorities                | 18      | Sovereign-relevant government, security, regulatory and national-infrastructure use cases. |
+| Enterprise cost & efficiency           | 18      | Operating-cost and productivity plays with short paths to measurable savings.              |
+| Enterprise risk, compliance & trust    | 18      | Detection, assurance and reporting for regulated enterprises.                              |
+| Customer & citizen experience at scale | 18      | Service, personalisation and self-service patterns.                                        |
 
 ## 5. Governance, privacy and cyber classification
 

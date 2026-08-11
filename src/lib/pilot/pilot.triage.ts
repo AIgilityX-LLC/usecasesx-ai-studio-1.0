@@ -131,7 +131,10 @@ export function evaluateEvidenceGap(
           ? "no_answers"
           : "none";
 
-  const copy: Record<Exclude<EvidenceGapState, "none">, { title: string; detail: string; action: string }> = {
+  const copy: Record<
+    Exclude<EvidenceGapState, "none">,
+    { title: string; detail: string; action: string }
+  > = {
     no_invitations: {
       title: "Pilot evidence gap — no seats issued",
       detail: `The cohort has been open ${daysOpen} day(s) with 0 invitations, so no verdict can be produced.`,

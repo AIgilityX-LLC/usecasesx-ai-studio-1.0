@@ -218,7 +218,15 @@ export type TriageReportInput = {
 
 /** One row per classified finding, with the route holding its evidence. */
 export function triageFindingsToCsv(findings: readonly TriageFinding[]): string {
-  const header = ["Triage", "Source", "Title", "Observations", "Detail", "Action", "Evidence route"];
+  const header = [
+    "Triage",
+    "Source",
+    "Title",
+    "Observations",
+    "Detail",
+    "Action",
+    "Evidence route",
+  ];
   const body = findings.map((finding) => [
     TRIAGE_CLASS_LABEL[finding.triage],
     finding.source,

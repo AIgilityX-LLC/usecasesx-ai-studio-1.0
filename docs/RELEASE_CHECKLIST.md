@@ -63,4 +63,4 @@ promotion. A failed item is a No-Go, not a note in the release thread.
 - [ ] Tag pushed (`vX.Y.Z`) and draft release published
 - [ ] Go / Conditional Go / No-Go decision recorded with owner and date
 
-**Decision:** ______  **Owner:** ______  **Date:** ______
+**Decision:** **\_\_** **Owner:** **\_\_** **Date:** **\_\_**
