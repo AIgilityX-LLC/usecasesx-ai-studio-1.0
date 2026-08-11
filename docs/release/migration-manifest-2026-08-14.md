@@ -33,6 +33,17 @@ Properties enforced for every entry:
 | 13  | `20260811062851_aaff588a-071a-418f-b704-e45908d0adc6.sql` | Sovereign Public Value Canvas™ storage                                                  | Tables + RLS     |
 | 14  | `20260811070036_e855aa33-0e99-40ac-9942-3e5a35acfe44.sql` | Canvas document attachments and append-only version snapshots                            | Tables + RLS     |
 | 15  | `20260811070115_ba4c9269-48cb-4a58-84b0-29e7bd1acb54.sql` | Storage policies for the private `canvas-documents` bucket                               | Storage policy   |
+| 16  | `20260811091632_f71f9e0a-3264-4cbb-943e-b3d30828ce00.sql` | Removes synthetic release-verification rows from `cta_events` (analytics-only, no customer content) | Data correction — **recorded exception** |
+
+### Recorded exception for entry 16
+
+`bun run verify:release` flags entry 16 because it contains `DELETE FROM`. The exception is
+deliberate and narrow: the statement removes rows this project's own verification runs wrote into
+`public.cta_events` (`utm_source = 'verify_run'` and the untagged probe events created before
+2026-08-11 09:12 UTC), so launch analytics do not report synthetic traffic. It touches no customer
+content, no schema and no policy. Until the verifier learns about approved exceptions, treat this
+single FAIL as expected and confirm no *other* migration is flagged. Any further data-correction
+migration needs the data owner's approval and its own row here.
 
 ## Demo and reference data (not migrations)
 
