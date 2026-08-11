@@ -3,6 +3,7 @@ import { useEffect, useMemo } from "react";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { PageHero } from "@/components/usecasex/PageHero";
 import type { UseCaseContent } from "@/lib/domain/saved-use-cases.repository";
+import { ListCountNotice } from "@/components/usecasex/ListCountNotice";
 import {
   computeTotalScore,
   interpretScore,
