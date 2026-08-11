@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ROSTER_MAX_ROWS, parseParticipantRoster } from "@/lib/pilot/pilot.roster";
+import { ROSTER_MAX_ROWS, parseParticipantRoster, rosterErrors } from "@/lib/pilot/pilot.roster";
 import {
   activeWaiver,
   applyLaunchWaiver,
@@ -47,10 +47,10 @@ describe("participant roster parsing", () => {
     );
     expect(result.participants).toHaveLength(1);
     expect(result.duplicates).toEqual(["good@example.com"]);
-    expect(result.issues.map((issue) => issue.reason)).toEqual([
-      "Not a valid email address.",
-      "Duplicate address in this file.",
-    ]);
+    const errors = rosterErrors(result);
+    expect(errors.map((issue) => issue.field)).toEqual(["email", "email"]);
+    expect(errors[0].reason).toContain("no @ found");
+    expect(errors[1].reason).toContain("Duplicate address");
   });
 
   it("caps an upload at the seat limit and reports the overflow", () => {
@@ -58,7 +58,7 @@ describe("participant roster parsing", () => {
     const result = parseParticipantRoster(rows.join("\n"));
     expect(result.participants).toHaveLength(ROSTER_MAX_ROWS);
     expect(result.truncated).toBe(true);
-    expect(result.issues).toHaveLength(3);
+    expect(rosterErrors(result)).toHaveLength(3);
   });
 
   it("handles semicolon and tab delimited files with quoted fields", () => {

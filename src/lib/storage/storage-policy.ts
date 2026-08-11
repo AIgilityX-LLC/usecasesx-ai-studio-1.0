@@ -7,7 +7,7 @@
  * issuer (`storage-access.server.ts`) is the enforcement point.
  */
 
-export const STORAGE_BUCKETS = ["benefit-evidence", "avatars"] as const;
+export const STORAGE_BUCKETS = ["benefit-evidence", "avatars", "canvas-documents"] as const;
 export type StorageBucket = (typeof STORAGE_BUCKETS)[number];
 
 export type BucketPolicy = {
@@ -47,6 +47,23 @@ export const BUCKET_POLICIES: Record<StorageBucket, BucketPolicy> = {
     mimeTypes: ["image/png", "image/jpeg", "image/webp"],
     extensions: ["png", "jpg", "jpeg", "webp"],
     signedUrlTtlSeconds: 300,
+  },
+  // Canvas documents are policy papers, mandates and baseline extracts, so the
+  // allowlist is deliberately document-shaped and the TTL stays short.
+  "canvas-documents": {
+    maxBytes: 15 * 1024 * 1024,
+    mimeTypes: [
+      "application/pdf",
+      "image/png",
+      "image/jpeg",
+      "text/csv",
+      "text/plain",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    ],
+    extensions: ["pdf", "png", "jpg", "jpeg", "csv", "txt", "xlsx", "docx", "pptx"],
+    signedUrlTtlSeconds: 90,
   },
 };
 
@@ -154,4 +171,21 @@ export function parseEvidencePath(
   const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuid.test(userId) || !uuid.test(useCaseId) || file.length === 0) return null;
   return { userId, useCaseId, file };
+}
+
+/**
+ * Canvas document keys are always `<workshopId>/<section>/<file>`, so the
+ * storage policy and the signed-URL issuer can both tie an object back to the
+ * workshop whose membership authorises it.
+ */
+export function parseCanvasDocumentPath(
+  path: string,
+): { workshopId: string; section: string; file: string } | null {
+  if (path.includes("..") || path.startsWith("/")) return null;
+  const parts = path.split("/");
+  if (parts.length !== 3) return null;
+  const [workshopId, section, file] = parts as [string, string, string];
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuid.test(workshopId) || !/^[a-z_]{3,40}$/.test(section) || file.length === 0) return null;
+  return { workshopId, section, file };
 }

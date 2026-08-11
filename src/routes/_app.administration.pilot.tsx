@@ -29,8 +29,12 @@ import {
 import {
   ROSTER_MAX_ROWS,
   ROSTER_TEMPLATE_NOTES,
+  buildRosterIssueReportCsv,
   buildRosterTemplateCsv,
   parseParticipantRoster,
+  rosterErrors,
+  rosterWarnings,
+  summarizeRosterParse,
   type RosterParseResult,
 } from "@/lib/pilot/pilot.roster";
 import { runAndRecordLaunchChecksFn } from "@/lib/qa/qa.functions";
@@ -561,11 +565,7 @@ function PilotAdmin() {
                 {roster && (
                   <div className="space-y-2 rounded-md border p-3 text-xs">
                     <p className="font-medium">
-                      {rosterFileName}: {roster.participants.length} seat
-                      {roster.participants.length === 1 ? "" : "s"} ready
-                      {roster.truncated
-                        ? ` · ${roster.usableRows - roster.participants.length} row(s) over the ${ROSTER_MAX_ROWS}-seat limit`
-                        : ""}
+                      {rosterFileName}: {summarizeRosterParse(roster)}
                     </p>
                     {roster.participants.length > 0 && (
                       <ul className="max-h-32 space-y-1 overflow-y-auto text-muted-foreground">
@@ -579,18 +579,67 @@ function PilotAdmin() {
                       </ul>
                     )}
                     {roster.issues.length > 0 && (
-                      <details>
-                        <summary className="cursor-pointer text-destructive">
-                          {roster.issues.length} row(s) skipped
+                      <details open>
+                        <summary className="cursor-pointer font-medium">
+                          <span className="text-destructive">
+                            {rosterErrors(roster).length} row(s) blocked
+                          </span>
+                          {rosterWarnings(roster).length > 0
+                            ? ` · ${rosterWarnings(roster).length} warning(s)`
+                            : ""}
                         </summary>
-                        <ul className="mt-1 space-y-1 text-muted-foreground">
-                          {roster.issues.slice(0, 10).map((issue, index) => (
-                            <li key={`${issue.value}-${index}`}>
-                              {issue.line > 0 ? `Line ${issue.line}: ` : ""}
-                              {issue.value || "(empty)"} — {issue.reason}
+                        <ul className="mt-1 space-y-1">
+                          {roster.issues.slice(0, 15).map((issue, index) => (
+                            <li
+                              key={`${issue.value}-${index}`}
+                              className="rounded border border-border px-2 py-1"
+                            >
+                              <span
+                                className={
+                                  issue.severity === "error"
+                                    ? "font-medium text-destructive"
+                                    : "font-medium text-muted-foreground"
+                                }
+                              >
+                                {issue.severity === "error" ? "Error" : "Warning"}
+                              </span>{" "}
+                              {issue.line > 0 ? `line ${issue.line}` : "over cap"} ·{" "}
+                              <code>{issue.field}</code> · {issue.value || "(empty)"} —{" "}
+                              {issue.reason}{" "}
+                              <span className="text-muted-foreground">Fix: {issue.fix}</span>
                             </li>
                           ))}
                         </ul>
+                        {roster.issues.length > 15 && (
+                          <p className="mt-1 text-muted-foreground">
+                            Showing 15 of {roster.issues.length} — download the report for the full
+                            list.
+                          </p>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="mt-2"
+                          onClick={() => {
+                            const csv = buildRosterIssueReportCsv(roster, {
+                              ...(rosterFileName ? { fileName: rosterFileName } : {}),
+                            });
+                            const blob = new Blob([`\uFEFF${csv}`], {
+                              type: "text/csv;charset=utf-8;",
+                            });
+                            const url = URL.createObjectURL(blob);
+                            const anchor = document.createElement("a");
+                            anchor.href = url;
+                            anchor.download = `pilot-roster-validation-${new Date().toISOString().slice(0, 10)}.csv`;
+                            document.body.appendChild(anchor);
+                            anchor.click();
+                            anchor.remove();
+                            URL.revokeObjectURL(url);
+                            toast.success("Validation report downloaded");
+                          }}
+                        >
+                          <Download className="mr-2 h-4 w-4" aria-hidden /> Download error report
+                        </Button>
                       </details>
                     )}
                     <div className="flex flex-wrap gap-2 pt-1">

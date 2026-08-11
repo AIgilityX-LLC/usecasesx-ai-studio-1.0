@@ -24,6 +24,12 @@ export type RosterIssue = {
   line: number;
   value: string;
   reason: string;
+  /** Errors block the row; warnings enrol it with a note. */
+  severity: "error" | "warning";
+  /** Column the problem was found in, when it is column-specific. */
+  field: keyof RosterParticipant | "row";
+  /** What the operator should change in the file. */
+  fix: string;
 };
 
 export type RosterParseResult = {
@@ -35,6 +41,10 @@ export type RosterParseResult = {
   truncated: boolean;
   /** Usable rows found before the cap was applied. */
   usableRows: number;
+  /** Total non-empty data lines read from the file. */
+  totalRows: number;
+  /** Delimiter the parser detected, reported back so surprises are visible. */
+  delimiter: "," | ";" | "\t";
 };
 
 /** Column order the parser recognises without any header mapping guesswork. */
@@ -165,6 +175,9 @@ function clean(value: string | undefined, max: number): string | null {
 /**
  * Parses an uploaded roster. `maxRows` defaults to the cohort cap so the caller
  * can never submit more seats than one provisioning action allows.
+ *
+ * Every rejected line is reported with the column at fault and the change that
+ * would make it importable; warnings still enrol the seat.
  */
 export function parseParticipantRoster(
   text: string,
@@ -174,9 +187,10 @@ export function parseParticipantRoster(
   const delimiter = detectDelimiter(text);
   const lines = text.split(/\r?\n/);
   const issues: RosterIssue[] = [];
-  const seen = new Set<string>();
+  const seen = new Map<string, number>();
   const duplicates: string[] = [];
   const usable: RosterParticipant[] = [];
+  let totalRows = 0;
 
   let mapping: (keyof RosterParticipant | null)[] | null = null;
 
@@ -193,18 +207,37 @@ export function parseParticipantRoster(
         !lowered.some((cell) => EMAIL_RE.test(cell));
       if (looksLikeHeader) {
         mapping = lowered.map((cell) => HEADER_ALIASES[cell] ?? null);
+        const unknown = lowered.filter((cell) => cell && !(cell in HEADER_ALIASES));
         if (!mapping.includes("email")) {
           issues.push({
             line: index + 1,
             value: line,
-            reason: "Header row has no email column — add an `email` column.",
+            reason: "Header row has no email column.",
+            severity: "error",
+            field: "email",
+            fix: `Rename a column to one of: ${Object.keys(HEADER_ALIASES)
+              .filter((key) => HEADER_ALIASES[key] === "email")
+              .join(", ")}.`,
           });
           mapping = null;
+          return;
+        }
+        if (unknown.length > 0) {
+          issues.push({
+            line: index + 1,
+            value: unknown.join(", "),
+            reason: "Unrecognised column heading(s) — those columns are ignored.",
+            severity: "warning",
+            field: "row",
+            fix: `Use the template headings: ${ROSTER_TEMPLATE_COLUMNS.join(", ")}.`,
+          });
         }
         return;
       }
       mapping = POSITIONAL;
     }
+
+    totalRows += 1;
 
     const fields: Record<keyof RosterParticipant, string | undefined> = {
       email: undefined,
@@ -219,19 +252,86 @@ export function parseParticipantRoster(
 
     const email = (fields.email ?? "").trim().toLowerCase();
     if (!email) {
-      issues.push({ line: index + 1, value: line, reason: "No email address in this row." });
+      issues.push({
+        line: index + 1,
+        value: line,
+        reason: "No email address in this row.",
+        severity: "error",
+        field: "email",
+        fix: "Add the participant's work email address in the first column.",
+      });
+      return;
+    }
+    if (/\s/.test(email)) {
+      issues.push({
+        line: index + 1,
+        value: email,
+        reason: "The email address contains a space.",
+        severity: "error",
+        field: "email",
+        fix: "Remove spaces, or quote the field if it contains a comma.",
+      });
       return;
     }
     if (!EMAIL_RE.test(email)) {
-      issues.push({ line: index + 1, value: email, reason: "Not a valid email address." });
+      issues.push({
+        line: index + 1,
+        value: email,
+        reason: email.includes("@")
+          ? "The domain part is not a valid address (missing dot or top-level domain)."
+          : "Not an email address — no @ found.",
+        severity: "error",
+        field: "email",
+        fix: "Use the form name@organisation.gov.",
+      });
       return;
     }
-    if (seen.has(email)) {
+    const firstSeen = seen.get(email);
+    if (firstSeen !== undefined) {
       if (!duplicates.includes(email)) duplicates.push(email);
-      issues.push({ line: index + 1, value: email, reason: "Duplicate address in this file." });
+      issues.push({
+        line: index + 1,
+        value: email,
+        reason: `Duplicate address — already listed on line ${firstSeen}.`,
+        severity: "error",
+        field: "email",
+        fix: "Delete one of the two rows; one seat per address.",
+      });
       return;
     }
-    seen.add(email);
+    seen.set(email, index + 1);
+
+    if (!fields.fullName?.trim()) {
+      issues.push({
+        line: index + 1,
+        value: email,
+        reason: "No participant name — the invitation will read as unnamed.",
+        severity: "warning",
+        field: "fullName",
+        fix: "Add the participant's full name in the second column.",
+      });
+    }
+    if ((fields.notes ?? "").trim().length > 500) {
+      issues.push({
+        line: index + 1,
+        value: email,
+        reason: "Notes longer than 500 characters were shortened.",
+        severity: "warning",
+        field: "notes",
+        fix: "Trim the note to 500 characters or fewer.",
+      });
+    }
+    if ((fields.organization ?? "").trim().length > 160) {
+      issues.push({
+        line: index + 1,
+        value: email,
+        reason: "Organisation longer than 160 characters was shortened.",
+        severity: "warning",
+        field: "organization",
+        fix: "Use the short organisation name.",
+      });
+    }
+
     usable.push({
       email,
       fullName: clean(fields.fullName, 120),
@@ -246,6 +346,9 @@ export function parseParticipantRoster(
       line: 0,
       value: participant.email,
       reason: `Over the ${maxRows}-seat limit for one upload.`,
+      severity: "error",
+      field: "row",
+      fix: `Split the roster into files of ${maxRows} rows or fewer.`,
     });
   });
 
@@ -255,5 +358,76 @@ export function parseParticipantRoster(
     duplicates,
     truncated: usable.length > maxRows,
     usableRows: usable.length,
+    totalRows,
+    delimiter: delimiter as "," | ";" | "\t",
   };
+}
+
+/** Blocking problems only — warnings never stop an import. */
+export function rosterErrors(result: RosterParseResult): RosterIssue[] {
+  return result.issues.filter((issue) => issue.severity === "error");
+}
+
+export function rosterWarnings(result: RosterParseResult): RosterIssue[] {
+  return result.issues.filter((issue) => issue.severity === "warning");
+}
+
+/** One-line human summary of the parse, shown above the issue list. */
+export function summarizeRosterParse(result: RosterParseResult): string {
+  const errors = rosterErrors(result).length;
+  const warnings = rosterWarnings(result).length;
+  const parts = [
+    `${result.totalRows} row(s) read`,
+    `${result.participants.length} seat(s) ready`,
+    `${errors} blocked`,
+  ];
+  if (warnings > 0) parts.push(`${warnings} warning(s)`);
+  if (result.truncated)
+    parts.push(`${result.usableRows - result.participants.length} over the cap`);
+  return parts.join(" · ");
+}
+
+const FIELD_LABEL: Record<RosterIssue["field"], string> = {
+  email: "email",
+  fullName: "full name",
+  organization: "organisation",
+  notes: "notes",
+  row: "whole row",
+};
+
+export const ROSTER_REPORT_COLUMNS = [
+  "Line",
+  "Severity",
+  "Column",
+  "Value",
+  "Problem",
+  "How to fix",
+] as const;
+
+/**
+ * Downloadable validation report for an upload: every rejected and flagged row
+ * with the column at fault, so a file can be corrected offline and re-uploaded.
+ */
+export function buildRosterIssueReportCsv(
+  result: RosterParseResult,
+  context: { fileName?: string; generatedAt?: string } = {},
+): string {
+  const rows = result.issues.map((issue) => [
+    issue.line > 0 ? String(issue.line) : "—",
+    issue.severity === "error" ? "Error" : "Warning",
+    FIELD_LABEL[issue.field],
+    issue.value,
+    issue.reason,
+    issue.fix,
+  ]);
+  const preamble = [
+    [`Pilot roster validation report`],
+    [`File`, context.fileName ?? "roster upload"],
+    [`Generated`, context.generatedAt ?? new Date().toISOString()],
+    [`Summary`, summarizeRosterParse(result)],
+    [],
+  ];
+  return [...preamble, [...ROSTER_REPORT_COLUMNS], ...rows]
+    .map((row) => row.map(templateCell).join(","))
+    .join("\r\n");
 }
