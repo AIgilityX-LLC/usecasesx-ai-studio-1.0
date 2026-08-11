@@ -37,13 +37,14 @@ Properties enforced for every entry:
 
 ### Recorded exception for entry 16
 
-`bun run verify:release` flags entry 16 because it contains `DELETE FROM`. The exception is
+`bun run verify:release` detects the `DELETE FROM` in entry 16 and allows it **because this row is
+annotated `recorded exception`** — the verifier reads this manifest and permits a destructive
+statement only in a file annotated here. The exception is
 deliberate and narrow: the statement removes rows this project's own verification runs wrote into
 `public.cta_events` (`utm_source = 'verify_run'` and the untagged probe events created before
 2026-08-11 09:12 UTC), so launch analytics do not report synthetic traffic. It touches no customer
-content, no schema and no policy. Until the verifier learns about approved exceptions, treat this
-single FAIL as expected and confirm no *other* migration is flagged. Any further data-correction
-migration needs the data owner's approval and its own row here.
+content, no schema and no policy. Any further data-correction migration needs the data owner's
+approval and its own `recorded exception` row here; without one the integrity gate fails.
 
 ## Demo and reference data (not migrations)
 
