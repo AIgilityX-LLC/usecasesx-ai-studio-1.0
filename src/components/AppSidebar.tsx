@@ -113,6 +113,7 @@ const ADMIN: Item[] = [
 ];
 
 const ACCOUNT: Item[] = [
+  { to: "/pilot", label: "Pilot Mission", icon: Rocket },
   { to: "/support", label: "Request Features / Report Bugs", icon: MessageSquarePlus },
   { to: "/account", label: "Account Settings", icon: UserCog },
   { to: "/account/security", label: "Security", icon: ShieldCheck },
