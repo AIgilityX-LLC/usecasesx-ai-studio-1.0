@@ -55,6 +55,7 @@ import {
 import { downloadWorkshopOutcomePDF } from "@/lib/workshops.collab";
 import { WorkshopInvitePanel } from "@/components/workshop/WorkshopInvitePanel";
 import { WorkshopAuditTrail } from "@/components/workshop/WorkshopAuditTrail";
+import { SovereignPublicValueCanvas } from "@/components/workshop/SovereignPublicValueCanvas";
 
 const KIND_FOR_STAGE: Partial<Record<WorkshopStage, WorkshopItemKind>> = {
   context: "context",
@@ -338,6 +339,15 @@ export function WorkshopBoardView({ id }: { id: string }) {
       </Card>
 
       {viewer.isFacilitator && active === "context" && <WorkshopInvitePanel workshopId={id} />}
+
+      {active === "context" && (
+        <SovereignPublicValueCanvas
+          workshopId={id}
+          workshopTitle={workshop.title}
+          organisation={workshop.clientName}
+          canEdit={viewer.isFacilitator}
+        />
+      )}
 
       <WorkshopAuditTrail workshopId={id} stage={active} workshopTitle={workshop.title} />
     </div>
