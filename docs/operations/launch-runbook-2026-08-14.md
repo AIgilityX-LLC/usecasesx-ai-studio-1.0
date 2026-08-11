@@ -277,7 +277,10 @@ Checked on authoring, against the repository rather than assumption:
 | Admin monitoring surfaces                | `src/routes/_app.admin-observability.tsx`, `_app.administration.{analytics,requests,pilot,production-data,production-readiness,release-candidate,launch-checks,launch-learning}.tsx` |
 | Public API and preview endpoints         | `src/routes/api/public/usecasex/*`, `src/routes/og.use-case.$slug.ts`, `src/routes/sitemap[.]xml.ts`                                                                                 |
 
-Not verifiable from the repository and therefore left open: named owners, escalation channel,
-`ALERT_WEBHOOK_URL` / `PRODUCTION_URL` configuration, the canonical production host, the email
-sender domain, and the previous-good tag for rollback. All are marked **TO BE RECORDED** above and
-must be filled in before GA.
+Now recorded in §1.1: the canonical production host, `PRODUCTION_URL`, `MONITOR_BASE_URL`, the
+alert destination key `ALERT_WEBHOOK_URL` (value held only as a repository secret), the stable
+pre-DNS fallback host, and the rollback artefact position (no previous-good tag for a first
+release; Method A applies).
+
+Still open and not derivable from the repository: the **named** owners in §1 (confirmed at the
+pre-launch briefing) and the email sender domain. Both must be filled in before GA.
