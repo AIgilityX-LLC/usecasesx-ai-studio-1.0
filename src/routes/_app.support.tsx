@@ -5,7 +5,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { publicHead, breadcrumbJsonLd } from "@/lib/seo";
 import { PageHero, Section } from "@/components/marketing/MarketingPrimitives";
 import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
-import { listMyFeedbackFn } from "@/lib/feedback/feedback.functions";
+import { listMyFeedbackFn, listMyRequestAlertsFn } from "@/lib/feedback/feedback.functions";
+import { requestPriorityLabel, slaState } from "@/lib/feedback/sla";
 import {
   FEEDBACK_STATUS_MEANING,
   FEEDBACK_STATUS_TONE,
@@ -41,6 +42,12 @@ function SupportPage() {
   const mine = useQuery({
     queryKey: ["my-feedback"],
     queryFn: () => loadMine(),
+    retry: false,
+  });
+  const loadAlerts = useServerFn(listMyRequestAlertsFn);
+  const alerts = useQuery({
+    queryKey: ["my-request-alerts"],
+    queryFn: () => loadAlerts(),
     retry: false,
   });
 
@@ -88,6 +95,60 @@ function SupportPage() {
               Commercial, workshop and Enterprise Design Partner enquiries go through the contact
               form so we can route them to the right person.
             </p>
+          </CardContent>
+        </Card>
+      </Section>
+
+      <Section title="Status updates">
+        <Card>
+          <CardHeader>
+            <CardTitle>Every status change on your requests</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {alerts.isLoading ? (
+              <p className="text-sm text-muted-foreground">Loading status updates…</p>
+            ) : alerts.isError ? (
+              <p className="text-sm text-muted-foreground">
+                Sign in to see status updates for your requests.
+              </p>
+            ) : (alerts.data ?? []).length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No status changes yet. You get an in-app alert here — and a toast while you are
+                signed in — every time one of your requests moves.
+              </p>
+            ) : (
+              <ul className="divide-y divide-border">
+                {(alerts.data ?? []).map((alert) => (
+                  <li key={alert.id} className="flex flex-wrap items-start gap-3 py-3">
+                    <Badge
+                      variant={FEEDBACK_STATUS_TONE[alert.toStatus as FeedbackStatus] ?? "outline"}
+                    >
+                      {feedbackStatusLabel(alert.toStatus)}
+                    </Badge>
+                    {!alert.readAt ? <Badge variant="secondary">new</Badge> : null}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm">
+                        Ref {alert.feedbackId.slice(0, 8).toUpperCase()}{" "}
+                        {alert.fromStatus
+                          ? `moved from ${feedbackStatusLabel(alert.fromStatus)} to ${feedbackStatusLabel(alert.toStatus)}`
+                          : `is now ${feedbackStatusLabel(alert.toStatus)}`}
+                        .
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        <time dateTime={alert.createdAt}>
+                          {new Date(alert.createdAt).toLocaleString()}
+                        </time>
+                        {alert.priority ? ` · ${requestPriorityLabel(alert.priority)}` : ""}
+                        {alert.dueAt ? ` · ${slaState(alert.dueAt, alert.toStatus).label}` : ""}
+                      </p>
+                      {alert.note ? (
+                        <p className="mt-1 text-xs text-foreground">{alert.note}</p>
+                      ) : null}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </CardContent>
         </Card>
       </Section>
