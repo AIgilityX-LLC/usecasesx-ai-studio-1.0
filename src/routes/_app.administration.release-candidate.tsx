@@ -217,7 +217,8 @@ function ReleaseCandidatePage() {
               variant="outline"
               disabled={!input}
               onClick={() =>
-                input && download(`launch-readiness-${stamp}.csv`, "text/csv", readinessToCsv(input))
+                input &&
+                download(`launch-readiness-${stamp}.csv`, "text/csv", readinessToCsv(input))
               }
             >
               <Download className="mr-2 h-4 w-4" aria-hidden /> Readiness CSV

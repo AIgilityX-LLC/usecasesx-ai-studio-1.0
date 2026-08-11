@@ -146,7 +146,13 @@ export function buildReadinessGates(input: ReadinessInput): ReadinessGate[] {
         : "All recorded verification steps passed.",
   };
 
-  return [p0, p1, seatGate(input.cohort, input.waiverActive), evidenceGate(input.cohort, input.waiverActive), pipeline];
+  return [
+    p0,
+    p1,
+    seatGate(input.cohort, input.waiverActive),
+    evidenceGate(input.cohort, input.waiverActive),
+    pipeline,
+  ];
 }
 
 export function readinessVerdict(gates: readonly ReadinessGate[]): ReadinessVerdict {

@@ -58,13 +58,21 @@ describe("launch readiness", () => {
   });
 
   it("blocks when P0 checks fail", () => {
-    const gates = buildReadinessGates(input({ run: run({ p0Failures: 2, failed: 2, passed: 11 }) }));
+    const gates = buildReadinessGates(
+      input({ run: run({ p0Failures: 2, failed: 2, passed: 11 }) }),
+    );
     expect(gates.find((g) => g.id === "checks.p0")?.status).toBe("fail");
     expect(readinessVerdict(gates)).toBe("blocked");
   });
 
   it("blocks an empty cohort and softens it under a waiver", () => {
-    const empty = cohort({ invited: 0, registered: 0, activated: 0, completed: 0, checkpointResponses: 0 });
+    const empty = cohort({
+      invited: 0,
+      registered: 0,
+      activated: 0,
+      completed: 0,
+      checkpointResponses: 0,
+    });
     expect(readinessVerdict(buildReadinessGates(input({ cohort: empty })))).toBe("blocked");
     const waived = buildReadinessGates(input({ cohort: empty, waiverActive: true }));
     expect(waived.find((g) => g.id === "pilot.evidence")?.status).toBe("attention");
