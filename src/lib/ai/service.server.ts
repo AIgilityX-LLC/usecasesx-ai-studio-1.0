@@ -156,6 +156,18 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
     ]);
     const burst = evaluateBurst(burstUser, burstWorkspace, burstLimits, burstStart);
     if (!burst.allowed) {
+      const { recordRateLimitEnforced } = await import(
+        "@/lib/observability/observability.server"
+      );
+      await recordRateLimitEnforced(ctx.supabase, ctx.userId, {
+        task,
+        kind: "burst",
+        used: burst.used,
+        limit: burst.limit,
+        resetsAt: burst.resetsAt,
+        workspaceId: subject.workspaceId,
+        organizationId: subject.organizationId,
+      });
       return aiFailure("rate_limited", {
         used: burst.used,
         limit: burst.limit,
@@ -174,7 +186,21 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
     ]);
     const verdict = evaluateFairUse(usedByUser, usedByWorkspace, limits, windowStart);
     fairUse = { used: verdict.used, limit: verdict.limit, resetsAt: verdict.resetsAt };
-    if (!verdict.allowed) return aiFailure("fair_use_exceeded", fairUse);
+    if (!verdict.allowed) {
+      const { recordRateLimitEnforced } = await import(
+        "@/lib/observability/observability.server"
+      );
+      await recordRateLimitEnforced(ctx.supabase, ctx.userId, {
+        task,
+        kind: "fair_use",
+        used: verdict.used,
+        limit: verdict.limit,
+        resetsAt: verdict.resetsAt,
+        workspaceId: subject.workspaceId,
+        organizationId: subject.organizationId,
+      });
+      return aiFailure("fair_use_exceeded", fairUse);
+    }
   }
 
   // 3. Provider call.
