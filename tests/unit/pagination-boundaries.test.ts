@@ -73,7 +73,7 @@ describe("keyset paging boundaries", () => {
     expect(ids.length).toBe(100);
     expect(new Set(ids).size).toBe(100);
     expect(result.truncated).toBe(false);
-    expect(result.requests).toBe(5); // 4 full pages + the page that reports no more
+    expect(result.requests).toBe(4); // over-fetch probe means no extra empty request
   });
 
   it("returns every row exactly once when the last page is partial", async () => {
