@@ -83,7 +83,7 @@ function PilotPage() {
     if (!token || claimed.current === token) return;
     claimed.current = token;
     claim.mutate(token);
-    void navigate({ search: {}, replace: true });
+    void navigate({ search: () => ({ [INVITE_QUERY_PARAM]: undefined }), replace: true });
     // `claim` and `navigate` are stable for the lifetime of this page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
