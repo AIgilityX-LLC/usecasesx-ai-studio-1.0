@@ -34,8 +34,7 @@ const asRecord = (v: unknown): Record<string, unknown> =>
   v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>) : {};
 
 const asStatus = (v: unknown): SubmissionStatus | null =>
-  typeof v === "string" &&
-  ["draft", "submitted", "in_review", "approved", "rejected"].includes(v)
+  typeof v === "string" && ["draft", "submitted", "in_review", "approved", "rejected"].includes(v)
     ? (v as SubmissionStatus)
     : null;
 
@@ -55,7 +54,9 @@ export function buildAuditRows(
     const prev = asRecord(e.previous_value);
     const next = asRecord(e.new_value);
     const submissionId =
-      e.entity_type === "use_case_submission" ? e.entity_id : (asText(next["submission_id"]) ?? null);
+      e.entity_type === "use_case_submission"
+        ? e.entity_id
+        : (asText(next["submission_id"]) ?? null);
     const sub = submissionId ? subById.get(submissionId) : undefined;
     return {
       id: e.id,
@@ -68,7 +69,7 @@ export function buildAuditRows(
       actorName: (e.actor_id && nameById.get(e.actor_id)) || null,
       fromStatus: asStatus(prev["status"]),
       toStatus: asStatus(next["status"]),
-      reviewNotes: asText(next["review_notes"]) ?? (sub?.review_notes ?? null),
+      reviewNotes: asText(next["review_notes"]) ?? sub?.review_notes ?? null,
       publishedSlug: asText(next["slug"]),
     };
   });

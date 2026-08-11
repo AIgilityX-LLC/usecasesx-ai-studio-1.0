@@ -75,9 +75,9 @@ function AdminAudit() {
         </p>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight">Submission audit trail</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Every status change, reviewer note and approval on community submissions, in order.
-          Each entry carries the correlation ID of the request that produced it, so one
-          submit → review → publish flow can be traced end to end.
+          Every status change, reviewer note and approval on community submissions, in order. Each
+          entry carries the correlation ID of the request that produced it, so one submit → review →
+          publish flow can be traced end to end.
         </p>
       </header>
 
