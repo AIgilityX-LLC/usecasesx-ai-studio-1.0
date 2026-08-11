@@ -120,7 +120,7 @@ async function main() {
       title: `Abuse suite opportunity ${stamp}`,
       workspace_id: a.workspaceId,
       created_by: a.userId,
-      source: "manual",
+      source: "scratch",
     })
     .select("id")
     .single();
@@ -191,7 +191,7 @@ async function main() {
         title: `Injected ${stamp}`,
         workspace_id: a.workspaceId,
         created_by: b.userId,
-        source: "manual",
+        source: "scratch",
       })
       .select("id"),
   );
