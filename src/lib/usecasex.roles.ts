@@ -52,24 +52,32 @@ export function useRoles(): RoleState {
 
   useEffect(() => {
     let active = true;
-    const load = async () => {
-      setLoading(true);
-      const { data: u } = await supabase.auth.getUser();
-      if (!active) return;
-      if (!u.user) {
+    /**
+     * Resolve the user from `onAuthStateChange` (which emits INITIAL_SESSION
+     * right after subscribing) rather than `getUser()` — the latter can hang
+     * behind navigator.locks in the preview iframe, which left every
+     * role-gated route stuck on "Verifying access…".
+     */
+    const load = async (uid: string | null) => {
+      if (!uid) {
+        if (!active) return;
         setUserId(null);
         setRoles([]);
         setLoading(false);
         return;
       }
-      setUserId(u.user.id);
-      const { data } = await supabase.from("user_roles").select("role").eq("user_id", u.user.id);
+      setUserId(uid);
+      const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
       if (!active) return;
       setRoles((data ?? []).map((r) => r.role as AppRole));
       setLoading(false);
     };
-    load();
-    const { data } = supabase.auth.onAuthStateChange(() => load());
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      const uid = session?.user?.id ?? null;
+      // Never await Supabase calls inside the callback itself — that deadlocks
+      // the auth client's internal lock. Defer to a macrotask instead.
+      setTimeout(() => void load(uid), 0);
+    });
     return () => {
       active = false;
       data.subscription.unsubscribe();

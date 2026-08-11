@@ -21,6 +21,33 @@ export const listMySubmissions = createServerFn({ method: "GET" })
     return data ?? [];
   });
 
+/**
+ * Everything the contributor has in flight: their own submissions in every
+ * state, plus the repository records their approved submissions became. The
+ * published half is matched on `submitted_by`, so it survives edits made by
+ * reviewers after publication.
+ */
+export const listMyContributions = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const [submissions, published] = await Promise.all([
+      supabase
+        .from("use_case_submissions")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("use_cases")
+        .select("id, slug, title, summary, status, published_at, provenance")
+        .eq("submitted_by", userId)
+        .order("published_at", { ascending: false, nullsFirst: false }),
+    ]);
+    if (submissions.error) throw new Error(submissions.error.message);
+    if (published.error) throw new Error(published.error.message);
+    return { submissions: submissions.data ?? [], published: published.data ?? [] };
+  });
+
 /** Create a draft or a submitted contribution. Ownership always comes from the token. */
 export const saveSubmission = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

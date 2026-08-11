@@ -36,6 +36,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Trash2, FileText, Target, Gauge, FolderPlus } from "lucide-react";
 import { Can } from "@/components/Can";
+import { MyContributions } from "@/components/usecasex/MyContributions";
 import { useState } from "react";
 
 const PRIORITIES: Priority[] = ["Low", "Medium", "High", "Strategic"];
@@ -112,6 +113,15 @@ function SavedPage() {
       />
       <section className="bg-secondary/40">
         <div className="mx-auto max-w-[1280px] px-6 py-12 space-y-8">
+          <MyContributions />
+          <div>
+            <h2 className="text-sm font-bold uppercase tracking-[0.18em] text-foreground">
+              Saved use cases
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              Repository use cases you shortlisted, with your notes, priorities and scores.
+            </p>
+          </div>
           {items.length === 0 ? (
             <Card className="border-dashed">
               <CardContent className="py-16 text-center space-y-3">

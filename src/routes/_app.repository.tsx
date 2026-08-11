@@ -105,7 +105,10 @@ const taxQ = queryOptions({
   staleTime: 5 * 60 * 1000,
 });
 
-function mapSort(s: SortKey | undefined): "recent" | "impact" | "maturity" | "featured" {
+function mapSort(
+  s: SortKey | undefined,
+  hasQuery: boolean,
+): "relevance" | "recent" | "impact" | "maturity" | "featured" {
   switch (s) {
     case "value":
       return "impact";
@@ -113,7 +116,9 @@ function mapSort(s: SortKey | undefined): "recent" | "impact" | "maturity" | "fe
       return "recent";
     case "relevant":
     default:
-      return "recent";
+      // "Most relevant" only means anything once there is a keyword query;
+      // without one it falls back to newest-first.
+      return hasQuery ? "relevance" : "recent";
   }
 }
 
@@ -147,7 +152,7 @@ function buildListInput(search: Search) {
     securityClassification: search.securityClassification ?? [],
     provenance: search.provenance ?? [],
     qualityStatus: search.qualityStatus ?? [],
-    sort: mapSort(search.sort as SortKey | undefined),
+    sort: mapSort(search.sort as SortKey | undefined, (search.q ?? "").trim().length > 0),
     limit: Math.min(PAGE_SIZE * page, 120),
     page: 1,
   };
