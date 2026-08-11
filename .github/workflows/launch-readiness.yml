@@ -9,13 +9,15 @@ concurrency:
   group: launch-readiness-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CI: "1"
+
 jobs:
-  full-e2e:
-    name: Full E2E launch gate
+  integration-gate:
+    name: P0 integration suites (service role)
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
-      CI: "1"
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -42,18 +44,57 @@ jobs:
             echo "available=true" >> "$GITHUB_OUTPUT"
           else
             echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::Backend credentials not configured — skipping launch-readiness E2E suites."
+            echo "::warning::Backend credentials not configured — skipping launch-readiness integration suites."
           fi
-      - name: Run all launch-readiness E2E suites
+      - name: Run integration suites (fails the build on any regression)
         if: steps.creds.outputs.available == 'true'
-        run: bun run test:e2e 2>&1 | tee launch-e2e.log
-      - name: Upload E2E logs
+        run: bun run test:integration 2>&1 | tee launch-e2e.log
+      - name: Upload integration evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: launch-readiness-logs
+          name: evidence-integration
           path: |
             launch-e2e.log
+            test-evidence/integration/**
             test-results/**
-          retention-days: 7
+          retention-days: 14
+          if-no-files-found: ignore
+
+  browser-p0-gate:
+    name: P0 browser journeys (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      SMOKE_DEMO_EMAIL: ${{ secrets.SMOKE_DEMO_EMAIL }}
+      SMOKE_DEMO_PASSWORD: ${{ secrets.SMOKE_DEMO_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies (frozen lockfile)
+        run: bun install --frozen-lockfile
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium
+      - name: Prepare test-mode env
+        run: node scripts/ci-test-env.mjs
+      - name: Run P0 browser journeys
+        run: bun run test:p0 2>&1 | tee playwright-p0.log
+      # Traces, screenshots, videos and the HTML report are configured in
+      # playwright.config.ts (retain-on-failure) so every failed gate ships
+      # reviewable evidence.
+      - name: Upload browser evidence (report, screenshots, videos, traces)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-browser-p0
+          path: |
+            playwright-p0.log
+            playwright-report/**
+            test-results/**
+          retention-days: 14
           if-no-files-found: ignore

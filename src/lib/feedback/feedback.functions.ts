@@ -6,6 +6,7 @@ import {
   FEEDBACK_MESSAGE_MIN,
   FEEDBACK_STATUSES,
 } from "@/lib/feedback/feedback.model";
+import { REQUEST_PRIORITIES } from "@/lib/feedback/sla";
 
 const SubmitInput = z.object({
   category: z.enum([
@@ -125,4 +126,67 @@ export const updateFeedbackStatus = createServerFn({ method: "POST" })
       },
     );
     return record;
+  });
+
+const TriageInput = z.object({
+  id: z.string().uuid(),
+  assignedTo: z.string().uuid().nullable(),
+  priority: z.enum(REQUEST_PRIORITIES.map((p) => p.value) as [string, ...string[]]),
+  dueAt: z.string().datetime(),
+});
+
+/** Assign an owner, set priority and set the SLA due date on one request. */
+export const setRequestTriage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => TriageInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { assertAnalyticsReader } = await import("@/lib/cta-analytics-access.server");
+    await assertAnalyticsReader(context.supabase, context.userId);
+    const { setFeedbackTriage } = await import("@/lib/feedback/feedback.server");
+    const record = await setFeedbackTriage(context.supabase, {
+      id: data.id,
+      assignedTo: data.assignedTo,
+      priority: data.priority,
+      dueAt: data.dueAt,
+      actorId: context.userId,
+    });
+    const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
+    await writeAuditEvent(
+      { supabase: context.supabase, userId: context.userId },
+      {
+        event: "admin.action",
+        entity: { type: "product_feedback", id: record.id },
+        next: { assignedTo: record.assignedTo, priority: record.priority, dueAt: record.dueAt },
+        source: "requests-inbox-triage",
+      },
+    );
+    return record;
+  });
+
+/** Platform admins who can own a request, for the assignment picker. */
+export const listRequestOwners = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { assertAnalyticsReader } = await import("@/lib/cta-analytics-access.server");
+    await assertAnalyticsReader(context.supabase, context.userId);
+    const { listAssignableOwners } = await import("@/lib/feedback/owners.server");
+    return listAssignableOwners();
+  });
+
+export const listMyRequestAlertsFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { listMyRequestAlerts } = await import("@/lib/feedback/feedback.server");
+    return listMyRequestAlerts(context.supabase, context.userId);
+  });
+
+const MarkReadInput = z.object({ ids: z.array(z.string().uuid()).min(1).max(50) });
+
+export const markRequestAlertsReadFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => MarkReadInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { markRequestAlertsRead } = await import("@/lib/feedback/feedback.server");
+    const updated = await markRequestAlertsRead(context.supabase, context.userId, data.ids);
+    return { updated };
   });
