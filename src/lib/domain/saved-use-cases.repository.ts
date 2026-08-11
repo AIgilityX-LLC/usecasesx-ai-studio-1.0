@@ -10,6 +10,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { normalizeError, unwrapResult } from "./errors";
 import { requireUserId } from "./ownership";
 import {
+  buildPage,
+  chunkIds,
+  clampPageSize,
+  collectPages,
+  keysetOrFilter,
+  type Page,
+} from "./pagination";
+import {
   AUDIT_EVENTS,
   PRODUCT_EVENTS,
   recordAuditEvent,
@@ -64,6 +72,19 @@ export type EnrichedSavedRow = {
   note: string | null;
   saved_at: string;
   content: UseCaseContent | null;
+};
+
+/** Keyset cursor: `saved_at` descending with `use_case_id` as the tiebreaker. */
+export type SavedCursor = { savedAt: string; useCaseId: string };
+
+/** Upper bound on rows returned by the "everything" convenience reader. */
+export const SAVED_MAX_ROWS = 500;
+
+type SavedBaseRow = {
+  use_case_id: string;
+  priority: string;
+  note: string | null;
+  saved_at: string;
 };
 
 /** Resolves a public use-case slug to its id. Returns null when unknown. */
@@ -174,82 +195,102 @@ export function parseScore(score: unknown) {
 }
 
 /**
- * Raw personal workspace read used by the Pro hook.
+ * One bounded page of saved entries, newest first, with the use-case content
+ * hydrated.
  *
  * `saved_use_cases.use_case_id` has no foreign key (it can reference either the
- * global catalogue or a workspace draft), so the content is hydrated in a
- * batch query against `use_cases` plus the industry / function / capability
- * join tables rather than embedded by PostgREST.
- *
- * Returns `EnrichedSavedRow` so callers get the full use-case content
- * (title, summary, classification fields, industry, function, capability)
- * alongside the saved-entry metadata — no more `MOCK_USE_CASES` lookups.
+ * global catalogue or a workspace draft), so the content is hydrated in batch
+ * queries against `use_cases` plus the industry / function / capability join
+ * tables rather than embedded by PostgREST. Those hydration reads are chunked,
+ * so the number of ids per request stays bounded no matter how large the page.
  */
-export async function listSavedForUser(userId: string | null): Promise<EnrichedSavedRow[]> {
+export async function listSavedPageForUser(
+  userId: string | null,
+  options: { limit?: number; cursor?: SavedCursor | null } = {},
+): Promise<Page<EnrichedSavedRow, SavedCursor>> {
   const uid = requireUserId(userId);
-  const result = await supabase
+  const pageSize = clampPageSize(options.limit);
+  const cursor = options.cursor ?? null;
+
+  let query = supabase
     .from("saved_use_cases")
     .select("use_case_id, priority, note, saved_at")
     .eq("user_id", uid)
-    .order("saved_at", { ascending: false });
-  const rows = (unwrapResult(result, { allowNull: true }) ?? []) as Array<{
-    use_case_id: string;
-    priority: string;
-    note: string | null;
-    saved_at: string;
-  }>;
-  if (rows.length === 0) return [];
+    .order("saved_at", { ascending: false })
+    .order("use_case_id", { ascending: true })
+    .limit(pageSize + 1);
+  if (cursor) {
+    query = query.or(keysetOrFilter("saved_at", cursor.savedAt, "use_case_id", cursor.useCaseId));
+  }
 
-  const ids = [...new Set(rows.map((row) => row.use_case_id))];
+  const result = await query;
+  const fetched = (unwrapResult(result, { allowNull: true }) ?? []) as SavedBaseRow[];
+  const page = buildPage<SavedBaseRow, SavedCursor>(fetched, pageSize, (row) => ({
+    savedAt: row.saved_at,
+    useCaseId: row.use_case_id,
+  }));
+  if (page.rows.length === 0) {
+    return { ...page, rows: [] };
+  }
 
-  // Batch-fetch use case content + join tables in parallel.
-  const [ucRes, indRes, funcRes, capRes] = await Promise.all([
-    supabase
-      .from("use_cases")
-      .select(
-        "id, slug, title, summary, value_potential, complexity, risk_level, time_to_value, maturity_level, maturity",
-      )
-      .in("id", ids),
-    supabase
-      .from("use_case_industries")
-      .select("use_case_id, industries!inner(slug, name)")
-      .in("use_case_id", ids),
-    supabase
-      .from("use_case_business_functions")
-      .select("use_case_id, business_functions(name)")
-      .in("use_case_id", ids),
-    supabase
-      .from("use_case_capabilities")
-      .select("use_case_id, ai_capabilities(name)")
-      .in("use_case_id", ids),
-  ]);
+  const hydrated = await hydrateSavedRows(page.rows);
+  return { rows: hydrated, hasMore: page.hasMore, nextCursor: page.nextCursor, pageSize };
+}
 
-  const ucMap = new Map(
-    (unwrapResult(ucRes, { allowNull: true }) ?? []).map((uc) => [uc.id, uc] as const),
-  );
+/** Chunked hydration for one page of saved rows. */
+async function hydrateSavedRows(rows: SavedBaseRow[]): Promise<EnrichedSavedRow[]> {
+  const { chunks } = chunkIds(rows.map((row) => row.use_case_id));
 
+  const ucMap = new Map<string, Record<string, string | null>>();
   const indByUc = new Map<string, { slug: string; name: string }>();
-  for (const row of (unwrapResult(indRes, { allowNull: true }) ?? []) as Array<{
-    use_case_id: string;
-    industries?: { slug: string; name: string } | null;
-  }>) {
-    if (row.industries) indByUc.set(row.use_case_id, row.industries);
-  }
-
   const funcByUc = new Map<string, string>();
-  for (const row of (unwrapResult(funcRes, { allowNull: true }) ?? []) as Array<{
-    use_case_id: string;
-    business_functions?: { name: string } | null;
-  }>) {
-    if (row.business_functions?.name) funcByUc.set(row.use_case_id, row.business_functions.name);
-  }
-
   const capByUc = new Map<string, string>();
-  for (const row of (unwrapResult(capRes, { allowNull: true }) ?? []) as Array<{
-    use_case_id: string;
-    ai_capabilities?: { name: string } | null;
-  }>) {
-    if (row.ai_capabilities?.name) capByUc.set(row.use_case_id, row.ai_capabilities.name);
+
+  for (const ids of chunks) {
+    const [ucRes, indRes, funcRes, capRes] = await Promise.all([
+      supabase
+        .from("use_cases")
+        .select(
+          "id, slug, title, summary, value_potential, complexity, risk_level, time_to_value, maturity_level, maturity",
+        )
+        .in("id", ids),
+      supabase
+        .from("use_case_industries")
+        .select("use_case_id, industries!inner(slug, name)")
+        .in("use_case_id", ids),
+      supabase
+        .from("use_case_business_functions")
+        .select("use_case_id, business_functions(name)")
+        .in("use_case_id", ids),
+      supabase
+        .from("use_case_capabilities")
+        .select("use_case_id, ai_capabilities(name)")
+        .in("use_case_id", ids),
+    ]);
+
+    for (const uc of (unwrapResult(ucRes, { allowNull: true }) ?? []) as Array<
+      Record<string, string | null> & { id: string }
+    >) {
+      ucMap.set(uc.id, uc);
+    }
+    for (const row of (unwrapResult(indRes, { allowNull: true }) ?? []) as Array<{
+      use_case_id: string;
+      industries?: { slug: string; name: string } | null;
+    }>) {
+      if (row.industries) indByUc.set(row.use_case_id, row.industries);
+    }
+    for (const row of (unwrapResult(funcRes, { allowNull: true }) ?? []) as Array<{
+      use_case_id: string;
+      business_functions?: { name: string } | null;
+    }>) {
+      if (row.business_functions?.name) funcByUc.set(row.use_case_id, row.business_functions.name);
+    }
+    for (const row of (unwrapResult(capRes, { allowNull: true }) ?? []) as Array<{
+      use_case_id: string;
+      ai_capabilities?: { name: string } | null;
+    }>) {
+      if (row.ai_capabilities?.name) capByUc.set(row.use_case_id, row.ai_capabilities.name);
+    }
   }
 
   return rows.map((row) => {
@@ -290,6 +331,20 @@ export async function listSavedForUser(userId: string | null): Promise<EnrichedS
       },
     };
   });
+}
+
+/**
+ * Every saved entry the user can see, capped at `SAVED_MAX_ROWS` and fetched as
+ * bounded keyset pages. Kept for callers that render the whole personal
+ * workspace at once; prefer `listSavedPageForUser` for new surfaces.
+ */
+export async function listSavedForUser(userId: string | null): Promise<EnrichedSavedRow[]> {
+  const uid = requireUserId(userId);
+  const { rows } = await collectPages<EnrichedSavedRow, SavedCursor>(
+    (cursor) => listSavedPageForUser(uid, { cursor }),
+    SAVED_MAX_ROWS,
+  );
+  return rows;
 }
 
 export async function listScoresForUser(userId: string | null) {
