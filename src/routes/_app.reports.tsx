@@ -135,7 +135,7 @@ function ReportsPage() {
 
   /** Workspace membership role decides which export formats are permitted. */
   const exportRole = workspace.data?.workspaceRole ?? null;
-  const workspaceId = workspace.data?.workspaceId ?? null;
+  const workspaceId = workspace.data?.workspace?.id ?? null;
   const exportAllowed = (format: ExportFormat) => canExportReport(exportRole, format).allowed;
 
   const printRef = useRef<HTMLDivElement>(null);
