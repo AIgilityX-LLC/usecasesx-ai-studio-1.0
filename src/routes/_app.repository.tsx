@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState, useEffect } from "react";
 import { z } from "zod";
+import { publicHead } from "@/lib/seo";
 import { listUseCases, listTaxonomies, listRepositoryFacets } from "@/lib/use-cases.functions";
 import { type FacetState } from "@/components/UseCaseFilters";
 import { HorizontalFilters } from "@/components/usecasex/HorizontalFilters";
