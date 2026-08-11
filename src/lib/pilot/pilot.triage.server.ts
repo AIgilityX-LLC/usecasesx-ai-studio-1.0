@@ -7,8 +7,10 @@
  */
 import { summarizeCohort } from "@/lib/pilot/pilot.model";
 import {
+  evaluateEvidenceGap,
   recommendFreeze,
   triagePilotEvidence,
+  type EvidenceGapAlert,
   type FreezeRecommendation,
   type PilotEvidence,
   type TriageFinding,
@@ -23,6 +25,8 @@ export type PilotTriageReport = {
   evidence: PilotEvidence;
   findings: TriageFinding[];
   freeze: FreezeRecommendation;
+  evidenceGap: EvidenceGapAlert;
+  generatedAt: string;
 };
 
 export async function buildPilotTriageReport(
@@ -58,11 +62,21 @@ export async function buildPilotTriageReport(
   };
 
   const findings = triagePilotEvidence(evidence);
+  const invitedAts = cohortView.rows
+    .map((row: { invitedAt: string | null }) => row.invitedAt)
+    .filter((value: string | null): value is string => Boolean(value))
+    .sort();
   return {
     cohort: settings.cohort,
     windowDays,
     evidence,
     findings,
     freeze: recommendFreeze(evidence, findings),
+    evidenceGap: evaluateEvidenceGap(evidence, {
+      cohortStartedAt: invitedAts[0] ?? null,
+      cohortOpenedAt: settings.pausedAt ?? null,
+      now: to,
+    }),
+    generatedAt: to.toISOString(),
   };
 }
