@@ -1957,16 +1957,22 @@ export type Database = {
       product_feedback: {
         Row: {
           allow_contact: boolean
+          assigned_at: string | null
+          assigned_by: string | null
+          assigned_to: string | null
           category: string
           contact_email: string | null
           context_route: string | null
           created_at: string
+          due_at: string | null
           entity_id: string | null
           entity_type: string | null
           evidence_url: string | null
+          first_response_at: string | null
           id: string
           message: string
           organization_id: string | null
+          priority: string
           resolution_note: string | null
           resolved_at: string | null
           resolved_by: string | null
@@ -1978,16 +1984,22 @@ export type Database = {
         }
         Insert: {
           allow_contact?: boolean
+          assigned_at?: string | null
+          assigned_by?: string | null
+          assigned_to?: string | null
           category: string
           contact_email?: string | null
           context_route?: string | null
           created_at?: string
+          due_at?: string | null
           entity_id?: string | null
           entity_type?: string | null
           evidence_url?: string | null
+          first_response_at?: string | null
           id?: string
           message: string
           organization_id?: string | null
+          priority?: string
           resolution_note?: string | null
           resolved_at?: string | null
           resolved_by?: string | null
@@ -1999,16 +2011,22 @@ export type Database = {
         }
         Update: {
           allow_contact?: boolean
+          assigned_at?: string | null
+          assigned_by?: string | null
+          assigned_to?: string | null
           category?: string
           contact_email?: string | null
           context_route?: string | null
           created_at?: string
+          due_at?: string | null
           entity_id?: string | null
           entity_type?: string | null
           evidence_url?: string | null
+          first_response_at?: string | null
           id?: string
           message?: string
           organization_id?: string | null
+          priority?: string
           resolution_note?: string | null
           resolved_at?: string | null
           resolved_by?: string | null
@@ -2090,6 +2108,63 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      request_status_alerts: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          due_at: string | null
+          feedback_id: string
+          from_status: string | null
+          id: string
+          note: string | null
+          priority: string | null
+          read_at: string | null
+          to_status: string
+          user_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          due_at?: string | null
+          feedback_id: string
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          priority?: string | null
+          read_at?: string | null
+          to_status: string
+          user_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          due_at?: string | null
+          feedback_id?: string
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          priority?: string | null
+          read_at?: string | null
+          to_status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_status_alerts_feedback_id_fkey"
+            columns: ["feedback_id"]
+            isOneToOne: false
+            referencedRelation: "product_feedback"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_status_alerts_feedback_id_fkey"
+            columns: ["feedback_id"]
+            isOneToOne: false
+            referencedRelation: "v_feedback_queue"
             referencedColumns: ["id"]
           },
         ]
@@ -4656,16 +4731,22 @@ export type Database = {
       v_feedback_queue: {
         Row: {
           allow_contact: boolean | null
+          assigned_at: string | null
+          assigned_by: string | null
+          assigned_to: string | null
           category: string | null
           context_route: string | null
           created_at: string | null
+          due_at: string | null
           entity_id: string | null
           entity_type: string | null
           evidence_url: string | null
+          first_response_at: string | null
           id: string | null
           is_real_activity: boolean | null
           message: string | null
           organization_id: string | null
+          priority: string | null
           resolution_note: string | null
           resolved_at: string | null
           severity: string | null
@@ -4676,16 +4757,22 @@ export type Database = {
         }
         Insert: {
           allow_contact?: boolean | null
+          assigned_at?: string | null
+          assigned_by?: string | null
+          assigned_to?: string | null
           category?: string | null
           context_route?: string | null
           created_at?: string | null
+          due_at?: string | null
           entity_id?: string | null
           entity_type?: string | null
           evidence_url?: string | null
+          first_response_at?: string | null
           id?: string | null
           is_real_activity?: never
           message?: string | null
           organization_id?: string | null
+          priority?: string | null
           resolution_note?: string | null
           resolved_at?: string | null
           severity?: string | null
@@ -4696,16 +4783,22 @@ export type Database = {
         }
         Update: {
           allow_contact?: boolean | null
+          assigned_at?: string | null
+          assigned_by?: string | null
+          assigned_to?: string | null
           category?: string | null
           context_route?: string | null
           created_at?: string | null
+          due_at?: string | null
           entity_id?: string | null
           entity_type?: string | null
           evidence_url?: string | null
+          first_response_at?: string | null
           id?: string | null
           is_real_activity?: never
           message?: string | null
           organization_id?: string | null
+          priority?: string | null
           resolution_note?: string | null
           resolved_at?: string | null
           severity?: string | null
