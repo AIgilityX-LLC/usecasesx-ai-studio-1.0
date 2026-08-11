@@ -21,6 +21,7 @@ import {
   type PilotVerdictSnapshot,
   type ReminderDispatch,
 } from "./pilot.governance";
+import { describeRun, type LaunchCheckRun } from "@/lib/qa/launch-runs";
 import { toCsvCell } from "./pilot.export";
 
 export const TIMELINE_CATEGORIES = [
@@ -31,6 +32,7 @@ export const TIMELINE_CATEGORIES = [
   "reminder",
   "verdict",
   "waiver",
+  "launch_check",
 ] as const;
 export type TimelineCategory = (typeof TIMELINE_CATEGORIES)[number];
 
@@ -42,6 +44,7 @@ export const TIMELINE_CATEGORY_LABEL: Record<TimelineCategory, string> = {
   reminder: "Reminder",
   verdict: "Verdict",
   waiver: "Waiver",
+  launch_check: "Launch check",
 };
 
 export type PilotTimelineEvent = {
@@ -63,6 +66,7 @@ export type TimelineInput = {
   dispatches?: readonly ReminderDispatch[];
   snapshots?: readonly PilotVerdictSnapshot[];
   waivers?: readonly LaunchWaiver[];
+  launchCheckRuns?: readonly LaunchCheckRun[];
 };
 
 const iso = (value: string | null | undefined): string | null =>
@@ -185,6 +189,16 @@ export function buildPilotTimeline(input: TimelineInput): PilotTimelineEvent[] {
     });
   }
 
+  for (const run of input.launchCheckRuns ?? []) {
+    push(iso(run.createdAt), {
+      category: "launch_check",
+      title: "Signed-in launch checks re-run",
+      detail: describeRun(run),
+      participant: null,
+      actor: run.actorEmail ?? run.actorId,
+    });
+  }
+
   return events.sort((a, b) => a.at.localeCompare(b.at) || a.title.localeCompare(b.title));
 }
 
@@ -199,6 +213,38 @@ export function pilotTimelineToCsv(events: readonly PilotTimelineEvent[]): strin
     event.actor ?? "",
   ]);
   return [header, ...body].map((row) => row.map(toCsvCell).join(",")).join("\r\n");
+}
+
+/** Column headers for the PDF rendering of the timeline. */
+export const TIMELINE_PDF_COLUMNS = ["Occurred at", "Category", "Event", "Participant"] as const;
+
+/** Flattened rows for the PDF, in the same order as the CSV. */
+export function buildTimelinePdfRows(events: readonly PilotTimelineEvent[]): string[][] {
+  return events.map((event) => [
+    event.at.replace("T", " ").slice(0, 19),
+    TIMELINE_CATEGORY_LABEL[event.category],
+    event.title,
+    event.participant ?? "—",
+  ]);
+}
+
+/** Summary lines shared by the PDF header and the Markdown artifact. */
+export function buildTimelineSummaryLines(input: {
+  cohort: string;
+  events: readonly PilotTimelineEvent[];
+}): string[] {
+  const counts = countTimeline(input.events);
+  const first = input.events[0]?.at ?? null;
+  const last = input.events[input.events.length - 1]?.at ?? null;
+  return [
+    `Cohort: ${input.cohort}`,
+    `Events recorded: ${input.events.length}`,
+    `First event: ${first ?? "none recorded"}`,
+    `Latest event: ${last ?? "none recorded"}`,
+    ...TIMELINE_CATEGORIES.map(
+      (category) => `${TIMELINE_CATEGORY_LABEL[category]}: ${counts[category]}`,
+    ),
+  ];
 }
 
 export type TimelineCounts = Record<TimelineCategory, number>;
