@@ -49,6 +49,110 @@ export const savePublicValueCanvasFn = createServerFn({ method: "POST" })
     });
   });
 
+export const recordPublicValueCanvasVersionFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(async (d) => {
+    const { publicValueCanvasInputSchema } = await import("@/lib/workshops.public-value");
+    return publicValueCanvasInputSchema
+      .extend({ note: z.string().trim().max(400).optional() })
+      .parse(d);
+  })
+  .handler(async ({ data, context }) => {
+    const { savePublicValueCanvas } = await import("@/lib/workshops.public-value.server");
+    const { recordCanvasVersion } = await import("@/lib/workshops.canvas-evidence.server");
+    const { assertFacilitator } = await import("@/lib/workshops.server");
+    await assertFacilitator(context.supabase, data.workshopId, context.userId);
+    const canvas = await savePublicValueCanvas(context.supabase, {
+      workshopId: data.workshopId,
+      sections: data.sections,
+      userId: context.userId,
+    });
+    const version = await recordCanvasVersion(context.supabase, {
+      workshopId: data.workshopId,
+      sections: data.sections,
+      note: data.note?.trim() ? data.note.trim() : null,
+      userId: context.userId,
+    });
+    return { canvas, version };
+  });
+
+export const listPublicValueCanvasVersionsFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ workshopId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { listCanvasVersions } = await import("@/lib/workshops.canvas-evidence.server");
+    return listCanvasVersions(context.supabase, data.workshopId);
+  });
+
+export const listCanvasDocumentsFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ workshopId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { listCanvasDocuments } = await import("@/lib/workshops.canvas-evidence.server");
+    return listCanvasDocuments(context.supabase, data.workshopId);
+  });
+
+export const recordCanvasDocumentFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        workshopId: z.string().uuid(),
+        section: z.string().regex(/^[a-z_]{3,40}$/),
+        label: z.string().trim().min(1).max(160),
+        storagePath: z.string().trim().min(5).max(400),
+        mimeType: z.string().trim().min(3).max(160),
+        sizeBytes: z
+          .number()
+          .int()
+          .positive()
+          .max(15 * 1024 * 1024),
+        note: z.string().trim().max(400).nullish(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { recordCanvasDocument } = await import("@/lib/workshops.canvas-evidence.server");
+    const { isCanvasSection } = await import("@/lib/workshops.canvas-evidence");
+    const { assertFacilitator } = await import("@/lib/workshops.server");
+    if (!isCanvasSection(data.section)) throw new Error("Unknown canvas section.");
+    await assertFacilitator(context.supabase, data.workshopId, context.userId);
+    return recordCanvasDocument(context.supabase, {
+      workshopId: data.workshopId,
+      section: data.section,
+      label: data.label,
+      storagePath: data.storagePath,
+      mimeType: data.mimeType,
+      sizeBytes: data.sizeBytes,
+      note: data.note?.trim() ? data.note.trim() : null,
+      userId: context.userId,
+    });
+  });
+
+export const deleteCanvasDocumentFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ workshopId: z.string().uuid(), documentId: z.string().uuid() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { deleteCanvasDocument } = await import("@/lib/workshops.canvas-evidence.server");
+    const { assertFacilitator } = await import("@/lib/workshops.server");
+    await assertFacilitator(context.supabase, data.workshopId, context.userId);
+    return deleteCanvasDocument(context.supabase, {
+      workshopId: data.workshopId,
+      documentId: data.documentId,
+      userId: context.userId,
+    });
+  });
+
+export const canvasDocumentUrlFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ path: z.string().trim().min(5).max(400) }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { issueCanvasDocumentUrl } = await import("@/lib/workshops.canvas-evidence.server");
+    return issueCanvasDocumentUrl(context.supabase, context.userId, data.path);
+  });
+
 export const listWorkshopsFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {

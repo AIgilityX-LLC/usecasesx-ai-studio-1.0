@@ -26,8 +26,8 @@ import {
   buildTimelinePdfRows,
   buildTimelineSummaryLines,
   countTimeline,
-  pilotTimelineToCsv,
-  TIMELINE_PDF_COLUMNS,
+  localizedTimelineToCsv,
+  timelinePdfColumns,
   TIMELINE_CATEGORIES,
   TIMELINE_CATEGORY_LABEL,
 } from "@/lib/pilot/pilot.timeline";
@@ -47,6 +47,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  REPORT_LANGUAGE_LABEL,
+  REPORT_LANGUAGES,
+  type ReportLanguage,
+} from "@/lib/i18n/report-language";
 import {
   Dialog,
   DialogContent,
@@ -173,6 +185,7 @@ export function PilotLaunchGovernanceCard({
     ],
   );
   const counts = useMemo(() => countTimeline(timeline), [timeline]);
+  const [reportLanguage, setReportLanguage] = useState<ReportLanguage>("en");
   const stamp = new Date().toISOString().slice(0, 10);
 
   /** Paginated PDF rendering of the same timeline rows the CSV exports. */
@@ -195,7 +208,11 @@ export function PilotLaunchGovernanceCard({
       doc.text("Summary", margin, y);
       y += 16;
       doc.setFontSize(10);
-      for (const line of buildTimelineSummaryLines({ cohort, events: timeline })) {
+      for (const line of buildTimelineSummaryLines({
+        cohort,
+        events: timeline,
+        language: reportLanguage,
+      })) {
         doc.text(line, margin, y);
         y += 14;
       }
@@ -206,11 +223,11 @@ export function PilotLaunchGovernanceCard({
       y += 16;
       doc.setFontSize(9);
       const columnX = [margin, margin + 120, margin + 200, margin + 400];
-      TIMELINE_PDF_COLUMNS.forEach((column, index) => {
+      timelinePdfColumns(reportLanguage).forEach((column, index) => {
         doc.text(column, columnX[index] ?? margin, y);
       });
       y += 12;
-      for (const row of buildTimelinePdfRows(timeline)) {
+      for (const row of buildTimelinePdfRows(timeline, reportLanguage)) {
         if (y > 780) {
           doc.addPage();
           y = margin;
@@ -221,7 +238,7 @@ export function PilotLaunchGovernanceCard({
         y += 13;
       }
 
-      doc.save(`pilot-timeline-${cohort}-${stamp}.pdf`);
+      doc.save(`pilot-timeline-${cohort}-${reportLanguage}-${stamp}.pdf`);
       toast.success("Evidence timeline PDF exported");
     } catch (error) {
       toast.error("PDF export failed", {
@@ -491,15 +508,31 @@ export function PilotLaunchGovernanceCard({
             {gapEmailMutation.isPending ? "Running…" : "Run evidence-gap reminders"}
           </Button>
 
+          <Select
+            value={reportLanguage}
+            onValueChange={(value) => setReportLanguage(value as ReportLanguage)}
+          >
+            <SelectTrigger className="h-8 w-[9.5rem]" aria-label="Evidence report language">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {REPORT_LANGUAGES.map((code) => (
+                <SelectItem key={code} value={code}>
+                  {REPORT_LANGUAGE_LABEL[code]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           <Button
             size="sm"
             variant="outline"
             disabled={timeline.length === 0}
             onClick={() =>
               download(
-                `pilot-timeline-${cohort}-${stamp}.csv`,
+                `pilot-timeline-${cohort}-${reportLanguage}-${stamp}.csv`,
                 "text/csv",
-                pilotTimelineToCsv(timeline),
+                localizedTimelineToCsv(timeline, reportLanguage),
               )
             }
           >
@@ -510,12 +543,13 @@ export function PilotLaunchGovernanceCard({
             disabled={timeline.length === 0}
             onClick={() =>
               download(
-                `pilot-timeline-${cohort}-${stamp}.md`,
+                `pilot-timeline-${cohort}-${reportLanguage}-${stamp}.md`,
                 "text/markdown",
                 buildTimelineMarkdown({
                   cohort,
                   generatedAt: new Date().toISOString(),
                   events: timeline,
+                  language: reportLanguage,
                 }),
               )
             }

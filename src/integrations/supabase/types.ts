@@ -4621,6 +4621,100 @@ export type Database = {
         }
         Relationships: []
       }
+      workshop_canvas_documents: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          mime_type: string
+          note: string | null
+          section: string
+          size_bytes: number
+          storage_path: string
+          updated_at: string
+          uploaded_by: string
+          workshop_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          mime_type: string
+          note?: string | null
+          section: string
+          size_bytes?: number
+          storage_path: string
+          updated_at?: string
+          uploaded_by: string
+          workshop_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          mime_type?: string
+          note?: string | null
+          section?: string
+          size_bytes?: number
+          storage_path?: string
+          updated_at?: string
+          uploaded_by?: string
+          workshop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workshop_canvas_documents_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workshop_canvas_versions: {
+        Row: {
+          answered: number
+          completeness: number
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string | null
+          sections: Json
+          version: number
+          workshop_id: string
+        }
+        Insert: {
+          answered?: number
+          completeness?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          sections?: Json
+          version: number
+          workshop_id: string
+        }
+        Update: {
+          answered?: number
+          completeness?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          sections?: Json
+          version?: number
+          workshop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workshop_canvas_versions_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workshop_invitations: {
         Row: {
           accepted_at: string | null

@@ -23,6 +23,10 @@ import {
 } from "./pilot.governance";
 import { describeRun, type LaunchCheckRun } from "@/lib/qa/launch-runs";
 import { toCsvCell } from "./pilot.export";
+import { reportStrings, type ReportLanguage } from "@/lib/i18n/report-language";
+import type { CanvasDocument } from "@/lib/workshops.canvas-evidence";
+import { CANVAS_SECTION_LABEL } from "@/lib/workshops.public-value";
+import { humanBytes } from "@/lib/storage/storage-policy";
 
 export const TIMELINE_CATEGORIES = [
   "seat",
@@ -33,6 +37,7 @@ export const TIMELINE_CATEGORIES = [
   "verdict",
   "waiver",
   "launch_check",
+  "document",
 ] as const;
 export type TimelineCategory = (typeof TIMELINE_CATEGORIES)[number];
 
@@ -45,6 +50,7 @@ export const TIMELINE_CATEGORY_LABEL: Record<TimelineCategory, string> = {
   verdict: "Verdict",
   waiver: "Waiver",
   launch_check: "Launch check",
+  document: "Document",
 };
 
 export type PilotTimelineEvent = {
@@ -67,6 +73,8 @@ export type TimelineInput = {
   snapshots?: readonly PilotVerdictSnapshot[];
   waivers?: readonly LaunchWaiver[];
   launchCheckRuns?: readonly LaunchCheckRun[];
+  /** Canvas evidence files, linked into the trail by the section they prove. */
+  canvasDocuments?: readonly CanvasDocument[];
 };
 
 const iso = (value: string | null | undefined): string | null =>
@@ -199,7 +207,49 @@ export function buildPilotTimeline(input: TimelineInput): PilotTimelineEvent[] {
     });
   }
 
+  for (const document of input.canvasDocuments ?? []) {
+    push(iso(document.createdAt), {
+      category: "document",
+      title: `Canvas document attached — ${document.label}`,
+      detail: [
+        CANVAS_SECTION_LABEL[document.section],
+        document.mimeType,
+        humanBytes(document.sizeBytes),
+        document.note,
+      ]
+        .filter(Boolean)
+        .join(" · "),
+      participant: null,
+      actor: emailByUserId[document.uploadedBy] ?? document.uploadedBy,
+    });
+  }
+
   return events.sort((a, b) => a.at.localeCompare(b.at) || a.title.localeCompare(b.title));
+}
+
+/** Language-aware CSV of the same rows, for multilingual evidence packs. */
+export function localizedTimelineToCsv(
+  events: readonly PilotTimelineEvent[],
+  language: ReportLanguage = "en",
+): string {
+  const t = reportStrings(language);
+  const body = events.map((event) => [
+    event.at,
+    t.categories[event.category] ?? TIMELINE_CATEGORY_LABEL[event.category],
+    event.title,
+    event.participant ?? "",
+    event.detail,
+    event.actor ?? "",
+  ]);
+  return [[...t.timelineColumns], ...body].map((row) => row.map(toCsvCell).join(",")).join("\r\n");
+}
+
+/** Localised category label, falling back to English for unknown values. */
+export function timelineCategoryLabel(
+  category: TimelineCategory,
+  language: ReportLanguage = "en",
+): string {
+  return reportStrings(language).categories[category] ?? TIMELINE_CATEGORY_LABEL[category];
 }
 
 export function pilotTimelineToCsv(events: readonly PilotTimelineEvent[]): string {
@@ -218,11 +268,19 @@ export function pilotTimelineToCsv(events: readonly PilotTimelineEvent[]): strin
 /** Column headers for the PDF rendering of the timeline. */
 export const TIMELINE_PDF_COLUMNS = ["Occurred at", "Category", "Event", "Participant"] as const;
 
+/** Localised PDF column headers, in the same order. */
+export function timelinePdfColumns(language: ReportLanguage = "en"): string[] {
+  return reportStrings(language).timelineColumns.slice(0, 4);
+}
+
 /** Flattened rows for the PDF, in the same order as the CSV. */
-export function buildTimelinePdfRows(events: readonly PilotTimelineEvent[]): string[][] {
+export function buildTimelinePdfRows(
+  events: readonly PilotTimelineEvent[],
+  language: ReportLanguage = "en",
+): string[][] {
   return events.map((event) => [
     event.at.replace("T", " ").slice(0, 19),
-    TIMELINE_CATEGORY_LABEL[event.category],
+    timelineCategoryLabel(event.category, language),
     event.title,
     event.participant ?? "—",
   ]);
@@ -232,17 +290,19 @@ export function buildTimelinePdfRows(events: readonly PilotTimelineEvent[]): str
 export function buildTimelineSummaryLines(input: {
   cohort: string;
   events: readonly PilotTimelineEvent[];
+  language?: ReportLanguage;
 }): string[] {
+  const t = reportStrings(input.language ?? "en");
   const counts = countTimeline(input.events);
   const first = input.events[0]?.at ?? null;
   const last = input.events[input.events.length - 1]?.at ?? null;
   return [
-    `Cohort: ${input.cohort}`,
-    `Events recorded: ${input.events.length}`,
-    `First event: ${first ?? "none recorded"}`,
-    `Latest event: ${last ?? "none recorded"}`,
+    `${t.cohort}: ${input.cohort}`,
+    `${t.eventsRecorded}: ${input.events.length}`,
+    `${t.firstEvent}: ${first ?? t.noneRecorded}`,
+    `${t.latestEvent}: ${last ?? t.noneRecorded}`,
     ...TIMELINE_CATEGORIES.map(
-      (category) => `${TIMELINE_CATEGORY_LABEL[category]}: ${counts[category]}`,
+      (category) => `${timelineCategoryLabel(category, input.language)}: ${counts[category]}`,
     ),
   ];
 }
@@ -264,42 +324,38 @@ export function buildTimelineMarkdown(input: {
   cohort: string;
   generatedAt: string;
   events: readonly PilotTimelineEvent[];
+  language?: ReportLanguage;
 }): string {
+  const t = reportStrings(input.language ?? "en");
   const counts = countTimeline(input.events);
   const first = input.events[0]?.at ?? null;
   const last = input.events[input.events.length - 1]?.at ?? null;
   const lines: string[] = [
-    `# Pilot evidence timeline — cohort ${input.cohort}`,
+    `# ${t.timelineTitle} — ${t.cohort} ${input.cohort}`,
     ``,
-    `Generated ${input.generatedAt}`,
+    `${t.generated} ${input.generatedAt}`,
     ``,
-    `- Events recorded: ${input.events.length}`,
-    `- First event: ${first ?? "none recorded"}`,
-    `- Latest event: ${last ?? "none recorded"}`,
+    `- ${t.eventsRecorded}: ${input.events.length}`,
+    `- ${t.firstEvent}: ${first ?? t.noneRecorded}`,
+    `- ${t.latestEvent}: ${last ?? t.noneRecorded}`,
     ...TIMELINE_CATEGORIES.map(
-      (category) => `- ${TIMELINE_CATEGORY_LABEL[category]}: ${counts[category]}`,
+      (category) => `- ${timelineCategoryLabel(category, input.language)}: ${counts[category]}`,
     ),
     ``,
-    `## Trail`,
+    `## ${t.trail}`,
     ``,
   ];
 
   if (input.events.length === 0) {
-    lines.push(
-      `No pilot events have been recorded yet. Issue seats and the trail starts populating itself.`,
-      ``,
-    );
+    lines.push(t.emptyTimeline, ``);
     return lines.join("\n");
   }
 
-  lines.push(
-    `| Occurred at | Category | Event | Participant | Detail |`,
-    `| --- | --- | --- | --- | --- |`,
-  );
+  lines.push(`| ${t.timelineColumns.slice(0, 5).join(" | ")} |`, `| --- | --- | --- | --- | --- |`);
   for (const event of input.events) {
     const cell = (value: string) => value.replace(/\|/g, "\\|");
     lines.push(
-      `| ${event.at} | ${TIMELINE_CATEGORY_LABEL[event.category]} | ${cell(event.title)} | ${cell(
+      `| ${event.at} | ${timelineCategoryLabel(event.category, input.language)} | ${cell(event.title)} | ${cell(
         event.participant ?? "—",
       )} | ${cell(event.detail || "—")} |`,
     );
