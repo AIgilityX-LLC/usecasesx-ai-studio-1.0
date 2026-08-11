@@ -507,6 +507,35 @@ function PilotAdmin() {
 
               <div className="space-y-2 border-t pt-3">
                 <Label htmlFor="pilot-roster-file">Or upload a roster file (CSV/TSV)</Label>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      const csv = buildRosterTemplateCsv();
+                      const blob = new Blob([`\uFEFF${csv}`], {
+                        type: "text/csv;charset=utf-8;",
+                      });
+                      const url = URL.createObjectURL(blob);
+                      const anchor = document.createElement("a");
+                      anchor.href = url;
+                      anchor.download = "pilot-roster-template.csv";
+                      document.body.appendChild(anchor);
+                      anchor.click();
+                      anchor.remove();
+                      URL.revokeObjectURL(url);
+                      toast.success("Roster template downloaded", {
+                        description: "Replace the sample rows with your participants.",
+                      });
+                    }}
+                  >
+                    <Download className="mr-2 h-4 w-4" aria-hidden /> Download CSV template
+                  </Button>
+                  <span className="text-xs text-muted-foreground">
+                    Includes the expected header row and three sample rows.
+                  </span>
+                </div>
                 <Input
                   id="pilot-roster-file"
                   type="file"
@@ -523,6 +552,11 @@ function PilotAdmin() {
                   <code>notes</code> — header optional, or one email per line. Up to{" "}
                   {ROSTER_MAX_ROWS} seats per upload.
                 </p>
+                <ul className="list-disc space-y-0.5 pl-5 text-xs text-muted-foreground">
+                  {ROSTER_TEMPLATE_NOTES.map((note) => (
+                    <li key={note}>{note}</li>
+                  ))}
+                </ul>
                 {roster && (
                   <div className="space-y-2 rounded-md border p-3 text-xs">
                     <p className="font-medium">
