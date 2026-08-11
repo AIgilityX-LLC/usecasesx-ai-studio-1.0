@@ -37,6 +37,62 @@ export type RosterParseResult = {
   usableRows: number;
 };
 
+/** Column order the parser recognises without any header mapping guesswork. */
+export const ROSTER_TEMPLATE_COLUMNS = ["email", "full name", "organisation", "notes"] as const;
+
+/** Sample rows shipped in the template so the expected formatting is obvious. */
+export const ROSTER_TEMPLATE_SAMPLE_ROWS: readonly RosterParticipant[] = [
+  {
+    email: "aisha.rahman@example.gov",
+    fullName: "Aisha Rahman",
+    organization: "Ministry of Digital Government",
+    notes: "Director, service transformation — cohort lead",
+  },
+  {
+    email: "tom.becker@example.gov",
+    fullName: "Tom Becker",
+    organization: "National Revenue Agency",
+    notes: "Head of automation; needs a Friday session",
+  },
+  {
+    email: "l.moreau@example.org",
+    fullName: "Léa Moreau",
+    organization: "City of Lyon",
+    notes: "",
+  },
+];
+
+const templateCell = (value: string): string =>
+  /[",\r\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
+
+/**
+ * Downloadable CSV template for cohort provisioning: the header row the parser
+ * maps by name, plus sample rows that survive a round-trip through
+ * `parseParticipantRoster` unchanged.
+ */
+export function buildRosterTemplateCsv(
+  rows: readonly RosterParticipant[] = ROSTER_TEMPLATE_SAMPLE_ROWS,
+): string {
+  const body = rows.map((row) => [
+    row.email,
+    row.fullName ?? "",
+    row.organization ?? "",
+    row.notes ?? "",
+  ]);
+  return [[...ROSTER_TEMPLATE_COLUMNS], ...body]
+    .map((row) => row.map(templateCell).join(","))
+    .join("\r\n");
+}
+
+/** Short guidance shown next to the template download. */
+export const ROSTER_TEMPLATE_NOTES: readonly string[] = [
+  `Keep the header row: email, full name, organisation, notes.`,
+  `Only email is required — the other columns may be left blank.`,
+  `One participant per line, up to ${ROSTER_MAX_ROWS} seats per upload.`,
+  `Comma, semicolon and tab separated files are all accepted, as is a plain list of addresses.`,
+  `Wrap any value containing a comma in double quotes.`,
+];
+
 /** Splits one delimited line, honouring double-quoted fields. */
 function splitLine(line: string, delimiter: string): string[] {
   const cells: string[] = [];
