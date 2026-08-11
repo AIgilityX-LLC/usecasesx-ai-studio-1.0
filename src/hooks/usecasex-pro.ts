@@ -48,6 +48,7 @@ import type {
   ReviewCadence,
 } from "@/lib/portfolio-model";
 import { DomainError } from "@/lib/domain/errors";
+import type { ListMeta } from "@/lib/domain/pagination";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import {
