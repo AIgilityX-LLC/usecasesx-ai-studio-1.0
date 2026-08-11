@@ -56,7 +56,7 @@ export function PilotCheckpointForm({
           checkpoint: checkpoint.key as "welcome" | "scoring" | "final",
           journeyStage: checkpoint.stage,
           contextRoute: pathname,
-          missionStep: missionStep ?? checkpoint.missionStep ?? null,
+          missionStep: missionStep ?? checkpoint.afterStep ?? null,
           useCaseIds: references?.useCaseIds ?? [],
           portfolioId: references?.portfolioId ?? null,
           rating,
