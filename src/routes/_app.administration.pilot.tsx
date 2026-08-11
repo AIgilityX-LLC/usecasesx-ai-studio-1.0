@@ -123,6 +123,33 @@ function PilotAdmin() {
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["pilot-cohort"] });
 
+  /**
+   * Records a fresh signed-in P0/P1 launch-check pass so the evidence timeline
+   * shows the state of the checks at the moment the pilot changed.
+   */
+  const rerunLaunchChecks = async (detail: string) => {
+    try {
+      const { run } = await runChecks({
+        data: {
+          cohort: cohort.data?.settings?.cohort ?? "pilot",
+          trigger: "pilot_status_changed",
+          triggerDetail: detail,
+        },
+      });
+      const description = `${run.summary.passed}/${run.summary.total} passed · P0 failures ${run.summary.p0Failures}`;
+      if (run.summary.verdict === "pass") toast.success("Launch checks re-run — pass", { description });
+      else if (run.summary.verdict === "attention")
+        toast.warning("Launch checks re-run — needs attention", { description });
+      else toast.error("Launch checks re-run — P0 failure", { description });
+    } catch (error) {
+      toast.error("Launch checks could not be re-run", {
+        description: error instanceof Error ? error.message : "Run them from Launch checks.",
+      });
+    } finally {
+      void queryClient.invalidateQueries({ queryKey: ["pilot-launch-check-runs"] });
+    }
+  };
+
   const inviteMutation = useMutation({
     mutationFn: () =>
       invite({
