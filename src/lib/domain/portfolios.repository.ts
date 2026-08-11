@@ -18,10 +18,12 @@ import { normalizeError, unwrapResult } from "./errors";
 import { requireUserId } from "./ownership";
 import {
   buildPage,
+  buildListMeta,
   chunkIds,
   clampPageSize,
   collectPages,
   keysetOrFilter,
+  type ListMeta,
   type Page,
 } from "./pagination";
 import {
