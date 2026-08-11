@@ -6,9 +6,10 @@
  * report, so the exported document is exactly what the user reviewed. Nothing
  * is re-rendered server-side and no report content leaves the browser.
  *
- * Every entry point takes the caller's workspace role and refuses to produce a
- * file when that role is not permitted — the UI gate is a convenience, this is
- * the enforcement point.
+ * Every entry point checks permission twice: the local role matrix for an
+ * instant, honest message, then a server-side re-check (`authorizeReportExportFn`)
+ * that resolves role, workspace membership and entitlement from the database.
+ * A caller who fakes a role in the browser still gets refused.
  */
 
 import {
@@ -17,7 +18,28 @@ import {
   buildUseCasesCsv,
   type ReportItemInput,
 } from "@/lib/reports/report-model";
-import { assertCanExportReport } from "@/lib/reports/report-access";
+import {
+  assertCanExportReport,
+  ReportExportDeniedError,
+  type ExportFormat,
+} from "@/lib/reports/report-access";
+import { authorizeReportExportFn } from "@/lib/reports/report-export.functions";
+
+/**
+ * Server is the boundary: the local matrix short-circuits obvious denials,
+ * then the server re-derives role and entitlement from the database.
+ */
+async function authorize(
+  role: string | null | undefined,
+  format: ExportFormat,
+  workspaceId?: string | null,
+): Promise<void> {
+  assertCanExportReport(role, format);
+  const verdict = await authorizeReportExportFn({
+    data: { format, workspaceId: workspaceId ?? null },
+  });
+  if (!verdict.allowed) throw new ReportExportDeniedError(format, role, verdict.reason);
+}
 
 function downloadText(filename: string, mime: string, text: string) {
   const blob = new Blob([`\uFEFF${text}`], { type: `${mime};charset=utf-8;` });
@@ -31,30 +53,35 @@ function downloadText(filename: string, mime: string, text: string) {
   URL.revokeObjectURL(url);
 }
 
-export function downloadUseCaseCsv(
+export async function downloadUseCaseCsv(
   items: ReportItemInput[],
   kind: string,
   role: string | null | undefined,
-): string {
-  assertCanExportReport(role, "csv");
+  workspaceId?: string | null,
+): Promise<string> {
+  await authorize(role, "csv", workspaceId);
   const filename = `${reportFileName(kind)}.csv`;
   downloadText(filename, "text/csv", buildUseCasesCsv(items));
   return filename;
 }
 
-export function downloadBenefitsCsv(
+export async function downloadBenefitsCsv(
   items: ReportItemInput[],
   kind: string,
   role: string | null | undefined,
-): string {
-  assertCanExportReport(role, "csv_benefits");
+  workspaceId?: string | null,
+): Promise<string> {
+  await authorize(role, "csv_benefits", workspaceId);
   const filename = `${reportFileName(`${kind}-benefits`)}.csv`;
   downloadText(filename, "text/csv", benefitsToCsv(items));
   return filename;
 }
 
 /** Opens the browser print dialog; users pick "Save as PDF" from there. */
-export function printReport(role: string | null | undefined): void {
-  assertCanExportReport(role, "pdf");
+export async function printReport(
+  role: string | null | undefined,
+  workspaceId?: string | null,
+): Promise<void> {
+  await authorize(role, "pdf", workspaceId);
   window.print();
 }
