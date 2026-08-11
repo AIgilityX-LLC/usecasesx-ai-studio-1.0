@@ -356,6 +356,49 @@ function PilotAdmin() {
               The invitation is claimed automatically when that email registers and opens the pilot
               mission page. No account is created here.
             </p>
+            <div className="space-y-3 rounded-lg border border-dashed p-4">
+              <div className="space-y-1">
+                <Label htmlFor="pilot-bulk-emails">Enrol the cohort (bulk)</Label>
+                <Textarea
+                  id="pilot-bulk-emails"
+                  rows={4}
+                  placeholder="Paste 15–25 work emails, separated by commas, spaces or new lines"
+                  value={bulkEmails}
+                  onChange={(event) => setBulkEmails(event.target.value)}
+                  disabled={settings?.invitationsPaused}
+                  aria-describedby="pilot-bulk-help"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="pilot-bulk-org">Organisation (optional, applied to all)</Label>
+                <Input
+                  id="pilot-bulk-org"
+                  value={bulkOrganization}
+                  onChange={(event) => setBulkOrganization(event.target.value)}
+                  disabled={settings?.invitationsPaused}
+                />
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  variant="secondary"
+                  onClick={() => bulkInviteMutation.mutate()}
+                  disabled={
+                    bulkInviteMutation.isPending ||
+                    parsedBulkEmails.length === 0 ||
+                    Boolean(settings?.invitationsPaused)
+                  }
+                >
+                  {bulkInviteMutation.isPending
+                    ? "Enrolling…"
+                    : `Enrol ${parsedBulkEmails.length || ""} seat${parsedBulkEmails.length === 1 ? "" : "s"}`.trim()}
+                </Button>
+                <p id="pilot-bulk-help" className="text-xs text-muted-foreground">
+                  {parsedBulkEmails.length === 0
+                    ? "No valid email addresses detected yet — max 25 per batch."
+                    : `${parsedBulkEmails.length} valid address${parsedBulkEmails.length === 1 ? "" : "es"} detected. Duplicates and full-cohort overflow are skipped and reported.`}
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
