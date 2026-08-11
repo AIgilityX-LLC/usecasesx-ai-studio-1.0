@@ -47,6 +47,7 @@ import {
   willingnessLabel,
   type PilotStatus,
 } from "@/lib/pilot/pilot.model";
+import { PilotInvitationDispatchCard } from "@/components/pilot/PilotInvitationDispatchCard";
 import { PilotExportMenu } from "@/components/pilot/PilotExportMenu";
 import { PilotTriagePanel } from "@/components/pilot/PilotTriagePanel";
 import { PilotLaunchGovernanceCard } from "@/components/pilot/PilotLaunchGovernanceCard";
@@ -384,6 +385,12 @@ function PilotAdmin() {
         checkpoints={checkpoints}
         audit={audit}
         emailByUserId={emailByUserId}
+      />
+
+      <PilotInvitationDispatchCard
+        cohort={settings?.cohort ?? "pilot"}
+        seatsEnrolled={rows.filter((row) => row.status !== "revoked").length}
+        onDispatched={() => void refresh()}
       />
 
       <Card>

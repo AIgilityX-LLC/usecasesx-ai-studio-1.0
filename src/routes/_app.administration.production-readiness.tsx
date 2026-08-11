@@ -24,6 +24,13 @@ import {
   reportVerdict,
   type ProbeStatus,
 } from "@/lib/ops/production-config";
+import {
+  DRILL_MAX_AGE_DAYS,
+  RECOVERY_DRILL,
+  drillAgeDays,
+  drillProbeStatus,
+  drillSummary,
+} from "@/lib/ops/recovery-drill";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -211,6 +218,8 @@ function ProductionReadinessPage() {
         </CardContent>
       </Card>
 
+      <RecoveryStatusCard />
+
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Infrastructure limitations and mitigation</CardTitle>
@@ -259,5 +268,92 @@ function Fact({ label, value }: { label: string; value: string }) {
       <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
       <p className="break-words font-medium">{value}</p>
     </div>
+  );
+}
+
+/**
+ * Recovery status: the last restore rehearsal, how long it took, who owns it,
+ * and what the rehearsal could not prove. Reads the transcribed drill record so
+ * the page works without server access.
+ */
+function RecoveryStatusCard() {
+  const drill = RECOVERY_DRILL;
+  const age = drillAgeDays(drill);
+  const stale = age > DRILL_MAX_AGE_DAYS;
+  return (
+    <Card>
+      <CardHeader className="flex-row items-start justify-between gap-3">
+        <CardTitle className="text-base">Recovery status — last restore rehearsal</CardTitle>
+        {statusBadge(drillProbeStatus(drill))}
+      </CardHeader>
+      <CardContent className="space-y-3 text-sm">
+        <p className="text-muted-foreground">{drillSummary(drill)}</p>
+        <dl className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-md border border-border p-3">
+            <dt className="text-xs uppercase tracking-wide text-muted-foreground">Restore time</dt>
+            <dd className="font-medium">
+              {drill.restoreSeconds}s to a verified schema · {drill.migrations} migrations replayed
+            </dd>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <dt className="text-xs uppercase tracking-wide text-muted-foreground">
+              Rehearsed {age === 0 ? "today" : `${age} day${age === 1 ? "" : "s"} ago`}
+            </dt>
+            <dd className="font-medium">
+              {stale
+                ? `Older than the ${DRILL_MAX_AGE_DAYS}-day evidence window`
+                : "Inside the evidence window"}
+            </dd>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <dt className="text-xs uppercase tracking-wide text-muted-foreground">Drill owner</dt>
+            <dd className="font-medium">{drill.owner}</dd>
+          </div>
+          <div className="rounded-md border border-border p-3">
+            <dt className="text-xs uppercase tracking-wide text-muted-foreground">
+              Real restore executed by
+            </dt>
+            <dd className="font-medium">{drill.restoreExecutedBy}</dd>
+          </div>
+        </dl>
+        <p className="text-muted-foreground">
+          <span className="font-medium text-foreground">Environment: </span>
+          {drill.environment}
+        </p>
+        <p className="text-muted-foreground">
+          <span className="font-medium text-foreground">Method: </span>
+          {drill.method}
+        </p>
+        <ul className="space-y-1">
+          {drill.steps.map((step) => (
+            <li key={step.id} className="flex items-start gap-2">
+              {step.status === "pass" ? (
+                <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" aria-hidden />
+              ) : (
+                <XCircle className="mt-0.5 h-4 w-4 text-destructive" aria-hidden />
+              )}
+              <span>
+                <span className="font-medium">{step.label}</span>{" "}
+                <span className="text-muted-foreground">
+                  — {step.seconds}s — {step.detail}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ul>
+        {drill.baselineGaps.length > 0 && (
+          <Alert>
+            <AlertTitle>What this rehearsal could not prove</AlertTitle>
+            <AlertDescription>
+              {drill.baselineGaps.length} object(s) exist only inside the managed snapshot, so the
+              migration set alone does not rebuild the database: {drill.baselineGaps.join(", ")}. A
+              real recovery therefore depends on a platform restore. Reproduce the rehearsal with{" "}
+              <code>{drill.reproduceWith}</code>; machine evidence is checked in at{" "}
+              <code>{drill.evidencePath}</code>.
+            </AlertDescription>
+          </Alert>
+        )}
+      </CardContent>
+    </Card>
   );
 }

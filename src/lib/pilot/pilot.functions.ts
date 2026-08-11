@@ -1,7 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PILOT_STATUSES } from "@/lib/pilot/pilot.model";
+import { CANONICAL_ORIGIN } from "@/lib/ops/production-config";
 
 const CheckpointInput = z.object({
   checkpoint: z.enum(["welcome", "scoring", "final"]),
@@ -23,6 +25,14 @@ const CheckpointInput = z.object({
   workspaceId: z.string().uuid().nullable().optional(),
   organizationId: z.string().uuid().nullable().optional(),
 });
+
+const DispatchInput = z.object({
+  invitationIds: z.array(z.string().uuid()).max(50).optional(),
+  resend: z.boolean().default(false),
+  dryRun: z.boolean().default(false),
+});
+
+const ClaimInput = z.object({ token: z.string().trim().min(16).max(200) });
 
 const InviteInput = z.object({
   email: z.string().trim().email().max(255),
@@ -235,6 +245,40 @@ export const invitePilotParticipantFn = createServerFn({ method: "POST" })
       },
     );
     return invitation;
+  });
+
+/** Sends (or re-sends) invitation messages and returns the claim links. */
+export const dispatchPilotInvitesFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => DispatchInput.parse(d ?? {}))
+  .handler(async ({ data, context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { getPilotSettings } = await import("@/lib/pilot/pilot.server");
+    const { dispatchPilotInvitations } = await import("@/lib/pilot/pilot.invites.server");
+    const settings = await getPilotSettings(context.supabase);
+    let origin = CANONICAL_ORIGIN;
+    try {
+      origin = new URL(getRequest().url).origin;
+    } catch {
+      origin = CANONICAL_ORIGIN;
+    }
+    return dispatchPilotInvitations(context.supabase, {
+      cohort: settings.cohort,
+      origin,
+      invitationIds: data.invitationIds,
+      resend: data.resend,
+      dryRun: data.dryRun,
+      actorId: context.userId,
+    });
+  });
+
+/** Claims a seat from an invitation link for the signed-in account. */
+export const claimPilotInvitationFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => ClaimInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { claimInvitationByToken } = await import("@/lib/pilot/pilot.invites.server");
+    return claimInvitationByToken({ token: data.token, userId: context.userId });
   });
 
 export const setPilotInvitationStatusFn = createServerFn({ method: "POST" })
