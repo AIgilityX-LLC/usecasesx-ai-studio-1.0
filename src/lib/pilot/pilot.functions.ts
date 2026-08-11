@@ -295,19 +295,6 @@ export const invitePilotCohortFn = createServerFn({ method: "POST" })
     return { created, skipped, seatsUsed: taken.size, seatTarget: settings.seatTarget };
   });
 
-    const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
-    await writeAuditEvent(
-      { supabase: context.supabase, userId: context.userId },
-      {
-        event: "admin.action",
-        entity: { type: "pilot_invitations", id: invitation.id },
-        next: { status: invitation.status },
-        severity: "notice",
-      },
-    );
-    return invitation;
-  });
-
 /** P0 incident control: stops any new pilot invitation from being issued. */
 export const setPilotInvitationsPausedFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
