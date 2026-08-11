@@ -50,6 +50,7 @@ import { Route as AppMyUseCasesRouteImport } from './routes/_app.my-use-cases'
 import { Route as AppOnboardingRouteImport } from './routes/_app.onboarding'
 import { Route as AppOpportunityMapRouteImport } from './routes/_app.opportunity-map'
 import { Route as AppPatternsRouteImport } from './routes/_app.patterns'
+import { Route as AppPilotRouteImport } from './routes/_app.pilot'
 import { Route as AppPortfolioxRouteImport } from './routes/_app.portfoliox'
 import { Route as AppPricingRouteImport } from './routes/_app.pricing'
 import { Route as AppProRouteImport } from './routes/_app.pro'
@@ -73,6 +74,7 @@ import { Route as AppAccountTeamRouteImport } from './routes/_app.account.team'
 import { Route as AppAdministrationAnalyticsRouteImport } from './routes/_app.administration.analytics'
 import { Route as AppAdministrationFeedbackRouteImport } from './routes/_app.administration.feedback'
 import { Route as AppAdministrationLaunchLearningRouteImport } from './routes/_app.administration.launch-learning'
+import { Route as AppAdministrationPilotRouteImport } from './routes/_app.administration.pilot'
 import { Route as AppAdministrationRequestsRouteImport } from './routes/_app.administration.requests'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
@@ -317,6 +319,11 @@ const AppPatternsRoute = AppPatternsRouteImport.update({
   path: '/patterns',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPilotRoute = AppPilotRouteImport.update({
+  id: '/pilot',
+  path: '/pilot',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPortfolioxRoute = AppPortfolioxRouteImport.update({
   id: '/portfoliox',
   path: '/portfoliox',
@@ -435,6 +442,11 @@ const AppAdministrationLaunchLearningRoute =
     path: '/launch-learning',
     getParentRoute: () => AppAdministrationRoute,
   } as any)
+const AppAdministrationPilotRoute = AppAdministrationPilotRouteImport.update({
+  id: '/pilot',
+  path: '/pilot',
+  getParentRoute: () => AppAdministrationRoute,
+} as any)
 const AppAdministrationRequestsRoute =
   AppAdministrationRequestsRouteImport.update({
     id: '/requests',
@@ -688,6 +700,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AppOnboardingRoute
   '/opportunity-map': typeof AppOpportunityMapRoute
   '/patterns': typeof AppPatternsRoute
+  '/pilot': typeof AppPilotRoute
   '/portfoliox': typeof AppPortfolioxRoute
   '/pricing': typeof AppPricingRoute
   '/pro': typeof AppProRoute
@@ -710,6 +723,7 @@ export interface FileRoutesByFullPath {
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
+  '/administration/pilot': typeof AppAdministrationPilotRoute
   '/administration/requests': typeof AppAdministrationRequestsRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
@@ -790,6 +804,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AppOnboardingRoute
   '/opportunity-map': typeof AppOpportunityMapRoute
   '/patterns': typeof AppPatternsRoute
+  '/pilot': typeof AppPilotRoute
   '/portfoliox': typeof AppPortfolioxRoute
   '/pricing': typeof AppPricingRoute
   '/pro': typeof AppProRoute
@@ -812,6 +827,7 @@ export interface FileRoutesByTo {
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
+  '/administration/pilot': typeof AppAdministrationPilotRoute
   '/administration/requests': typeof AppAdministrationRequestsRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
@@ -896,6 +912,7 @@ export interface FileRoutesById {
   '/_app/onboarding': typeof AppOnboardingRoute
   '/_app/opportunity-map': typeof AppOpportunityMapRoute
   '/_app/patterns': typeof AppPatternsRoute
+  '/_app/pilot': typeof AppPilotRoute
   '/_app/portfoliox': typeof AppPortfolioxRoute
   '/_app/pricing': typeof AppPricingRoute
   '/_app/pro': typeof AppProRoute
@@ -918,6 +935,7 @@ export interface FileRoutesById {
   '/_app/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/_app/administration/feedback': typeof AppAdministrationFeedbackRoute
   '/_app/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
+  '/_app/administration/pilot': typeof AppAdministrationPilotRoute
   '/_app/administration/requests': typeof AppAdministrationRequestsRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/boards/collections': typeof AppBoardsCollectionsRoute
@@ -1002,6 +1020,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/opportunity-map'
     | '/patterns'
+    | '/pilot'
     | '/portfoliox'
     | '/pricing'
     | '/pro'
@@ -1024,6 +1043,7 @@ export interface FileRouteTypes {
     | '/administration/analytics'
     | '/administration/feedback'
     | '/administration/launch-learning'
+    | '/administration/pilot'
     | '/administration/requests'
     | '/boards/$boardId'
     | '/boards/collections'
@@ -1104,6 +1124,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/opportunity-map'
     | '/patterns'
+    | '/pilot'
     | '/portfoliox'
     | '/pricing'
     | '/pro'
@@ -1126,6 +1147,7 @@ export interface FileRouteTypes {
     | '/administration/analytics'
     | '/administration/feedback'
     | '/administration/launch-learning'
+    | '/administration/pilot'
     | '/administration/requests'
     | '/boards/$boardId'
     | '/boards/collections'
@@ -1209,6 +1231,7 @@ export interface FileRouteTypes {
     | '/_app/onboarding'
     | '/_app/opportunity-map'
     | '/_app/patterns'
+    | '/_app/pilot'
     | '/_app/portfoliox'
     | '/_app/pricing'
     | '/_app/pro'
@@ -1231,6 +1254,7 @@ export interface FileRouteTypes {
     | '/_app/administration/analytics'
     | '/_app/administration/feedback'
     | '/_app/administration/launch-learning'
+    | '/_app/administration/pilot'
     | '/_app/administration/requests'
     | '/_app/boards/$boardId'
     | '/_app/boards/collections'
@@ -1580,6 +1604,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPatternsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/pilot': {
+      id: '/_app/pilot'
+      path: '/pilot'
+      fullPath: '/pilot'
+      preLoaderRoute: typeof AppPilotRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/portfoliox': {
       id: '/_app/portfoliox'
       path: '/portfoliox'
@@ -1739,6 +1770,13 @@ declare module '@tanstack/react-router' {
       path: '/launch-learning'
       fullPath: '/administration/launch-learning'
       preLoaderRoute: typeof AppAdministrationLaunchLearningRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
+    '/_app/administration/pilot': {
+      id: '/_app/administration/pilot'
+      path: '/pilot'
+      fullPath: '/administration/pilot'
+      preLoaderRoute: typeof AppAdministrationPilotRouteImport
       parentRoute: typeof AppAdministrationRoute
     }
     '/_app/administration/requests': {
@@ -2039,6 +2077,7 @@ interface AppAdministrationRouteChildren {
   AppAdministrationAnalyticsRoute: typeof AppAdministrationAnalyticsRoute
   AppAdministrationFeedbackRoute: typeof AppAdministrationFeedbackRoute
   AppAdministrationLaunchLearningRoute: typeof AppAdministrationLaunchLearningRoute
+  AppAdministrationPilotRoute: typeof AppAdministrationPilotRoute
   AppAdministrationRequestsRoute: typeof AppAdministrationRequestsRoute
 }
 
@@ -2046,6 +2085,7 @@ const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationAnalyticsRoute: AppAdministrationAnalyticsRoute,
   AppAdministrationFeedbackRoute: AppAdministrationFeedbackRoute,
   AppAdministrationLaunchLearningRoute: AppAdministrationLaunchLearningRoute,
+  AppAdministrationPilotRoute: AppAdministrationPilotRoute,
   AppAdministrationRequestsRoute: AppAdministrationRequestsRoute,
 }
 
@@ -2140,6 +2180,7 @@ interface AppRouteChildren {
   AppOnboardingRoute: typeof AppOnboardingRoute
   AppOpportunityMapRoute: typeof AppOpportunityMapRoute
   AppPatternsRoute: typeof AppPatternsRoute
+  AppPilotRoute: typeof AppPilotRoute
   AppPortfolioxRoute: typeof AppPortfolioxRoute
   AppPricingRoute: typeof AppPricingRoute
   AppProRoute: typeof AppProRoute
@@ -2206,6 +2247,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppOnboardingRoute: AppOnboardingRoute,
   AppOpportunityMapRoute: AppOpportunityMapRoute,
   AppPatternsRoute: AppPatternsRoute,
+  AppPilotRoute: AppPilotRoute,
   AppPortfolioxRoute: AppPortfolioxRoute,
   AppPricingRoute: AppPricingRoute,
   AppProRoute: AppProRoute,
@@ -2273,3 +2315,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

@@ -105,6 +105,7 @@ const ADMIN: Item[] = [
   { to: "/reports", label: "Reports", icon: FileBarChart },
   { to: "/administration", label: "Admin Panel", icon: Settings, admin: true },
   { to: "/administration/requests", label: "Requests Inbox", icon: Inbox, admin: true },
+  { to: "/administration/pilot", label: "Pilot Programme", icon: Rocket, admin: true },
   { to: "/admin-submissions", label: "Submission Review", icon: Inbox, admin: true },
   { to: "/admin-audit", label: "Submission Audit", icon: ShieldCheck, admin: true },
   { to: "/admin-observability", label: "Export & AI Activity", icon: LineChart },
@@ -112,6 +113,7 @@ const ADMIN: Item[] = [
 ];
 
 const ACCOUNT: Item[] = [
+  { to: "/pilot", label: "Pilot Mission", icon: Rocket },
   { to: "/support", label: "Request Features / Report Bugs", icon: MessageSquarePlus },
   { to: "/account", label: "Account Settings", icon: UserCog },
   { to: "/account/security", label: "Security", icon: ShieldCheck },

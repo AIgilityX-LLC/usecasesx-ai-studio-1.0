@@ -1635,6 +1635,161 @@ export type Database = {
         }
         Relationships: []
       }
+      pilot_checkpoint_responses: {
+        Row: {
+          advisory_interest: boolean
+          blocked: boolean
+          checkpoint: string
+          comment: string | null
+          context_route: string | null
+          created_at: string
+          effort_rating: number | null
+          id: string
+          journey_stage: string | null
+          organization_id: string | null
+          pilot_id: string | null
+          rating: number | null
+          user_id: string
+          value_rating: number | null
+          willingness: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          advisory_interest?: boolean
+          blocked?: boolean
+          checkpoint: string
+          comment?: string | null
+          context_route?: string | null
+          created_at?: string
+          effort_rating?: number | null
+          id?: string
+          journey_stage?: string | null
+          organization_id?: string | null
+          pilot_id?: string | null
+          rating?: number | null
+          user_id?: string
+          value_rating?: number | null
+          willingness?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          advisory_interest?: boolean
+          blocked?: boolean
+          checkpoint?: string
+          comment?: string | null
+          context_route?: string | null
+          created_at?: string
+          effort_rating?: number | null
+          id?: string
+          journey_stage?: string | null
+          organization_id?: string | null
+          pilot_id?: string | null
+          rating?: number | null
+          user_id?: string
+          value_rating?: number | null
+          willingness?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pilot_checkpoint_responses_pilot_id_fkey"
+            columns: ["pilot_id"]
+            isOneToOne: false
+            referencedRelation: "pilot_invitations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pilot_invitations: {
+        Row: {
+          activated_at: string | null
+          cohort: string
+          completed_at: string | null
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          invite_token: string
+          invited_at: string
+          invited_by: string | null
+          notes: string | null
+          organization: string | null
+          registered_at: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          activated_at?: string | null
+          cohort?: string
+          completed_at?: string | null
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id?: string
+          invite_token?: string
+          invited_at?: string
+          invited_by?: string | null
+          notes?: string | null
+          organization?: string | null
+          registered_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          activated_at?: string | null
+          cohort?: string
+          completed_at?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          invite_token?: string
+          invited_at?: string
+          invited_by?: string | null
+          notes?: string | null
+          organization?: string | null
+          registered_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      pilot_settings: {
+        Row: {
+          cohort: string
+          id: boolean
+          invitations_paused: boolean
+          pause_reason: string | null
+          paused_at: string | null
+          paused_by: string | null
+          seat_target: number
+          updated_at: string
+        }
+        Insert: {
+          cohort?: string
+          id?: boolean
+          invitations_paused?: boolean
+          pause_reason?: string | null
+          paused_at?: string | null
+          paused_by?: string | null
+          seat_target?: number
+          updated_at?: string
+        }
+        Update: {
+          cohort?: string
+          id?: boolean
+          invitations_paused?: boolean
+          pause_reason?: string | null
+          paused_at?: string | null
+          paused_by?: string | null
+          seat_target?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       plans: {
         Row: {
           code: string
