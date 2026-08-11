@@ -174,10 +174,7 @@ export async function recordRateLimitEnforced(
  * rows (which they can always read), so it survives across workers without any
  * in-memory state.
  */
-export async function exportRetryShield(
-  supabase: Client,
-  userId: string,
-): Promise<ShieldVerdict> {
+export async function exportRetryShield(supabase: Client, userId: string): Promise<ShieldVerdict> {
   const since = new Date(Date.now() - RETRY_SHIELD.windowSeconds * 1000).toISOString();
   const { data, error } = await supabase
     .from("audit_events")
@@ -211,15 +208,13 @@ async function displayNames(
   return out;
 }
 
-async function workspaceNames(
-  supabase: Client,
-  ids: string[],
-): Promise<Record<string, string>> {
+async function workspaceNames(supabase: Client, ids: string[]): Promise<Record<string, string>> {
   const unique = [...new Set(ids.filter(Boolean))];
   if (unique.length === 0) return {};
   const { data } = await supabase.from("workspaces").select("id, name").in("id", unique);
   const out: Record<string, string> = {};
-  for (const row of (data ?? []) as any[]) out[row.id as string] = (row.name as string) ?? "Workspace";
+  for (const row of (data ?? []) as any[])
+    out[row.id as string] = (row.name as string) ?? "Workspace";
   return out;
 }
 
@@ -249,11 +244,9 @@ export async function listExportAudit(
 
   const raw = (data ?? []) as any[];
   const [names, wsNames] = await Promise.all([
-    displayNames(
-      supabase,
-      workspaceId,
-      [...new Set(raw.map((r) => r.actor_id).filter(Boolean))] as string[],
-    ),
+    displayNames(supabase, workspaceId, [
+      ...new Set(raw.map((r) => r.actor_id).filter(Boolean)),
+    ] as string[]),
     workspaceNames(supabase, raw.map((r) => r.workspace_id).filter(Boolean) as string[]),
   ]);
 
@@ -333,10 +326,7 @@ export async function aiUsageAnalytics(
   }
 
   const userIds = [
-    ...new Set([
-      ...rows.map((r) => r.userId).filter(Boolean),
-      ...Object.keys(rateLimits.byUser),
-    ]),
+    ...new Set([...rows.map((r) => r.userId).filter(Boolean), ...Object.keys(rateLimits.byUser)]),
   ] as string[];
 
   const [userNames, wsNames] = await Promise.all([
@@ -377,11 +367,9 @@ export async function securityAlerts(
   if (error) throw error;
 
   const raw = (data ?? []) as any[];
-  const names = await displayNames(
-    supabase,
-    workspaceId,
-    [...new Set(raw.map((r) => r.actor_id).filter(Boolean))] as string[],
-  );
+  const names = await displayNames(supabase, workspaceId, [
+    ...new Set(raw.map((r) => r.actor_id).filter(Boolean)),
+  ] as string[]);
 
   const signals: SecuritySignal[] = raw.map((r) => {
     const payload = (r.new_value ?? {}) as Record<string, unknown>;

@@ -19,8 +19,7 @@ export const OBSERVABILITY_EVENTS = {
   rateLimitEnforced: "ai.rate_limit_enforced",
 } as const;
 
-export type ObservabilityEvent =
-  (typeof OBSERVABILITY_EVENTS)[keyof typeof OBSERVABILITY_EVENTS];
+export type ObservabilityEvent = (typeof OBSERVABILITY_EVENTS)[keyof typeof OBSERVABILITY_EVENTS];
 
 /** Events shown on the export/download audit log. */
 export const EXPORT_AUDIT_EVENTS: readonly string[] = [

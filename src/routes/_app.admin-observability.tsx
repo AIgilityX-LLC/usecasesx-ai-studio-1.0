@@ -151,8 +151,7 @@ function ExportAudit({ windowDays }: { windowDays: number }) {
   }, [query.data, term]);
 
   if (query.isLoading) return <Loading />;
-  if (query.error)
-    return <p className="text-sm text-destructive">{toUserMessage(query.error)}</p>;
+  if (query.error) return <p className="text-sm text-destructive">{toUserMessage(query.error)}</p>;
   if (query.data && query.data.authorized === false)
     return <NotAuthorized reason={query.data.reason} />;
 
@@ -211,8 +210,9 @@ function ExportAudit({ windowDays }: { windowDays: number }) {
                     <span className="text-muted-foreground"> · {r.workspaceName}</span>
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {[r.format?.toUpperCase(), r.subject ?? r.entityType].filter(Boolean).join(" · ") ||
-                      "Report export"}
+                    {[r.format?.toUpperCase(), r.subject ?? r.entityType]
+                      .filter(Boolean)
+                      .join(" · ") || "Report export"}
                     {r.reason ? ` — ${r.reason}` : ""}
                   </p>
                 </div>
@@ -253,8 +253,7 @@ function AiUsage({ windowDays }: { windowDays: number }) {
   });
 
   if (query.isLoading) return <Loading />;
-  if (query.error)
-    return <p className="text-sm text-destructive">{toUserMessage(query.error)}</p>;
+  if (query.error) return <p className="text-sm text-destructive">{toUserMessage(query.error)}</p>;
   if (!query.data) return null;
   if (query.data.authorized === false) return <NotAuthorized reason={query.data.reason} />;
 
@@ -356,8 +355,7 @@ function Alerts({ windowDays }: { windowDays: number }) {
   });
 
   if (query.isLoading) return <Loading />;
-  if (query.error)
-    return <p className="text-sm text-destructive">{toUserMessage(query.error)}</p>;
+  if (query.error) return <p className="text-sm text-destructive">{toUserMessage(query.error)}</p>;
   if (!query.data) return null;
   if (query.data.authorized === false) return <NotAuthorized reason={query.data.reason} />;
 

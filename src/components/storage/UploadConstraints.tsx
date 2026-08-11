@@ -21,7 +21,9 @@ export function UploadConstraints({
   className?: string;
 }) {
   return (
-    <p className={cn("text-xs text-muted-foreground", className)}>{uploadConstraintsText(bucket)}</p>
+    <p className={cn("text-xs text-muted-foreground", className)}>
+      {uploadConstraintsText(bucket)}
+    </p>
   );
 }
 

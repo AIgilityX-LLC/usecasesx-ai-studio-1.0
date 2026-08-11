@@ -99,10 +99,7 @@ describe("alert thresholds", () => {
   });
 
   it("fires immediately on a cross-workspace attempt", () => {
-    const alerts = evaluateAlerts(
-      [signal(OBSERVABILITY_EVENTS.crossWorkspaceAttempt, "u1")],
-      now,
-    );
+    const alerts = evaluateAlerts([signal(OBSERVABILITY_EVENTS.crossWorkspaceAttempt, "u1")], now);
     expect(alerts.find((a) => a.id === "cross_workspace")?.triggered).toBe(true);
     expect(alerts.find((a) => a.id === "storage_blocked")?.triggered).toBe(false);
   });
