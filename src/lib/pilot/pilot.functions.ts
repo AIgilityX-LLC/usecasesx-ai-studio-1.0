@@ -31,11 +31,47 @@ const InviteInput = z.object({
   notes: z.string().trim().max(500).nullable().optional(),
 });
 
-/** Bulk enrolment: one paste of 1–25 work emails, validated per line. */
-const BulkInviteInput = z.object({
-  emails: z.array(z.string().trim().email().max(255)).min(1).max(25),
-  organization: z.string().trim().max(160).nullable().optional(),
+/**
+ * Bulk enrolment: a paste of work emails, or a parsed CSV roster carrying a
+ * name, organisation and note per seat. Both shapes are capped at 25 seats.
+ */
+const BulkInviteInput = z
+  .object({
+    emails: z.array(z.string().trim().email().max(255)).max(25).default([]),
+    participants: z
+      .array(
+        z.object({
+          email: z.string().trim().email().max(255),
+          fullName: z.string().trim().max(120).nullable().optional(),
+          organization: z.string().trim().max(160).nullable().optional(),
+          notes: z.string().trim().max(500).nullable().optional(),
+        }),
+      )
+      .max(25)
+      .default([]),
+    organization: z.string().trim().max(160).nullable().optional(),
+  })
+  .refine((value) => value.emails.length + value.participants.length > 0, {
+    message: "Provide at least one email address.",
+  })
+  .refine((value) => value.emails.length + value.participants.length <= 25, {
+    message: "A single enrolment may provision at most 25 seats.",
+  });
+
+const WaiverInput = z.object({
+  reason: z.string().trim().min(20).max(1000),
+  approverName: z.string().trim().min(2).max(120),
+  approverRole: z.string().trim().min(2).max(120),
+  /** ISO date-time; omit for an open-ended waiver that must be revoked by hand. */
+  expiresAt: z.string().trim().datetime().nullable().optional(),
 });
+
+const RevokeWaiverInput = z.object({
+  id: z.string().uuid(),
+  reason: z.string().trim().max(500).nullable().optional(),
+});
+
+const GapEmailInput = z.object({ dryRun: z.boolean().default(false) });
 
 const PauseInput = z.object({
   paused: z.boolean(),
@@ -251,8 +287,24 @@ export const invitePilotCohortFn = createServerFn({ method: "POST" })
     const created: string[] = [];
     const skipped: { email: string; reason: string }[] = [];
 
-    for (const raw of data.emails) {
-      const email = raw.toLowerCase();
+    // One code path for both input shapes: pasted emails become bare seats.
+    const roster = [
+      ...data.participants.map((participant) => ({
+        email: participant.email.toLowerCase(),
+        fullName: participant.fullName ?? null,
+        organization: participant.organization ?? data.organization ?? null,
+        notes: participant.notes ?? null,
+      })),
+      ...data.emails.map((email) => ({
+        email: email.toLowerCase(),
+        fullName: null,
+        organization: data.organization ?? null,
+        notes: null,
+      })),
+    ];
+
+    for (const entry of roster) {
+      const email = entry.email;
       if (taken.has(email)) {
         skipped.push({ email, reason: "Already holds a seat in this cohort." });
         continue;
@@ -268,9 +320,9 @@ export const invitePilotCohortFn = createServerFn({ method: "POST" })
         const invitation = await createInvitation(context.supabase, {
           cohort: settings.cohort,
           email,
-          fullName: null,
-          organization: data.organization ?? null,
-          notes: null,
+          fullName: entry.fullName,
+          organization: entry.organization,
+          notes: entry.notes,
           actorId: context.userId,
         });
         taken.add(email);
@@ -353,4 +405,130 @@ export const sendPilotRemindersFn = createServerFn({ method: "POST" })
       },
     );
     return result;
+  });
+
+/* ---------------------------------------------------------- governance */
+
+/** Waivers, recorded verdicts and the reminder dispatch ledger for the cohort. */
+export const getPilotGovernanceFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { getPilotSettings } = await import("@/lib/pilot/pilot.server");
+    const { listWaivers, listVerdictSnapshots, listReminderDispatches } =
+      await import("@/lib/pilot/pilot.governance.server");
+    const settings = await getPilotSettings(context.supabase);
+    const [waivers, snapshots, dispatches] = await Promise.all([
+      listWaivers(context.supabase, settings.cohort),
+      listVerdictSnapshots(context.supabase, settings.cohort),
+      listReminderDispatches(context.supabase, settings.cohort),
+    ]);
+    return { cohort: settings.cohort, waivers, snapshots, dispatches };
+  });
+
+/**
+ * Records a named launch waiver for the evidence shortfall. A waiver never
+ * clears a P0 finding — that rule is enforced when the verdict is applied.
+ */
+export const grantLaunchWaiverFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => WaiverInput.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { getPilotSettings } = await import("@/lib/pilot/pilot.server");
+    const { grantWaiver } = await import("@/lib/pilot/pilot.governance.server");
+    const settings = await getPilotSettings(context.supabase);
+    const waiver = await grantWaiver(context.supabase, {
+      cohort: settings.cohort,
+      scope: "pilot_evidence",
+      reason: data.reason,
+      approverName: data.approverName,
+      approverRole: data.approverRole,
+      expiresAt: data.expiresAt ?? null,
+      actorId: context.userId,
+    });
+    const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
+    await writeAuditEvent(
+      { supabase: context.supabase, userId: context.userId },
+      {
+        event: "admin.action",
+        entity: { type: "pilot_rc_waivers", id: waiver.id },
+        next: { scope: waiver.scope, approver: waiver.approverName },
+        severity: "warning",
+      },
+    );
+    return waiver;
+  });
+
+export const revokeLaunchWaiverFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => RevokeWaiverInput.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { revokeWaiver } = await import("@/lib/pilot/pilot.governance.server");
+    const waiver = await revokeWaiver(context.supabase, {
+      id: data.id,
+      reason: data.reason ?? null,
+      actorId: context.userId,
+    });
+    const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
+    await writeAuditEvent(
+      { supabase: context.supabase, userId: context.userId },
+      {
+        event: "admin.action",
+        entity: { type: "pilot_rc_waivers", id: waiver.id },
+        next: { revoked: true },
+        severity: "notice",
+      },
+    );
+    return waiver;
+  });
+
+/**
+ * Freezes the current verdict into the evidence timeline. The counts are
+ * measured server-side from the triage report — never taken from the client.
+ */
+export const recordPilotVerdictFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { buildPilotTriageReport } = await import("@/lib/pilot/pilot.triage.server");
+    const { listWaivers, recordVerdictSnapshot } =
+      await import("@/lib/pilot/pilot.governance.server");
+    const { activeWaiver, applyLaunchWaiver } = await import("@/lib/pilot/pilot.governance");
+    const report = await buildPilotTriageReport(context.supabase, { windowDays: 30 });
+    const waivers = await listWaivers(context.supabase, report.cohort);
+    const waiver = activeWaiver(waivers);
+    const applied = applyLaunchWaiver(report.freeze, waiver);
+    return recordVerdictSnapshot(context.supabase, {
+      cohort: report.cohort,
+      verdict: applied.verdict,
+      headline: applied.headline,
+      freezeRecommended: applied.freezeRecommended,
+      reasons: applied.reasons,
+      invited: report.evidence.cohort.invited,
+      registered: report.evidence.cohort.registered,
+      checkpointAnswers: report.evidence.cohort.checkpointResponses,
+      p0Count: report.freeze.counts.p0,
+      p1Count: report.freeze.counts.p1,
+      evidenceGapState: report.evidenceGap.state,
+      waiverId: applied.waived ? (waiver?.id ?? null) : null,
+      actorId: context.userId,
+    });
+  });
+
+/** Manual run of the evidence-gap nudge pass the scheduler also performs. */
+export const runEvidenceGapEmailsFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => GapEmailInput.parse(d ?? {}))
+  .handler(async ({ data, context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { buildPilotTriageReport } = await import("@/lib/pilot/pilot.triage.server");
+    const { dispatchEvidenceGapEmails } = await import("@/lib/pilot/pilot.gap-emails.server");
+    const report = await buildPilotTriageReport(context.supabase, { windowDays: 30 });
+    return dispatchEvidenceGapEmails(context.supabase, {
+      cohort: report.cohort,
+      gap: report.evidenceGap,
+      dryRun: data.dryRun,
+    });
   });

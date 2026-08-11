@@ -19,6 +19,11 @@ import {
   setPilotInvitationsPausedFn,
 } from "@/lib/pilot/pilot.functions";
 import {
+  ROSTER_MAX_ROWS,
+  parseParticipantRoster,
+  type RosterParseResult,
+} from "@/lib/pilot/pilot.roster";
+import {
   PILOT_STATUSES,
   checkpointDeepLinks,
   pilotAuditActionLabel,
@@ -29,6 +34,7 @@ import {
 } from "@/lib/pilot/pilot.model";
 import { PilotExportMenu } from "@/components/pilot/PilotExportMenu";
 import { PilotTriagePanel } from "@/components/pilot/PilotTriagePanel";
+import { PilotLaunchGovernanceCard } from "@/components/pilot/PilotLaunchGovernanceCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -81,6 +87,8 @@ function PilotAdmin() {
   const [statusReason, setStatusReason] = useState("");
   const [bulkEmails, setBulkEmails] = useState("");
   const [bulkOrganization, setBulkOrganization] = useState("");
+  const [roster, setRoster] = useState<RosterParseResult | null>(null);
+  const [rosterFileName, setRosterFileName] = useState<string | null>(null);
 
   const parsedBulkEmails = useMemo(
     () =>
@@ -170,6 +178,55 @@ function PilotAdmin() {
         description: error instanceof Error ? error.message : "Please try again.",
       }),
   });
+
+  /** CSV/TSV roster upload: parsed in the browser, enrolled in one action. */
+  const rosterMutation = useMutation({
+    mutationFn: () =>
+      inviteCohort({
+        data: {
+          participants: roster?.participants ?? [],
+          organization: bulkOrganization.trim() || null,
+        },
+      }),
+    onSuccess: (result) => {
+      toast.success(
+        `${result.created.length} seat${result.created.length === 1 ? "" : "s"} provisioned from the file`,
+        {
+          description:
+            result.skipped.length > 0
+              ? `${result.seatsUsed}/${result.seatTarget} seats used · ${result.skipped.length} skipped (${result.skipped[0]!.reason})`
+              : `${result.seatsUsed}/${result.seatTarget} seats used`,
+        },
+      );
+      setRoster(null);
+      setRosterFileName(null);
+      void refresh();
+    },
+    onError: (error: unknown) =>
+      toast.error("Roster not enrolled", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      }),
+  });
+
+  const onRosterFile = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = parseParticipantRoster(text, { maxRows: ROSTER_MAX_ROWS });
+      setRoster(parsed);
+      setRosterFileName(file.name);
+      if (parsed.participants.length === 0) {
+        toast.error("No usable rows in that file", {
+          description:
+            parsed.issues[0]?.reason ?? "Expected an email column or one email per line.",
+        });
+      }
+    } catch (error) {
+      toast.error("File could not be read", {
+        description: error instanceof Error ? error.message : "Please upload a CSV or text file.",
+      });
+    }
+  };
 
   const statusMutation = useMutation({
     mutationFn: (input: { id: string; status: PilotStatus }) =>
@@ -274,6 +331,14 @@ function PilotAdmin() {
       </section>
 
       <PilotTriagePanel />
+
+      <PilotLaunchGovernanceCard
+        cohort={settings?.cohort ?? "pilot"}
+        rows={rows}
+        checkpoints={checkpoints}
+        audit={audit}
+        emailByUserId={emailByUserId}
+      />
 
       <Card>
         <CardHeader className="gap-3">
@@ -397,6 +462,88 @@ function PilotAdmin() {
                     ? "No valid email addresses detected yet — max 25 per batch."
                     : `${parsedBulkEmails.length} valid address${parsedBulkEmails.length === 1 ? "" : "es"} detected. Duplicates and full-cohort overflow are skipped and reported.`}
                 </p>
+              </div>
+
+              <div className="space-y-2 border-t pt-3">
+                <Label htmlFor="pilot-roster-file">Or upload a roster file (CSV/TSV)</Label>
+                <Input
+                  id="pilot-roster-file"
+                  type="file"
+                  accept=".csv,.tsv,.txt,text/csv,text/plain"
+                  disabled={settings?.invitationsPaused}
+                  aria-describedby="pilot-roster-help"
+                  onChange={(event) => {
+                    void onRosterFile(event.target.files?.[0]);
+                    event.target.value = "";
+                  }}
+                />
+                <p id="pilot-roster-help" className="text-xs text-muted-foreground">
+                  Columns <code>email</code>, <code>name</code>, <code>organisation</code>,{" "}
+                  <code>notes</code> — header optional, or one email per line. Up to{" "}
+                  {ROSTER_MAX_ROWS} seats per upload.
+                </p>
+                {roster && (
+                  <div className="space-y-2 rounded-md border p-3 text-xs">
+                    <p className="font-medium">
+                      {rosterFileName}: {roster.participants.length} seat
+                      {roster.participants.length === 1 ? "" : "s"} ready
+                      {roster.truncated
+                        ? ` · ${roster.usableRows - roster.participants.length} row(s) over the ${ROSTER_MAX_ROWS}-seat limit`
+                        : ""}
+                    </p>
+                    {roster.participants.length > 0 && (
+                      <ul className="max-h-32 space-y-1 overflow-y-auto text-muted-foreground">
+                        {roster.participants.map((participant) => (
+                          <li key={participant.email}>
+                            {participant.email}
+                            {participant.fullName ? ` · ${participant.fullName}` : ""}
+                            {participant.organization ? ` · ${participant.organization}` : ""}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {roster.issues.length > 0 && (
+                      <details>
+                        <summary className="cursor-pointer text-destructive">
+                          {roster.issues.length} row(s) skipped
+                        </summary>
+                        <ul className="mt-1 space-y-1 text-muted-foreground">
+                          {roster.issues.slice(0, 10).map((issue, index) => (
+                            <li key={`${issue.value}-${index}`}>
+                              {issue.line > 0 ? `Line ${issue.line}: ` : ""}
+                              {issue.value || "(empty)"} — {issue.reason}
+                            </li>
+                          ))}
+                        </ul>
+                      </details>
+                    )}
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Button
+                        size="sm"
+                        onClick={() => rosterMutation.mutate()}
+                        disabled={
+                          rosterMutation.isPending ||
+                          roster.participants.length === 0 ||
+                          Boolean(settings?.invitationsPaused)
+                        }
+                      >
+                        {rosterMutation.isPending
+                          ? "Provisioning…"
+                          : `Provision ${roster.participants.length} seat${roster.participants.length === 1 ? "" : "s"}`}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setRoster(null);
+                          setRosterFileName(null);
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>

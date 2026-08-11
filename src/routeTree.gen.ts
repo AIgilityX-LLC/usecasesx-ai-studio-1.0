@@ -82,6 +82,7 @@ import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.se
 import { Route as AppAccountTeamRouteImport } from './routes/_app.account.team'
 import { Route as AppAdministrationAnalyticsRouteImport } from './routes/_app.administration.analytics'
 import { Route as AppAdministrationFeedbackRouteImport } from './routes/_app.administration.feedback'
+import { Route as AppAdministrationLaunchChecksRouteImport } from './routes/_app.administration.launch-checks'
 import { Route as AppAdministrationLaunchLearningRouteImport } from './routes/_app.administration.launch-learning'
 import { Route as AppAdministrationPilotRouteImport } from './routes/_app.administration.pilot'
 import { Route as AppAdministrationRequestsRouteImport } from './routes/_app.administration.requests'
@@ -107,6 +108,7 @@ import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g
 import { Route as AppWorkshopsJoinTokenRouteImport } from './routes/_app.workshops.join.$token'
 import { Route as ApiPublicHooksErpReconciliationRouteImport } from './routes/api/public/hooks/erp-reconciliation'
 import { Route as ApiPublicHooksEvidenceCleanupRouteImport } from './routes/api/public/hooks/evidence-cleanup'
+import { Route as ApiPublicHooksPilotEvidenceRemindersRouteImport } from './routes/api/public/hooks/pilot-evidence-reminders'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
 import { Route as AppStudioUseCaseIdIndexRouteImport } from './routes/_app.studio.use-case.$id.index'
@@ -490,6 +492,12 @@ const AppAdministrationFeedbackRoute =
     path: '/feedback',
     getParentRoute: () => AppAdministrationRoute,
   } as any)
+const AppAdministrationLaunchChecksRoute =
+  AppAdministrationLaunchChecksRouteImport.update({
+    id: '/launch-checks',
+    path: '/launch-checks',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
 const AppAdministrationLaunchLearningRoute =
   AppAdministrationLaunchLearningRouteImport.update({
     id: '/launch-learning',
@@ -617,6 +625,12 @@ const ApiPublicHooksEvidenceCleanupRoute =
   ApiPublicHooksEvidenceCleanupRouteImport.update({
     id: '/api/public/hooks/evidence-cleanup',
     path: '/api/public/hooks/evidence-cleanup',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksPilotEvidenceRemindersRoute =
+  ApiPublicHooksPilotEvidenceRemindersRouteImport.update({
+    id: '/api/public/hooks/pilot-evidence-reminders',
+    path: '/api/public/hooks/pilot-evidence-reminders',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicUsecasexTaxonomyRoute =
@@ -785,6 +799,7 @@ export interface FileRoutesByFullPath {
   '/account/team': typeof AppAccountTeamRoute
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
+  '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/administration/pilot': typeof AppAdministrationPilotRoute
   '/administration/requests': typeof AppAdministrationRequestsRoute
@@ -811,6 +826,7 @@ export interface FileRoutesByFullPath {
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
+  '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
@@ -898,6 +914,7 @@ export interface FileRoutesByTo {
   '/account/team': typeof AppAccountTeamRoute
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
+  '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/administration/pilot': typeof AppAdministrationPilotRoute
   '/administration/requests': typeof AppAdministrationRequestsRoute
@@ -924,6 +941,7 @@ export interface FileRoutesByTo {
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
+  '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
@@ -1015,6 +1033,7 @@ export interface FileRoutesById {
   '/_app/account/team': typeof AppAccountTeamRoute
   '/_app/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/_app/administration/feedback': typeof AppAdministrationFeedbackRoute
+  '/_app/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/_app/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/_app/administration/pilot': typeof AppAdministrationPilotRoute
   '/_app/administration/requests': typeof AppAdministrationRequestsRoute
@@ -1041,6 +1060,7 @@ export interface FileRoutesById {
   '/_app/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
+  '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/_app/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
@@ -1132,6 +1152,7 @@ export interface FileRouteTypes {
     | '/account/team'
     | '/administration/analytics'
     | '/administration/feedback'
+    | '/administration/launch-checks'
     | '/administration/launch-learning'
     | '/administration/pilot'
     | '/administration/requests'
@@ -1158,6 +1179,7 @@ export interface FileRouteTypes {
     | '/workshops/join/$token'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
+    | '/api/public/hooks/pilot-evidence-reminders'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/studio/use-case/$id/advisorx'
@@ -1245,6 +1267,7 @@ export interface FileRouteTypes {
     | '/account/team'
     | '/administration/analytics'
     | '/administration/feedback'
+    | '/administration/launch-checks'
     | '/administration/launch-learning'
     | '/administration/pilot'
     | '/administration/requests'
@@ -1271,6 +1294,7 @@ export interface FileRouteTypes {
     | '/workshops/join/$token'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
+    | '/api/public/hooks/pilot-evidence-reminders'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/studio/use-case/$id/advisorx'
@@ -1361,6 +1385,7 @@ export interface FileRouteTypes {
     | '/_app/account/team'
     | '/_app/administration/analytics'
     | '/_app/administration/feedback'
+    | '/_app/administration/launch-checks'
     | '/_app/administration/launch-learning'
     | '/_app/administration/pilot'
     | '/_app/administration/requests'
@@ -1387,6 +1412,7 @@ export interface FileRouteTypes {
     | '/_app/workshops/join/$token'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
+    | '/api/public/hooks/pilot-evidence-reminders'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/_app/studio/use-case/$id/advisorx'
@@ -1418,6 +1444,7 @@ export interface RootRouteChildren {
   OgUseCaseSlugRoute: typeof OgUseCaseSlugRoute
   ApiPublicHooksErpReconciliationRoute: typeof ApiPublicHooksErpReconciliationRoute
   ApiPublicHooksEvidenceCleanupRoute: typeof ApiPublicHooksEvidenceCleanupRoute
+  ApiPublicHooksPilotEvidenceRemindersRoute: typeof ApiPublicHooksPilotEvidenceRemindersRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
   ApiPublicUsecasexRoadmapExportRoute: typeof ApiPublicUsecasexRoadmapExportRoute
@@ -1936,6 +1963,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdministrationFeedbackRouteImport
       parentRoute: typeof AppAdministrationRoute
     }
+    '/_app/administration/launch-checks': {
+      id: '/_app/administration/launch-checks'
+      path: '/launch-checks'
+      fullPath: '/administration/launch-checks'
+      preLoaderRoute: typeof AppAdministrationLaunchChecksRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/administration/launch-learning': {
       id: '/_app/administration/launch-learning'
       path: '/launch-learning'
@@ -2111,6 +2145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksEvidenceCleanupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/pilot-evidence-reminders': {
+      id: '/api/public/hooks/pilot-evidence-reminders'
+      path: '/api/public/hooks/pilot-evidence-reminders'
+      fullPath: '/api/public/hooks/pilot-evidence-reminders'
+      preLoaderRoute: typeof ApiPublicHooksPilotEvidenceRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/usecasex/taxonomy': {
       id: '/api/public/usecasex/taxonomy'
       path: '/api/public/usecasex/taxonomy'
@@ -2249,6 +2290,7 @@ const AppAccountRouteWithChildren = AppAccountRoute._addFileChildren(
 interface AppAdministrationRouteChildren {
   AppAdministrationAnalyticsRoute: typeof AppAdministrationAnalyticsRoute
   AppAdministrationFeedbackRoute: typeof AppAdministrationFeedbackRoute
+  AppAdministrationLaunchChecksRoute: typeof AppAdministrationLaunchChecksRoute
   AppAdministrationLaunchLearningRoute: typeof AppAdministrationLaunchLearningRoute
   AppAdministrationPilotRoute: typeof AppAdministrationPilotRoute
   AppAdministrationRequestsRoute: typeof AppAdministrationRequestsRoute
@@ -2257,6 +2299,7 @@ interface AppAdministrationRouteChildren {
 const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationAnalyticsRoute: AppAdministrationAnalyticsRoute,
   AppAdministrationFeedbackRoute: AppAdministrationFeedbackRoute,
+  AppAdministrationLaunchChecksRoute: AppAdministrationLaunchChecksRoute,
   AppAdministrationLaunchLearningRoute: AppAdministrationLaunchLearningRoute,
   AppAdministrationPilotRoute: AppAdministrationPilotRoute,
   AppAdministrationRequestsRoute: AppAdministrationRequestsRoute,
@@ -2497,6 +2540,8 @@ const rootRouteChildren: RootRouteChildren = {
   OgUseCaseSlugRoute: OgUseCaseSlugRoute,
   ApiPublicHooksErpReconciliationRoute: ApiPublicHooksErpReconciliationRoute,
   ApiPublicHooksEvidenceCleanupRoute: ApiPublicHooksEvidenceCleanupRoute,
+  ApiPublicHooksPilotEvidenceRemindersRoute:
+    ApiPublicHooksPilotEvidenceRemindersRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
   ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRouteWithChildren,
   ApiPublicUsecasexRoadmapExportRoute: ApiPublicUsecasexRoadmapExportRoute,
@@ -2504,13 +2549,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
