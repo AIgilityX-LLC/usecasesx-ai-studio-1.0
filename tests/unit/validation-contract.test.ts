@@ -104,8 +104,11 @@ describe("portfolio input", () => {
 
   it("rejects an unknown visibility rather than silently widening access", () => {
     expect(
-      reject(portfolioCreateSchema, { name: "Board view", type: "initiative", visibility: "public" })
-        .kind,
+      reject(portfolioCreateSchema, {
+        name: "Board view",
+        type: "initiative",
+        visibility: "public",
+      }).kind,
     ).toBe("validation");
   });
 
@@ -129,7 +132,9 @@ describe("portfolio input", () => {
   });
 
   it("rejects a dependency list of non-uuids", () => {
-    expect(reject(portfolioEntryPatchSchema, { dependsOn: ["not-a-uuid"] }).kind).toBe("validation");
+    expect(reject(portfolioEntryPatchSchema, { dependsOn: ["not-a-uuid"] }).kind).toBe(
+      "validation",
+    );
     expect(parseInput(portfolioEntryPatchSchema, { dependsOn: [VALID_UUID] }).dependsOn).toEqual([
       VALID_UUID,
     ]);
@@ -138,7 +143,9 @@ describe("portfolio input", () => {
 
 describe("report request", () => {
   it("requires a title and caps the selection size", () => {
-    expect(reject(reportRequestSchema, { kind: "board", useCaseSlugs: [] }).kind).toBe("validation");
+    expect(reject(reportRequestSchema, { kind: "board", useCaseSlugs: [] }).kind).toBe(
+      "validation",
+    );
     expect(
       reject(reportRequestSchema, {
         title: "Board pack",
