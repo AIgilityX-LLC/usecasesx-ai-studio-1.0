@@ -40,3 +40,4 @@ playwright-report/
 playwright-run.log
 navbar-run.log
 launch-e2e.log
+test-evidence/
