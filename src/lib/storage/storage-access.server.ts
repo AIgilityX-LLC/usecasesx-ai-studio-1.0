@@ -29,7 +29,15 @@ export async function issueEvidenceSignedUrl(
   path: string,
 ): Promise<SignedUrlResult> {
   const parsed = parseEvidencePath(path);
-  if (!parsed) return { ok: false, reason: "That evidence reference is not valid." };
+  const { recordStorageDenied } = await import("@/lib/observability/observability.server");
+  if (!parsed) {
+    await recordStorageDenied(supabase, userId, {
+      bucket: EVIDENCE_BUCKET,
+      reason: "Malformed evidence reference",
+      path,
+    });
+    return { ok: false, reason: "That evidence reference is not valid." };
+  }
 
   if (parsed.userId !== userId) {
     const { data, error } = await supabase
@@ -38,6 +46,14 @@ export async function issueEvidenceSignedUrl(
       .eq("id", parsed.useCaseId)
       .maybeSingle();
     if (error || !data) {
+      // A caller naming an object under someone else's record is exactly the
+      // signal a workspace admin needs to see.
+      await recordStorageDenied(supabase, userId, {
+        bucket: EVIDENCE_BUCKET,
+        reason: "Evidence belongs to a record outside the caller's workspace",
+        path,
+        crossWorkspace: true,
+      });
       return {
         ok: false,
         reason: "Access denied: this evidence belongs to a workspace record you cannot read.",
