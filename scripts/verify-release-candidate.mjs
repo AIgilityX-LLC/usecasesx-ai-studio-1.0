@@ -65,15 +65,27 @@ const DESTRUCTIVE = [
   /\bRENAME\s+COLUMN\b/i,
   /DISABLE\s+ROW\s+LEVEL\s+SECURITY/i,
 ];
+// Singleton/config rows a migration may legitimately install. Anything else —
+// demo, sample or production content — belongs in scripts/seed.
+const CONFIG_TABLES = [
+  "pilot_settings",
+  "taxonomy_meta",
+  "plans",
+  "platform_modules",
+  "ai_capabilities",
+];
 let seedHits = 0;
 for (const f of files) {
   const sql = readFileSync(`${MIG_DIR}/${f}`, "utf8");
   for (const rx of DESTRUCTIVE) {
     if (rx.test(sql)) fail(`${f}: destructive statement matches ${rx}`);
   }
-  const inserts = sql.match(/\bINSERT\s+INTO\s+public\.(\w+)/gi) ?? [];
+  // Function/trigger bodies legitimately contain INSERTs; strip dollar-quoted
+  // blocks so only top-level data statements are considered.
+  const topLevel = sql.replace(/\$\$[\s\S]*?\$\$/g, "");
+  const inserts = topLevel.match(/\bINSERT\s+INTO\s+public\.(\w+)/gi) ?? [];
   const dataInserts = inserts.filter(
-    (i) => !/taxonomy_meta|plans|platform_modules|ai_capabilities/i.test(i),
+    (i) => !CONFIG_TABLES.some((t) => new RegExp(`public\\.${t}$`, "i").test(i)),
   );
   if (dataInserts.length > 0) {
     seedHits += dataInserts.length;
