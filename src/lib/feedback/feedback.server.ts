@@ -5,7 +5,8 @@
  * only ever write and read their own rows, platform admins read and triage
  * the whole queue.
  */
-import type { FeedbackRecord, FeedbackStatus } from "./feedback.model";
+import type { FeedbackRecord, FeedbackStatus, RequestStatusAlert } from "./feedback.model";
+import { DEFAULT_REQUEST_PRIORITY } from "./sla";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Client = any;
@@ -30,6 +31,27 @@ function mapRow(row: any): FeedbackRecord {
     resolutionNote: row.resolution_note ?? null,
     resolvedAt: row.resolved_at ?? null,
     isRealActivity: row.is_real_activity === undefined ? true : Boolean(row.is_real_activity),
+    assignedTo: row.assigned_to ?? null,
+    assignedBy: row.assigned_by ?? null,
+    assignedAt: row.assigned_at ?? null,
+    priority: String(row.priority ?? DEFAULT_REQUEST_PRIORITY),
+    dueAt: row.due_at ?? null,
+    firstResponseAt: row.first_response_at ?? null,
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapAlert(row: any): RequestStatusAlert {
+  return {
+    id: String(row.id),
+    feedbackId: String(row.feedback_id),
+    fromStatus: row.from_status ?? null,
+    toStatus: String(row.to_status),
+    priority: row.priority ?? null,
+    dueAt: row.due_at ?? null,
+    note: row.note ?? null,
+    readAt: row.read_at ?? null,
+    createdAt: String(row.created_at),
   };
 }
 
@@ -113,17 +135,98 @@ export async function setFeedbackStatus(
   input: { id: string; status: FeedbackStatus; resolutionNote: string | null; actorId: string },
 ): Promise<FeedbackRecord> {
   const closing = input.status === "resolved" || input.status === "declined";
+  const { data: before } = await supabase
+    .from("product_feedback")
+    .select("status, first_response_at")
+    .eq("id", input.id)
+    .maybeSingle();
+  const nowIso = new Date().toISOString();
   const { data, error } = await supabase
     .from("product_feedback")
     .update({
       status: input.status,
       resolution_note: input.resolutionNote,
       resolved_by: closing ? input.actorId : null,
-      resolved_at: closing ? new Date().toISOString() : null,
+      resolved_at: closing ? nowIso : null,
+      first_response_at: before?.first_response_at ?? nowIso,
+    })
+    .eq("id", input.id)
+    .select("*")
+    .single();
+  if (error) throw new Error(error.message);
+  const record = mapRow(data);
+  // The reporter learns about every status move in-app; a failed alert must not
+  // roll back the triage decision, so it is best-effort and logged, not thrown.
+  if (record.userId && before?.status !== record.status) {
+    const { error: alertError } = await supabase.from("request_status_alerts").insert({
+      feedback_id: record.id,
+      user_id: record.userId,
+      from_status: before?.status ?? null,
+      to_status: record.status,
+      priority: record.priority,
+      due_at: record.dueAt,
+      note: input.resolutionNote,
+      actor_id: input.actorId,
+    });
+    if (alertError) console.error("request alert insert failed", alertError.message);
+  }
+  return record;
+}
+
+/** Assign an owner, set priority and set/derive the SLA due date. */
+export async function setFeedbackTriage(
+  supabase: Client,
+  input: {
+    id: string;
+    assignedTo: string | null;
+    priority: string;
+    dueAt: string;
+    actorId: string;
+  },
+): Promise<FeedbackRecord> {
+  const { data, error } = await supabase
+    .from("product_feedback")
+    .update({
+      assigned_to: input.assignedTo,
+      assigned_by: input.assignedTo ? input.actorId : null,
+      assigned_at: input.assignedTo ? new Date().toISOString() : null,
+      priority: input.priority,
+      due_at: input.dueAt,
     })
     .eq("id", input.id)
     .select("*")
     .single();
   if (error) throw new Error(error.message);
   return mapRow(data);
+}
+
+export async function listMyRequestAlerts(
+  supabase: Client,
+  userId: string,
+): Promise<RequestStatusAlert[]> {
+  const { data, error } = await supabase
+    .from("request_status_alerts")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(50);
+  if (error) throw new Error(error.message);
+  return (data ?? []).map(mapAlert);
+}
+
+export async function markRequestAlertsRead(
+  supabase: Client,
+  userId: string,
+  ids: string[],
+): Promise<number> {
+  if (ids.length === 0) return 0;
+  const { data, error } = await supabase
+    .from("request_status_alerts")
+    .update({ read_at: new Date().toISOString() })
+    .in("id", ids)
+    .eq("user_id", userId)
+    .is("read_at", null)
+    .select("id");
+  if (error) throw new Error(error.message);
+  return (data ?? []).length;
 }
