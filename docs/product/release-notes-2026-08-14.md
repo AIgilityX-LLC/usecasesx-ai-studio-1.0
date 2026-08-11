@@ -1,5 +1,10 @@
 # Release notes — Lite + Pro Founding Access (14 August 2026)
 
+**Candidate: `v1.0.0-rc.1`** · release marker `release/2026-08-14` · scope frozen 11 August 2026.
+Candidate record: `docs/release/release-candidate-2026-08-14.md`. Migration manifest:
+`docs/release/migration-manifest-2026-08-14.md`. Change control:
+`docs/process/change-freeze-2026-08-14.md`.
+
 Product: **UseCasesX™** — Global AI Use Case Repository, AI Opportunity Map and AI Use Case Studio™.
 Editions: **Lite** (public discovery) and **Pro Founding Access** (complimentary through
 31 December 2026, subject to fair-use limits). Enterprise is designed into the architecture and
@@ -54,8 +59,28 @@ Discover → Capture Opportunity → Design → Score → Prioritize → Portfol
 
 See `docs/product/known-issues-2026-08-14.md`.
 
+## Verification for v1.0.0-rc.1
+
+Measured on the candidate state (build sandbox, 11 August 2026):
+
+| Gate                                        | Result                                                      |
+| ------------------------------------------- | ----------------------------------------------------------- |
+| `bun run verify:release`                    | PASS — version markers aligned, 15 migrations ordered, additive, seed-free, manifest complete |
+| `bun install --frozen-lockfile`             | PASS                                                        |
+| `bun run lint`                              | PASS (0 errors)                                             |
+| `bunx tsgo --noEmit`                        | PASS                                                        |
+| `bun run verify:routes`                     | PASS                                                        |
+| `bun run build`                             | PASS (Workers bundle generated)                             |
+| `bun run test:unit`                         | PASS                                                        |
+| `bun run check:nav-integrity`               | PASS — no dead nav                                          |
+| Browser P0 (`bun run test:p0`)              | Runs in CI `launch-readiness.yml`; not runnable in the build sandbox (known issue #2) |
+
 ## Release status
 
 Scope is **frozen** as of 11 August 2026: P0 fixes and evidence-backed copy corrections only.
-Current verdict is **No-Go on evidence** until the pilot cohort produces signal — see
-`docs/product/pilot-report-2026-08-11.md`.
+Current verdict is **No-Go on evidence** until the pilot cohort produces signal or an admin waiver
+is recorded — see `docs/product/pilot-report-2026-08-11.md`. Code, security and test gates are green;
+the candidate is code-ready / evidence-pending.
+
+Rollback: revert the application to the previous version; the schema is additive and stays ahead.
+Forward-fix: additive migration plus a new `v1.0.0-rc.N` tag — applied migrations are never edited.

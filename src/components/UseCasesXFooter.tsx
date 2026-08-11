@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { TRANSPARENCY_LINKS } from "@/lib/legal/legal-content";
+import { RELEASE_TARGET_DATE, RELEASE_VERSION, releaseLabel } from "@/lib/release";
 import { openConsentPreferences } from "@/components/legal/ConsentBanner";
 
 export function UseCasesXFooter() {
@@ -71,6 +72,12 @@ export function UseCasesXFooter() {
           <span>
             © {new Date().getFullYear()} AIgilityX. UseCasesX™ — Global AI Use Cases Repository &
             Development Studio.
+          </span>
+          <span
+            className="font-mono text-[10px] text-muted-foreground/80"
+            title={`Release candidate ${RELEASE_VERSION}, target ${RELEASE_TARGET_DATE}`}
+          >
+            {releaseLabel()}
           </span>
           <div className="flex flex-wrap items-center gap-4">
             <Link to="/editions" className="hover:text-foreground">
