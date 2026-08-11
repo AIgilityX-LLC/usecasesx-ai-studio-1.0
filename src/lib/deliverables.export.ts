@@ -89,8 +89,17 @@ export async function exportDeliverablePDF(doc: ExportDoc, fileName: string) {
 }
 
 export async function exportDeliverableWord(doc: ExportDoc, fileName: string) {
-  const { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType } =
-    await loadDocx();
+  const {
+    Document,
+    Packer,
+    Paragraph,
+    HeadingLevel,
+    TextRun,
+    Table,
+    TableRow,
+    TableCell,
+    WidthType,
+  } = await loadDocx();
   const children: (ParagraphType | TableType)[] = [
     new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun(doc.title)] }),
   ];
@@ -263,8 +272,17 @@ export async function exportPackagePDF(pkg: ExportPackage, fileName: string) {
 
 /** The same package as a single Word document. */
 export async function exportPackageWord(pkg: ExportPackage, fileName: string) {
-  const { Document, Packer, Paragraph, HeadingLevel, TextRun, Table, TableRow, TableCell, WidthType } =
-    await loadDocx();
+  const {
+    Document,
+    Packer,
+    Paragraph,
+    HeadingLevel,
+    TextRun,
+    Table,
+    TableRow,
+    TableCell,
+    WidthType,
+  } = await loadDocx();
   const children: (ParagraphType | TableType)[] = [
     new Paragraph({ heading: HeadingLevel.TITLE, children: [new TextRun(pkg.title)] }),
   ];

@@ -653,34 +653,34 @@ function Matrix({ data }: { data: { uc: UseCase; x: number; y: number }[] }) {
           )}
         </tbody>
       </table>
-    <div className="relative mx-auto aspect-square w-full max-w-2xl rounded-md border bg-muted/20">
-      <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
-        <Quadrant label="Strategic Bets" tone="amber" align="tl" />
-        <Quadrant label="Quick Wins" tone="emerald" align="tr" />
-        <Quadrant label="Avoid / Hold" tone="rose" align="bl" />
-        <Quadrant label="Experiments" tone="sky" align="br" />
+      <div className="relative mx-auto aspect-square w-full max-w-2xl rounded-md border bg-muted/20">
+        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
+          <Quadrant label="Strategic Bets" tone="amber" align="tl" />
+          <Quadrant label="Quick Wins" tone="emerald" align="tr" />
+          <Quadrant label="Avoid / Hold" tone="rose" align="bl" />
+          <Quadrant label="Experiments" tone="sky" align="br" />
+        </div>
+        <div className="absolute left-1/2 top-0 h-full w-px bg-border" />
+        <div className="absolute left-0 top-1/2 h-px w-full bg-border" />
+        {data.map(({ uc, x, y }) => (
+          <Link
+            key={uc.id}
+            to="/studio/use-case/$id/feasibility"
+            params={{ id: uc.id }}
+            className="group absolute -ml-1.5 -mt-1.5"
+            style={{ left: `${x}%`, top: `${100 - y}%` }}
+            title={`${uc.title} (F:${x.toFixed(0)} V:${y.toFixed(0)})`}
+          >
+            <span className="block h-3 w-3 rounded-full bg-primary ring-2 ring-background transition group-hover:scale-150" />
+          </Link>
+        ))}
+        <div className="pointer-events-none absolute bottom-1 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-wider text-muted-foreground">
+          Feasibility →
+        </div>
+        <div className="pointer-events-none absolute left-1 top-1/2 -translate-y-1/2 -rotate-90 text-[10px] uppercase tracking-wider text-muted-foreground">
+          Value / Viability →
+        </div>
       </div>
-      <div className="absolute left-1/2 top-0 h-full w-px bg-border" />
-      <div className="absolute left-0 top-1/2 h-px w-full bg-border" />
-      {data.map(({ uc, x, y }) => (
-        <Link
-          key={uc.id}
-          to="/studio/use-case/$id/feasibility"
-          params={{ id: uc.id }}
-          className="group absolute -ml-1.5 -mt-1.5"
-          style={{ left: `${x}%`, top: `${100 - y}%` }}
-          title={`${uc.title} (F:${x.toFixed(0)} V:${y.toFixed(0)})`}
-        >
-          <span className="block h-3 w-3 rounded-full bg-primary ring-2 ring-background transition group-hover:scale-150" />
-        </Link>
-      ))}
-      <div className="pointer-events-none absolute bottom-1 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-wider text-muted-foreground">
-        Feasibility →
-      </div>
-      <div className="pointer-events-none absolute left-1 top-1/2 -translate-y-1/2 -rotate-90 text-[10px] uppercase tracking-wider text-muted-foreground">
-        Value / Viability →
-      </div>
-    </div>
     </>
   );
 }

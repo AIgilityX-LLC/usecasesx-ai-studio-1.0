@@ -415,7 +415,13 @@ function UseCasesTab() {
                 </td>
                 <td className="px-3 py-2">
                   <div className="flex justify-end gap-1">
-                    <Button asChild variant="ghost" size="icon" title="View" aria-label="View use case">
+                    <Button
+                      asChild
+                      variant="ghost"
+                      size="icon"
+                      title="View"
+                      aria-label="View use case"
+                    >
                       <Link to="/use-cases/$slug" params={{ slug: u.slug }}>
                         <Eye className="w-4 h-4" />
                       </Link>
@@ -1429,7 +1435,13 @@ function SectorWorkflowEditor() {
                   Archive
                 </Button>
               )}
-              <Button size="icon" variant="ghost" onClick={() => remove(r.id)} title="Delete" aria-label="Delete">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => remove(r.id)}
+                title="Delete"
+                aria-label="Delete"
+              >
                 <XCircle className="w-4 h-4 text-destructive" />
               </Button>
             </li>
@@ -1557,7 +1569,13 @@ function TaxonomyEditor({ table, title }: { table: string; title: string }) {
                 />
                 {r.is_published ? "Pub" : "Draft"}
               </label>
-              <Button size="icon" variant="ghost" onClick={() => void remove(r)} title="Delete" aria-label="Delete">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => void remove(r)}
+                title="Delete"
+                aria-label="Delete"
+              >
                 <XCircle className="w-4 h-4 text-destructive" />
               </Button>
             </li>
