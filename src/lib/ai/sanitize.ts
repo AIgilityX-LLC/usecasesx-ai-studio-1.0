@@ -23,6 +23,9 @@ const NEUTRALISE: Array<[RegExp, string]> = [
   [/```+/g, "'''"],
   [/-{3,}\s*(end|begin)[^\n]*/gi, "[removed]"],
   [/\[\/?(?:USER_DATA|INST|SYS)\]/gi, "[removed]"],
+  // Our own fence markers, so a payload cannot forge the end of its block.
+  [/<{2,}\s*USER_DATA/gi, "[removed]"],
+  [/USER_DATA\s*>{2,}/gi, "[removed]"],
   // Direct instruction-override attempts.
   [
     /\b(ignore|disregard|forget|override)\b[^.\n]{0,40}\b(previous|prior|above|earlier|all)\b[^.\n]{0,40}\b(instruction|instructions|prompt|prompts|rules?)\b/gi,
