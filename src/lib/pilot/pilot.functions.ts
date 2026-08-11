@@ -31,6 +31,12 @@ const InviteInput = z.object({
   notes: z.string().trim().max(500).nullable().optional(),
 });
 
+/** Bulk enrolment: one paste of 1–25 work emails, validated per line. */
+const BulkInviteInput = z.object({
+  emails: z.array(z.string().trim().email().max(255)).min(1).max(25),
+  organization: z.string().trim().max(160).nullable().optional(),
+});
+
 const PauseInput = z.object({
   paused: z.boolean(),
   reason: z.string().trim().max(300).nullable().optional(),
