@@ -8,7 +8,17 @@ import { Inbox, Bug, Sparkles, Crown, Search } from "lucide-react";
 import { privateHead } from "@/lib/seo";
 import { RequireRoles } from "@/components/RequireRoles";
 import { PLATFORM_ADMIN_ROLES } from "@/lib/admin/platform-admin";
-import { getFeedbackQueue, updateFeedbackStatus } from "@/lib/feedback/feedback.functions";
+import {
+  getFeedbackQueue,
+  listRequestOwners,
+  setRequestTriage,
+  updateFeedbackStatus,
+} from "@/lib/feedback/feedback.functions";
+import {
+  RequestTriageControls,
+  type RequestOwnerOption,
+} from "@/components/feedback/RequestTriageControls";
+import { slaState } from "@/lib/feedback/sla";
 import {
   FEEDBACK_STATUSES,
   FEEDBACK_STATUS_TONE,
@@ -76,6 +86,8 @@ function leadTone(status: string): "default" | "secondary" | "outline" | "destru
 function RequestsInbox() {
   const loadFeedback = useServerFn(getFeedbackQueue);
   const updateStatus = useServerFn(updateFeedbackStatus);
+  const loadOwners = useServerFn(listRequestOwners);
+  const saveTriage = useServerFn(setRequestTriage);
   const queryClient = useQueryClient();
 
   const [status, setStatus] = useState<string>("open");
@@ -97,6 +109,27 @@ function RequestsInbox() {
   const leads = useQuery({
     queryKey: ["requests-inbox", "leads"],
     queryFn: () => adminRepo.listWaitlistLeads<Lead>(),
+  });
+
+  const owners = useQuery({
+    queryKey: ["requests-inbox", "owners"],
+    queryFn: () => loadOwners(),
+    retry: false,
+  });
+
+  const triage = useMutation({
+    mutationFn: (input: {
+      id: string;
+      assignedTo: string | null;
+      priority: string;
+      dueAt: string;
+    }) => saveTriage({ data: input }),
+    onSuccess: () => {
+      toast.success("Owner and SLA saved.");
+      void queryClient.invalidateQueries({ queryKey: ["requests-inbox", "feedback"] });
+    },
+    onError: (error: unknown) =>
+      toast.error(toUserMessage(error, "Could not save the owner and due date.")),
   });
 
   const setFeedbackStatus = useMutation({
