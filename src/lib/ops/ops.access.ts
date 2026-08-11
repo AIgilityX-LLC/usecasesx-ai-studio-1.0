@@ -14,7 +14,9 @@ type AuthContext = {
       name: "is_admin_tier",
       args: { _user_id: string },
     ) => PromiseLike<{ data: boolean | null }>;
-    auth: { getUser: () => PromiseLike<{ data: { user: { email?: string | null } | null } | null }> };
+    auth: {
+      getUser: () => PromiseLike<{ data: { user: { email?: string | null } | null } | null }>;
+    };
   };
 };
 

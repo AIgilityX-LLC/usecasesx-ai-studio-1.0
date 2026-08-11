@@ -550,7 +550,7 @@ export async function flagDemoTenants(input: {
   const { data: workspaces, error: workspaceError } = await admin
     .from("workspaces")
     .update({ is_demo: true })
-    .in("owner_id", userIds)
+    .in("created_by", userIds)
     .neq("is_demo", true)
     .select("id");
   if (workspaceError) throw new Error(`Could not flag demo workspaces: ${workspaceError.message}`);
