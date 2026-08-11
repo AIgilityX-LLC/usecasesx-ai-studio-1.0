@@ -177,7 +177,7 @@ export function workshopOutcomeFileName(summary: OutcomeSummary): string {
 }
 
 export function downloadWorkshopOutcomePDF(summary: OutcomeSummary): void {
-  exportDeliverablePDF(buildWorkshopOutcomeDoc(summary), workshopOutcomeFileName(summary));
+  void exportDeliverablePDF(buildWorkshopOutcomeDoc(summary), workshopOutcomeFileName(summary));
 }
 
 /* ----------------------------------------------------- audit trail exports */
@@ -232,7 +232,7 @@ export function downloadWorkshopAuditPDF(
   entries: WorkshopAuditEntry[],
   workshopTitle: string,
 ): void {
-  exportDeliverablePDF(
+  void exportDeliverablePDF(
     buildWorkshopAuditDoc(entries, workshopTitle),
     `${slugify(workshopTitle, "workshop")}-audit-trail.pdf`,
   );

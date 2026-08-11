@@ -241,6 +241,6 @@ export function downloadHandoffPdf(
 ): string {
   assertCanExportReport(role, "pdf" satisfies ExportFormat);
   const filename = handoffExportFileName(request, "pdf");
-  exportDeliverablePDF(buildHandoffExportDoc(request), filename);
+  void exportDeliverablePDF(buildHandoffExportDoc(request), filename);
   return filename;
 }

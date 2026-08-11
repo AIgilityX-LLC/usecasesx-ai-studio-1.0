@@ -9,8 +9,9 @@
  * wants and every format (CSV, JSON table, PDF) honours the same selection.
  */
 
-import jsPDF from "jspdf";
-import saveAs from "file-saver";
+/** Heavy export libraries load on demand — see deliverables.export.ts. */
+const loadJsPdf = async () => (await import("jspdf")).default;
+const loadSaveAs = async () => (await import("file-saver")).default;
 
 import { exportDeliverablePDF, type ExportDoc } from "@/lib/deliverables.export";
 import {
@@ -213,11 +214,12 @@ export function portfolioDecisionCounts(entries: PortfolioEntry[]): Array<[strin
  * Board-pack PDF: cover sheet, decision summary, then one banded table per
  * decision group with repeating headers and page numbering.
  */
-export function exportPortfolioBoardPack(
+export async function exportPortfolioBoardPack(
   portfolio: Portfolio,
   fileName: string,
   options?: PortfolioExportOptions,
 ) {
+  const jsPDF = await loadJsPdf();
   const pdf = new jsPDF({ unit: "pt", format: "a4", orientation: "landscape" });
   const margin = 40;
   const pageW = pdf.internal.pageSize.getWidth();
@@ -374,12 +376,12 @@ export function downloadPortfolio(
 ): string {
   if (format === "board-pack") {
     const name = portfolioFileName(portfolio, "board-pack.pdf");
-    exportPortfolioBoardPack(portfolio, name, options);
+    void exportPortfolioBoardPack(portfolio, name, options);
     return name;
   }
   if (format === "pdf") {
     const name = portfolioFileName(portfolio, "pdf");
-    exportDeliverablePDF(portfolioToExportDoc(portfolio, options), name);
+    void exportDeliverablePDF(portfolioToExportDoc(portfolio, options), name);
     return name;
   }
   const isCsv = format === "csv";
@@ -388,6 +390,6 @@ export function downloadPortfolio(
     [isCsv ? portfolioToCsv(portfolio, options) : portfolioToJson(portfolio, options)],
     { type: isCsv ? "text/csv;charset=utf-8" : "application/json;charset=utf-8" },
   );
-  saveAs(blob, name);
+  void loadSaveAs().then((saveAs) => saveAs(blob, name));
   return name;
 }
