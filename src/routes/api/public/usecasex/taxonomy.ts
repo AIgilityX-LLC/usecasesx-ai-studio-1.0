@@ -47,11 +47,7 @@ export const Route = createFileRoute("/api/public/usecasex/taxonomy")({
             .select("slug, name, description, sort_order")
             .eq("is_published", true)
             .order("sort_order"),
-          db
-            .from("taxonomy_meta")
-            .select("version, published_at")
-            .eq("id", 1)
-            .maybeSingle(),
+          db.from("taxonomy_meta").select("version, published_at").eq("id", 1).maybeSingle(),
         ]);
 
         const mergeBySlug = <T extends { slug: string }>(base: T[], extra: T[]) => {
