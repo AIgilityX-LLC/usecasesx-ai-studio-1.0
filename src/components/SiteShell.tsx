@@ -54,9 +54,11 @@ export function SiteShell({ children }: { children: ReactNode }) {
         {isAuthed ? <SidebarTrigger /> : <MobileNav items={TOP_NAV} />}
 
         <Link to="/" className="flex items-center gap-2">
-          <div className="grid h-7 w-7 place-items-center rounded-md bg-primary/15 ring-1 ring-primary/40">
-            <span className="font-mono text-[11px] font-black text-primary">UX</span>
-          </div>
+          <img
+            src={brandMark}
+            alt="UseCasesX brand mark"
+            className="h-7 w-7 rounded-md ring-1 ring-primary/40"
+          />
           <div className="hidden text-[11px] font-bold uppercase tracking-[0.18em] text-foreground sm:block">
             UseCasesX™{" "}
             <span className="text-muted-foreground">· AIgilityX AI Use Case Studio™</span>
