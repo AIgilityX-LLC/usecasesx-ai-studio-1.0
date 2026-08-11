@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { FileDown, FileText, BarChart3, Loader2 } from "lucide-react";
-import jsPDF from "jspdf";
 import { privateHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_app/studio/portfolio")({
@@ -277,11 +276,12 @@ function PortfolioRoadmapPage() {
     URL.revokeObjectURL(url);
   };
 
-  const exportPortfolioPDF = () => {
+  const exportPortfolioPDF = async () => {
     if (!filtered.length) {
       toast.info("Nothing to export.");
       return;
     }
+    const { default: jsPDF } = await import("jspdf");
     const pdf = new jsPDF({ unit: "pt", format: "a4" });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();

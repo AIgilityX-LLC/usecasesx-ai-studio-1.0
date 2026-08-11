@@ -3,9 +3,6 @@ import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer
 import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import jsPDF from "jspdf";
-import { Document, Packer, Paragraph, HeadingLevel, TextRun } from "docx";
-import { saveAs } from "file-saver";
 import * as studioRepo from "@/lib/domain/studio.repository";
 import { toUserMessage } from "@/lib/domain/errors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -228,7 +225,8 @@ function BlueprintPage() {
     toast.success("Blueprint saved.");
   };
 
-  const exportPDF = () => {
+  const exportPDF = async () => {
+    const { default: jsPDF } = await import("jspdf");
     const pdf = new jsPDF({ unit: "pt", format: "a4" });
     const margin = 48;
     const width = pdf.internal.pageSize.getWidth() - margin * 2;
@@ -264,6 +262,8 @@ function BlueprintPage() {
   };
 
   const exportWord = async () => {
+    const { Document, Packer, Paragraph, HeadingLevel, TextRun } = await import("docx");
+    const { saveAs } = await import("file-saver");
     const children = [
       new Paragraph({
         heading: HeadingLevel.HEADING_1,
