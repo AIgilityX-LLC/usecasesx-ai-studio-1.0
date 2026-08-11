@@ -257,6 +257,41 @@ export async function countMissionEventsForUsers(
   return byUser;
 }
 
+/**
+ * The concrete work behind the mission: the use cases the participant completed
+ * or scored, and the portfolio they built. Read from their own product events,
+ * so a checkpoint answer can be traced back to the exact artefacts.
+ */
+export async function collectMissionReferences(
+  supabase: Client,
+  userId: string,
+): Promise<{ useCaseIds: string[]; portfolioId: string | null }> {
+  const { data, error } = await supabase
+    .from("product_events")
+    .select("event_name, entity_type, entity_id, occurred_at")
+    .eq("user_id", userId)
+    .in("event_name", MISSION_EVENTS)
+    .not("entity_id", "is", null)
+    .order("occurred_at", { ascending: false })
+    .limit(200);
+  if (error) throw new Error(error.message);
+
+  const useCaseIds: string[] = [];
+  let portfolioId: string | null = null;
+  for (const raw of data ?? []) {
+    const row = raw as { entity_type: string | null; entity_id: string | null };
+    if (!row.entity_id) continue;
+    if (row.entity_type === "use_cases" || row.entity_type === "ai_use_cases") {
+      if (!useCaseIds.includes(row.entity_id) && useCaseIds.length < 10) {
+        useCaseIds.push(row.entity_id);
+      }
+    } else if (row.entity_type === "portfolios" && !portfolioId) {
+      portfolioId = row.entity_id;
+    }
+  }
+  return { useCaseIds, portfolioId };
+}
+
 /* ---------------------------------------------------------- checkpoints */
 
 export async function listMyCheckpoints(

@@ -49,18 +49,20 @@ const ReminderIdInput = z.object({ id: z.string().uuid() });
 export const getMyPilotFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { resolvePilotForUser, listMyCheckpoints } = await import("@/lib/pilot/pilot.server");
+    const { resolvePilotForUser, listMyCheckpoints, collectMissionReferences } =
+      await import("@/lib/pilot/pilot.server");
     const email =
       (context.claims as { email?: string } | undefined)?.email ??
       (await context.supabase.auth.getUser()).data?.user?.email ??
       null;
     const { listMyReminders } = await import("@/lib/pilot/pilot.reminders.server");
-    const [{ invitation, progress }, checkpoints, reminders] = await Promise.all([
+    const [{ invitation, progress }, checkpoints, reminders, references] = await Promise.all([
       resolvePilotForUser(context.supabase, context.userId, email),
       listMyCheckpoints(context.supabase, context.userId),
       listMyReminders(context.supabase, context.userId),
+      collectMissionReferences(context.supabase, context.userId),
     ]);
-    return { invitation, progress, checkpoints, reminders };
+    return { invitation, progress, checkpoints, reminders, references };
   });
 
 export const submitPilotCheckpointFn = createServerFn({ method: "POST" })
