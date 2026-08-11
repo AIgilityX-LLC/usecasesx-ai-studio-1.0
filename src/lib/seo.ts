@@ -34,6 +34,14 @@ export const PUBLIC_INDEXABLE_PATHS = [
   "/segments/government",
   "/segments/defense",
   "/segments/critical-infrastructure",
+  "/getting-started",
+  "/faq",
+  "/terms",
+  "/privacy",
+  "/acceptable-use",
+  "/ai-notice",
+  "/founding-access-terms",
+  "/data-rights",
 ] as const;
 
 /**

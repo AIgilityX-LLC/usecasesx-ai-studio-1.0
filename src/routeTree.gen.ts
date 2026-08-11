@@ -17,6 +17,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AppAboutRouteImport } from './routes/_app.about'
+import { Route as AppAcceptableUseRouteImport } from './routes/_app.acceptable-use'
 import { Route as AppAccountRouteImport } from './routes/_app.account'
 import { Route as AppAdminAuditRouteImport } from './routes/_app.admin-audit'
 import { Route as AppAdminObservabilityRouteImport } from './routes/_app.admin-observability'
@@ -25,6 +26,7 @@ import { Route as AppAdminWaitlistRouteImport } from './routes/_app.admin-waitli
 import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
 import { Route as AppAdvisorxRouteImport } from './routes/_app.advisorx'
 import { Route as AppAdvisoryRouteImport } from './routes/_app.advisory'
+import { Route as AppAiNoticeRouteImport } from './routes/_app.ai-notice'
 import { Route as AppAiUseCaseStudioRouteImport } from './routes/_app.ai-use-case-studio'
 import { Route as AppApiIntegrationRouteImport } from './routes/_app.api-integration'
 import { Route as AppBlueprintRouteImport } from './routes/_app.blueprint'
@@ -33,13 +35,17 @@ import { Route as AppCompareRouteImport } from './routes/_app.compare'
 import { Route as AppContactRouteImport } from './routes/_app.contact'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppDataReadinessRouteImport } from './routes/_app.data-readiness'
+import { Route as AppDataRightsRouteImport } from './routes/_app.data-rights'
 import { Route as AppDecisionRouteImport } from './routes/_app.decision'
 import { Route as AppDemoScenariosRouteImport } from './routes/_app.demo-scenarios'
 import { Route as AppDiscoverRouteImport } from './routes/_app.discover'
 import { Route as AppEditionsRouteImport } from './routes/_app.editions'
 import { Route as AppEnterpriseRouteImport } from './routes/_app.enterprise'
 import { Route as AppEntitlementRouteImport } from './routes/_app.entitlement'
+import { Route as AppFaqRouteImport } from './routes/_app.faq'
 import { Route as AppFeasibilityRouteImport } from './routes/_app.feasibility'
+import { Route as AppFoundingAccessTermsRouteImport } from './routes/_app.founding-access-terms'
+import { Route as AppGettingStartedRouteImport } from './routes/_app.getting-started'
 import { Route as AppGovernanceRouteImport } from './routes/_app.governance'
 import { Route as AppHandoffsRouteImport } from './routes/_app.handoffs'
 import { Route as AppHowItWorksRouteImport } from './routes/_app.how-it-works'
@@ -53,6 +59,7 @@ import { Route as AppPatternsRouteImport } from './routes/_app.patterns'
 import { Route as AppPilotRouteImport } from './routes/_app.pilot'
 import { Route as AppPortfolioxRouteImport } from './routes/_app.portfoliox'
 import { Route as AppPricingRouteImport } from './routes/_app.pricing'
+import { Route as AppPrivacyRouteImport } from './routes/_app.privacy'
 import { Route as AppProRouteImport } from './routes/_app.pro'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
 import { Route as AppQuickWinsRouteImport } from './routes/_app.quick-wins'
@@ -65,6 +72,7 @@ import { Route as AppSarpiRouteImport } from './routes/_app.sarpi'
 import { Route as AppStudioRouteImport } from './routes/_app.studio'
 import { Route as AppSubmitRouteImport } from './routes/_app.submit'
 import { Route as AppSupportRouteImport } from './routes/_app.support'
+import { Route as AppTermsRouteImport } from './routes/_app.terms'
 import { Route as CTokenRouteImport } from './routes/c.$token'
 import { Route as PTokenRouteImport } from './routes/p.$token'
 import { Route as AppAccountIndexRouteImport } from './routes/_app.account.index'
@@ -154,6 +162,11 @@ const AppAboutRoute = AppAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAcceptableUseRoute = AppAcceptableUseRouteImport.update({
+  id: '/acceptable-use',
+  path: '/acceptable-use',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAccountRoute = AppAccountRouteImport.update({
   id: '/account',
   path: '/account',
@@ -192,6 +205,11 @@ const AppAdvisorxRoute = AppAdvisorxRouteImport.update({
 const AppAdvisoryRoute = AppAdvisoryRouteImport.update({
   id: '/advisory',
   path: '/advisory',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAiNoticeRoute = AppAiNoticeRouteImport.update({
+  id: '/ai-notice',
+  path: '/ai-notice',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAiUseCaseStudioRoute = AppAiUseCaseStudioRouteImport.update({
@@ -234,6 +252,11 @@ const AppDataReadinessRoute = AppDataReadinessRouteImport.update({
   path: '/data-readiness',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDataRightsRoute = AppDataRightsRouteImport.update({
+  id: '/data-rights',
+  path: '/data-rights',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDecisionRoute = AppDecisionRouteImport.update({
   id: '/decision',
   path: '/decision',
@@ -264,9 +287,24 @@ const AppEntitlementRoute = AppEntitlementRouteImport.update({
   path: '/entitlement',
   getParentRoute: () => AppRoute,
 } as any)
+const AppFaqRoute = AppFaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppFeasibilityRoute = AppFeasibilityRouteImport.update({
   id: '/feasibility',
   path: '/feasibility',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFoundingAccessTermsRoute = AppFoundingAccessTermsRouteImport.update({
+  id: '/founding-access-terms',
+  path: '/founding-access-terms',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGettingStartedRoute = AppGettingStartedRouteImport.update({
+  id: '/getting-started',
+  path: '/getting-started',
   getParentRoute: () => AppRoute,
 } as any)
 const AppGovernanceRoute = AppGovernanceRouteImport.update({
@@ -334,6 +372,11 @@ const AppPricingRoute = AppPricingRouteImport.update({
   path: '/pricing',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPrivacyRoute = AppPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppProRoute = AppProRouteImport.update({
   id: '/pro',
   path: '/pro',
@@ -392,6 +435,11 @@ const AppSubmitRoute = AppSubmitRouteImport.update({
 const AppSupportRoute = AppSupportRouteImport.update({
   id: '/support',
   path: '/support',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTermsRoute = AppTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => AppRoute,
 } as any)
 const CTokenRoute = CTokenRouteImport.update({
@@ -667,6 +715,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/about': typeof AppAboutRoute
+  '/acceptable-use': typeof AppAcceptableUseRoute
   '/account': typeof AppAccountRouteWithChildren
   '/admin-audit': typeof AppAdminAuditRoute
   '/admin-observability': typeof AppAdminObservabilityRoute
@@ -675,6 +724,7 @@ export interface FileRoutesByFullPath {
   '/administration': typeof AppAdministrationRouteWithChildren
   '/advisorx': typeof AppAdvisorxRoute
   '/advisory': typeof AppAdvisoryRoute
+  '/ai-notice': typeof AppAiNoticeRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
@@ -683,13 +733,17 @@ export interface FileRoutesByFullPath {
   '/contact': typeof AppContactRoute
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
+  '/data-rights': typeof AppDataRightsRoute
   '/decision': typeof AppDecisionRoute
   '/demo-scenarios': typeof AppDemoScenariosRoute
   '/discover': typeof AppDiscoverRoute
   '/editions': typeof AppEditionsRoute
   '/enterprise': typeof AppEnterpriseRoute
   '/entitlement': typeof AppEntitlementRoute
+  '/faq': typeof AppFaqRoute
   '/feasibility': typeof AppFeasibilityRoute
+  '/founding-access-terms': typeof AppFoundingAccessTermsRoute
+  '/getting-started': typeof AppGettingStartedRoute
   '/governance': typeof AppGovernanceRoute
   '/handoffs': typeof AppHandoffsRoute
   '/how-it-works': typeof AppHowItWorksRoute
@@ -703,6 +757,7 @@ export interface FileRoutesByFullPath {
   '/pilot': typeof AppPilotRoute
   '/portfoliox': typeof AppPortfolioxRoute
   '/pricing': typeof AppPricingRoute
+  '/privacy': typeof AppPrivacyRoute
   '/pro': typeof AppProRoute
   '/profile': typeof AppProfileRoute
   '/quick-wins': typeof AppQuickWinsRoute
@@ -715,6 +770,7 @@ export interface FileRoutesByFullPath {
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
   '/support': typeof AppSupportRoute
+  '/terms': typeof AppTermsRoute
   '/c/$token': typeof CTokenRoute
   '/p/$token': typeof PTokenRoute
   '/account/organization': typeof AppAccountOrganizationRoute
@@ -773,6 +829,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/about': typeof AppAboutRoute
+  '/acceptable-use': typeof AppAcceptableUseRoute
   '/admin-audit': typeof AppAdminAuditRoute
   '/admin-observability': typeof AppAdminObservabilityRoute
   '/admin-submissions': typeof AppAdminSubmissionsRoute
@@ -780,6 +837,7 @@ export interface FileRoutesByTo {
   '/administration': typeof AppAdministrationRouteWithChildren
   '/advisorx': typeof AppAdvisorxRoute
   '/advisory': typeof AppAdvisoryRoute
+  '/ai-notice': typeof AppAiNoticeRoute
   '/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/api-integration': typeof AppApiIntegrationRoute
   '/blueprint': typeof AppBlueprintRoute
@@ -787,13 +845,17 @@ export interface FileRoutesByTo {
   '/contact': typeof AppContactRoute
   '/dashboard': typeof AppDashboardRoute
   '/data-readiness': typeof AppDataReadinessRoute
+  '/data-rights': typeof AppDataRightsRoute
   '/decision': typeof AppDecisionRoute
   '/demo-scenarios': typeof AppDemoScenariosRoute
   '/discover': typeof AppDiscoverRoute
   '/editions': typeof AppEditionsRoute
   '/enterprise': typeof AppEnterpriseRoute
   '/entitlement': typeof AppEntitlementRoute
+  '/faq': typeof AppFaqRoute
   '/feasibility': typeof AppFeasibilityRoute
+  '/founding-access-terms': typeof AppFoundingAccessTermsRoute
+  '/getting-started': typeof AppGettingStartedRoute
   '/governance': typeof AppGovernanceRoute
   '/handoffs': typeof AppHandoffsRoute
   '/how-it-works': typeof AppHowItWorksRoute
@@ -807,6 +869,7 @@ export interface FileRoutesByTo {
   '/pilot': typeof AppPilotRoute
   '/portfoliox': typeof AppPortfolioxRoute
   '/pricing': typeof AppPricingRoute
+  '/privacy': typeof AppPrivacyRoute
   '/pro': typeof AppProRoute
   '/profile': typeof AppProfileRoute
   '/quick-wins': typeof AppQuickWinsRoute
@@ -819,6 +882,7 @@ export interface FileRoutesByTo {
   '/studio': typeof AppStudioRouteWithChildren
   '/submit': typeof AppSubmitRoute
   '/support': typeof AppSupportRoute
+  '/terms': typeof AppTermsRoute
   '/c/$token': typeof CTokenRoute
   '/p/$token': typeof PTokenRoute
   '/account/organization': typeof AppAccountOrganizationRoute
@@ -879,6 +943,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_app/about': typeof AppAboutRoute
+  '/_app/acceptable-use': typeof AppAcceptableUseRoute
   '/_app/account': typeof AppAccountRouteWithChildren
   '/_app/admin-audit': typeof AppAdminAuditRoute
   '/_app/admin-observability': typeof AppAdminObservabilityRoute
@@ -887,6 +952,7 @@ export interface FileRoutesById {
   '/_app/administration': typeof AppAdministrationRouteWithChildren
   '/_app/advisorx': typeof AppAdvisorxRoute
   '/_app/advisory': typeof AppAdvisoryRoute
+  '/_app/ai-notice': typeof AppAiNoticeRoute
   '/_app/ai-use-case-studio': typeof AppAiUseCaseStudioRoute
   '/_app/api-integration': typeof AppApiIntegrationRoute
   '/_app/blueprint': typeof AppBlueprintRoute
@@ -895,13 +961,17 @@ export interface FileRoutesById {
   '/_app/contact': typeof AppContactRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/data-readiness': typeof AppDataReadinessRoute
+  '/_app/data-rights': typeof AppDataRightsRoute
   '/_app/decision': typeof AppDecisionRoute
   '/_app/demo-scenarios': typeof AppDemoScenariosRoute
   '/_app/discover': typeof AppDiscoverRoute
   '/_app/editions': typeof AppEditionsRoute
   '/_app/enterprise': typeof AppEnterpriseRoute
   '/_app/entitlement': typeof AppEntitlementRoute
+  '/_app/faq': typeof AppFaqRoute
   '/_app/feasibility': typeof AppFeasibilityRoute
+  '/_app/founding-access-terms': typeof AppFoundingAccessTermsRoute
+  '/_app/getting-started': typeof AppGettingStartedRoute
   '/_app/governance': typeof AppGovernanceRoute
   '/_app/handoffs': typeof AppHandoffsRoute
   '/_app/how-it-works': typeof AppHowItWorksRoute
@@ -915,6 +985,7 @@ export interface FileRoutesById {
   '/_app/pilot': typeof AppPilotRoute
   '/_app/portfoliox': typeof AppPortfolioxRoute
   '/_app/pricing': typeof AppPricingRoute
+  '/_app/privacy': typeof AppPrivacyRoute
   '/_app/pro': typeof AppProRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/quick-wins': typeof AppQuickWinsRoute
@@ -927,6 +998,7 @@ export interface FileRoutesById {
   '/_app/studio': typeof AppStudioRouteWithChildren
   '/_app/submit': typeof AppSubmitRoute
   '/_app/support': typeof AppSupportRoute
+  '/_app/terms': typeof AppTermsRoute
   '/c/$token': typeof CTokenRoute
   '/p/$token': typeof PTokenRoute
   '/_app/account/organization': typeof AppAccountOrganizationRoute
@@ -987,6 +1059,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/about'
+    | '/acceptable-use'
     | '/account'
     | '/admin-audit'
     | '/admin-observability'
@@ -995,6 +1068,7 @@ export interface FileRouteTypes {
     | '/administration'
     | '/advisorx'
     | '/advisory'
+    | '/ai-notice'
     | '/ai-use-case-studio'
     | '/api-integration'
     | '/blueprint'
@@ -1003,13 +1077,17 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/data-readiness'
+    | '/data-rights'
     | '/decision'
     | '/demo-scenarios'
     | '/discover'
     | '/editions'
     | '/enterprise'
     | '/entitlement'
+    | '/faq'
     | '/feasibility'
+    | '/founding-access-terms'
+    | '/getting-started'
     | '/governance'
     | '/handoffs'
     | '/how-it-works'
@@ -1023,6 +1101,7 @@ export interface FileRouteTypes {
     | '/pilot'
     | '/portfoliox'
     | '/pricing'
+    | '/privacy'
     | '/pro'
     | '/profile'
     | '/quick-wins'
@@ -1035,6 +1114,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/submit'
     | '/support'
+    | '/terms'
     | '/c/$token'
     | '/p/$token'
     | '/account/organization'
@@ -1093,6 +1173,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/about'
+    | '/acceptable-use'
     | '/admin-audit'
     | '/admin-observability'
     | '/admin-submissions'
@@ -1100,6 +1181,7 @@ export interface FileRouteTypes {
     | '/administration'
     | '/advisorx'
     | '/advisory'
+    | '/ai-notice'
     | '/ai-use-case-studio'
     | '/api-integration'
     | '/blueprint'
@@ -1107,13 +1189,17 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/data-readiness'
+    | '/data-rights'
     | '/decision'
     | '/demo-scenarios'
     | '/discover'
     | '/editions'
     | '/enterprise'
     | '/entitlement'
+    | '/faq'
     | '/feasibility'
+    | '/founding-access-terms'
+    | '/getting-started'
     | '/governance'
     | '/handoffs'
     | '/how-it-works'
@@ -1127,6 +1213,7 @@ export interface FileRouteTypes {
     | '/pilot'
     | '/portfoliox'
     | '/pricing'
+    | '/privacy'
     | '/pro'
     | '/profile'
     | '/quick-wins'
@@ -1139,6 +1226,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/submit'
     | '/support'
+    | '/terms'
     | '/c/$token'
     | '/p/$token'
     | '/account/organization'
@@ -1198,6 +1286,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/_app/about'
+    | '/_app/acceptable-use'
     | '/_app/account'
     | '/_app/admin-audit'
     | '/_app/admin-observability'
@@ -1206,6 +1295,7 @@ export interface FileRouteTypes {
     | '/_app/administration'
     | '/_app/advisorx'
     | '/_app/advisory'
+    | '/_app/ai-notice'
     | '/_app/ai-use-case-studio'
     | '/_app/api-integration'
     | '/_app/blueprint'
@@ -1214,13 +1304,17 @@ export interface FileRouteTypes {
     | '/_app/contact'
     | '/_app/dashboard'
     | '/_app/data-readiness'
+    | '/_app/data-rights'
     | '/_app/decision'
     | '/_app/demo-scenarios'
     | '/_app/discover'
     | '/_app/editions'
     | '/_app/enterprise'
     | '/_app/entitlement'
+    | '/_app/faq'
     | '/_app/feasibility'
+    | '/_app/founding-access-terms'
+    | '/_app/getting-started'
     | '/_app/governance'
     | '/_app/handoffs'
     | '/_app/how-it-works'
@@ -1234,6 +1328,7 @@ export interface FileRouteTypes {
     | '/_app/pilot'
     | '/_app/portfoliox'
     | '/_app/pricing'
+    | '/_app/privacy'
     | '/_app/pro'
     | '/_app/profile'
     | '/_app/quick-wins'
@@ -1246,6 +1341,7 @@ export interface FileRouteTypes {
     | '/_app/studio'
     | '/_app/submit'
     | '/_app/support'
+    | '/_app/terms'
     | '/c/$token'
     | '/p/$token'
     | '/_app/account/organization'
@@ -1373,6 +1469,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAboutRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/acceptable-use': {
+      id: '/_app/acceptable-use'
+      path: '/acceptable-use'
+      fullPath: '/acceptable-use'
+      preLoaderRoute: typeof AppAcceptableUseRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/account': {
       id: '/_app/account'
       path: '/account'
@@ -1427,6 +1530,13 @@ declare module '@tanstack/react-router' {
       path: '/advisory'
       fullPath: '/advisory'
       preLoaderRoute: typeof AppAdvisoryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/ai-notice': {
+      id: '/_app/ai-notice'
+      path: '/ai-notice'
+      fullPath: '/ai-notice'
+      preLoaderRoute: typeof AppAiNoticeRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/ai-use-case-studio': {
@@ -1485,6 +1595,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDataReadinessRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/data-rights': {
+      id: '/_app/data-rights'
+      path: '/data-rights'
+      fullPath: '/data-rights'
+      preLoaderRoute: typeof AppDataRightsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/decision': {
       id: '/_app/decision'
       path: '/decision'
@@ -1527,11 +1644,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppEntitlementRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/faq': {
+      id: '/_app/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof AppFaqRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/feasibility': {
       id: '/_app/feasibility'
       path: '/feasibility'
       fullPath: '/feasibility'
       preLoaderRoute: typeof AppFeasibilityRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/founding-access-terms': {
+      id: '/_app/founding-access-terms'
+      path: '/founding-access-terms'
+      fullPath: '/founding-access-terms'
+      preLoaderRoute: typeof AppFoundingAccessTermsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/getting-started': {
+      id: '/_app/getting-started'
+      path: '/getting-started'
+      fullPath: '/getting-started'
+      preLoaderRoute: typeof AppGettingStartedRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/governance': {
@@ -1625,6 +1763,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPricingRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/privacy': {
+      id: '/_app/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof AppPrivacyRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/pro': {
       id: '/_app/pro'
       path: '/pro'
@@ -1707,6 +1852,13 @@ declare module '@tanstack/react-router' {
       path: '/support'
       fullPath: '/support'
       preLoaderRoute: typeof AppSupportRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/terms': {
+      id: '/_app/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof AppTermsRouteImport
       parentRoute: typeof AppRoute
     }
     '/c/$token': {
@@ -2147,6 +2299,7 @@ const AppStudioRouteWithChildren = AppStudioRoute._addFileChildren(
 
 interface AppRouteChildren {
   AppAboutRoute: typeof AppAboutRoute
+  AppAcceptableUseRoute: typeof AppAcceptableUseRoute
   AppAccountRoute: typeof AppAccountRouteWithChildren
   AppAdminAuditRoute: typeof AppAdminAuditRoute
   AppAdminObservabilityRoute: typeof AppAdminObservabilityRoute
@@ -2155,6 +2308,7 @@ interface AppRouteChildren {
   AppAdministrationRoute: typeof AppAdministrationRouteWithChildren
   AppAdvisorxRoute: typeof AppAdvisorxRoute
   AppAdvisoryRoute: typeof AppAdvisoryRoute
+  AppAiNoticeRoute: typeof AppAiNoticeRoute
   AppAiUseCaseStudioRoute: typeof AppAiUseCaseStudioRoute
   AppApiIntegrationRoute: typeof AppApiIntegrationRoute
   AppBlueprintRoute: typeof AppBlueprintRoute
@@ -2163,13 +2317,17 @@ interface AppRouteChildren {
   AppContactRoute: typeof AppContactRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppDataReadinessRoute: typeof AppDataReadinessRoute
+  AppDataRightsRoute: typeof AppDataRightsRoute
   AppDecisionRoute: typeof AppDecisionRoute
   AppDemoScenariosRoute: typeof AppDemoScenariosRoute
   AppDiscoverRoute: typeof AppDiscoverRoute
   AppEditionsRoute: typeof AppEditionsRoute
   AppEnterpriseRoute: typeof AppEnterpriseRoute
   AppEntitlementRoute: typeof AppEntitlementRoute
+  AppFaqRoute: typeof AppFaqRoute
   AppFeasibilityRoute: typeof AppFeasibilityRoute
+  AppFoundingAccessTermsRoute: typeof AppFoundingAccessTermsRoute
+  AppGettingStartedRoute: typeof AppGettingStartedRoute
   AppGovernanceRoute: typeof AppGovernanceRoute
   AppHandoffsRoute: typeof AppHandoffsRoute
   AppHowItWorksRoute: typeof AppHowItWorksRoute
@@ -2183,6 +2341,7 @@ interface AppRouteChildren {
   AppPilotRoute: typeof AppPilotRoute
   AppPortfolioxRoute: typeof AppPortfolioxRoute
   AppPricingRoute: typeof AppPricingRoute
+  AppPrivacyRoute: typeof AppPrivacyRoute
   AppProRoute: typeof AppProRoute
   AppProfileRoute: typeof AppProfileRoute
   AppQuickWinsRoute: typeof AppQuickWinsRoute
@@ -2195,6 +2354,7 @@ interface AppRouteChildren {
   AppStudioRoute: typeof AppStudioRouteWithChildren
   AppSubmitRoute: typeof AppSubmitRoute
   AppSupportRoute: typeof AppSupportRoute
+  AppTermsRoute: typeof AppTermsRoute
   AppCollectionsSlugRoute: typeof AppCollectionsSlugRoute
   AppInviteTokenRoute: typeof AppInviteTokenRoute
   AppOpportunitiesIdRoute: typeof AppOpportunitiesIdRoute
@@ -2214,6 +2374,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppAboutRoute: AppAboutRoute,
+  AppAcceptableUseRoute: AppAcceptableUseRoute,
   AppAccountRoute: AppAccountRouteWithChildren,
   AppAdminAuditRoute: AppAdminAuditRoute,
   AppAdminObservabilityRoute: AppAdminObservabilityRoute,
@@ -2222,6 +2383,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdministrationRoute: AppAdministrationRouteWithChildren,
   AppAdvisorxRoute: AppAdvisorxRoute,
   AppAdvisoryRoute: AppAdvisoryRoute,
+  AppAiNoticeRoute: AppAiNoticeRoute,
   AppAiUseCaseStudioRoute: AppAiUseCaseStudioRoute,
   AppApiIntegrationRoute: AppApiIntegrationRoute,
   AppBlueprintRoute: AppBlueprintRoute,
@@ -2230,13 +2392,17 @@ const AppRouteChildren: AppRouteChildren = {
   AppContactRoute: AppContactRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppDataReadinessRoute: AppDataReadinessRoute,
+  AppDataRightsRoute: AppDataRightsRoute,
   AppDecisionRoute: AppDecisionRoute,
   AppDemoScenariosRoute: AppDemoScenariosRoute,
   AppDiscoverRoute: AppDiscoverRoute,
   AppEditionsRoute: AppEditionsRoute,
   AppEnterpriseRoute: AppEnterpriseRoute,
   AppEntitlementRoute: AppEntitlementRoute,
+  AppFaqRoute: AppFaqRoute,
   AppFeasibilityRoute: AppFeasibilityRoute,
+  AppFoundingAccessTermsRoute: AppFoundingAccessTermsRoute,
+  AppGettingStartedRoute: AppGettingStartedRoute,
   AppGovernanceRoute: AppGovernanceRoute,
   AppHandoffsRoute: AppHandoffsRoute,
   AppHowItWorksRoute: AppHowItWorksRoute,
@@ -2250,6 +2416,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppPilotRoute: AppPilotRoute,
   AppPortfolioxRoute: AppPortfolioxRoute,
   AppPricingRoute: AppPricingRoute,
+  AppPrivacyRoute: AppPrivacyRoute,
   AppProRoute: AppProRoute,
   AppProfileRoute: AppProfileRoute,
   AppQuickWinsRoute: AppQuickWinsRoute,
@@ -2262,6 +2429,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppStudioRoute: AppStudioRouteWithChildren,
   AppSubmitRoute: AppSubmitRoute,
   AppSupportRoute: AppSupportRoute,
+  AppTermsRoute: AppTermsRoute,
   AppCollectionsSlugRoute: AppCollectionsSlugRoute,
   AppInviteTokenRoute: AppInviteTokenRoute,
   AppOpportunitiesIdRoute: AppOpportunitiesIdRoute,
@@ -2315,13 +2483,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

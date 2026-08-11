@@ -25,6 +25,7 @@ function arrayLiteral(name) {
 
 const primary = arrayLiteral("PRIMARY_NAV_TARGETS");
 const sidebar = arrayLiteral("SIDEBAR_NAV_TARGETS");
+const transparency = arrayLiteral("TRANSPARENCY_NAV_TARGETS");
 const redirects = {};
 const redirectBlock = navSrc.match(/EXPECTED_REDIRECTS[^{]*\{([\s\S]*?)\}/);
 if (redirectBlock) {
@@ -46,7 +47,7 @@ for (const m of tree.matchAll(/path:\s*['"]([^'"]+)['"]/g)) declared.add(m[1]);
 // Full paths string also appears in the generated file id map; index it too.
 for (const m of tree.matchAll(/'(\/[a-zA-Z0-9/_$:-]*)'/g)) declared.add(m[1]);
 
-const targets = [...new Set([...primary, ...sidebar])];
+const targets = [...new Set([...primary, ...sidebar, ...transparency])];
 const failures = [];
 
 for (const t of targets) {

@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 
 import { publicHead, breadcrumbJsonLd } from "@/lib/seo";
 import { PageHero, Section } from "@/components/marketing/MarketingPrimitives";
+import { TransparencyLinks } from "@/components/legal/LegalDocumentView";
 import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
 import { listMyFeedbackFn, listMyRequestAlertsFn } from "@/lib/feedback/feedback.functions";
 import { requestPriorityLabel, slaState } from "@/lib/feedback/sla";
@@ -217,6 +218,13 @@ function SupportPage() {
             )}
           </CardContent>
         </Card>
+      </Section>
+
+      <Section
+        title="Learn how it works, and what we do with your data"
+        lead="Getting started, the FAQs, and every transparency document in one place."
+      >
+        <TransparencyLinks currentPath="/support" />
       </Section>
     </div>
   );

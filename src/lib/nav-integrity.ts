@@ -56,6 +56,23 @@ export const SIDEBAR_NAV_TARGETS = [
 ] as const;
 
 /**
+ * Legal, transparency and help targets linked from the footer and from the
+ * support surface. Covered by the integrity check so a published policy link
+ * can never point at a missing route.
+ */
+export const TRANSPARENCY_NAV_TARGETS = [
+  "/getting-started",
+  "/faq",
+  "/support",
+  "/terms",
+  "/privacy",
+  "/acceptable-use",
+  "/ai-notice",
+  "/founding-access-terms",
+  "/data-rights",
+] as const;
+
+/**
  * Targets that intentionally redirect to another route. The integrity check
  * treats these as expected; any *other* redirect is flagged as drift.
  */

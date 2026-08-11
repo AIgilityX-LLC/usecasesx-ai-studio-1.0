@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
 
+import { TRANSPARENCY_LINKS } from "@/lib/legal/legal-content";
+
 export function UseCasesXFooter() {
   return (
     <footer className="dark border-t border-border bg-background text-foreground">
-      <div className="mx-auto grid max-w-[1400px] gap-10 px-6 py-12 md:grid-cols-4">
+      <div className="mx-auto grid max-w-[1400px] gap-10 px-6 py-12 md:grid-cols-3 lg:grid-cols-5">
         <div>
           <Link to="/" className="flex items-center gap-2">
             <div className="grid h-8 w-8 place-items-center rounded-md bg-primary/15 ring-1 ring-primary/40">
@@ -58,6 +60,10 @@ export function UseCasesXFooter() {
             { l: "Contact & demo", to: "/contact" },
           ]}
         />
+        <FooterCol
+          title="Legal & transparency"
+          items={TRANSPARENCY_LINKS.map((link) => ({ l: link.label, to: link.to }))}
+        />
       </div>
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3 px-6 py-4 text-[11px] text-muted-foreground">
@@ -74,6 +80,15 @@ export function UseCasesXFooter() {
             </Link>
             <Link to="/about" className="hover:text-foreground">
               Trust
+            </Link>
+            <Link to="/terms" className="hover:text-foreground">
+              Terms
+            </Link>
+            <Link to="/privacy" className="hover:text-foreground">
+              Privacy
+            </Link>
+            <Link to="/ai-notice" className="hover:text-foreground">
+              AI notice
             </Link>
             <Link to="/contact" className="hover:text-foreground">
               Contact
