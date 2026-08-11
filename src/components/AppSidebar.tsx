@@ -29,6 +29,7 @@ import {
   Lightbulb,
   UserCog,
   ShieldCheck,
+  MessageSquarePlus,
 } from "lucide-react";
 import {
   Sidebar,
@@ -110,6 +111,7 @@ const ADMIN: Item[] = [
 ];
 
 const ACCOUNT: Item[] = [
+  { to: "/support", label: "Request Features / Report Bugs", icon: MessageSquarePlus },
   { to: "/account", label: "Account Settings", icon: UserCog },
   { to: "/account/security", label: "Security", icon: ShieldCheck },
   { to: "/entitlement", label: "My Plan", icon: Crown },
