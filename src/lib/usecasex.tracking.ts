@@ -63,7 +63,10 @@ async function persistEvent(cta: string, payload: Record<string, unknown> = {}):
     utm_medium: attribution.utmMedium,
     utm_campaign: attribution.utmCampaign,
     referrer_host: attribution.referrerHost,
-    search_query: typeof payload.search_query === "string" ? payload.search_query : null,
+    // Defense in depth: any caller-supplied term is sanitized here too, so a
+    // future call site cannot route raw user text into analytics.
+    search_query:
+      typeof payload.search_query === "string" ? sanitizeSearchQuery(payload.search_query) : null,
     result_count: typeof payload.result_count === "number" ? payload.result_count : null,
   });
   if (error) console.warn("[usecasex:analytics] event rejected", cta, error.message);
