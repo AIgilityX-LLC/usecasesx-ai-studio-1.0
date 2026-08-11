@@ -5,7 +5,7 @@
  * invitations, registrations or checkpoint answers must escalate after the
  * window, and the exported report must carry the verdict plus evidence links.
  */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 
 import {
   EVIDENCE_GAP_WINDOW_DAYS,
