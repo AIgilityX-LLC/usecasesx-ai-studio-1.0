@@ -44,6 +44,7 @@ export const PRIVATE_PATH_PREFIXES = [
   "/account",
   "/administration",
   "/admin-submissions",
+  "/admin-audit",
   "/admin-waitlist",
   "/boards",
   "/c/",
