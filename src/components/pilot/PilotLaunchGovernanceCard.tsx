@@ -175,6 +175,63 @@ export function PilotLaunchGovernanceCard({
   const counts = useMemo(() => countTimeline(timeline), [timeline]);
   const stamp = new Date().toISOString().slice(0, 10);
 
+  /** Paginated PDF rendering of the same timeline rows the CSV exports. */
+  const exportTimelinePdf = async () => {
+    setPdfBusy(true);
+    try {
+      const { default: JsPDF } = await import("jspdf");
+      const doc = new JsPDF({ unit: "pt", format: "a4" });
+      const margin = 48;
+      let y = margin;
+
+      doc.setFontSize(16);
+      doc.text(`Pilot evidence timeline — cohort ${cohort}`, margin, y);
+      y += 20;
+      doc.setFontSize(10);
+      doc.text(`Generated ${new Date().toLocaleString()}`, margin, y);
+      y += 22;
+
+      doc.setFontSize(12);
+      doc.text("Summary", margin, y);
+      y += 16;
+      doc.setFontSize(10);
+      for (const line of buildTimelineSummaryLines({ cohort, events: timeline })) {
+        doc.text(line, margin, y);
+        y += 14;
+      }
+
+      y += 12;
+      doc.setFontSize(12);
+      doc.text("Trail", margin, y);
+      y += 16;
+      doc.setFontSize(9);
+      const columnX = [margin, margin + 120, margin + 200, margin + 400];
+      TIMELINE_PDF_COLUMNS.forEach((column, index) => {
+        doc.text(column, columnX[index] ?? margin, y);
+      });
+      y += 12;
+      for (const row of buildTimelinePdfRows(timeline)) {
+        if (y > 780) {
+          doc.addPage();
+          y = margin;
+        }
+        row.forEach((cell, index) => {
+          doc.text(String(cell).slice(0, index === 2 ? 42 : 34), columnX[index] ?? margin, y);
+        });
+        y += 13;
+      }
+
+      doc.save(`pilot-timeline-${cohort}-${stamp}.pdf`);
+      toast.success("Evidence timeline PDF exported");
+    } catch (error) {
+      toast.error("PDF export failed", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      });
+    } finally {
+      setPdfBusy(false);
+    }
+  };
+
   const grantMutation = useMutation({
     mutationFn: () =>
       grant({
