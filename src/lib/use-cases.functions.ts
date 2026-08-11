@@ -127,14 +127,18 @@ export const listUseCases = createServerFn({ method: "GET" })
     if (idFilter !== null) query = query.in("id", idFilter);
     if (data.featuredOnly) query = query.eq("is_featured", true);
     if (data.landingOnly) query = query.eq("show_on_landing", true);
-    if (data.q.trim()) {
+    // Keyword search: every term must appear somewhere (chained `or()` calls are
+    // ANDed by PostgREST), each term may appear in any searchable column.
+    const terms = searchTerms(data.q);
+    for (const term of terms) {
       // Escape PostgREST `or()` delimiters so a stray comma or parenthesis in a
       // user query cannot alter the filter expression.
-      const term = `%${data.q.trim().replace(/[(),*]/g, " ")}%`;
+      const like = `%${term.replace(/[(),*]/g, " ")}%`;
       query = query.or(
-        `title.ilike.${term},summary.ilike.${term},organization.ilike.${term},business_problem.ilike.${term},ai_solution_concept.ilike.${term},deployment_model.ilike.${term},security_classification.ilike.${term}`,
+        `title.ilike.${like},summary.ilike.${like},organization.ilike.${like},business_problem.ilike.${like},ai_solution_concept.ilike.${like},deployment_model.ilike.${like},security_classification.ilike.${like}`,
       );
     }
+    const rankByKeyword = terms.length > 0 && (data.sort === "relevance" || data.q.trim() !== "");
     if (data.maturity.length)
       query = query.in(
         "maturity",
@@ -159,6 +163,26 @@ export const listUseCases = createServerFn({ method: "GET" })
     query = query.order("id", { ascending: true });
 
     const from = (page - 1) * pageSize;
+
+    // Relevance ordering cannot be expressed in a PostgREST `order()`, so for
+    // keyword searches we pull a capped pool of matches, rank it, then slice the
+    // requested page out of the ranked list.
+    if (data.sort === "relevance" && rankByKeyword) {
+      const { data: pool, error: poolErr, count } = await query.range(0, RANK_POOL_SIZE - 1);
+      if (poolErr) throw new Error(poolErr.message);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const ranked = rankByRelevance((pool ?? []) as Array<Record<string, any>>, data.q, terms);
+      const total = count ?? ranked.length;
+      const slice = ranked.slice(from, from + pageSize);
+      return {
+        cases: slice,
+        total,
+        page,
+        pageSize,
+        hasMore: from + slice.length < Math.min(total, ranked.length),
+      };
+    }
+
     const { data: rows, error, count } = await query.range(from, from + pageSize - 1);
     if (error) throw new Error(error.message);
 
