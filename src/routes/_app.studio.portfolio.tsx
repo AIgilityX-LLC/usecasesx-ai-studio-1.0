@@ -613,7 +613,46 @@ function FilterSelect({
 }
 
 function Matrix({ data }: { data: { uc: UseCase; x: number; y: number }[] }) {
+  const quadrantOf = (x: number, y: number) =>
+    y >= 50
+      ? x >= 50
+        ? "Quick Wins"
+        : "Strategic Bets"
+      : x >= 50
+        ? "Experiments"
+        : "Avoid / Hold";
   return (
+    <>
+      <table className="sr-only">
+        <caption>
+          Prioritization matrix — feasibility on the horizontal axis, value and viability on the
+          vertical axis, each scored 0 to 100.
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Use case</th>
+            <th scope="col">Feasibility</th>
+            <th scope="col">Value / viability</th>
+            <th scope="col">Quadrant</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan={4}>No scored use cases</td>
+            </tr>
+          ) : (
+            data.map(({ uc, x, y }) => (
+              <tr key={uc.id}>
+                <th scope="row">{uc.title}</th>
+                <td>{x.toFixed(0)}</td>
+                <td>{y.toFixed(0)}</td>
+                <td>{quadrantOf(x, y)}</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
     <div className="relative mx-auto aspect-square w-full max-w-2xl rounded-md border bg-muted/20">
       <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
         <Quadrant label="Strategic Bets" tone="amber" align="tl" />
@@ -642,6 +681,7 @@ function Matrix({ data }: { data: { uc: UseCase; x: number; y: number }[] }) {
         Value / Viability →
       </div>
     </div>
+    </>
   );
 }
 
