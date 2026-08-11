@@ -96,9 +96,7 @@ function ProductionDataPage() {
     mutationFn: (input: { userId: string; role: string; reason: string }) =>
       revoke({ data: input }),
     onSuccess: (result) => {
-      toast.success(
-        result.revoked ? "Role revoked and audited." : "That grant no longer exists.",
-      );
+      toast.success(result.revoked ? "Role revoked and audited." : "That grant no longer exists.");
       void refresh();
     },
     onError: (cause) =>
