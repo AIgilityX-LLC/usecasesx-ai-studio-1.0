@@ -287,6 +287,15 @@ function OpportunityMapPage() {
 
       {query.isSuccess && readiness.hasRecords && (
         <>
+          {query.data?.truncated && (
+            <p
+              role="status"
+              className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground"
+            >
+              Showing the {records.length} most recently updated opportunities of{" "}
+              {query.data.totalCount}. Narrow the scope in Opportunities to map an older cohort.
+            </p>
+          )}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Tabs value={axis} onValueChange={(v) => setAxis(v as RowAxis)}>
               <TabsList>

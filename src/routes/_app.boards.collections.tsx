@@ -269,6 +269,7 @@ function CollectionsPage() {
                           className="h-8 w-8"
                           onClick={() => copyShare(c)}
                           title="Copy share link"
+                          aria-label={`Copy share link for ${c.name}`}
                         >
                           <Share2 className="h-4 w-4" />
                         </Button>
@@ -278,6 +279,7 @@ function CollectionsPage() {
                               size="icon"
                               variant="ghost"
                               className="h-8 w-8 text-destructive"
+                              aria-label={`Delete collection ${c.name}`}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -376,7 +378,12 @@ function CollectionDialog({
               <div className="flex shrink-0 items-center gap-1">
                 {i.use_cases?.slug && (
                   <Button asChild size="icon" variant="ghost" className="h-8 w-8">
-                    <Link to="/use-cases/$slug" params={{ slug: i.use_cases.slug }} title="Open">
+                    <Link
+                      to="/use-cases/$slug"
+                      params={{ slug: i.use_cases.slug }}
+                      title="Open"
+                      aria-label="Open use case"
+                    >
                       <ExternalLink className="h-4 w-4" />
                     </Link>
                   </Button>
@@ -386,6 +393,7 @@ function CollectionDialog({
                   variant="ghost"
                   className="h-8 w-8 text-destructive"
                   onClick={() => removeItem(i.id)}
+                  aria-label="Remove from collection"
                 >
                   <X className="h-4 w-4" />
                 </Button>

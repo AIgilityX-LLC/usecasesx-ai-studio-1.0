@@ -59,10 +59,13 @@ const tooltipStyle = {
 function ChartFrame({
   title,
   hint,
+  data,
   children,
 }: {
   title: string;
   hint?: string;
+  /** Text equivalent of the chart, exposed to assistive tech and hidden visually. */
+  data: { name: string; value: number }[];
   children: React.ReactNode;
 }) {
   return (
@@ -71,7 +74,35 @@ function ChartFrame({
         {title}
       </div>
       {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
-      <div className="mt-3 h-56 w-full">{children}</div>
+      <table className="sr-only">
+        <caption>
+          {title}
+          {hint ? ` — ${hint}` : ""}
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Category</th>
+            <th scope="col">Use cases</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan={2}>No data</td>
+            </tr>
+          ) : (
+            data.map((row) => (
+              <tr key={row.name}>
+                <th scope="row">{row.name}</th>
+                <td>{row.value}</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+      <div className="mt-3 h-56 w-full" aria-hidden>
+        {children}
+      </div>
     </div>
   );
 }
@@ -128,7 +159,11 @@ export function PortfolioCharts({ entries }: { entries: PortfolioEntry[] }) {
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <ChartFrame title="Decision mix" hint="Portfolio decisions across the filtered entries.">
+      <ChartFrame
+        title="Decision mix"
+        hint="Portfolio decisions across the filtered entries."
+        data={decisionData}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={decisionData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
@@ -151,7 +186,11 @@ export function PortfolioCharts({ entries }: { entries: PortfolioEntry[] }) {
         </ResponsiveContainer>
       </ChartFrame>
 
-      <ChartFrame title="Funding state" hint="Where the money conversation currently stands.">
+      <ChartFrame
+        title="Funding state"
+        hint="Where the money conversation currently stands."
+        data={fundingData}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -172,7 +211,11 @@ export function PortfolioCharts({ entries }: { entries: PortfolioEntry[] }) {
         </ResponsiveContainer>
       </ChartFrame>
 
-      <ChartFrame title="Target periods" hint="Delivery pressure by target period.">
+      <ChartFrame
+        title="Target periods"
+        hint="Delivery pressure by target period."
+        data={periodData}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={periodData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
@@ -191,7 +234,11 @@ export function PortfolioCharts({ entries }: { entries: PortfolioEntry[] }) {
         </ResponsiveContainer>
       </ChartFrame>
 
-      <ChartFrame title="Value potential" hint="Source use-case value bands. Read-only.">
+      <ChartFrame
+        title="Value potential"
+        hint="Source use-case value bands. Read-only."
+        data={valueData}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={valueData}

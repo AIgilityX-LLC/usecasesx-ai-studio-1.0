@@ -131,7 +131,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
 
   if (!isAuthed) {
     return (
-      <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
+      <div className="flex min-h-dvh w-full flex-col bg-background text-foreground">
         <SkipToContent />
         {headerInner}
         <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
@@ -144,7 +144,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-background text-foreground">
+      <div className="flex min-h-dvh w-full bg-background text-foreground">
         <SkipToContent />
         <div className="dark">
           <AppSidebar />

@@ -396,7 +396,7 @@ function SubmitPage() {
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
   return (
-    <p id={id} className="text-xs font-medium text-destructive">
+    <p id={id} role="alert" className="text-xs font-medium text-destructive">
       {message}
     </p>
   );

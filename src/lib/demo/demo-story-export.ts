@@ -205,7 +205,7 @@ export function buildDemoStoryDocs(
 }
 
 export function exportDemoStoryPDF(scenario: DemoScenario, lineage: LineageEntry[] = []) {
-  exportPackagePDF(
+  void exportPackagePDF(
     {
       title: `${scenario.label} — guided demonstration story`,
       subtitle: `${DEMO_DISCLAIMER} Template ${scenario.key} · version ${DEMO_TEMPLATE_VERSION}.`,

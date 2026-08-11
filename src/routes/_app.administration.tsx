@@ -415,18 +415,31 @@ function UseCasesTab() {
                 </td>
                 <td className="px-3 py-2">
                   <div className="flex justify-end gap-1">
-                    <Button asChild variant="ghost" size="icon" title="View">
+                    <Button
+                      asChild
+                      variant="ghost"
+                      size="icon"
+                      title="View"
+                      aria-label="View use case"
+                    >
                       <Link to="/use-cases/$slug" params={{ slug: u.slug }}>
                         <Eye className="w-4 h-4" />
                       </Link>
                     </Button>
-                    <Button variant="ghost" size="icon" title="Edit" onClick={() => setEditing(u)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      title="Edit"
+                      aria-label="Edit use case"
+                      onClick={() => setEditing(u)}
+                    >
                       <Pencil className="w-4 h-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
                       title="Duplicate"
+                      aria-label="Duplicate use case"
                       onClick={() => {
                         store.duplicate(u.id);
                         trackCTAEvent("admin_duplicated", { id: u.id });
@@ -1422,7 +1435,13 @@ function SectorWorkflowEditor() {
                   Archive
                 </Button>
               )}
-              <Button size="icon" variant="ghost" onClick={() => remove(r.id)} title="Delete">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => remove(r.id)}
+                title="Delete"
+                aria-label="Delete"
+              >
                 <XCircle className="w-4 h-4 text-destructive" />
               </Button>
             </li>
@@ -1550,7 +1569,13 @@ function TaxonomyEditor({ table, title }: { table: string; title: string }) {
                 />
                 {r.is_published ? "Pub" : "Draft"}
               </label>
-              <Button size="icon" variant="ghost" onClick={() => void remove(r)} title="Delete">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => void remove(r)}
+                title="Delete"
+                aria-label="Delete"
+              >
                 <XCircle className="w-4 h-4 text-destructive" />
               </Button>
             </li>

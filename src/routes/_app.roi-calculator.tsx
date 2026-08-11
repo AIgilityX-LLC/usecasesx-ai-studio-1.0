@@ -194,8 +194,14 @@ function RoiCalculatorPage() {
       />
 
       <div className="mx-auto max-w-[1100px] px-6 py-10">
-        <div className="inline-flex rounded-lg border border-border bg-card p-1">
+        <div
+          role="group"
+          aria-label="Calculator mode"
+          className="inline-flex rounded-lg border border-border bg-card p-1"
+        >
           <button
+            type="button"
+            aria-pressed={mode === "financial"}
             onClick={() => switchMode("financial")}
             className={
               "rounded-md px-4 py-2 text-sm font-bold " +
@@ -207,6 +213,8 @@ function RoiCalculatorPage() {
             Financial ROI
           </button>
           <button
+            type="button"
+            aria-pressed={mode === "mission"}
             onClick={() => switchMode("mission")}
             className={
               "rounded-md px-4 py-2 text-sm font-bold " +

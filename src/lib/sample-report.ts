@@ -49,5 +49,5 @@ const SAMPLE: ExportDoc = {
 };
 
 export function downloadSampleReport() {
-  exportDeliverablePDF(SAMPLE, "UseCasesX-Sample-Board-Ready-Report");
+  void exportDeliverablePDF(SAMPLE, "UseCasesX-Sample-Board-Ready-Report");
 }

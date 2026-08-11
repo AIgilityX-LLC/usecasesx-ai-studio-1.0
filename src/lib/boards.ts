@@ -184,13 +184,17 @@ export async function addSavedUseCaseToBoard(input: {
   return { id: data.id };
 }
 
+/** Hard cap so board lists stay bounded as workspaces grow. */
+export const BOARD_LIST_CAP = 200;
+
 export async function listBoards(): Promise<BoardRow[]> {
   const { data, error } = await supabase
     .from("use_case_boards")
     .select(
       "id, title, description, board_type, status, workspace_id, created_at, updated_at, ai_use_cases(count)",
     )
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(BOARD_LIST_CAP);
   if (error) throw new Error(error.message);
   return (data ?? []).map((b: any) => ({
     ...b,

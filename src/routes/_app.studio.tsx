@@ -127,7 +127,7 @@ function StudioPage() {
   if (!authChecked) {
     if (isStudioChild) return <Outlet />;
     return (
-      <div className="min-h-screen flex items-center justify-center text-muted-foreground">
+      <div className="min-h-dvh flex items-center justify-center text-muted-foreground">
         <Loader2 className="h-5 w-5 animate-spin mr-2" /> Loading studio…
       </div>
     );
@@ -136,7 +136,7 @@ function StudioPage() {
   if (isStudioChild) return <Outlet />;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-dvh bg-background text-foreground">
       <section className="border-b border-border">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-3 py-1 text-xs uppercase tracking-widest text-muted-foreground">
@@ -175,7 +175,7 @@ function StudioPage() {
           <CardContent className="space-y-5">
             <div>
               <Label className="mb-2 block">Research engine</Label>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 {STUDIO_PROVIDERS.map((p) => {
                   const meta = PROVIDER_META[p];
                   const active = provider === p;

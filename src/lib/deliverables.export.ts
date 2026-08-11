@@ -1,17 +1,13 @@
-import jsPDF from "jspdf";
-import {
-  Document,
-  Packer,
-  Paragraph,
-  HeadingLevel,
-  TextRun,
-  Table,
-  TableRow,
-  TableCell,
-  WidthType,
-} from "docx";
-import saveAs from "file-saver";
+import type { Paragraph as ParagraphType, Table as TableType } from "docx";
 
+/**
+ * jsPDF, docx and file-saver are heavy (~500 kB combined) and only needed the
+ * moment a user actually exports, so they are loaded on demand instead of
+ * shipping in the route chunk.
+ */
+const loadJsPdf = async () => (await import("jspdf")).default;
+const loadDocx = () => import("docx");
+const loadSaveAs = async () => (await import("file-saver")).default;
 export type ExportSection =
   | { heading: string; kind: "text"; body: string }
   | { heading: string; kind: "table"; columns: string[]; rows: string[][] };
@@ -22,7 +18,8 @@ export interface ExportDoc {
   sections: ExportSection[];
 }
 
-export function exportDeliverablePDF(doc: ExportDoc, fileName: string) {
+export async function exportDeliverablePDF(doc: ExportDoc, fileName: string) {
+  const jsPDF = await loadJsPdf();
   const pdf = new jsPDF({ unit: "pt", format: "a4" });
   const margin = 48;
   const pageW = pdf.internal.pageSize.getWidth();
@@ -92,7 +89,18 @@ export function exportDeliverablePDF(doc: ExportDoc, fileName: string) {
 }
 
 export async function exportDeliverableWord(doc: ExportDoc, fileName: string) {
-  const children: (Paragraph | Table)[] = [
+  const {
+    Document,
+    Packer,
+    Paragraph,
+    HeadingLevel,
+    TextRun,
+    Table,
+    TableRow,
+    TableCell,
+    WidthType,
+  } = await loadDocx();
+  const children: (ParagraphType | TableType)[] = [
     new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun(doc.title)] }),
   ];
   if (doc.subtitle) {
@@ -140,6 +148,7 @@ export async function exportDeliverableWord(doc: ExportDoc, fileName: string) {
 
   const document = new Document({ sections: [{ children }] });
   const blob = await Packer.toBlob(document);
+  const saveAs = await loadSaveAs();
   saveAs(blob, fileName);
 }
 
@@ -156,7 +165,8 @@ export interface ExportPackage {
  * One consistent report package: cover page, contents list, then every
  * selected deliverable as a numbered chapter in a single PDF.
  */
-export function exportPackagePDF(pkg: ExportPackage, fileName: string) {
+export async function exportPackagePDF(pkg: ExportPackage, fileName: string) {
+  const jsPDF = await loadJsPdf();
   const pdf = new jsPDF({ unit: "pt", format: "a4" });
   const margin = 48;
   const pageW = pdf.internal.pageSize.getWidth();
@@ -262,7 +272,18 @@ export function exportPackagePDF(pkg: ExportPackage, fileName: string) {
 
 /** The same package as a single Word document. */
 export async function exportPackageWord(pkg: ExportPackage, fileName: string) {
-  const children: (Paragraph | Table)[] = [
+  const {
+    Document,
+    Packer,
+    Paragraph,
+    HeadingLevel,
+    TextRun,
+    Table,
+    TableRow,
+    TableCell,
+    WidthType,
+  } = await loadDocx();
+  const children: (ParagraphType | TableType)[] = [
     new Paragraph({ heading: HeadingLevel.TITLE, children: [new TextRun(pkg.title)] }),
   ];
   if (pkg.subtitle) {
@@ -327,5 +348,6 @@ export async function exportPackageWord(pkg: ExportPackage, fileName: string) {
 
   const document = new Document({ sections: [{ children }] });
   const blob = await Packer.toBlob(document);
+  const saveAs = await loadSaveAs();
   saveAs(blob, fileName);
 }

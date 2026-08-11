@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { FileDown, FileText, BarChart3, Loader2 } from "lucide-react";
-import jsPDF from "jspdf";
 import { privateHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_app/studio/portfolio")({
@@ -277,11 +276,12 @@ function PortfolioRoadmapPage() {
     URL.revokeObjectURL(url);
   };
 
-  const exportPortfolioPDF = () => {
+  const exportPortfolioPDF = async () => {
     if (!filtered.length) {
       toast.info("Nothing to export.");
       return;
     }
+    const { default: jsPDF } = await import("jspdf");
     const pdf = new jsPDF({ unit: "pt", format: "a4" });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
@@ -613,35 +613,75 @@ function FilterSelect({
 }
 
 function Matrix({ data }: { data: { uc: UseCase; x: number; y: number }[] }) {
+  const quadrantOf = (x: number, y: number) =>
+    y >= 50
+      ? x >= 50
+        ? "Quick Wins"
+        : "Strategic Bets"
+      : x >= 50
+        ? "Experiments"
+        : "Avoid / Hold";
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-2xl rounded-md border bg-muted/20">
-      <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
-        <Quadrant label="Strategic Bets" tone="amber" align="tl" />
-        <Quadrant label="Quick Wins" tone="emerald" align="tr" />
-        <Quadrant label="Avoid / Hold" tone="rose" align="bl" />
-        <Quadrant label="Experiments" tone="sky" align="br" />
+    <>
+      <table className="sr-only">
+        <caption>
+          Prioritization matrix — feasibility on the horizontal axis, value and viability on the
+          vertical axis, each scored 0 to 100.
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Use case</th>
+            <th scope="col">Feasibility</th>
+            <th scope="col">Value / viability</th>
+            <th scope="col">Quadrant</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan={4}>No scored use cases</td>
+            </tr>
+          ) : (
+            data.map(({ uc, x, y }) => (
+              <tr key={uc.id}>
+                <th scope="row">{uc.title}</th>
+                <td>{x.toFixed(0)}</td>
+                <td>{y.toFixed(0)}</td>
+                <td>{quadrantOf(x, y)}</td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+      <div className="relative mx-auto aspect-square w-full max-w-2xl rounded-md border bg-muted/20">
+        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
+          <Quadrant label="Strategic Bets" tone="amber" align="tl" />
+          <Quadrant label="Quick Wins" tone="emerald" align="tr" />
+          <Quadrant label="Avoid / Hold" tone="rose" align="bl" />
+          <Quadrant label="Experiments" tone="sky" align="br" />
+        </div>
+        <div className="absolute left-1/2 top-0 h-full w-px bg-border" />
+        <div className="absolute left-0 top-1/2 h-px w-full bg-border" />
+        {data.map(({ uc, x, y }) => (
+          <Link
+            key={uc.id}
+            to="/studio/use-case/$id/feasibility"
+            params={{ id: uc.id }}
+            className="group absolute -ml-1.5 -mt-1.5"
+            style={{ left: `${x}%`, top: `${100 - y}%` }}
+            title={`${uc.title} (F:${x.toFixed(0)} V:${y.toFixed(0)})`}
+          >
+            <span className="block h-3 w-3 rounded-full bg-primary ring-2 ring-background transition group-hover:scale-150" />
+          </Link>
+        ))}
+        <div className="pointer-events-none absolute bottom-1 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-wider text-muted-foreground">
+          Feasibility →
+        </div>
+        <div className="pointer-events-none absolute left-1 top-1/2 -translate-y-1/2 -rotate-90 text-[10px] uppercase tracking-wider text-muted-foreground">
+          Value / Viability →
+        </div>
       </div>
-      <div className="absolute left-1/2 top-0 h-full w-px bg-border" />
-      <div className="absolute left-0 top-1/2 h-px w-full bg-border" />
-      {data.map(({ uc, x, y }) => (
-        <Link
-          key={uc.id}
-          to="/studio/use-case/$id/feasibility"
-          params={{ id: uc.id }}
-          className="group absolute -ml-1.5 -mt-1.5"
-          style={{ left: `${x}%`, top: `${100 - y}%` }}
-          title={`${uc.title} (F:${x.toFixed(0)} V:${y.toFixed(0)})`}
-        >
-          <span className="block h-3 w-3 rounded-full bg-primary ring-2 ring-background transition group-hover:scale-150" />
-        </Link>
-      ))}
-      <div className="pointer-events-none absolute bottom-1 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-wider text-muted-foreground">
-        Feasibility →
-      </div>
-      <div className="pointer-events-none absolute left-1 top-1/2 -translate-y-1/2 -rotate-90 text-[10px] uppercase tracking-wider text-muted-foreground">
-        Value / Viability →
-      </div>
-    </div>
+    </>
   );
 }
 

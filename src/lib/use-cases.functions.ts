@@ -108,10 +108,16 @@ export const listUseCases = createServerFn({ method: "GET" })
       .map((facet) => [facet, data[facet] ?? []] as [TaxonomyFacet, string[]])
       .filter(([, slugs]) => slugs.length > 0);
 
+    // Facet id-sets are independent reads: fetch them concurrently, then
+    // intersect. Serial awaits here cost one round trip per active facet.
+    const facetIdSets = await Promise.all(
+      facetSelections.map(([facet, slugs]) => idsForFacet(sb, facet, slugs)),
+    );
+
     let idFilter: string[] | null = null;
-    for (const [facet, slugs] of facetSelections) {
-      const ids = await idsForFacet(sb, facet, slugs);
-      idFilter = idFilter === null ? ids : idFilter.filter((id) => ids.includes(id));
+    for (const ids of facetIdSets) {
+      const allowed = new Set(ids);
+      idFilter = idFilter === null ? ids : idFilter.filter((id) => allowed.has(id));
       if (idFilter.length === 0) break;
     }
 
