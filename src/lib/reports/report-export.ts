@@ -33,10 +33,11 @@ async function authorize(
   role: string | null | undefined,
   format: ExportFormat,
   workspaceId?: string | null,
+  subject?: string | null,
 ): Promise<void> {
   assertCanExportReport(role, format);
   const verdict = await authorizeReportExportFn({
-    data: { format, workspaceId: workspaceId ?? null },
+    data: { format, workspaceId: workspaceId ?? null, subject: subject ?? null },
   });
   if (!verdict.allowed) throw new ReportExportDeniedError(format, role, verdict.reason);
 }
@@ -59,7 +60,7 @@ export async function downloadUseCaseCsv(
   role: string | null | undefined,
   workspaceId?: string | null,
 ): Promise<string> {
-  await authorize(role, "csv", workspaceId);
+  await authorize(role, "csv", workspaceId, kind);
   const filename = `${reportFileName(kind)}.csv`;
   downloadText(filename, "text/csv", buildUseCasesCsv(items));
   return filename;
@@ -71,7 +72,7 @@ export async function downloadBenefitsCsv(
   role: string | null | undefined,
   workspaceId?: string | null,
 ): Promise<string> {
-  await authorize(role, "csv_benefits", workspaceId);
+  await authorize(role, "csv_benefits", workspaceId, `${kind}-benefits`);
   const filename = `${reportFileName(`${kind}-benefits`)}.csv`;
   downloadText(filename, "text/csv", benefitsToCsv(items));
   return filename;
@@ -81,7 +82,8 @@ export async function downloadBenefitsCsv(
 export async function printReport(
   role: string | null | undefined,
   workspaceId?: string | null,
+  kind?: string | null,
 ): Promise<void> {
-  await authorize(role, "pdf", workspaceId);
+  await authorize(role, "pdf", workspaceId, kind ?? "report");
   window.print();
 }
