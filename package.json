@@ -18,6 +18,7 @@
     "test:mobile": "playwright test tests/mobile-responsive.spec.ts",
     "test:drafts": "playwright test tests/draft-recovery.spec.ts",
     "test:rls": "bun run tests/rls-isolation.e2e.ts",
+    "test:submissions": "bun run tests/submission-publish.e2e.ts",
     "test:rls:taxonomy": "bun run tests/org-taxonomy-rls.e2e.ts",
     "test:tenancy": "bun run tests/tenancy-isolation.e2e.ts",
     "seed:refresh": "bun run scripts/seed/refresh-baseline.mjs",
