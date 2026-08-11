@@ -1,12 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import {
-  SubmissionInput,
-  ReviewInput,
-  SubmissionIdInput,
-  slugifyTitle,
-  REVIEW_ROLES,
-} from "@/lib/submissions";
+import { SubmissionInput, ReviewInput, SubmissionIdInput, REVIEW_ROLES } from "@/lib/submissions";
+import { logDbFailure, logStep } from "@/lib/submissions.logging";
 
 /** Submissions owned by the signed-in contributor, newest first. */
 export const listMySubmissions = createServerFn({ method: "GET" })
@@ -69,7 +64,12 @@ export const saveSubmission = createServerFn({ method: "POST" })
       })
       .select("id")
       .single();
-    if (error) throw new Error(error.message);
+    if (error)
+      throw logDbFailure("saveSubmission.insert", error, {
+        userId: context.userId,
+        status: data.status,
+      });
+    logStep("saveSubmission.ok", { id: row.id, status: data.status, userId: context.userId });
     return { id: row.id, status: data.status };
   });
 
@@ -84,7 +84,9 @@ export const submitDraft = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .eq("user_id", context.userId)
       .eq("status", "draft");
-    if (error) throw new Error(error.message);
+    if (error)
+      throw logDbFailure("submitDraft.update", error, { id: data.id, userId: context.userId });
+    logStep("submitDraft.ok", { id: data.id, userId: context.userId });
     return { ok: true };
   });
 
@@ -125,7 +127,11 @@ export const reviewSubmission = createServerFn({ method: "POST" })
       .select("*")
       .eq("id", data.id)
       .maybeSingle();
-    if (readErr) throw new Error(readErr.message);
+    if (readErr)
+      throw logDbFailure("reviewSubmission.read", readErr, {
+        submissionId: data.id,
+        reviewer: userId,
+      });
     if (!submission) throw new Error("Submission not found");
 
     const { error } = await supabase
@@ -137,65 +143,36 @@ export const reviewSubmission = createServerFn({ method: "POST" })
         reviewed_at: new Date().toISOString(),
       })
       .eq("id", data.id);
-    if (error) throw new Error(error.message);
+    if (error)
+      throw logDbFailure("reviewSubmission.update", error, {
+        submissionId: data.id,
+        reviewer: userId,
+        status: data.status,
+      });
 
-    if (data.status !== "approved" || !data.publish) return { published: null };
-
-    // Publishing into the global catalogue is a privileged write: the reviewer's
-    // own RLS context cannot insert global rows, so use the service client
-    // AFTER the reviewer role check above.
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    // Publish: derive a unique slug, then link the declared industry when it
-    // matches a canonical taxonomy term.
-    const base = slugifyTitle(submission.title);
-    let slug = base;
-    for (let attempt = 2; attempt <= 20; attempt += 1) {
-      const { data: clash } = await supabaseAdmin
-        .from("use_cases")
-        .select("id")
-        .eq("slug", slug)
-        .maybeSingle();
-      if (!clash) break;
-      slug = `${base}-${attempt}`;
+    if (data.status !== "approved" || !data.publish) {
+      logStep("review.decision-only", {
+        submissionId: data.id,
+        status: data.status,
+        reviewer: userId,
+      });
+      return { published: null };
     }
 
-    const { data: published, error: pubErr } = await supabaseAdmin
-      .from("use_cases")
-      .insert({
-        slug,
-        title: submission.title,
-        summary: submission.summary ?? submission.title,
-        business_problem: submission.business_problem,
-        ai_solution_concept: submission.ai_solution,
-        problem: submission.business_problem,
-        solution: submission.ai_solution,
-        evidence_urls: submission.sources ?? [],
-        submitted_by: submission.user_id,
-        status: "published",
-        content_status: "published",
-        visibility: "both",
-        provenance: "community_contribution",
-        provenance_note: `Community submission reviewed by ${userId}`,
-        quality_status: "quality_passed",
-        quality_checked_at: new Date().toISOString(),
-        published_at: new Date().toISOString(),
-      })
-      .select("id, slug")
-      .single();
-    if (pubErr) throw new Error(pubErr.message);
+    // Publishing is a privileged, audited write into the global repository.
+    // `publish_use_case_submission` is SECURITY DEFINER and re-checks the
+    // reviewer role in the database, so RLS on `use_cases` stays intact and
+    // contributors can never publish their own drafts.
+    const { data: published, error: pubErr } = await supabase.rpc("publish_use_case_submission", {
+      _submission_id: data.id,
+      _review_notes: data.reviewNotes ?? null,
+    });
+    if (pubErr)
+      throw logDbFailure("publish_use_case_submission", pubErr, {
+        submissionId: data.id,
+        reviewer: userId,
+      });
 
-    if (submission.industry) {
-      const { data: industry } = await supabaseAdmin
-        .from("industries")
-        .select("id")
-        .or(`slug.eq.${slugifyTitle(submission.industry)},name.eq.${submission.industry}`)
-        .maybeSingle();
-      if (industry)
-        await supabaseAdmin
-          .from("use_case_industries")
-          .insert({ use_case_id: published.id, industry_id: industry.id });
-    }
-
-    return { published };
+    logStep("publish.ok", { submissionId: data.id, published });
+    return { published: published as { id: string; slug: string } | null };
   });

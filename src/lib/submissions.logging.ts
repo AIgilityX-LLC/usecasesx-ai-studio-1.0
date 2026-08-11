@@ -6,7 +6,10 @@ type Fields = Record<string, unknown>;
 
 const redact = (fields: Fields): Fields =>
   Object.fromEntries(
-    Object.entries(fields).map(([k, v]) => [k, typeof v === "string" && v.length > 200 ? `${v.slice(0, 200)}…` : v]),
+    Object.entries(fields).map(([k, v]) => [
+      k,
+      typeof v === "string" && v.length > 200 ? `${v.slice(0, 200)}…` : v,
+    ]),
   );
 
 export function logStep(step: string, fields: Fields = {}) {
@@ -22,7 +25,8 @@ export function logDbFailure(
   error: { message: string; code?: string; details?: string | null; hint?: string | null },
   fields: Fields = {},
 ) {
-  const isRls = /row-level security|violates row-level/i.test(error.message) || error.code === "42501";
+  const isRls =
+    /row-level security|violates row-level/i.test(error.message) || error.code === "42501";
   console.error(
     `[submissions] ${step} FAILED${isRls ? " (RLS denied)" : ""}`,
     JSON.stringify(
