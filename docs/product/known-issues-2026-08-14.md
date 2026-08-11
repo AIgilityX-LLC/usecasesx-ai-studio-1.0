@@ -1,7 +1,8 @@
 # Known issues — 14 August 2026 release
 
 Only issues that are actually observed or verified are listed. Nothing here is speculative and
-nothing observed has been omitted.
+nothing observed has been omitted. Scoped to candidate **v1.0.0-rc.1** (release marker
+`release/2026-08-14`).
 
 | #   | Issue                                                                                                                                            | Impact | Class                                  | Mitigation / status                                                                                                                         |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
