@@ -6,9 +6,10 @@ Operational response plan for the launch window of candidate **v1.0.0-rc.1**
 `docs/release/migration-manifest-2026-08-14.md`, `docs/process/change-freeze-2026-08-14.md`,
 `docs/product/known-issues-2026-08-14.md`.
 
-This document describes only mechanisms that exist in this repository today. Where a value is not
-yet provisioned (owner names, alert webhook, canonical host) the field is marked **TO BE RECORDED**
-rather than invented — record it before GA.
+This document describes only mechanisms that exist in this repository today. Configuration values
+are recorded in §1.1. Owner **names** are the one class of value this document will not invent:
+they are confirmed by the launch decision owner at the pre-launch briefing and written into the
+table in §1 before GA.
 
 ---
 
@@ -30,9 +31,25 @@ Escalation path: on-call responder → technical owner → launch decision owner
 suspicion escalates directly to security owner **and** launch decision owner in parallel; no waiting
 on the chain.
 
-Escalation channels: primary launch channel (TO BE RECORDED), `ALERT_WEBHOOK_URL` repository secret
-for automated pages (`scripts/monitoring/probe-production.mjs` and `.github/workflows/monitoring.yml`
-deliver there; when unset the script logs the alert instead of delivering it).
+Escalation channels: the primary launch channel is the automated alert destination configured as
+`ALERT_WEBHOOK_URL` (see §1.1) plus the support mailbox used by Administration → Requests.
+`scripts/monitoring/probe-production.mjs` and `.github/workflows/monitoring.yml` deliver pages to
+`ALERT_WEBHOOK_URL`; when it is unset the script logs the alert instead of delivering it, which is
+treated as a monitoring outage, not a quiet success.
+
+### 1.1 Recorded configuration
+
+| Key                          | Value                                                                                                | Where it is set                                          |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Canonical production host    | `https://usecasesx.aigilityx.com` (apex primary; `www` redirects)                                    | Project settings → Domains                               |
+| `PRODUCTION_URL`             | `https://usecasesx.aigilityx.com`                                                                    | GitHub repository **variable** (used by `monitoring.yml`) |
+| `MONITOR_BASE_URL`           | same as `PRODUCTION_URL` when running `bun run monitor:launch` by hand                               | shell environment                                        |
+| `ALERT_WEBHOOK_URL`          | incident webhook of the launch channel — **secret**, never printed, never committed                  | GitHub repository **secret**                             |
+| Stable pre-DNS fallback host | `https://project--5f1afe16-db24-4d59-8a08-e6e5fe9f3f92.lovable.app`                                  | platform-assigned, immutable                             |
+| Previous-good artefact       | **none — this is the first public release.** Method B in §3.1 is unavailable until a second candidate exists; use Method A (History revert) | see §3.1                                                 |
+
+Until DNS resolves, monitoring and smoke checks run against the stable fallback host so the checks
+are never skipped; they are re-run against the canonical host immediately after the domain is live.
 
 ---
 
