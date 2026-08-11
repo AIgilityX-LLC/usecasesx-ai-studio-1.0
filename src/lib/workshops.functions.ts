@@ -21,6 +21,34 @@ import {
 
 const idSchema = z.object({ id: z.string().uuid() });
 
+/* ------------------------------------ Sovereign Public Value Canvas™ */
+
+export const getPublicValueCanvasFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ workshopId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { getPublicValueCanvas } = await import("@/lib/workshops.public-value.server");
+    // RLS: workshop members read, facilitators write.
+    return getPublicValueCanvas(context.supabase, data.workshopId);
+  });
+
+export const savePublicValueCanvasFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(async (d) => {
+    const { publicValueCanvasInputSchema } = await import("@/lib/workshops.public-value");
+    return publicValueCanvasInputSchema.parse(d);
+  })
+  .handler(async ({ data, context }) => {
+    const { savePublicValueCanvas } = await import("@/lib/workshops.public-value.server");
+    const { assertFacilitator } = await import("@/lib/workshops.server");
+    await assertFacilitator(context.supabase, data.workshopId, context.userId);
+    return savePublicValueCanvas(context.supabase, {
+      workshopId: data.workshopId,
+      sections: data.sections,
+      userId: context.userId,
+    });
+  });
+
 export const listWorkshopsFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
