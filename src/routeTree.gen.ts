@@ -50,6 +50,7 @@ import { Route as AppMyUseCasesRouteImport } from './routes/_app.my-use-cases'
 import { Route as AppOnboardingRouteImport } from './routes/_app.onboarding'
 import { Route as AppOpportunityMapRouteImport } from './routes/_app.opportunity-map'
 import { Route as AppPatternsRouteImport } from './routes/_app.patterns'
+import { Route as AppPilotRouteImport } from './routes/_app.pilot'
 import { Route as AppPortfolioxRouteImport } from './routes/_app.portfoliox'
 import { Route as AppPricingRouteImport } from './routes/_app.pricing'
 import { Route as AppProRouteImport } from './routes/_app.pro'
@@ -315,6 +316,11 @@ const AppOpportunityMapRoute = AppOpportunityMapRouteImport.update({
 const AppPatternsRoute = AppPatternsRouteImport.update({
   id: '/patterns',
   path: '/patterns',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPilotRoute = AppPilotRouteImport.update({
+  id: '/pilot',
+  path: '/pilot',
   getParentRoute: () => AppRoute,
 } as any)
 const AppPortfolioxRoute = AppPortfolioxRouteImport.update({
@@ -688,6 +694,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AppOnboardingRoute
   '/opportunity-map': typeof AppOpportunityMapRoute
   '/patterns': typeof AppPatternsRoute
+  '/pilot': typeof AppPilotRoute
   '/portfoliox': typeof AppPortfolioxRoute
   '/pricing': typeof AppPricingRoute
   '/pro': typeof AppProRoute
@@ -790,6 +797,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AppOnboardingRoute
   '/opportunity-map': typeof AppOpportunityMapRoute
   '/patterns': typeof AppPatternsRoute
+  '/pilot': typeof AppPilotRoute
   '/portfoliox': typeof AppPortfolioxRoute
   '/pricing': typeof AppPricingRoute
   '/pro': typeof AppProRoute
@@ -896,6 +904,7 @@ export interface FileRoutesById {
   '/_app/onboarding': typeof AppOnboardingRoute
   '/_app/opportunity-map': typeof AppOpportunityMapRoute
   '/_app/patterns': typeof AppPatternsRoute
+  '/_app/pilot': typeof AppPilotRoute
   '/_app/portfoliox': typeof AppPortfolioxRoute
   '/_app/pricing': typeof AppPricingRoute
   '/_app/pro': typeof AppProRoute
@@ -1002,6 +1011,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/opportunity-map'
     | '/patterns'
+    | '/pilot'
     | '/portfoliox'
     | '/pricing'
     | '/pro'
@@ -1104,6 +1114,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/opportunity-map'
     | '/patterns'
+    | '/pilot'
     | '/portfoliox'
     | '/pricing'
     | '/pro'
@@ -1209,6 +1220,7 @@ export interface FileRouteTypes {
     | '/_app/onboarding'
     | '/_app/opportunity-map'
     | '/_app/patterns'
+    | '/_app/pilot'
     | '/_app/portfoliox'
     | '/_app/pricing'
     | '/_app/pro'
@@ -1578,6 +1590,13 @@ declare module '@tanstack/react-router' {
       path: '/patterns'
       fullPath: '/patterns'
       preLoaderRoute: typeof AppPatternsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/pilot': {
+      id: '/_app/pilot'
+      path: '/pilot'
+      fullPath: '/pilot'
+      preLoaderRoute: typeof AppPilotRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/portfoliox': {
@@ -2140,6 +2159,7 @@ interface AppRouteChildren {
   AppOnboardingRoute: typeof AppOnboardingRoute
   AppOpportunityMapRoute: typeof AppOpportunityMapRoute
   AppPatternsRoute: typeof AppPatternsRoute
+  AppPilotRoute: typeof AppPilotRoute
   AppPortfolioxRoute: typeof AppPortfolioxRoute
   AppPricingRoute: typeof AppPricingRoute
   AppProRoute: typeof AppProRoute
@@ -2206,6 +2226,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppOnboardingRoute: AppOnboardingRoute,
   AppOpportunityMapRoute: AppOpportunityMapRoute,
   AppPatternsRoute: AppPatternsRoute,
+  AppPilotRoute: AppPilotRoute,
   AppPortfolioxRoute: AppPortfolioxRoute,
   AppPricingRoute: AppPricingRoute,
   AppProRoute: AppProRoute,
