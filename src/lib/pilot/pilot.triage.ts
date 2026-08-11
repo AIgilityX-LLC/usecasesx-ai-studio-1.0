@@ -77,6 +77,98 @@ export const AI_MIN_CALLS = 5;
 export const SEARCH_GAP_MIN = 3;
 /** Minimum answered checkpoints before the evidence base counts as usable. */
 export const MIN_CHECKPOINTS_FOR_VERDICT = 10;
+/** How long a cohort may sit without producing evidence before we alert. */
+export const EVIDENCE_GAP_WINDOW_DAYS = 7;
+
+export type EvidenceGapState = "none" | "no_invitations" | "no_registrations" | "no_answers";
+
+export type EvidenceGapAlert = {
+  /** "none" means the cohort is producing evidence — no alert should render. */
+  state: EvidenceGapState;
+  /** True once the fixed window has elapsed with the gap still open. */
+  triggered: boolean;
+  windowDays: number;
+  /** Whole days the gap has been open, measured from the cohort start. */
+  daysOpen: number;
+  title: string;
+  detail: string;
+  action: string;
+};
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Evidence-gap watchdog. Alerts when the cohort has been open for longer than
+ * the window without producing the evidence the verdict depends on: no seats
+ * issued, nobody registered, or nobody answering a checkpoint.
+ *
+ * `cohortStartedAt` is the first invitation timestamp; with no invitations at
+ * all the clock runs from `cohortOpenedAt` (settings/last change).
+ */
+export function evaluateEvidenceGap(
+  evidence: PilotEvidence,
+  options: {
+    cohortStartedAt: string | null;
+    cohortOpenedAt?: string | null;
+    now?: Date;
+    windowDays?: number;
+  },
+): EvidenceGapAlert {
+  const windowDays = Math.max(1, options.windowDays ?? EVIDENCE_GAP_WINDOW_DAYS);
+  const now = options.now ?? new Date();
+  const anchor = options.cohortStartedAt ?? options.cohortOpenedAt ?? null;
+  const daysOpen = anchor
+    ? Math.max(0, Math.floor((now.getTime() - new Date(anchor).getTime()) / DAY_MS))
+    : 0;
+  const { invited, registered, checkpointResponses } = evidence.cohort;
+
+  const state: EvidenceGapState =
+    invited === 0
+      ? "no_invitations"
+      : registered === 0
+        ? "no_registrations"
+        : checkpointResponses === 0
+          ? "no_answers"
+          : "none";
+
+  const copy: Record<Exclude<EvidenceGapState, "none">, { title: string; detail: string; action: string }> = {
+    no_invitations: {
+      title: "Pilot evidence gap — no seats issued",
+      detail: `The cohort has been open ${daysOpen} day(s) with 0 invitations, so no verdict can be produced.`,
+      action: "Enrol 15–25 participants, then re-read this panel.",
+    },
+    no_registrations: {
+      title: "Pilot evidence gap — invitations unclaimed",
+      detail: `${invited} seat(s) issued and 0 registrations after ${daysOpen} day(s).`,
+      action: "Re-send the invitations or replace unresponsive seats.",
+    },
+    no_answers: {
+      title: "Pilot evidence gap — no checkpoint answers",
+      detail: `${registered} participant(s) registered but 0 checkpoint answers after ${daysOpen} day(s).`,
+      action: "Send pending-step reminders and shorten the mission ask.",
+    },
+  };
+
+  if (state === "none") {
+    return {
+      state,
+      triggered: false,
+      windowDays,
+      daysOpen,
+      title: "Pilot evidence is accumulating",
+      detail: `${checkpointResponses} checkpoint answer(s) recorded.`,
+      action: "No action required.",
+    };
+  }
+
+  return {
+    state,
+    triggered: daysOpen >= windowDays,
+    windowDays,
+    daysOpen,
+    ...copy[state],
+  };
+}
 
 const ratio = (errors: number, calls: number) => (calls === 0 ? 0 : errors / calls);
 
