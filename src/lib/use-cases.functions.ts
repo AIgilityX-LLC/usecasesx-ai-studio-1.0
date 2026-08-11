@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
+import { RANK_POOL_SIZE, rankByRelevance, searchTerms } from "@/lib/use-cases.search";
 
 function publicClient() {
   return createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
@@ -31,7 +32,10 @@ const ListInput = z.object({
   provenance: z.array(z.string()).optional().default([]),
   /** Quality gate status. Published content is always `quality_passed`. */
   qualityStatus: z.array(z.string()).optional().default([]),
-  sort: z.enum(["recent", "impact", "maturity", "featured"]).optional().default("recent"),
+  sort: z
+    .enum(["relevance", "recent", "impact", "maturity", "featured"])
+    .optional()
+    .default("recent"),
   featuredOnly: z.boolean().optional().default(false),
   landingOnly: z.boolean().optional().default(false),
   /** Page size. `limit` is kept as the legacy alias used by existing callers. */
@@ -40,6 +44,7 @@ const ListInput = z.object({
 });
 
 const SELECT = `id, slug, title, summary, organization, organization_type, region,
+  business_problem, ai_solution_concept,
   maturity, maturity_level, maturity_score, impact_score,
   value_potential, complexity, risk_level, time_to_value, visibility,
   deployment_model, security_classification, cost_range,
