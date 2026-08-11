@@ -278,8 +278,10 @@ function AccountProfilePage() {
                   </button>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground">JPG, PNG, WEBP or GIF. Max 2 MB.</p>
-              {avatarErr ? <p className="text-xs text-destructive">{avatarErr}</p> : null}
+              <UploadConstraints bucket={AVATAR_BUCKET} />
+              {avatarErr ? (
+                <UploadError bucket={AVATAR_BUCKET} message={avatarErr} className="max-w-sm" />
+              ) : null}
             </div>
             <input
               ref={fileRef}
