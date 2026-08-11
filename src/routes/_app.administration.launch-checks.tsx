@@ -3,16 +3,17 @@
  * session. Results are evidence, so each row shows what was observed, and the
  * whole run downloads as CSV or Markdown for the release record.
  */
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { CheckCircle2, Download, FileText, PlayCircle, XCircle } from "lucide-react";
+import { CheckCircle2, Download, FileText, PlayCircle, Save, XCircle } from "lucide-react";
 
 import { privateHead } from "@/lib/seo";
 import { RequireRoles } from "@/components/RequireRoles";
 import { PLATFORM_ADMIN_ROLES } from "@/lib/admin/platform-admin";
-import { runLaunchChecksFn } from "@/lib/qa/qa.functions";
+import { runAndRecordLaunchChecksFn, runLaunchChecksFn } from "@/lib/qa/qa.functions";
+import { PILOT_COHORT } from "@/lib/pilot/pilot.model";
 import {
   LAUNCH_CHECKS,
   buildHarnessMarkdown,
@@ -55,6 +56,7 @@ function download(filename: string, mime: string, text: string) {
 
 function LaunchChecks() {
   const run = useServerFn(runLaunchChecksFn);
+  const runAndRecord = useServerFn(runAndRecordLaunchChecksFn);
   const mutation = useMutation({
     mutationFn: () => run(),
     onSuccess: (result) =>
@@ -70,7 +72,30 @@ function LaunchChecks() {
       }),
   });
 
-  const run_ = mutation.data;
+  /** One-click audited run: same probes, written to the launch-check ledger. */
+  const recordMutation = useMutation({
+    mutationFn: () =>
+      runAndRecord({
+        data: {
+          cohort: PILOT_COHORT,
+          trigger: "manual" as const,
+          triggerDetail: "Run and recorded from the launch checks page",
+        },
+      }),
+    onSuccess: (result) =>
+      toast[result.run.summary.verdict === "pass" ? "success" : "error"](
+        `Run recorded: ${result.run.summary.verdict.toUpperCase()}`,
+        {
+          description: `${result.run.summary.passed}/${result.run.summary.total} passed · ${result.run.summary.p0Failures} P0 failure(s) · saved for audit`,
+        },
+      ),
+    onError: (error: unknown) =>
+      toast.error("Run was not recorded", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      }),
+  });
+
+  const run_ = mutation.data ?? recordMutation.data?.run;
   const stamp = new Date().toISOString().slice(0, 10);
 
   return (
@@ -88,6 +113,14 @@ function LaunchChecks() {
         <Button disabled={mutation.isPending} onClick={() => mutation.mutate()}>
           <PlayCircle className="mr-2 h-4 w-4" aria-hidden />
           {mutation.isPending ? "Running…" : "Run launch checks"}
+        </Button>
+        <Button
+          variant="secondary"
+          disabled={recordMutation.isPending}
+          onClick={() => recordMutation.mutate()}
+        >
+          <Save className="mr-2 h-4 w-4" aria-hidden />
+          {recordMutation.isPending ? "Recording…" : "Run and record for audit"}
         </Button>
         <Button
           variant="outline"
@@ -109,9 +142,12 @@ function LaunchChecks() {
         >
           <FileText className="mr-2 h-4 w-4" aria-hidden /> Evidence report
         </Button>
+        <Button variant="ghost" asChild>
+          <Link to="/administration/release-candidate">Release candidate status</Link>
+        </Button>
       </div>
 
-      {!run_ && !mutation.isPending && (
+      {!run_ && !mutation.isPending && !recordMutation.isPending && (
         <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
           No run yet. The checks are read-only apart from one deliberate insert that row-level
           security must refuse.

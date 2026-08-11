@@ -85,6 +85,7 @@ import { Route as AppAdministrationFeedbackRouteImport } from './routes/_app.adm
 import { Route as AppAdministrationLaunchChecksRouteImport } from './routes/_app.administration.launch-checks'
 import { Route as AppAdministrationLaunchLearningRouteImport } from './routes/_app.administration.launch-learning'
 import { Route as AppAdministrationPilotRouteImport } from './routes/_app.administration.pilot'
+import { Route as AppAdministrationReleaseCandidateRouteImport } from './routes/_app.administration.release-candidate'
 import { Route as AppAdministrationRequestsRouteImport } from './routes/_app.administration.requests'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
@@ -509,6 +510,12 @@ const AppAdministrationPilotRoute = AppAdministrationPilotRouteImport.update({
   path: '/pilot',
   getParentRoute: () => AppAdministrationRoute,
 } as any)
+const AppAdministrationReleaseCandidateRoute =
+  AppAdministrationReleaseCandidateRouteImport.update({
+    id: '/release-candidate',
+    path: '/release-candidate',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
 const AppAdministrationRequestsRoute =
   AppAdministrationRequestsRouteImport.update({
     id: '/requests',
@@ -802,6 +809,7 @@ export interface FileRoutesByFullPath {
   '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/administration/pilot': typeof AppAdministrationPilotRoute
+  '/administration/release-candidate': typeof AppAdministrationReleaseCandidateRoute
   '/administration/requests': typeof AppAdministrationRequestsRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
@@ -917,6 +925,7 @@ export interface FileRoutesByTo {
   '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/administration/pilot': typeof AppAdministrationPilotRoute
+  '/administration/release-candidate': typeof AppAdministrationReleaseCandidateRoute
   '/administration/requests': typeof AppAdministrationRequestsRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
@@ -1036,6 +1045,7 @@ export interface FileRoutesById {
   '/_app/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/_app/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/_app/administration/pilot': typeof AppAdministrationPilotRoute
+  '/_app/administration/release-candidate': typeof AppAdministrationReleaseCandidateRoute
   '/_app/administration/requests': typeof AppAdministrationRequestsRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/boards/collections': typeof AppBoardsCollectionsRoute
@@ -1155,6 +1165,7 @@ export interface FileRouteTypes {
     | '/administration/launch-checks'
     | '/administration/launch-learning'
     | '/administration/pilot'
+    | '/administration/release-candidate'
     | '/administration/requests'
     | '/boards/$boardId'
     | '/boards/collections'
@@ -1270,6 +1281,7 @@ export interface FileRouteTypes {
     | '/administration/launch-checks'
     | '/administration/launch-learning'
     | '/administration/pilot'
+    | '/administration/release-candidate'
     | '/administration/requests'
     | '/boards/$boardId'
     | '/boards/collections'
@@ -1388,6 +1400,7 @@ export interface FileRouteTypes {
     | '/_app/administration/launch-checks'
     | '/_app/administration/launch-learning'
     | '/_app/administration/pilot'
+    | '/_app/administration/release-candidate'
     | '/_app/administration/requests'
     | '/_app/boards/$boardId'
     | '/_app/boards/collections'
@@ -1984,6 +1997,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdministrationPilotRouteImport
       parentRoute: typeof AppAdministrationRoute
     }
+    '/_app/administration/release-candidate': {
+      id: '/_app/administration/release-candidate'
+      path: '/release-candidate'
+      fullPath: '/administration/release-candidate'
+      preLoaderRoute: typeof AppAdministrationReleaseCandidateRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/administration/requests': {
       id: '/_app/administration/requests'
       path: '/requests'
@@ -2293,6 +2313,7 @@ interface AppAdministrationRouteChildren {
   AppAdministrationLaunchChecksRoute: typeof AppAdministrationLaunchChecksRoute
   AppAdministrationLaunchLearningRoute: typeof AppAdministrationLaunchLearningRoute
   AppAdministrationPilotRoute: typeof AppAdministrationPilotRoute
+  AppAdministrationReleaseCandidateRoute: typeof AppAdministrationReleaseCandidateRoute
   AppAdministrationRequestsRoute: typeof AppAdministrationRequestsRoute
 }
 
@@ -2302,6 +2323,8 @@ const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationLaunchChecksRoute: AppAdministrationLaunchChecksRoute,
   AppAdministrationLaunchLearningRoute: AppAdministrationLaunchLearningRoute,
   AppAdministrationPilotRoute: AppAdministrationPilotRoute,
+  AppAdministrationReleaseCandidateRoute:
+    AppAdministrationReleaseCandidateRoute,
   AppAdministrationRequestsRoute: AppAdministrationRequestsRoute,
 }
 
