@@ -84,3 +84,40 @@ export const listLaunchCheckRunsFn = createServerFn({ method: "GET" })
     const { listLaunchCheckRuns } = await import("@/lib/qa/launch-runs.server");
     return listLaunchCheckRuns(context.supabase, data.cohort, data.limit);
   });
+
+/**
+ * Read model for the release-candidate status page: latest recorded launch
+ * check run, the cohort roll-up and whether an evidence waiver is in force.
+ * Admin-only, and nothing is invented when a read is not permitted.
+ */
+export const getLaunchReadinessFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("is_admin_tier", {
+      _user_id: context.userId,
+    });
+    if (!isAdmin) throw new Error("Platform administrator access is required.");
+
+    const { getPilotSettings, buildCohortView } = await import("@/lib/pilot/pilot.server");
+    const { summarizeCohort } = await import("@/lib/pilot/pilot.model");
+    const { listLaunchCheckRuns } = await import("@/lib/qa/launch-runs.server");
+    const { listWaivers } = await import("@/lib/pilot/pilot.governance.server");
+    const { activeWaiver } = await import("@/lib/pilot/pilot.governance");
+
+    const settings = await getPilotSettings(context.supabase);
+    const [cohortView, runs, waivers] = await Promise.all([
+      buildCohortView(context.supabase, settings.cohort),
+      listLaunchCheckRuns(context.supabase, settings.cohort, 10),
+      listWaivers(context.supabase, settings.cohort),
+    ]);
+    const waiver = activeWaiver(waivers);
+    return {
+      cohort: settings.cohort,
+      summary: summarizeCohort(cohortView.rows, settings.seatTarget),
+      runs,
+      waiverActive: Boolean(waiver),
+      waiverNote: waiver
+        ? `${waiver.reason} (approved by ${waiver.approverName}, ${waiver.approverRole})`
+        : null,
+    };
+  });
