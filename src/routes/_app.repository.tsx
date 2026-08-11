@@ -16,7 +16,7 @@ import { CardSkeleton } from "@/components/LoadingSkeleton";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { PresetBar } from "@/components/usecasex/PresetBar";
 import { CompareTray } from "@/components/usecasex/CompareTray";
-import { track } from "@/lib/usecasex.tracking";
+import { track, trackSearch } from "@/lib/usecasex.tracking";
 import { trackModuleEvent } from "@/lib/module-analytics";
 import { AddToStudioBoardDialog } from "@/components/AddToStudioBoardDialog";
 import { SampleDataDisclaimer } from "@/components/usecasex/SampleDataDisclaimer";
@@ -345,6 +345,14 @@ function Page() {
   const reachedPageCap = page >= MAX_PAGES && (data?.hasMore ?? false);
   const canLoadMore = !derivedActive && (data?.hasMore ?? false) && page < MAX_PAGES;
 
+  // Search terms are recorded once results for the term are known, so the
+  // launch-learning view can surface top and zero-result queries.
+  useEffect(() => {
+    const term = search.q?.trim();
+    if (!term || isLoading) return;
+    trackSearch(term, total, "/repository");
+  }, [search.q, total, isLoading]);
+
   const loadMore = () => {
     update({ page: page + 1 });
     track("results_load_more", { page: page + 1, total });
@@ -492,7 +500,6 @@ function Page() {
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
     update({ q: q || undefined, page: undefined });
-    if (q) track("search_used", { q });
     if (q) void trackModuleEvent("repository", "click", { interaction: "search" });
   };
 
