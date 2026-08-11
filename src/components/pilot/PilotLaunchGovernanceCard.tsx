@@ -23,11 +23,17 @@ import { DISPATCH_STATUS_LABEL, activeWaiver, isWaiverActive } from "@/lib/pilot
 import {
   buildPilotTimeline,
   buildTimelineMarkdown,
+  buildTimelinePdfRows,
+  buildTimelineSummaryLines,
   countTimeline,
   pilotTimelineToCsv,
+  TIMELINE_PDF_COLUMNS,
   TIMELINE_CATEGORIES,
   TIMELINE_CATEGORY_LABEL,
 } from "@/lib/pilot/pilot.timeline";
+import { listLaunchCheckRunsFn, runAndRecordLaunchChecksFn } from "@/lib/qa/qa.functions";
+import { describeRun, RUN_TRIGGER_LABEL, runVerdict } from "@/lib/qa/launch-runs";
+import type { RunTrigger } from "@/lib/qa/launch-runs";
 import type {
   PilotAuditEvent,
   PilotCheckpointResponse,
@@ -82,6 +88,8 @@ export function PilotLaunchGovernanceCard({
   const revoke = useServerFn(revokeLaunchWaiverFn);
   const recordVerdict = useServerFn(recordPilotVerdictFn);
   const runGapEmails = useServerFn(runEvidenceGapEmailsFn);
+  const runChecks = useServerFn(runAndRecordLaunchChecksFn);
+  const loadCheckRuns = useServerFn(listLaunchCheckRunsFn);
   const queryClient = useQueryClient();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -90,6 +98,7 @@ export function PilotLaunchGovernanceCard({
   const [approverRole, setApproverRole] = useState("");
   const [expiresAt, setExpiresAt] = useState("");
   const [revokeReason, setRevokeReason] = useState("");
+  const [pdfBusy, setPdfBusy] = useState(false);
 
   const governance = useQuery({
     queryKey: ["pilot-governance"],
@@ -97,10 +106,40 @@ export function PilotLaunchGovernanceCard({
     retry: false,
   });
 
+  const checkRuns = useQuery({
+    queryKey: ["pilot-launch-check-runs", cohort],
+    queryFn: () => loadCheckRuns({ data: { cohort, limit: 25 } }),
+    retry: false,
+  });
+
   const refresh = () => {
     void queryClient.invalidateQueries({ queryKey: ["pilot-governance"] });
     void queryClient.invalidateQueries({ queryKey: ["pilot-triage"] });
     void queryClient.invalidateQueries({ queryKey: ["pilot-cohort"] });
+    void queryClient.invalidateQueries({ queryKey: ["pilot-launch-check-runs"] });
+  };
+
+  /**
+   * Re-runs the signed-in P0/P1 launch checks and records the pass, so the
+   * evidence timeline shows the checks that were green at the moment a waiver
+   * was approved or revoked.
+   */
+  const rerunChecks = async (trigger: RunTrigger, triggerDetail: string) => {
+    try {
+      const { run } = await runChecks({ data: { cohort, trigger, triggerDetail } });
+      const verdict = run.summary.verdict;
+      const description = `${run.summary.passed}/${run.summary.total} passed · P0 failures ${run.summary.p0Failures}`;
+      if (verdict === "pass") toast.success("Launch checks re-run — pass", { description });
+      else if (verdict === "attention")
+        toast.warning("Launch checks re-run — needs attention", { description });
+      else toast.error("Launch checks re-run — P0 failure", { description });
+    } catch (error) {
+      toast.error("Launch checks could not be re-run", {
+        description: error instanceof Error ? error.message : "Run them from Launch checks.",
+      });
+    } finally {
+      void queryClient.invalidateQueries({ queryKey: ["pilot-launch-check-runs"] });
+    }
   };
 
   const waivers = governance.data?.waivers ?? [];
@@ -119,8 +158,19 @@ export function PilotLaunchGovernanceCard({
         dispatches,
         snapshots,
         waivers,
+        launchCheckRuns: checkRuns.data ?? [],
       }),
-    [cohort, rows, checkpoints, audit, emailByUserId, dispatches, snapshots, waivers],
+    [
+      cohort,
+      rows,
+      checkpoints,
+      audit,
+      emailByUserId,
+      dispatches,
+      snapshots,
+      waivers,
+      checkRuns.data,
+    ],
   );
   const counts = useMemo(() => countTimeline(timeline), [timeline]);
   const stamp = new Date().toISOString().slice(0, 10);
@@ -140,6 +190,7 @@ export function PilotLaunchGovernanceCard({
         description: "The verdict now shows as a conditional go under an explicit override.",
       });
       setDialogOpen(false);
+      void rerunChecks("waiver_granted", `Waiver approved by ${approverName.trim() || "an admin"}`);
       setReason("");
       setExpiresAt("");
       refresh();
@@ -154,6 +205,7 @@ export function PilotLaunchGovernanceCard({
     mutationFn: (id: string) => revoke({ data: { id, reason: revokeReason.trim() || null } }),
     onSuccess: () => {
       toast.success("Launch waiver revoked");
+      void rerunChecks("waiver_revoked", revokeReason.trim() || "Waiver revoked");
       setRevokeReason("");
       refresh();
     },
@@ -167,6 +219,7 @@ export function PilotLaunchGovernanceCard({
     mutationFn: () => recordVerdict(),
     onSuccess: (snapshot) => {
       toast.success("Verdict recorded", { description: snapshot.headline });
+      void rerunChecks("verdict_recorded", snapshot.headline);
       refresh();
     },
     onError: (error: unknown) =>
