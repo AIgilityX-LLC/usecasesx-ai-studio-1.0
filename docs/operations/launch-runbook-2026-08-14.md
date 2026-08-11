@@ -46,6 +46,7 @@ treated as a monitoring outage, not a quiet success.
 | `MONITOR_BASE_URL`           | same as `PRODUCTION_URL` when running `bun run monitor:launch` by hand                               | shell environment                                        |
 | `ALERT_WEBHOOK_URL`          | incident webhook of the launch channel — **secret**, never printed, never committed                  | GitHub repository **secret**                             |
 | Stable pre-DNS fallback host | `https://project--5f1afe16-db24-4d59-8a08-e6e5fe9f3f92.lovable.app`                                  | platform-assigned, immutable                             |
+| Email sender identity        | `info@aigilityx.com` (sender domain `aigilityx.com`)                                                 | Cloud → Emails (domain provisioning + DNS)               |
 | Previous-good artefact       | **none — this is the first public release.** Method B in §3.1 is unavailable until a second candidate exists; use Method A (History revert) | see §3.1                                                 |
 
 Until DNS resolves, monitoring and smoke checks run against the stable fallback host so the checks
