@@ -85,6 +85,7 @@ import { Route as AppAdministrationFeedbackRouteImport } from './routes/_app.adm
 import { Route as AppAdministrationLaunchChecksRouteImport } from './routes/_app.administration.launch-checks'
 import { Route as AppAdministrationLaunchLearningRouteImport } from './routes/_app.administration.launch-learning'
 import { Route as AppAdministrationPilotRouteImport } from './routes/_app.administration.pilot'
+import { Route as AppAdministrationProductionReadinessRouteImport } from './routes/_app.administration.production-readiness'
 import { Route as AppAdministrationReleaseCandidateRouteImport } from './routes/_app.administration.release-candidate'
 import { Route as AppAdministrationRequestsRouteImport } from './routes/_app.administration.requests'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
@@ -510,6 +511,12 @@ const AppAdministrationPilotRoute = AppAdministrationPilotRouteImport.update({
   path: '/pilot',
   getParentRoute: () => AppAdministrationRoute,
 } as any)
+const AppAdministrationProductionReadinessRoute =
+  AppAdministrationProductionReadinessRouteImport.update({
+    id: '/production-readiness',
+    path: '/production-readiness',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
 const AppAdministrationReleaseCandidateRoute =
   AppAdministrationReleaseCandidateRouteImport.update({
     id: '/release-candidate',
@@ -809,6 +816,7 @@ export interface FileRoutesByFullPath {
   '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/administration/pilot': typeof AppAdministrationPilotRoute
+  '/administration/production-readiness': typeof AppAdministrationProductionReadinessRoute
   '/administration/release-candidate': typeof AppAdministrationReleaseCandidateRoute
   '/administration/requests': typeof AppAdministrationRequestsRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
@@ -925,6 +933,7 @@ export interface FileRoutesByTo {
   '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/administration/pilot': typeof AppAdministrationPilotRoute
+  '/administration/production-readiness': typeof AppAdministrationProductionReadinessRoute
   '/administration/release-candidate': typeof AppAdministrationReleaseCandidateRoute
   '/administration/requests': typeof AppAdministrationRequestsRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
@@ -1045,6 +1054,7 @@ export interface FileRoutesById {
   '/_app/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/_app/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/_app/administration/pilot': typeof AppAdministrationPilotRoute
+  '/_app/administration/production-readiness': typeof AppAdministrationProductionReadinessRoute
   '/_app/administration/release-candidate': typeof AppAdministrationReleaseCandidateRoute
   '/_app/administration/requests': typeof AppAdministrationRequestsRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
@@ -1165,6 +1175,7 @@ export interface FileRouteTypes {
     | '/administration/launch-checks'
     | '/administration/launch-learning'
     | '/administration/pilot'
+    | '/administration/production-readiness'
     | '/administration/release-candidate'
     | '/administration/requests'
     | '/boards/$boardId'
@@ -1281,6 +1292,7 @@ export interface FileRouteTypes {
     | '/administration/launch-checks'
     | '/administration/launch-learning'
     | '/administration/pilot'
+    | '/administration/production-readiness'
     | '/administration/release-candidate'
     | '/administration/requests'
     | '/boards/$boardId'
@@ -1400,6 +1412,7 @@ export interface FileRouteTypes {
     | '/_app/administration/launch-checks'
     | '/_app/administration/launch-learning'
     | '/_app/administration/pilot'
+    | '/_app/administration/production-readiness'
     | '/_app/administration/release-candidate'
     | '/_app/administration/requests'
     | '/_app/boards/$boardId'
@@ -1997,6 +2010,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdministrationPilotRouteImport
       parentRoute: typeof AppAdministrationRoute
     }
+    '/_app/administration/production-readiness': {
+      id: '/_app/administration/production-readiness'
+      path: '/production-readiness'
+      fullPath: '/administration/production-readiness'
+      preLoaderRoute: typeof AppAdministrationProductionReadinessRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/administration/release-candidate': {
       id: '/_app/administration/release-candidate'
       path: '/release-candidate'
@@ -2313,6 +2333,7 @@ interface AppAdministrationRouteChildren {
   AppAdministrationLaunchChecksRoute: typeof AppAdministrationLaunchChecksRoute
   AppAdministrationLaunchLearningRoute: typeof AppAdministrationLaunchLearningRoute
   AppAdministrationPilotRoute: typeof AppAdministrationPilotRoute
+  AppAdministrationProductionReadinessRoute: typeof AppAdministrationProductionReadinessRoute
   AppAdministrationReleaseCandidateRoute: typeof AppAdministrationReleaseCandidateRoute
   AppAdministrationRequestsRoute: typeof AppAdministrationRequestsRoute
 }
@@ -2323,6 +2344,8 @@ const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationLaunchChecksRoute: AppAdministrationLaunchChecksRoute,
   AppAdministrationLaunchLearningRoute: AppAdministrationLaunchLearningRoute,
   AppAdministrationPilotRoute: AppAdministrationPilotRoute,
+  AppAdministrationProductionReadinessRoute:
+    AppAdministrationProductionReadinessRoute,
   AppAdministrationReleaseCandidateRoute:
     AppAdministrationReleaseCandidateRoute,
   AppAdministrationRequestsRoute: AppAdministrationRequestsRoute,
@@ -2572,3 +2595,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
