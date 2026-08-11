@@ -225,7 +225,11 @@ export function aggregateAiUsage(
 
     const wsKey = row.workspaceId ?? "none";
     const wsBucket =
-      wsBucketLabel(byWorkspace, wsKey, options.workspaceNames?.[wsKey]) ?? emptyBucket(wsKey, wsKey);
+      byWorkspace.get(wsKey) ??
+      emptyBucket(
+        wsKey,
+        options.workspaceNames?.[wsKey] ?? (wsKey === "none" ? "No workspace" : "Workspace"),
+      );
     addRow(wsBucket, row);
     byWorkspace.set(wsKey, wsBucket);
 
@@ -280,16 +284,6 @@ export function aggregateAiUsage(
       .map(([kind, count]) => ({ kind, count }))
       .sort((a, b) => b.count - a.count),
   };
-}
-
-function wsBucketLabel(
-  map: Map<string, AiUsageBucket>,
-  key: string,
-  name?: string,
-): AiUsageBucket | null {
-  const existing = map.get(key);
-  if (existing) return existing;
-  return emptyBucket(key, name ?? (key === "none" ? "No workspace" : "Workspace"));
 }
 
 /* ------------------------------------------------------------ alerting */
