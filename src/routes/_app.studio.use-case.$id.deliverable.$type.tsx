@@ -458,6 +458,7 @@ function EditorBody({
               />
               <Button
                 size="icon"
+                aria-label="Remove capability gap"
                 variant="ghost"
                 onClick={() =>
                   setContent((c) => ({
@@ -558,6 +559,7 @@ function EditorBody({
               />
               <Button
                 size="icon"
+                aria-label="Remove risk"
                 variant="ghost"
                 onClick={() =>
                   setContent((c) => ({
@@ -637,6 +639,7 @@ function EditorBody({
                 </label>
                 <Button
                   size="icon"
+                  aria-label="Remove workflow step"
                   variant="ghost"
                   className="md:col-span-1"
                   onClick={() =>
@@ -746,6 +749,7 @@ function EditorBody({
               />
               <Button
                 size="icon"
+                aria-label="Remove phase"
                 variant="ghost"
                 onClick={() =>
                   setContent((c) => ({
