@@ -72,6 +72,25 @@ export const Route = createFileRoute("/api/public/usecasex/roadmap/export")({
           return new Response("Unauthorized", { status: 401, headers: CORS });
         }
 
+        // A valid bearer token is not authorization: re-derive the caller's
+        // workspace role and entitlement server-side before producing a file.
+        const { authorizeExport, portfolioWorkspaceId } = await import(
+          "@/lib/reports/report-access.server"
+        );
+        const workspaceId = await portfolioWorkspaceId(client as never, parsed.portfolioId);
+        if (!workspaceId) {
+          return new Response("Not found", { status: 404, headers: CORS });
+        }
+        const authorization = await authorizeExport(
+          client as never,
+          userData.user.id,
+          "csv",
+          workspaceId,
+        );
+        if (!authorization.allowed) {
+          return new Response(authorization.reason, { status: 403, headers: CORS });
+        }
+
         const format = parsed.format === "json" ? "json" : "csv";
         const columns = normalizeColumns(parsed.columns);
         const labels = new Map(ROADMAP_EXPORT_COLUMNS.map((c) => [c.key, c.label] as const));
