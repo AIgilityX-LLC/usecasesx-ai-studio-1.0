@@ -465,6 +465,65 @@ export function PilotLaunchGovernanceCard({
           >
             <FileText className="mr-2 h-4 w-4" aria-hidden /> Evidence timeline report
           </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={timeline.length === 0 || pdfBusy}
+            onClick={() => void exportTimelinePdf()}
+          >
+            <FileText className="mr-2 h-4 w-4" aria-hidden />
+            {pdfBusy ? "Building…" : "Evidence timeline PDF"}
+          </Button>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-medium">Signed-in launch checks</h3>
+          <p className="text-xs text-muted-foreground">
+            Re-run automatically whenever a waiver is approved or revoked, a verdict is recorded, or
+            a participant's pilot status changes. Every pass is part of the timeline above.
+          </p>
+          {checkRuns.isLoading ? (
+            <p className="mt-2 text-xs text-muted-foreground">Loading recorded runs…</p>
+          ) : checkRuns.isError ? (
+            <p className="mt-2 text-xs text-destructive">
+              {checkRuns.error instanceof Error
+                ? checkRuns.error.message
+                : "Recorded runs could not be loaded."}
+            </p>
+          ) : (checkRuns.data ?? []).length === 0 ? (
+            <p className="mt-2 text-xs text-muted-foreground">
+              No run recorded yet — approve a waiver or use the button below to record one.
+            </p>
+          ) : (
+            <ul className="mt-2 space-y-1.5">
+              {(checkRuns.data ?? []).slice(0, 5).map((run) => (
+                <li
+                  key={run.id}
+                  className="flex flex-wrap items-baseline gap-x-2 gap-y-1 rounded-md border px-3 py-2 text-xs"
+                >
+                  <Badge
+                    variant={runVerdict(run) === "pass" ? "secondary" : "destructive"}
+                    className="uppercase"
+                  >
+                    {runVerdict(run)}
+                  </Badge>
+                  <span className="font-medium">{RUN_TRIGGER_LABEL[run.trigger] ?? run.trigger}</span>
+                  <span className="min-w-0 flex-1 text-muted-foreground">{describeRun(run)}</span>
+                  <time dateTime={run.createdAt} className="tabular-nums text-muted-foreground">
+                    {new Date(run.createdAt).toLocaleString()}
+                  </time>
+                </li>
+              ))}
+            </ul>
+          )}
+          <Button
+            className="mt-2"
+            size="sm"
+            variant="outline"
+            onClick={() => void rerunChecks("manual", "Run from launch governance")}
+          >
+            <BadgeCheck className="mr-2 h-4 w-4" aria-hidden /> Re-run launch checks now
+          </Button>
         </div>
 
         <div>
