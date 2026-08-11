@@ -16,10 +16,29 @@ export type FairUseLimits = {
   perWorkspacePerDay: number;
 };
 
+/**
+ * Burst limits — a short rolling window that stops a scripted loop from
+ * spending a whole day's budget (and a whole day's provider cost) in seconds.
+ * Unlike the daily budget these count attempts, not successes: a failing call
+ * still costs an upstream request.
+ */
+export type BurstLimits = {
+  perUserPerMinute: number;
+  perWorkspacePerMinute: number;
+};
+
+export const BURST_WINDOW_MS = 60_000;
+
 const DEFAULT_LIMITS: Record<Edition, FairUseLimits> = {
   lite: { perUserPerDay: 5, perWorkspacePerDay: 20 },
   pro: { perUserPerDay: 60, perWorkspacePerDay: 300 },
   enterprise: { perUserPerDay: 500, perWorkspacePerDay: 5_000 },
+};
+
+const DEFAULT_BURST: Record<Edition, BurstLimits> = {
+  lite: { perUserPerMinute: 3, perWorkspacePerMinute: 6 },
+  pro: { perUserPerMinute: 8, perWorkspacePerMinute: 24 },
+  enterprise: { perUserPerMinute: 20, perWorkspacePerMinute: 90 },
 };
 
 /** Tasks that are cheap enough not to consume the interactive budget. */
@@ -57,6 +76,39 @@ export type FairUseVerdict = {
   limit: number;
   resetsAt: string;
 };
+
+/** Resolve the burst limits for an edition, with environment overrides. */
+export function burstLimitsForEdition(
+  edition: Edition,
+  env: Record<string, string | undefined> = {},
+): BurstLimits {
+  const base = DEFAULT_BURST[edition] ?? DEFAULT_BURST.lite;
+  return {
+    perUserPerMinute: positiveInt(env.AI_BURST_PER_USER_PER_MINUTE) ?? base.perUserPerMinute,
+    perWorkspacePerMinute:
+      positiveInt(env.AI_BURST_PER_WORKSPACE_PER_MINUTE) ?? base.perWorkspacePerMinute,
+  };
+}
+
+/** Decide whether one more request fits inside the short burst window. */
+export function evaluateBurst(
+  usedByUser: number,
+  usedByWorkspace: number,
+  limits: BurstLimits,
+  windowStart: Date,
+): FairUseVerdict {
+  const resetsAt = new Date(windowStart.getTime() + BURST_WINDOW_MS).toISOString();
+  const userExceeded = usedByUser >= limits.perUserPerMinute;
+  const workspaceExceeded = usedByWorkspace >= limits.perWorkspacePerMinute;
+  return {
+    allowed: !userExceeded && !workspaceExceeded,
+    used: workspaceExceeded && !userExceeded ? usedByWorkspace : usedByUser,
+    limit: workspaceExceeded && !userExceeded
+      ? limits.perWorkspacePerMinute
+      : limits.perUserPerMinute,
+    resetsAt,
+  };
+}
 
 /** Decide whether one more request fits inside the window. */
 export function evaluateFairUse(
