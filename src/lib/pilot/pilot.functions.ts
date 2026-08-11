@@ -227,6 +227,100 @@ export const setPilotInvitationStatusFn = createServerFn({ method: "POST" })
     return invitation;
   });
 
+/** Enrol a cohort in one action; each seat is audited exactly as a single invite. */
+export const invitePilotCohortFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => BulkInviteInput.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { getPilotSettings, createInvitation, listInvitations } =
+      await import("@/lib/pilot/pilot.server");
+    const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
+    const settings = await getPilotSettings(context.supabase);
+    if (settings.invitationsPaused) {
+      throw new Error(
+        settings.pauseReason
+          ? `New pilot invitations are paused: ${settings.pauseReason}`
+          : "New pilot invitations are paused.",
+      );
+    }
+    const existing = await listInvitations(context.supabase, settings.cohort);
+    const taken = new Set(
+      existing.filter((i) => i.status !== "revoked").map((i) => i.email.toLowerCase()),
+    );
+    const created: string[] = [];
+    const skipped: { email: string; reason: string }[] = [];
+
+    for (const raw of data.emails) {
+      const email = raw.toLowerCase();
+      if (taken.has(email)) {
+        skipped.push({ email, reason: "Already holds a seat in this cohort." });
+        continue;
+      }
+      if (taken.size >= settings.seatTarget) {
+        skipped.push({
+          email,
+          reason: `Cohort full (${taken.size}/${settings.seatTarget} seats).`,
+        });
+        continue;
+      }
+      try {
+        const invitation = await createInvitation(context.supabase, {
+          cohort: settings.cohort,
+          email,
+          fullName: null,
+          organization: data.organization ?? null,
+          notes: null,
+          actorId: context.userId,
+        });
+        taken.add(email);
+        created.push(email);
+        await writeAuditEvent(
+          { supabase: context.supabase, userId: context.userId },
+          {
+            event: "membership.invited",
+            entity: { type: "pilot_invitations", id: invitation.id },
+            next: { cohort: invitation.cohort, status: invitation.status },
+            severity: "notice",
+          },
+        );
+      } catch (error) {
+        skipped.push({
+          email,
+          reason: error instanceof Error ? error.message : "Invitation failed.",
+        });
+      }
+    }
+
+    return { created, skipped, seatsUsed: taken.size, seatTarget: settings.seatTarget };
+  });
+
+const _unusedStatusFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => StatusInput.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { setInvitationStatus } = await import("@/lib/pilot/pilot.server");
+    const invitation = await setInvitationStatus(context.supabase, {
+      id: data.id,
+      status: data.status,
+      notes: data.notes ?? undefined,
+      reason: data.reason ?? null,
+      actorId: context.userId,
+    });
+    const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
+    await writeAuditEvent(
+      { supabase: context.supabase, userId: context.userId },
+      {
+        event: "admin.action",
+        entity: { type: "pilot_invitations", id: invitation.id },
+        next: { status: invitation.status },
+        severity: "notice",
+      },
+    );
+    return invitation;
+  });
+
 /** P0 incident control: stops any new pilot invitation from being issued. */
 export const setPilotInvitationsPausedFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
