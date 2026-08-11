@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Loader2, Sparkles, Plus, X } from "lucide-react";
+import { AiSafetyNotice } from "@/components/ai/AiSafetyNotice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -663,6 +664,7 @@ export function OpportunityForm({
             <p className="text-sm text-muted-foreground">
               Suggestions appear here as prompts. Your words are never replaced.
             </p>
+            <AiSafetyNotice what="Each suggestion below" />
             <Button
               variant="secondary"
               className="w-full"

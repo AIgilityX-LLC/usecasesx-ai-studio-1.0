@@ -76,6 +76,7 @@ import { Route as AppTermsRouteImport } from './routes/_app.terms'
 import { Route as CTokenRouteImport } from './routes/c.$token'
 import { Route as PTokenRouteImport } from './routes/p.$token'
 import { Route as AppAccountIndexRouteImport } from './routes/_app.account.index'
+import { Route as AppAccountDataRouteImport } from './routes/_app.account.data'
 import { Route as AppAccountOrganizationRouteImport } from './routes/_app.account.organization'
 import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.security'
 import { Route as AppAccountTeamRouteImport } from './routes/_app.account.team'
@@ -457,6 +458,11 @@ const AppAccountIndexRoute = AppAccountIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppAccountRoute,
 } as any)
+const AppAccountDataRoute = AppAccountDataRouteImport.update({
+  id: '/data',
+  path: '/data',
+  getParentRoute: () => AppAccountRoute,
+} as any)
 const AppAccountOrganizationRoute = AppAccountOrganizationRouteImport.update({
   id: '/organization',
   path: '/organization',
@@ -773,6 +779,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof AppTermsRoute
   '/c/$token': typeof CTokenRoute
   '/p/$token': typeof PTokenRoute
+  '/account/data': typeof AppAccountDataRoute
   '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
   '/account/team': typeof AppAccountTeamRoute
@@ -885,6 +892,7 @@ export interface FileRoutesByTo {
   '/terms': typeof AppTermsRoute
   '/c/$token': typeof CTokenRoute
   '/p/$token': typeof PTokenRoute
+  '/account/data': typeof AppAccountDataRoute
   '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
   '/account/team': typeof AppAccountTeamRoute
@@ -1001,6 +1009,7 @@ export interface FileRoutesById {
   '/_app/terms': typeof AppTermsRoute
   '/c/$token': typeof CTokenRoute
   '/p/$token': typeof PTokenRoute
+  '/_app/account/data': typeof AppAccountDataRoute
   '/_app/account/organization': typeof AppAccountOrganizationRoute
   '/_app/account/security': typeof AppAccountSecurityRoute
   '/_app/account/team': typeof AppAccountTeamRoute
@@ -1117,6 +1126,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/c/$token'
     | '/p/$token'
+    | '/account/data'
     | '/account/organization'
     | '/account/security'
     | '/account/team'
@@ -1229,6 +1239,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/c/$token'
     | '/p/$token'
+    | '/account/data'
     | '/account/organization'
     | '/account/security'
     | '/account/team'
@@ -1344,6 +1355,7 @@ export interface FileRouteTypes {
     | '/_app/terms'
     | '/c/$token'
     | '/p/$token'
+    | '/_app/account/data'
     | '/_app/account/organization'
     | '/_app/account/security'
     | '/_app/account/team'
@@ -1882,6 +1894,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAccountIndexRouteImport
       parentRoute: typeof AppAccountRoute
     }
+    '/_app/account/data': {
+      id: '/_app/account/data'
+      path: '/data'
+      fullPath: '/account/data'
+      preLoaderRoute: typeof AppAccountDataRouteImport
+      parentRoute: typeof AppAccountRoute
+    }
     '/_app/account/organization': {
       id: '/_app/account/organization'
       path: '/organization'
@@ -2208,6 +2227,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppAccountRouteChildren {
+  AppAccountDataRoute: typeof AppAccountDataRoute
   AppAccountOrganizationRoute: typeof AppAccountOrganizationRoute
   AppAccountSecurityRoute: typeof AppAccountSecurityRoute
   AppAccountTeamRoute: typeof AppAccountTeamRoute
@@ -2215,6 +2235,7 @@ interface AppAccountRouteChildren {
 }
 
 const AppAccountRouteChildren: AppAccountRouteChildren = {
+  AppAccountDataRoute: AppAccountDataRoute,
   AppAccountOrganizationRoute: AppAccountOrganizationRoute,
   AppAccountSecurityRoute: AppAccountSecurityRoute,
   AppAccountTeamRoute: AppAccountTeamRoute,

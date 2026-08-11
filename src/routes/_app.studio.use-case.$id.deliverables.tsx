@@ -21,6 +21,7 @@ import {
 } from "@/lib/deliverables.compose";
 import { exportPackagePDF, exportPackageWord, type ExportPackage } from "@/lib/deliverables.export";
 import { FairUseMeter } from "@/components/ai/FairUseMeter";
+import { AiSafetyNotice } from "@/components/ai/AiSafetyNotice";
 import { DeliverableHistoryDialog } from "@/components/studio/DeliverableHistoryDialog";
 import { useFairUse } from "@/hooks/useFairUse";
 import {
@@ -585,6 +586,8 @@ function DeliverablesHub() {
           </Card>
 
           <FairUseMeter status={fairUse.status} loading={fairUse.loading} />
+
+          <AiSafetyNotice what="Every generated deliverable" />
         </aside>
       </div>
 
