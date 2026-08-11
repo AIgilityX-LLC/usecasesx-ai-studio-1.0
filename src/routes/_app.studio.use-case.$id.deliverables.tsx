@@ -274,7 +274,7 @@ function DeliverablesHub() {
     }
     const base = `${slugify(title ?? "use-case")}-deliverables`;
     const pkg = buildPackage(chosen);
-    if (kind === "pdf") exportPackagePDF(pkg, `${base}.pdf`);
+    if (kind === "pdf") await exportPackagePDF(pkg, `${base}.pdf`);
     else await exportPackageWord(pkg, `${base}.docx`);
   };
 
