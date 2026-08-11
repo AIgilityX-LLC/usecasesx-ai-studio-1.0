@@ -43,6 +43,8 @@ const searchSchema = z.object({
   businessFunctions: z.array(z.string()).optional(),
   objectives: z.array(z.string()).optional(),
   processes: z.array(z.string()).optional(),
+  countries: z.array(z.string()).optional(),
+  govFunctions: z.array(z.string()).optional(),
   page: z.number().int().optional(),
 
   maturity: z.array(z.string()).optional(),
@@ -79,6 +81,8 @@ const FACET_LABELS: Record<string, string> = {
   businessFunctions: "Business Function",
   objectives: "Objective",
   processes: "Business Process",
+  countries: "Country",
+  govFunctions: "Public-sector function",
   maturity: "Maturity",
   valuePotential: "Value",
   complexity: "Complexity",
@@ -132,6 +136,8 @@ function buildListInput(search: Search) {
     businessFunctions: search.businessFunctions ?? [],
     objectives: search.objectives ?? [],
     processes: search.processes ?? [],
+    countries: search.countries ?? [],
+    govFunctions: search.govFunctions ?? [],
     maturity: search.maturity ?? [],
     valuePotential: search.valuePotential ?? [],
     complexity: search.complexity ?? [],
@@ -377,6 +383,8 @@ function Page() {
     "businessFunctions",
     "objectives",
     "processes",
+    "countries",
+    "govFunctions",
 
     "priority",
     "maturity",
@@ -394,6 +402,8 @@ function Page() {
     businessFunctions: Object.fromEntries(tax.businessFunctions.map((i) => [i.slug, i.name])),
     objectives: Object.fromEntries(tax.objectives.map((i) => [i.slug, i.name])),
     processes: Object.fromEntries((facets.data?.processes ?? []).map((i) => [i.slug, i.name])),
+    countries: Object.fromEntries((tax.countries ?? []).map((i) => [i.slug, i.name])),
+    govFunctions: Object.fromEntries((tax.govFunctions ?? []).map((i) => [i.slug, i.name])),
 
     segments: Object.fromEntries(SEGMENTS.map((s) => [s.slug, s.short])),
     sectors: Object.fromEntries(SECTORS.map((s) => [s.slug, s.name])),
@@ -442,6 +452,8 @@ function Page() {
       businessFunctions: undefined,
       objectives: undefined,
       processes: undefined,
+      countries: undefined,
+      govFunctions: undefined,
       maturity: undefined,
       valuePotential: undefined,
       complexity: undefined,
@@ -543,6 +555,16 @@ function Page() {
               processes: (facets.data?.processes ?? []).map((p) => ({
                 slug: p.slug,
                 name: p.name,
+              })),
+              // Country + public-sector facets, restricted to terms that
+              // actually carry published content.
+              countries: (facets.data?.countries ?? []).map((c) => ({
+                slug: c.slug,
+                name: c.name,
+              })),
+              govFunctions: (facets.data?.govFunctions ?? []).map((g) => ({
+                slug: g.slug,
+                name: g.name,
               })),
             }}
             value={{ ...search, industries: effectiveIndustries } as Partial<FacetState>}
