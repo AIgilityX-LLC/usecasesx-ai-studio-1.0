@@ -295,19 +295,6 @@ export const invitePilotCohortFn = createServerFn({ method: "POST" })
     return { created, skipped, seatsUsed: taken.size, seatTarget: settings.seatTarget };
   });
 
-const _unusedStatusFn = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => StatusInput.parse(d))
-  .handler(async ({ data, context }) => {
-    await assertPlatformAdmin(context.supabase, context.userId);
-    const { setInvitationStatus } = await import("@/lib/pilot/pilot.server");
-    const invitation = await setInvitationStatus(context.supabase, {
-      id: data.id,
-      status: data.status,
-      notes: data.notes ?? undefined,
-      reason: data.reason ?? null,
-      actorId: context.userId,
-    });
     const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
     await writeAuditEvent(
       { supabase: context.supabase, userId: context.userId },
