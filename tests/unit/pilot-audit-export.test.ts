@@ -68,7 +68,9 @@ describe("pilot csv cells", () => {
 
 describe("pilot funnel export", () => {
   test("emits one header and one row per participant", () => {
-    const lines = pilotFunnelToCsv([row(), row({ id: "i2", email: "b@example.com" })]).split("\r\n");
+    const lines = pilotFunnelToCsv([row(), row({ id: "i2", email: "b@example.com" })]).split(
+      "\r\n",
+    );
     expect(lines).toHaveLength(3);
     expect(lines[0]).toContain("Mission percent");
     expect(lines[1]).toContain("lead@example.com");
