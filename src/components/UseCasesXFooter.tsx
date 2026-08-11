@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { TRANSPARENCY_LINKS } from "@/lib/legal/legal-content";
+import { RELEASE_TARGET_DATE, RELEASE_VERSION, releaseLabel } from "@/lib/release";
 import { openConsentPreferences } from "@/components/legal/ConsentBanner";
 
 export function UseCasesXFooter() {
