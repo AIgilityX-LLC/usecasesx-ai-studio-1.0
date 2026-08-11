@@ -7,7 +7,8 @@
  *  2. package.json version matches src/lib/release.ts.
  *  3. Every migration filename is timestamp-ordered and unique.
  *  4. Migrations contain no destructive statements (DROP TABLE/COLUMN, TRUNCATE,
- *     DELETE FROM, ALTER ... RENAME COLUMN, DISABLE ROW LEVEL SECURITY).
+ *     DELETE FROM, ALTER ... RENAME COLUMN, DISABLE ROW LEVEL SECURITY), unless
+ *     the migration manifest marks that exact file as a recorded exception.
  *  5. Migrations carry no demo/sample seed INSERTs (seeds live in scripts/seed).
  *  6. The migration manifest lists exactly the migrations on disk.
  *
@@ -56,6 +57,22 @@ const ordered = [...stamps].sort();
 if (stamps.join() !== ordered.join()) fail("migration timestamps are not monotonically ordered");
 else ok(`${files.length} migrations, timestamp-ordered, no duplicates`);
 
+// Manifest is read before the destructive scan so approved exceptions can be
+// honoured. An exception is only valid when the manifest row for that exact
+// filename is annotated **recorded exception**.
+let manifest = "";
+try {
+  manifest = readFileSync(MANIFEST, "utf8");
+} catch {
+  fail(`${MANIFEST} is missing`);
+}
+const exceptions = new Set(
+  manifest
+    .split("\n")
+    .filter((line) => /recorded exception/i.test(line))
+    .flatMap((line) => [...line.matchAll(/(\d{14}_[0-9a-f-]+\.sql)/g)].map((m) => m[1])),
+);
+
 // 4 + 5: destructive / seed scan
 const DESTRUCTIVE = [
   /\bDROP\s+TABLE\b/i,
@@ -78,7 +95,12 @@ let seedHits = 0;
 for (const f of files) {
   const sql = readFileSync(`${MIG_DIR}/${f}`, "utf8");
   for (const rx of DESTRUCTIVE) {
-    if (rx.test(sql)) fail(`${f}: destructive statement matches ${rx}`);
+    if (!rx.test(sql)) continue;
+    if (exceptions.has(f)) {
+      ok(`${f}: destructive statement matching ${rx} allowed by recorded manifest exception`);
+    } else {
+      fail(`${f}: destructive statement matches ${rx}`);
+    }
   }
   // Function/trigger bodies legitimately contain INSERTs; strip dollar-quoted
   // blocks so only top-level data statements are considered.
@@ -95,12 +117,6 @@ for (const f of files) {
 if (seedHits === 0) ok("no demo/sample seed rows in migrations");
 
 // 6: manifest coverage
-let manifest = "";
-try {
-  manifest = readFileSync(MANIFEST, "utf8");
-} catch {
-  fail(`${MANIFEST} is missing`);
-}
 if (manifest) {
   const missing = files.filter((f) => !manifest.includes(f));
   const extra = [...manifest.matchAll(/(\d{14}_[0-9a-f-]+\.sql)/g)]

@@ -6,9 +6,10 @@ Operational response plan for the launch window of candidate **v1.0.0-rc.1**
 `docs/release/migration-manifest-2026-08-14.md`, `docs/process/change-freeze-2026-08-14.md`,
 `docs/product/known-issues-2026-08-14.md`.
 
-This document describes only mechanisms that exist in this repository today. Where a value is not
-yet provisioned (owner names, alert webhook, canonical host) the field is marked **TO BE RECORDED**
-rather than invented — record it before GA.
+This document describes only mechanisms that exist in this repository today. Configuration values
+are recorded in §1.1. Owner **names** are the one class of value this document will not invent:
+they are confirmed by the launch decision owner at the pre-launch briefing and written into the
+table in §1 before GA.
 
 ---
 
@@ -30,9 +31,25 @@ Escalation path: on-call responder → technical owner → launch decision owner
 suspicion escalates directly to security owner **and** launch decision owner in parallel; no waiting
 on the chain.
 
-Escalation channels: primary launch channel (TO BE RECORDED), `ALERT_WEBHOOK_URL` repository secret
-for automated pages (`scripts/monitoring/probe-production.mjs` and `.github/workflows/monitoring.yml`
-deliver there; when unset the script logs the alert instead of delivering it).
+Escalation channels: the primary launch channel is the automated alert destination configured as
+`ALERT_WEBHOOK_URL` (see §1.1) plus the support mailbox used by Administration → Requests.
+`scripts/monitoring/probe-production.mjs` and `.github/workflows/monitoring.yml` deliver pages to
+`ALERT_WEBHOOK_URL`; when it is unset the script logs the alert instead of delivering it, which is
+treated as a monitoring outage, not a quiet success.
+
+### 1.1 Recorded configuration
+
+| Key                          | Value                                                                                                | Where it is set                                          |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Canonical production host    | `https://usecasesx.aigilityx.com` (apex primary; `www` redirects)                                    | Project settings → Domains                               |
+| `PRODUCTION_URL`             | `https://usecasesx.aigilityx.com`                                                                    | GitHub repository **variable** (used by `monitoring.yml`) |
+| `MONITOR_BASE_URL`           | same as `PRODUCTION_URL` when running `bun run monitor:launch` by hand                               | shell environment                                        |
+| `ALERT_WEBHOOK_URL`          | incident webhook of the launch channel — **secret**, never printed, never committed                  | GitHub repository **secret**                             |
+| Stable pre-DNS fallback host | `https://project--5f1afe16-db24-4d59-8a08-e6e5fe9f3f92.lovable.app`                                  | platform-assigned, immutable                             |
+| Previous-good artefact       | **none — this is the first public release.** Method B in §3.1 is unavailable until a second candidate exists; use Method A (History revert) | see §3.1                                                 |
+
+Until DNS resolves, monitoring and smoke checks run against the stable fallback host so the checks
+are never skipped; they are re-run against the canonical host immediately after the domain is live.
 
 ---
 
@@ -77,8 +94,10 @@ A failed smoke check is triaged with §4 severities before any further change la
 
 - **Method A (fastest):** Lovable chat revert / History → select the last known-good version, then
   Publish/Update. Use for a launch-surface regression.
-- **Method B:** redeploy the previous tag from source control. The previous artefact must be
-  identified **before** publish and recorded here: previous good tag **TO BE RECORDED**.
+- **Method B:** redeploy the previous tag from source control. **Not available for this launch:**
+  `v1.0.0-rc.1` is the first public artefact, so there is no earlier good tag. Method A is the
+  rollback path on 14 August; Method B becomes available from `v1.0.0-rc.2` onward, whose
+  previous-good tag is `v1.0.0-rc.1`.
 - Rollback authority: technical owner, on the launch decision owner's call.
 - After rollback: re-run §2 smoke checks 1–4 and record the outcome in the release notes.
 
@@ -86,7 +105,9 @@ A failed smoke check is triaged with §4 severities before any further change la
 
 Schema changes are never rolled back by reverting the application.
 
-- All 15 candidate migrations are **additive** (enforced by `bun run verify:release`), so the schema
+- All 16 candidate migrations are **additive** apart from the single analytics data correction
+  recorded as an exception in the migration manifest (enforced by `bun run verify:release`, which
+  now honours manifest-recorded exceptions and fails on anything else), so the schema
   may stay ahead of an older application version and the previous app runs unchanged against it.
 - **No `DROP TABLE`, `DROP COLUMN`, `TRUNCATE`, `DELETE FROM`, `RENAME COLUMN` or
   `DISABLE ROW LEVEL SECURITY` is authorised during the launch window.**
@@ -256,7 +277,10 @@ Checked on authoring, against the repository rather than assumption:
 | Admin monitoring surfaces                | `src/routes/_app.admin-observability.tsx`, `_app.administration.{analytics,requests,pilot,production-data,production-readiness,release-candidate,launch-checks,launch-learning}.tsx` |
 | Public API and preview endpoints         | `src/routes/api/public/usecasex/*`, `src/routes/og.use-case.$slug.ts`, `src/routes/sitemap[.]xml.ts`                                                                                 |
 
-Not verifiable from the repository and therefore left open: named owners, escalation channel,
-`ALERT_WEBHOOK_URL` / `PRODUCTION_URL` configuration, the canonical production host, the email
-sender domain, and the previous-good tag for rollback. All are marked **TO BE RECORDED** above and
-must be filled in before GA.
+Now recorded in §1.1: the canonical production host, `PRODUCTION_URL`, `MONITOR_BASE_URL`, the
+alert destination key `ALERT_WEBHOOK_URL` (value held only as a repository secret), the stable
+pre-DNS fallback host, and the rollback artefact position (no previous-good tag for a first
+release; Method A applies).
+
+Still open and not derivable from the repository: the **named** owners in §1 (confirmed at the
+pre-launch briefing) and the email sender domain. Both must be filled in before GA.
