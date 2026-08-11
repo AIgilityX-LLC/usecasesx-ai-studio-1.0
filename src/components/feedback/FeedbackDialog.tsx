@@ -15,6 +15,7 @@ import {
   type FeedbackSeverity,
 } from "@/lib/feedback/feedback.model";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -67,6 +68,14 @@ export function FeedbackDialog({
   const [contactEmail, setContactEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** Set once the submission is persisted — drives the in-dialog receipt. */
+  const [receipt, setReceipt] = useState<{
+    id: string;
+    createdAt: string;
+    status: string;
+    category: string;
+    severity: string;
+  } | null>(null);
 
   const tooShort = message.trim().length < FEEDBACK_MESSAGE_MIN;
 
@@ -82,7 +91,7 @@ export function FeedbackDialog({
     setBusy(true);
     setError(null);
     try {
-      await send({
+      const record = await send({
         data: {
           category,
           severity,
@@ -95,8 +104,15 @@ export function FeedbackDialog({
           contactEmail: allowContact ? contactEmail.trim() : null,
         },
       });
-      toast.success("Thank you — your feedback is in the queue.");
-      setOpen(false);
+      const createdAt = record?.createdAt ?? new Date().toISOString();
+      setReceipt({
+        id: String(record?.id ?? ""),
+        createdAt,
+        status: String(record?.status ?? "new"),
+        category: String(record?.category ?? category),
+        severity: String(record?.severity ?? severity),
+      });
+      toast.success("Feedback received — reference recorded.");
       setMessage("");
       setEvidenceUrl("");
     } catch (cause) {
@@ -106,8 +122,19 @@ export function FeedbackDialog({
     }
   }
 
+  /** Clears the receipt so the dialog reopens as a blank form next time. */
+  function handleOpenChange(next: boolean) {
+    setOpen(next);
+    if (!next) {
+      setReceipt(null);
+      setError(null);
+    }
+  }
+
+  const reference = receipt ? receipt.id.slice(0, 8).toUpperCase() : "";
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant={variant} size="sm">
           <MessageSquarePlus className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -115,6 +142,50 @@ export function FeedbackDialog({
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+        {receipt ? (
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-primary" aria-hidden="true" />
+                Request received
+              </DialogTitle>
+              <DialogDescription>
+                It is in the internal triage queue. You can track its status on the support page at
+                any time.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div role="status" className="space-y-3 rounded-md border border-border p-4 text-sm">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="outline">Reference {reference}</Badge>
+                <Badge variant="secondary">Status: {receipt.status}</Badge>
+                <Badge variant="outline">{receipt.category}</Badge>
+                <Badge variant="outline">{receipt.severity}</Badge>
+              </div>
+              <p className="text-muted-foreground">
+                Submitted{" "}
+                <time dateTime={receipt.createdAt}>
+                  {new Date(receipt.createdAt).toLocaleString()}
+                </time>
+              </p>
+              <ul className="space-y-1 text-xs text-muted-foreground">
+                {SUPPORT_EXPECTATIONS.map((item) => (
+                  <li key={item.title}>
+                    <span className="font-medium text-foreground">{item.title}:</span> {item.detail}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <DialogFooter>
+              <Button variant="ghost" onClick={() => setReceipt(null)}>
+                Send another
+              </Button>
+              <Button onClick={() => handleOpenChange(false)}>Done</Button>
+            </DialogFooter>
+          </>
+        ) : (
+          <>
         <DialogHeader>
           <DialogTitle>Send product feedback</DialogTitle>
           <DialogDescription>
@@ -219,13 +290,15 @@ export function FeedbackDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)} disabled={busy}>
+          <Button variant="ghost" onClick={() => handleOpenChange(false)} disabled={busy}>
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={busy || tooShort}>
             {busy ? "Sending…" : "Send feedback"}
           </Button>
         </DialogFooter>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
