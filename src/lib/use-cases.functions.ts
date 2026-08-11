@@ -20,8 +20,6 @@ const ListInput = z.object({
   countries: z.array(z.string()).optional().default([]),
   /** Public-sector government function slugs (see `gov_functions.slug`). */
   govFunctions: z.array(z.string()).optional().default([]),
-  /** Free-form tags stored on `use_cases.tags`. */
-  tags: z.array(z.string()).optional().default([]),
   maturity: z.array(z.string()).optional().default([]),
   valuePotential: z.array(z.string()).optional().default([]),
   complexity: z.array(z.string()).optional().default([]),
@@ -41,7 +39,7 @@ const ListInput = z.object({
   page: z.number().int().min(1).max(500).optional().default(1),
 });
 
-const SELECT = `id, slug, title, summary, organization, organization_type, region, tags,
+const SELECT = `id, slug, title, summary, organization, organization_type, region,
   maturity, maturity_level, maturity_score, impact_score,
   value_potential, complexity, risk_level, time_to_value, visibility,
   deployment_model, security_classification, cost_range,
@@ -146,9 +144,6 @@ export const listUseCases = createServerFn({ method: "GET" })
       query = query.in("security_classification", data.securityClassification);
     if (data.provenance.length) query = query.in("provenance", data.provenance);
     if (data.qualityStatus.length) query = query.in("quality_status", data.qualityStatus);
-    // Tags live on the use case row itself: match ANY selected tag.
-    if (data.tags.length) query = query.overlaps("tags", data.tags);
-
     if (data.sort === "impact")
       query = query.order("impact_score", { ascending: false, nullsFirst: false });
     else if (data.sort === "maturity")
@@ -219,20 +214,6 @@ export const listRepositoryFacets = createServerFn({ method: "GET" }).handler(as
       countsFor("govFunctions"),
     ]);
 
-  // Tag counts come off the use case rows themselves (no link table).
-  const { data: tagRows, error: tagErr } = await sb
-    .from("use_cases")
-    .select("tags")
-    .eq("status", "published")
-    .in("visibility", ["free_lite", "both"]);
-  if (tagErr) throw new Error(tagErr.message);
-  const tagCounts = new Map<string, number>();
-  for (const row of (tagRows ?? []) as Array<{ tags: string[] | null }>)
-    for (const tag of row.tags ?? []) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
-  const tags = Array.from(tagCounts.entries())
-    .map(([slug, count]) => ({ slug, name: slug, count }))
-    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
-
   return {
     industries,
     capabilities,
@@ -241,7 +222,6 @@ export const listRepositoryFacets = createServerFn({ method: "GET" }).handler(as
     processes,
     countries,
     govFunctions,
-    tags,
   };
 });
 
