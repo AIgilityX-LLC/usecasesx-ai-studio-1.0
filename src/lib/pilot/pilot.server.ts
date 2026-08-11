@@ -143,7 +143,7 @@ export async function setInvitationStatus(
   if (input.status === "completed") patch["completed_at"] = new Date().toISOString();
   const { data, error } = await supabase
     .from("pilot_invitations")
-    .update(patch)
+    .update(patch as never)
     .eq("id", input.id)
     .select("*")
     .single();
@@ -348,7 +348,7 @@ export async function resolvePilotForUser(
   if (Object.keys(patch).length > 0) {
     const { data: updated } = await supabaseAdmin
       .from("pilot_invitations")
-      .update(patch)
+      .update(patch as never)
       .eq("id", row.id)
       .select("*")
       .maybeSingle();
