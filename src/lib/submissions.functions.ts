@@ -1,7 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { SubmissionInput, ReviewInput, SubmissionIdInput, REVIEW_ROLES } from "@/lib/submissions";
-import { logDbFailure, logStep } from "@/lib/submissions.logging";
+import { logDbFailure, logStep, newCorrelationId } from "@/lib/submissions.logging";
+import { recordSubmissionAudit } from "@/lib/submissions.audit";
 
 /** Submissions owned by the signed-in contributor, newest first. */
 export const listMySubmissions = createServerFn({ method: "GET" })
@@ -48,6 +49,8 @@ export const saveSubmission = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => SubmissionInput.parse(d))
   .handler(async ({ data, context }) => {
+    const cid = newCorrelationId();
+    logStep("saveSubmission.start", { cid, userId: context.userId, status: data.status });
     const { data: row, error } = await context.supabase
       .from("use_case_submissions")
       .insert({
@@ -66,11 +69,19 @@ export const saveSubmission = createServerFn({ method: "POST" })
       .single();
     if (error)
       throw logDbFailure("saveSubmission.insert", error, {
+        cid,
         userId: context.userId,
         status: data.status,
       });
-    logStep("saveSubmission.ok", { id: row.id, status: data.status, userId: context.userId });
-    return { id: row.id, status: data.status };
+    logStep("saveSubmission.ok", { cid, id: row.id, status: data.status, userId: context.userId });
+    await recordSubmissionAudit(context.supabase, {
+      eventType: data.status === "submitted" ? "submission.submitted" : "submission.draft_saved",
+      submissionId: row.id,
+      actorId: context.userId,
+      correlationId: cid,
+      next: { status: data.status, title: data.title },
+    });
+    return { id: row.id, status: data.status, correlationId: cid };
   });
 
 /** Move one of the contributor's own drafts into the review queue. */
@@ -78,6 +89,7 @@ export const submitDraft = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => SubmissionIdInput.parse(d))
   .handler(async ({ data, context }) => {
+    const cid = newCorrelationId();
     const { error } = await context.supabase
       .from("use_case_submissions")
       .update({ status: "submitted" })
@@ -85,9 +97,21 @@ export const submitDraft = createServerFn({ method: "POST" })
       .eq("user_id", context.userId)
       .eq("status", "draft");
     if (error)
-      throw logDbFailure("submitDraft.update", error, { id: data.id, userId: context.userId });
-    logStep("submitDraft.ok", { id: data.id, userId: context.userId });
-    return { ok: true };
+      throw logDbFailure("submitDraft.update", error, {
+        cid,
+        id: data.id,
+        userId: context.userId,
+      });
+    logStep("submitDraft.ok", { cid, id: data.id, userId: context.userId });
+    await recordSubmissionAudit(context.supabase, {
+      eventType: "submission.submitted",
+      submissionId: data.id,
+      actorId: context.userId,
+      correlationId: cid,
+      previous: { status: "draft" },
+      next: { status: "submitted" },
+    });
+    return { ok: true, correlationId: cid };
   });
 
 /** Delete one of the contributor's own drafts. */
@@ -95,14 +119,28 @@ export const deleteDraft = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => SubmissionIdInput.parse(d))
   .handler(async ({ data, context }) => {
+    const cid = newCorrelationId();
     const { error } = await context.supabase
       .from("use_case_submissions")
       .delete()
       .eq("id", data.id)
       .eq("user_id", context.userId)
       .eq("status", "draft");
-    if (error) throw new Error(error.message);
-    return { ok: true };
+    if (error)
+      throw logDbFailure("deleteDraft.delete", error, {
+        cid,
+        id: data.id,
+        userId: context.userId,
+      });
+    logStep("deleteDraft.ok", { cid, id: data.id, userId: context.userId });
+    await recordSubmissionAudit(context.supabase, {
+      eventType: "submission.draft_deleted",
+      submissionId: data.id,
+      actorId: context.userId,
+      correlationId: cid,
+      previous: { status: "draft" },
+    });
+    return { ok: true, correlationId: cid };
   });
 
 /**
@@ -115,6 +153,8 @@ export const reviewSubmission = createServerFn({ method: "POST" })
   .inputValidator((d) => ReviewInput.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+    const cid = newCorrelationId();
+    logStep("review.start", { cid, submissionId: data.id, reviewer: userId, status: data.status });
 
     // Authorize against server-side roles, never the client.
     const roleChecks = await Promise.all(
@@ -129,6 +169,7 @@ export const reviewSubmission = createServerFn({ method: "POST" })
       .maybeSingle();
     if (readErr)
       throw logDbFailure("reviewSubmission.read", readErr, {
+        cid,
         submissionId: data.id,
         reviewer: userId,
       });
@@ -145,18 +186,30 @@ export const reviewSubmission = createServerFn({ method: "POST" })
       .eq("id", data.id);
     if (error)
       throw logDbFailure("reviewSubmission.update", error, {
+        cid,
         submissionId: data.id,
         reviewer: userId,
         status: data.status,
       });
 
+    await recordSubmissionAudit(supabase, {
+      eventType: "submission.status_changed",
+      submissionId: data.id,
+      actorId: userId,
+      correlationId: cid,
+      previous: { status: submission.status },
+      next: { status: data.status, review_notes: data.reviewNotes ?? null },
+      severity: data.status === "rejected" ? "notice" : "info",
+    });
+
     if (data.status !== "approved" || !data.publish) {
       logStep("review.decision-only", {
+        cid,
         submissionId: data.id,
         status: data.status,
         reviewer: userId,
       });
-      return { published: null };
+      return { published: null, correlationId: cid };
     }
 
     // Publishing is a privileged, audited write into the global repository.
@@ -169,10 +222,25 @@ export const reviewSubmission = createServerFn({ method: "POST" })
     });
     if (pubErr)
       throw logDbFailure("publish_use_case_submission", pubErr, {
+        cid,
         submissionId: data.id,
         reviewer: userId,
       });
 
-    logStep("publish.ok", { submissionId: data.id, published });
-    return { published: published as { id: string; slug: string } | null };
+    logStep("publish.ok", { cid, submissionId: data.id, published });
+    const publishedRecord = published as { id: string; slug: string } | null;
+    await recordSubmissionAudit(supabase, {
+      eventType: "submission.published",
+      submissionId: data.id,
+      actorId: userId,
+      correlationId: cid,
+      previous: { status: submission.status },
+      next: {
+        status: "approved",
+        use_case_id: publishedRecord?.id ?? null,
+        slug: publishedRecord?.slug ?? null,
+        review_notes: data.reviewNotes ?? null,
+      },
+    });
+    return { published: publishedRecord, correlationId: cid };
   });
