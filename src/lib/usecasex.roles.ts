@@ -73,7 +73,10 @@ export function useRoles(): RoleState {
       setLoading(false);
     };
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-      void load(session?.user?.id ?? null);
+      const uid = session?.user?.id ?? null;
+      // Never await Supabase calls inside the callback itself — that deadlocks
+      // the auth client's internal lock. Defer to a macrotask instead.
+      setTimeout(() => void load(uid), 0);
     });
     return () => {
       active = false;
