@@ -171,25 +171,6 @@ function PilotAdmin() {
       }),
   });
 
-  const _legacyReminders = useMutation({
-    mutationFn: () => sendReminders(),
-    onSuccess: (result) => {
-      toast.success(
-        result.remindersCreated > 0
-          ? `${result.remindersCreated} reminder${result.remindersCreated === 1 ? "" : "s"} sent`
-          : "Everyone is already up to date",
-        {
-          description: `${result.participantsConsidered} participants checked · ${result.alreadyPending} already pending`,
-        },
-      );
-      void refresh();
-    },
-    onError: (error: unknown) =>
-      toast.error("Reminders not sent", {
-        description: error instanceof Error ? error.message : "Please try again.",
-      }),
-  });
-
   const statusMutation = useMutation({
     mutationFn: (input: { id: string; status: PilotStatus }) =>
       setStatus({ data: { ...input, reason: statusReason.trim() || null } }),
