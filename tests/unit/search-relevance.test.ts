@@ -36,7 +36,10 @@ describe("relevanceScore", () => {
 
   it("weights a title hit above the same word in the body", () => {
     const inTitle = repositoryRow({ title: "Invoice triage", business_problem: "Nothing here." });
-    const inBody = repositoryRow({ title: "Generic assistant", business_problem: "Invoice backlog." });
+    const inBody = repositoryRow({
+      title: "Generic assistant",
+      business_problem: "Invoice backlog.",
+    });
     expect(relevanceScore(inTitle, ["invoice"], "invoice")).toBeGreaterThan(
       relevanceScore(inBody, ["invoice"], "invoice"),
     );
