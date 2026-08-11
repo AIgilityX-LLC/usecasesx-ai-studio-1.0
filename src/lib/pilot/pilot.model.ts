@@ -226,7 +226,165 @@ export type PilotCheckpointResponse = {
   comment: string | null;
   createdAt: string;
   userId?: string | null;
+  /** Mission step the answer is about — anchors the deep link back. */
+  missionStep?: string | null;
+  /** The exact use cases the participant had in play for that step. */
+  useCaseIds?: string[];
+  /** The portfolio the participant built for the mission, when relevant. */
+  portfolioId?: string | null;
 };
+
+/* ------------------------------------------------- checkpoint deep links */
+
+export type PilotDeepLink = {
+  label: string;
+  to: string;
+  /** Route params for parameterised routes (e.g. the use case id). */
+  params?: Record<string, string>;
+  kind: "step" | "use-case" | "portfolio" | "context";
+};
+
+export function missionStepByKey(key: string | null | undefined): MissionStep | null {
+  if (!key) return null;
+  return PILOT_MISSION.find((s) => s.key === key) ?? null;
+}
+
+/**
+ * Deep links from one checkpoint answer back to the exact work it describes:
+ * the mission step, each referenced use case, and the portfolio used.
+ */
+export function checkpointDeepLinks(response: PilotCheckpointResponse): PilotDeepLink[] {
+  const links: PilotDeepLink[] = [];
+  const step = missionStepByKey(response.missionStep);
+  if (step) links.push({ label: `Step: ${step.label}`, to: step.to, kind: "step" });
+  for (const [index, id] of (response.useCaseIds ?? []).entries()) {
+    links.push({
+      label: `Use case ${index + 1}`,
+      to: "/studio/use-case/$id",
+      params: { id },
+      kind: "use-case",
+    });
+  }
+  if (response.portfolioId) {
+    links.push({ label: "Portfolio", to: "/studio/portfolio", kind: "portfolio" });
+  }
+  if (!step && response.contextRoute) {
+    links.push({ label: response.contextRoute, to: response.contextRoute, kind: "context" });
+  }
+  return links;
+}
+
+/* ------------------------------------------------------------ audit trail */
+
+export const PILOT_AUDIT_ACTIONS = [
+  "invitation.created",
+  "invitation.linked",
+  "invitation.status_changed",
+  "invitation.revoked",
+  "invitations.paused",
+  "invitations.resumed",
+] as const;
+export type PilotAuditAction = (typeof PILOT_AUDIT_ACTIONS)[number];
+
+export function pilotAuditActionLabel(action: string): string {
+  switch (action) {
+    case "invitation.created":
+      return "Invitation created";
+    case "invitation.linked":
+      return "Account linked to invitation";
+    case "invitation.status_changed":
+      return "Status changed";
+    case "invitation.revoked":
+      return "Seat revoked";
+    case "invitations.paused":
+      return "New invitations paused";
+    case "invitations.resumed":
+      return "Invitations resumed";
+    default:
+      return action;
+  }
+}
+
+export type PilotAuditEvent = {
+  id: string;
+  cohort: string;
+  invitationId: string | null;
+  subjectEmail: string | null;
+  subjectUserId: string | null;
+  action: string;
+  fromStatus: string | null;
+  toStatus: string | null;
+  reason: string | null;
+  actorId: string | null;
+  actorKind: string;
+  createdAt: string;
+};
+
+/* -------------------------------------------------------------- reminders */
+
+export type PilotReminderKind = "mission_step" | "checkpoint";
+
+export type PilotReminder = {
+  id: string;
+  kind: PilotReminderKind;
+  missionStep: string | null;
+  checkpoint: string | null;
+  title: string;
+  body: string;
+  targetRoute: string | null;
+  readAt: string | null;
+  dismissedAt: string | null;
+  createdAt: string;
+};
+
+export type PilotReminderDraft = {
+  kind: PilotReminderKind;
+  missionStep: string | null;
+  checkpoint: string | null;
+  title: string;
+  body: string;
+  targetRoute: string | null;
+};
+
+/**
+ * What a participant should be reminded about right now: the next pending
+ * mission step, and any checkpoint they can answer but have not.
+ *
+ * Pure — measured progress in, drafts out. Nothing is created for a mission
+ * that is already complete and fully answered.
+ */
+export function buildReminderDrafts(
+  progress: MissionProgress,
+  answeredCheckpoints: string[],
+): PilotReminderDraft[] {
+  const drafts: PilotReminderDraft[] = [];
+  const next = progress.nextStep;
+  if (next) {
+    const remaining = Math.max(0, next.target - next.count);
+    drafts.push({
+      kind: "mission_step",
+      missionStep: next.key,
+      checkpoint: null,
+      title: `Next mission step: ${next.label}`,
+      body:
+        next.target > 1
+          ? `${remaining} of ${next.target} still to go. ${next.helper}`
+          : next.helper,
+      targetRoute: next.to,
+    });
+  }
+  for (const checkpoint of availableCheckpoints(progress, answeredCheckpoints)) {
+    drafts.push({
+      kind: "checkpoint",
+      missionStep: checkpoint.afterStep,
+      checkpoint: checkpoint.key,
+      title: `Checkpoint waiting: ${checkpoint.title}`,
+      body: checkpoint.prompt,
+      targetRoute: "/pilot",
+    });
+  }
+  return drafts;
+}
 
 export function willingnessLabel(value: string | null): string {
   if (!value) return "—";
