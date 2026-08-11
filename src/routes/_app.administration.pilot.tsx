@@ -3,7 +3,15 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { AlertTriangle, BellRing, History, PauseCircle, PlayCircle, UserPlus } from "lucide-react";
+import {
+  AlertTriangle,
+  BellRing,
+  Download,
+  History,
+  PauseCircle,
+  PlayCircle,
+  UserPlus,
+} from "lucide-react";
 
 import { privateHead } from "@/lib/seo";
 import { RequireRoles } from "@/components/RequireRoles";
@@ -20,9 +28,12 @@ import {
 } from "@/lib/pilot/pilot.functions";
 import {
   ROSTER_MAX_ROWS,
+  ROSTER_TEMPLATE_NOTES,
+  buildRosterTemplateCsv,
   parseParticipantRoster,
   type RosterParseResult,
 } from "@/lib/pilot/pilot.roster";
+import { runAndRecordLaunchChecksFn } from "@/lib/qa/qa.functions";
 import {
   PILOT_STATUSES,
   checkpointDeepLinks,
@@ -78,6 +89,7 @@ function PilotAdmin() {
   const setStatus = useServerFn(setPilotInvitationStatusFn);
   const setPaused = useServerFn(setPilotInvitationsPausedFn);
   const sendReminders = useServerFn(sendPilotRemindersFn);
+  const runChecks = useServerFn(runAndRecordLaunchChecksFn);
   const queryClient = useQueryClient();
 
   const [email, setEmail] = useState("");
@@ -231,8 +243,10 @@ function PilotAdmin() {
   const statusMutation = useMutation({
     mutationFn: (input: { id: string; status: PilotStatus }) =>
       setStatus({ data: { ...input, reason: statusReason.trim() || null } }),
-    onSuccess: () => {
+    onSuccess: (_result, input) => {
       toast.success("Invitation updated");
+      // The recorded launch checks must reflect the state after the change.
+      void rerunLaunchChecks(`Pilot status set to ${pilotStatusLabel(input.status)}`);
       void refresh();
     },
     onError: (error: unknown) =>
