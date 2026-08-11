@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MOCK_TAX, MOCK_USE_CASES } from "@/lib/usecasex.mock";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { publicDataClient } from "@/lib/supabase-public.server";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -30,23 +30,24 @@ export const Route = createFileRoute("/api/public/usecasex/taxonomy")({
         };
 
         // Merge published DB taxonomy on top of mock-derived facets
+        const db = publicDataClient();
         const [dbSectors, dbTags, dbMaturity, meta] = await Promise.all([
-          supabaseAdmin
+          db
             .from("taxonomy_sectors")
             .select("slug, name, description, sort_order")
             .eq("is_published", true)
             .order("sort_order"),
-          supabaseAdmin
+          db
             .from("taxonomy_tags")
             .select("slug, name, description, sort_order")
             .eq("is_published", true)
             .order("sort_order"),
-          supabaseAdmin
+          db
             .from("taxonomy_maturity_levels")
             .select("slug, name, description, sort_order")
             .eq("is_published", true)
             .order("sort_order"),
-          supabaseAdmin
+          db
             .from("taxonomy_meta")
             .select("version, published_at")
             .eq("id", 1)
