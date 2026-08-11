@@ -6,7 +6,15 @@ import { publicHead, breadcrumbJsonLd } from "@/lib/seo";
 import { PageHero, Section } from "@/components/marketing/MarketingPrimitives";
 import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
 import { listMyFeedbackFn } from "@/lib/feedback/feedback.functions";
-import { SUPPORT_EMAIL, SUPPORT_EXPECTATIONS } from "@/lib/feedback/feedback.model";
+import {
+  FEEDBACK_STATUS_MEANING,
+  FEEDBACK_STATUS_TONE,
+  FEEDBACK_STATUSES,
+  SUPPORT_EMAIL,
+  SUPPORT_EXPECTATIONS,
+  feedbackStatusLabel,
+  type FeedbackStatus,
+} from "@/lib/feedback/feedback.model";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -90,6 +98,18 @@ function SupportPage() {
             <CardTitle>Submitted items</CardTitle>
           </CardHeader>
           <CardContent>
+            <dl className="mb-5 grid gap-2 text-xs text-muted-foreground sm:grid-cols-2">
+              {FEEDBACK_STATUSES.map((status) => (
+                <div key={status} className="flex items-start gap-2">
+                  <dt>
+                    <Badge variant={FEEDBACK_STATUS_TONE[status]}>
+                      {FEEDBACK_STATUS_MEANING[status].label}
+                    </Badge>
+                  </dt>
+                  <dd>{FEEDBACK_STATUS_MEANING[status].detail}</dd>
+                </div>
+              ))}
+            </dl>
             {mine.isLoading ? (
               <p className="text-sm text-muted-foreground">Loading your submissions…</p>
             ) : mine.isError ? (
@@ -104,13 +124,31 @@ function SupportPage() {
               <ul className="divide-y divide-border">
                 {(mine.data ?? []).map((item) => (
                   <li key={item.id} className="flex flex-wrap items-start gap-3 py-3">
-                    <Badge variant="outline">{item.status}</Badge>
+                    <Badge
+                      variant={FEEDBACK_STATUS_TONE[item.status as FeedbackStatus] ?? "outline"}
+                    >
+                      {feedbackStatusLabel(item.status)}
+                    </Badge>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm">{item.message}</p>
                       <p className="text-xs text-muted-foreground">
-                        {item.category} · {item.severity} ·{" "}
-                        {new Date(item.createdAt).toLocaleDateString()}
+                        Ref {item.id.slice(0, 8).toUpperCase()} · {item.category} · {item.severity}{" "}
+                        · submitted{" "}
+                        <time dateTime={item.createdAt}>
+                          {new Date(item.createdAt).toLocaleString()}
+                        </time>
+                        {item.resolvedAt ? (
+                          <>
+                            {" · resolved "}
+                            <time dateTime={item.resolvedAt}>
+                              {new Date(item.resolvedAt).toLocaleString()}
+                            </time>
+                          </>
+                        ) : null}
                       </p>
+                      {item.resolutionNote ? (
+                        <p className="mt-1 text-xs text-foreground">{item.resolutionNote}</p>
+                      ) : null}
                     </div>
                   </li>
                 ))}

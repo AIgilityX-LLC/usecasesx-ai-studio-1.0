@@ -31,6 +31,32 @@ export const FEEDBACK_STATUSES = ["new", "triaged", "in_progress", "resolved", "
 
 export type FeedbackStatus = (typeof FEEDBACK_STATUSES)[number];
 
+/** What each queue status means, in the words we show the person who reported it. */
+export const FEEDBACK_STATUS_MEANING: Record<FeedbackStatus, { label: string; detail: string }> = {
+  new: { label: "Received", detail: "In the queue, not yet reviewed by the team." },
+  triaged: { label: "Triaged", detail: "Reviewed and categorised; queued for work." },
+  in_progress: { label: "In progress", detail: "Being worked on right now." },
+  resolved: { label: "Resolved", detail: "Shipped or answered. Reopen by sending a new report." },
+  declined: { label: "Not planned", detail: "We decided not to act on this for now." },
+};
+
+/** Badge tone per status, so the same status reads the same way on every surface. */
+export const FEEDBACK_STATUS_TONE: Record<
+  FeedbackStatus,
+  "default" | "secondary" | "outline" | "destructive"
+> = {
+  new: "secondary",
+  triaged: "outline",
+  in_progress: "default",
+  resolved: "default",
+  declined: "outline",
+};
+
+/** Human label for a status string that may come from the database. */
+export function feedbackStatusLabel(status: string): string {
+  return FEEDBACK_STATUS_MEANING[status as FeedbackStatus]?.label ?? status;
+}
+
 export interface FeedbackSubmission {
   category: FeedbackCategory;
   severity: FeedbackSeverity;

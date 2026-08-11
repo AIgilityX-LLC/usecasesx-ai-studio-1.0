@@ -18,10 +18,12 @@ import { normalizeError, unwrapResult } from "./errors";
 import { requireUserId } from "./ownership";
 import {
   buildPage,
+  buildListMeta,
   chunkIds,
   clampPageSize,
   collectPages,
   keysetOrFilter,
+  type ListMeta,
   type Page,
 } from "./pagination";
 import {
@@ -211,6 +213,46 @@ export async function listPortfoliosForUser(userId: string | null) {
     PORTFOLIO_MAX_ROWS,
   );
   return rows;
+}
+
+/**
+ * Exact number of portfolios the user owns. Head-only count, so no portfolio
+ * bodies or items are transferred. Returns null when the count is unavailable.
+ */
+export async function countPortfoliosForUser(userId: string | null): Promise<number | null> {
+  const uid = requireUserId(userId);
+  const { count, error } = await supabase
+    .from("portfolios")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", uid);
+  if (error) return null;
+  return typeof count === "number" ? count : null;
+}
+
+/**
+ * `listPortfoliosForUser` plus completeness metadata, so the UI can say
+ * "showing the first 200 of 340" instead of silently hiding portfolios.
+ */
+export async function listPortfoliosWithMetaForUser(
+  userId: string | null,
+): Promise<{ rows: PortfolioRow[]; meta: ListMeta }> {
+  const uid = requireUserId(userId);
+  const [collected, total] = await Promise.all([
+    collectPages<PortfolioRow, PortfolioCursor>(
+      (cursor) => listPortfoliosPageForUser(uid, { cursor }),
+      PORTFOLIO_MAX_ROWS,
+    ),
+    countPortfoliosForUser(uid),
+  ]);
+  return {
+    rows: collected.rows,
+    meta: buildListMeta({
+      loaded: collected.rows.length,
+      total,
+      cap: PORTFOLIO_MAX_ROWS,
+      walkTruncated: collected.truncated,
+    }),
+  };
 }
 
 /**

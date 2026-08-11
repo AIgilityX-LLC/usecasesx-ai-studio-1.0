@@ -16,8 +16,8 @@ import { useCallback, useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
-  listSavedForUser,
   listScoresForUser,
+  listSavedWithMetaForUser,
   resolveUseCaseIdBySlug,
   saveUseCase,
   unsaveUseCase,
@@ -30,7 +30,7 @@ import {
   addUseCasesToPortfolio,
   createPortfolio,
   deletePortfolio,
-  listPortfoliosForUser,
+  listPortfoliosWithMetaForUser,
   removeUseCaseFromPortfolio,
   removeUseCasesFromPortfolio,
   updatePortfolio,
@@ -47,6 +47,7 @@ import type {
   ReviewCadence,
 } from "@/lib/portfolio-model";
 import { DomainError } from "@/lib/domain/errors";
+import type { ListMeta } from "@/lib/domain/pagination";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import {
@@ -68,9 +69,22 @@ interface ProData {
   slugToId: Record<string, string>;
   /** slug → live use-case content (title, summary, classification, industry…). */
   useCaseContent: Record<string, UseCaseContent>;
+  /** Completeness of the saved list — loaded vs. exact total, and whether the cap applied. */
+  savedMeta: ListMeta;
+  /** Completeness of the portfolio list — loaded vs. exact total, and whether the cap applied. */
+  portfolioMeta: ListMeta;
 }
 
-const EMPTY: ProData = { saved: [], portfolios: [], slugToId: {}, useCaseContent: {} };
+const EMPTY_META: ListMeta = { loaded: 0, total: null, cap: 0, truncated: false };
+
+const EMPTY: ProData = {
+  saved: [],
+  portfolios: [],
+  slugToId: {},
+  useCaseContent: {},
+  savedMeta: EMPTY_META,
+  portfolioMeta: EMPTY_META,
+};
 
 function normalizeScore(
   row: {
@@ -114,11 +128,13 @@ function scoreToColumns(s: ScoreDimensions) {
 }
 
 async function fetchProData(userId: string): Promise<ProData> {
-  const [savedRows, scoreRows, portfolioRows] = await Promise.all([
-    listSavedForUser(userId),
+  const [savedResult, scoreRows, portfolioResult] = await Promise.all([
+    listSavedWithMetaForUser(userId),
     listScoresForUser(userId),
-    listPortfoliosForUser(userId),
+    listPortfoliosWithMetaForUser(userId),
   ]);
+  const savedRows = savedResult.rows;
+  const portfolioRows = portfolioResult.rows;
 
   const slugToId: Record<string, string> = {};
   const scoresByUcId = new Map<string, ScoreDimensions | undefined>();
@@ -145,7 +161,14 @@ async function fetchProData(userId: string): Promise<ProData> {
 
   const portfolios: Portfolio[] = (portfolioRows as any[]).map((p) => mapPortfolioRow(p, slugToId));
 
-  return { saved, portfolios, slugToId, useCaseContent };
+  return {
+    saved,
+    portfolios,
+    slugToId,
+    useCaseContent,
+    savedMeta: savedResult.meta,
+    portfolioMeta: portfolioResult.meta,
+  };
 }
 
 /**
@@ -432,6 +455,10 @@ export function useUseCaseXPro() {
       /** repository slug → repository use_cases.id (value/Studio lineage). */
       slugToId: data.slugToId,
       portfolios: data.portfolios,
+      /** Completeness of the saved list (loaded vs. total, cap applied). */
+      savedMeta: data.savedMeta,
+      /** Completeness of the portfolio list (loaded vs. total, cap applied). */
+      portfolioMeta: data.portfolioMeta,
       isLoading: query.isLoading,
       isAuthenticated: !!userId,
       error: query.error,

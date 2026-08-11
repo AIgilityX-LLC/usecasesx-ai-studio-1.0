@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUseCaseXPro } from "@/hooks/usecasex-pro";
+import { ListCountNotice } from "@/components/usecasex/ListCountNotice";
 import {
   PORTFOLIO_STATUSES,
   PORTFOLIO_TYPES,
@@ -181,6 +182,11 @@ function PortfoliosPage() {
       ) : (
         <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
           <nav aria-label="Portfolios" className="space-y-2">
+            <ListCountNotice
+              meta={store.portfolioMeta}
+              noun="portfolios"
+              action="Archive portfolios you no longer review to bring the rest into view."
+            />
             {store.portfolios.map((p) => (
               <button
                 key={p.id}

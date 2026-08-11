@@ -106,6 +106,52 @@ export interface CollectResult<TRow> {
 }
 
 /**
+ * What a bounded list reader tells the UI about its own completeness.
+ *
+ * `loaded` is what the caller received, `total` is the exact row count in the
+ * database (null when the count query failed — never guessed), and `cap` is the
+ * ceiling that stopped the walk. A list is truncated when the cap cut the walk
+ * short OR when the count exceeds what was loaded.
+ */
+export interface ListMeta {
+  loaded: number;
+  total: number | null;
+  cap: number;
+  truncated: boolean;
+}
+
+/** Builds list meta, treating `total > loaded` as truncation even if the walk ended cleanly. */
+export function buildListMeta(input: {
+  loaded: number;
+  total: number | null;
+  cap: number;
+  walkTruncated: boolean;
+}): ListMeta {
+  const total = typeof input.total === "number" && input.total >= 0 ? input.total : null;
+  const truncated = input.walkTruncated || (total !== null && total > input.loaded);
+  return { loaded: input.loaded, total, cap: input.cap, truncated };
+}
+
+/**
+ * One sentence describing a bounded list for the user. Returns null when there
+ * is nothing worth saying (empty list, or everything is on screen).
+ *
+ * `noun` is plural, lowercase — "saved use cases", "portfolios".
+ */
+export function describeListMeta(meta: ListMeta, noun: string): string | null {
+  if (meta.loaded === 0) return null;
+  if (!meta.truncated) {
+    return meta.total !== null && meta.total !== meta.loaded
+      ? `Showing ${meta.loaded} of ${meta.total} ${noun}.`
+      : null;
+  }
+  if (meta.total !== null) {
+    return `Showing the first ${meta.loaded} of ${meta.total} ${noun}. This view is capped at ${meta.cap} to keep it fast.`;
+  }
+  return `Showing the first ${meta.loaded} ${noun}. This view is capped at ${meta.cap} to keep it fast.`;
+}
+
+/**
  * Walks pages until the list is exhausted or `maxRows` is reached, whichever
  * comes first. This is what keeps the legacy "give me everything" callers
  * bounded: worst case is `ceil(maxRows / pageSize)` requests, never one giant
