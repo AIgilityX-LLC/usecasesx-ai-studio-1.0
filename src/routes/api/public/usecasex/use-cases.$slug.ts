@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MOCK_USE_CASES } from "@/lib/usecasex.mock";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { publicDataClient } from "@/lib/supabase-public.server";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -18,13 +18,14 @@ export const Route = createFileRoute("/api/public/usecasex/use-cases/$slug")({
           return Response.json({ error: "Not found" }, { status: 404, headers: CORS });
         }
 
+        const db = publicDataClient();
         const [agg, fb] = await Promise.all([
-          supabaseAdmin
+          db
             .from("use_case_rating_aggregates")
             .select("avg_rating, rating_count")
             .eq("use_case_slug", uc.slug)
             .maybeSingle(),
-          supabaseAdmin
+          db
             .from("use_case_feedback")
             .select("id, comment, sentiment, created_at")
             .eq("use_case_slug", uc.slug)

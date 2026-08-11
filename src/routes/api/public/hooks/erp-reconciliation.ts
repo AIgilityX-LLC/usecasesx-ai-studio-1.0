@@ -1,31 +1,22 @@
 /**
  * Scheduled ERP reconciliation endpoint.
  *
- * Called by the platform scheduler (pg_cron). Authenticated with the project
- * publishable key in the `apikey` header — the handler refuses anything else
- * before touching data.
+ * Called by the platform scheduler (pg_cron). Authenticated with the
+ * `CRON_HOOK_SECRET` shared secret in the `Authorization: Bearer …` header —
+ * the handler refuses anything else before touching data.
  */
 
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { isAuthorizedCron, unauthorized } from "@/lib/cron-auth.server";
 
 const bodySchema = z.object({ limit: z.number().int().min(1).max(2000).optional() }).default({});
-
-function unauthorized() {
-  return new Response(JSON.stringify({ error: "Unauthorized" }), {
-    status: 401,
-    headers: { "Content-Type": "application/json" },
-  });
-}
 
 export const Route = createFileRoute("/api/public/hooks/erp-reconciliation")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const key = request.headers.get("apikey");
-        const expected =
-          process.env["SUPABASE_PUBLISHABLE_KEY"] ?? process.env["SUPABASE_ANON_KEY"] ?? "";
-        if (!key || !expected || key !== expected) return unauthorized();
+        if (!isAuthorizedCron(request)) return unauthorized();
 
         let parsed: { limit?: number } = {};
         try {

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { filterAndSortMock, type MockFilters, type SortKey } from "@/lib/usecasex.mock";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { publicDataClient } from "@/lib/supabase-public.server";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/api/public/usecasex/use-cases")({
         const slugs = items.map((i) => i.slug);
         const aggMap = new Map<string, { avg: number | null; count: number }>();
         if (slugs.length > 0) {
-          const { data: aggs } = await supabaseAdmin
+          const { data: aggs } = await publicDataClient()
             .from("use_case_rating_aggregates")
             .select("use_case_slug, avg_rating, rating_count")
             .in("use_case_slug", slugs);

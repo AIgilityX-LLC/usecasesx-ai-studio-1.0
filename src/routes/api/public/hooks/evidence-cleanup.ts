@@ -1,31 +1,23 @@
 /**
  * Scheduled cleanup of orphaned benefit evidence uploads.
  *
- * Called by the platform scheduler (pg_cron) with the project publishable key
- * in the `apikey` header. Deletes stored objects in the private evidence
- * bucket that no benefit references any more, outside the grace period.
+ * Called by the platform scheduler (pg_cron) with the `CRON_HOOK_SECRET`
+ * shared secret in the `Authorization: Bearer …` header. Deletes stored
+ * objects in the private evidence bucket that no benefit references any
+ * more, outside the grace period.
  */
 
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { isAuthorizedCron, unauthorized } from "@/lib/cron-auth.server";
 
 const bodySchema = z.object({ dryRun: z.boolean().optional() }).default({});
-
-function unauthorized() {
-  return new Response(JSON.stringify({ error: "Unauthorized" }), {
-    status: 401,
-    headers: { "Content-Type": "application/json" },
-  });
-}
 
 export const Route = createFileRoute("/api/public/hooks/evidence-cleanup")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const key = request.headers.get("apikey");
-        const expected =
-          process.env["SUPABASE_PUBLISHABLE_KEY"] ?? process.env["SUPABASE_ANON_KEY"] ?? "";
-        if (!key || !expected || key !== expected) return unauthorized();
+        if (!isAuthorizedCron(request)) return unauthorized();
 
         let parsed: { dryRun?: boolean } = {};
         try {
