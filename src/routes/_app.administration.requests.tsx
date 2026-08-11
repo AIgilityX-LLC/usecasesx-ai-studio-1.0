@@ -183,6 +183,13 @@ function RequestsInbox() {
     );
   }, [leads.data, term]);
 
+  const ownerOptions: RequestOwnerOption[] = (owners.data ?? []).map((owner) => ({
+    userId: owner.userId,
+    name: owner.name,
+  }));
+
+  const overdue = feedbackItems.filter((item) => slaState(item.dueAt, item.status).overdue);
+
   const bugs = feedbackItems.filter((item) => BUG_CATEGORIES.has(item.category));
   const features = feedbackItems.filter((item) => FEATURE_CATEGORIES.has(item.category));
   const interest = feedbackItems.filter((item) => ACCESS_CATEGORIES.has(item.category));
@@ -204,7 +211,7 @@ function RequestsInbox() {
         <SummaryTile icon={Bug} label="Open bug reports" value={bugs.length} />
         <SummaryTile icon={Sparkles} label="Feature requests" value={features.length} />
         <SummaryTile icon={Crown} label="Access requests waiting" value={pendingLeads.length} />
-        <SummaryTile icon={Inbox} label="Enterprise interest" value={interest.length} />
+        <SummaryTile icon={Inbox} label="Past due (SLA breached)" value={overdue.length} />
       </div>
 
       <Card>
@@ -277,6 +284,9 @@ function RequestsInbox() {
             emptyLabel="No bug reports match these filters."
             busy={setFeedbackStatus.isPending}
             onStatus={(id, next) => setFeedbackStatus.mutate({ id, status: next })}
+            owners={ownerOptions}
+            triageBusy={triage.isPending}
+            onTriage={(id, input) => triage.mutate({ id, ...input })}
           />
         </TabsContent>
 
@@ -288,6 +298,9 @@ function RequestsInbox() {
             emptyLabel="No feature requests match these filters."
             busy={setFeedbackStatus.isPending}
             onStatus={(id, next) => setFeedbackStatus.mutate({ id, status: next })}
+            owners={ownerOptions}
+            triageBusy={triage.isPending}
+            onTriage={(id, input) => triage.mutate({ id, ...input })}
           />
         </TabsContent>
 
@@ -360,6 +373,9 @@ function RequestsInbox() {
             emptyLabel="No Enterprise interest logged through in-app feedback yet."
             busy={setFeedbackStatus.isPending}
             onStatus={(id, next) => setFeedbackStatus.mutate({ id, status: next })}
+            owners={ownerOptions}
+            triageBusy={triage.isPending}
+            onTriage={(id, input) => triage.mutate({ id, ...input })}
           />
         </TabsContent>
       </Tabs>
@@ -399,6 +415,9 @@ interface FeedbackItem {
   createdAt: string;
   allowContact: boolean;
   isRealActivity: boolean;
+  assignedTo: string | null;
+  priority: string;
+  dueAt: string | null;
 }
 
 function FeedbackList({
@@ -408,6 +427,9 @@ function FeedbackList({
   emptyLabel,
   busy,
   onStatus,
+  owners,
+  triageBusy,
+  onTriage,
 }: {
   items: FeedbackItem[];
   loading: boolean;
@@ -415,6 +437,12 @@ function FeedbackList({
   emptyLabel: string;
   busy: boolean;
   onStatus: (id: string, status: FeedbackStatus) => void;
+  owners: RequestOwnerOption[];
+  triageBusy: boolean;
+  onTriage: (
+    id: string,
+    input: { assignedTo: string | null; priority: string; dueAt: string },
+  ) => void;
 }) {
   if (loading) return <p className="text-sm text-muted-foreground">Loading requests…</p>;
   if (error)
@@ -455,6 +483,15 @@ function FeedbackList({
                 Context: <span className="font-mono">{item.contextRoute ?? "—"}</span>
                 {item.allowContact ? " · contact consented" : " · no contact consent"}
               </p>
+              <RequestTriageControls
+                status={item.status}
+                assignedTo={item.assignedTo}
+                priority={item.priority}
+                dueAt={item.dueAt}
+                owners={owners}
+                busy={triageBusy}
+                onSave={(input) => onTriage(item.id, input)}
+              />
               <div className="flex flex-wrap gap-2">
                 {FEEDBACK_STATUSES.filter((value) => value !== item.status).map((value) => (
                   <Button
