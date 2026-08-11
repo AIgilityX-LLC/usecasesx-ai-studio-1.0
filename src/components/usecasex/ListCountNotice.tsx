@@ -1,16 +1,7 @@
 import { AlertTriangle, HelpCircle, Info } from "lucide-react";
 
-import {
-  MAX_PAGE_SIZE,
-  describeListMeta,
-  type ListMeta,
-} from "@/lib/domain/pagination";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { MAX_PAGE_SIZE, describeListMeta, type ListMeta } from "@/lib/domain/pagination";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Props {
   meta: ListMeta;

@@ -67,7 +67,12 @@ function expected(rows: Row[], filter: Filter): string[] {
 }
 
 const STATUSES: Status[] = ["draft", "reviewed", "published"];
-const TITLES = ["Fraud triage copilot", "Permit intake triage", "Grid load forecast", "Fraud alerts"];
+const TITLES = [
+  "Fraud triage copilot",
+  "Permit intake triage",
+  "Grid load forecast",
+  "Fraud alerts",
+];
 
 /** 240 rows, deliberately full of sort-column ties. */
 function corpus(): Row[] {
@@ -95,10 +100,7 @@ describe("keyset pagination with search and status filters", () => {
       it(`is duplicate-free and gap-free: ${name}, pageSize ${pageSize}`, async () => {
         const rows = corpus();
         const read = makeReader(() => rows, filter);
-        const result = await collectPages<Row, Cursor>(
-          (cursor) => read(cursor, pageSize),
-          5_000,
-        );
+        const result = await collectPages<Row, Cursor>((cursor) => read(cursor, pageSize), 5_000);
 
         const ids = result.rows.map((row) => row.id);
         expect(new Set(ids).size).toBe(ids.length); // no duplicates

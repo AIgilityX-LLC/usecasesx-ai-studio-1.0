@@ -3,10 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
-import {
-  listMyRequestAlertsFn,
-  markRequestAlertsReadFn,
-} from "@/lib/feedback/feedback.functions";
+import { listMyRequestAlertsFn, markRequestAlertsReadFn } from "@/lib/feedback/feedback.functions";
 import { feedbackStatusLabel } from "@/lib/feedback/feedback.model";
 
 /**
@@ -38,9 +35,12 @@ export function RequestAlertWatcher({ enabled }: { enabled: boolean }) {
     if (unread.length === 0) return;
     for (const alert of unread) {
       announced.current.add(alert.id);
-      toast.info(`Request ${alert.feedbackId.slice(0, 8).toUpperCase()} is now “${feedbackStatusLabel(alert.toStatus)}”`, {
-        description: alert.note ?? "Open Support to see the full history.",
-      });
+      toast.info(
+        `Request ${alert.feedbackId.slice(0, 8).toUpperCase()} is now “${feedbackStatusLabel(alert.toStatus)}”`,
+        {
+          description: alert.note ?? "Open Support to see the full history.",
+        },
+      );
     }
     void markRead({ data: { ids: unread.slice(0, 50).map((alert) => alert.id) } }).catch(() => {
       // Read receipts are cosmetic: a failure must not break the page.

@@ -158,7 +158,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
           <EmailVerificationBanner />
           <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
             {alertWatcher}
-          {children}
+            {children}
           </main>
           <UseCasesXFooter />
         </SidebarInset>

@@ -61,7 +61,12 @@ const failed = results.filter((result) => !result.passed);
 await writeFile(
   path.join(evidenceDir, "summary.json"),
   JSON.stringify(
-    { generatedAt: new Date().toISOString(), total: results.length, failed: failed.length, results },
+    {
+      generatedAt: new Date().toISOString(),
+      total: results.length,
+      failed: failed.length,
+      results,
+    },
     null,
     2,
   ),
