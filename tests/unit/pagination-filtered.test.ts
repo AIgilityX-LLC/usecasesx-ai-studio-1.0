@@ -94,11 +94,11 @@ describe("keyset pagination with search and status filters", () => {
     for (const pageSize of [1, 7, 50]) {
       it(`is duplicate-free and gap-free: ${name}, pageSize ${pageSize}`, async () => {
         const rows = corpus();
-        const result = await collectPages<Row, Cursor>({
-          fetchPage: makeReader(() => rows, filter),
-          pageSize,
-          maxRows: 5_000,
-        });
+        const read = makeReader(() => rows, filter);
+        const result = await collectPages<Row, Cursor>(
+          (cursor) => read(cursor, pageSize),
+          5_000,
+        );
 
         const ids = result.rows.map((row) => row.id);
         expect(new Set(ids).size).toBe(ids.length); // no duplicates
@@ -111,11 +111,8 @@ describe("keyset pagination with search and status filters", () => {
   it("respects the row cap without dropping rows before it", async () => {
     const rows = corpus();
     const filter: Filter = { statuses: ["published"] };
-    const result = await collectPages<Row, Cursor>({
-      fetchPage: makeReader(() => rows, filter),
-      pageSize: 10,
-      maxRows: 25,
-    });
+    const read = makeReader(() => rows, filter);
+    const result = await collectPages<Row, Cursor>((cursor) => read(cursor, 10), 25);
 
     expect(result.rows).toHaveLength(25);
     expect(result.truncated).toBe(true);
@@ -129,19 +126,15 @@ describe("keyset pagination with search and status filters", () => {
     let requests = 0;
 
     const reader = makeReader(() => rows, filter);
-    const result = await collectPages<Row, Cursor>({
-      fetchPage: async (cursor, pageSize) => {
-        requests += 1;
-        // After the first page, a still-unread row is re-triaged away.
-        if (requests === 2) {
-          const victim = rows.find((row) => row.id === before[40]);
-          if (victim) victim.status = "draft";
-        }
-        return reader(cursor, pageSize);
-      },
-      pageSize: 10,
-      maxRows: 5_000,
-    });
+    const result = await collectPages<Row, Cursor>(async (cursor) => {
+      requests += 1;
+      // After the first page, a still-unread row is re-triaged away.
+      if (requests === 2) {
+        const victim = rows.find((row) => row.id === before[40]);
+        if (victim) victim.status = "draft";
+      }
+      return reader(cursor, 10);
+    }, 5_000);
 
     const ids = result.rows.map((row) => row.id);
     expect(new Set(ids).size).toBe(ids.length);
