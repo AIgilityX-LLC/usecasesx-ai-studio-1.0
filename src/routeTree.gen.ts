@@ -18,6 +18,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AppAboutRouteImport } from './routes/_app.about'
 import { Route as AppAccountRouteImport } from './routes/_app.account'
+import { Route as AppAdminAuditRouteImport } from './routes/_app.admin-audit'
 import { Route as AppAdminSubmissionsRouteImport } from './routes/_app.admin-submissions'
 import { Route as AppAdminWaitlistRouteImport } from './routes/_app.admin-waitlist'
 import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
@@ -152,6 +153,11 @@ const AppAboutRoute = AppAboutRouteImport.update({
 const AppAccountRoute = AppAccountRouteImport.update({
   id: '/account',
   path: '/account',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminAuditRoute = AppAdminAuditRouteImport.update({
+  id: '/admin-audit',
+  path: '/admin-audit',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAdminSubmissionsRoute = AppAdminSubmissionsRouteImport.update({
@@ -637,6 +643,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/about': typeof AppAboutRoute
   '/account': typeof AppAccountRouteWithChildren
+  '/admin-audit': typeof AppAdminAuditRoute
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRouteWithChildren
@@ -737,6 +744,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/about': typeof AppAboutRoute
+  '/admin-audit': typeof AppAdminAuditRoute
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRouteWithChildren
@@ -839,6 +847,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_app/about': typeof AppAboutRoute
   '/_app/account': typeof AppAccountRouteWithChildren
+  '/_app/admin-audit': typeof AppAdminAuditRoute
   '/_app/admin-submissions': typeof AppAdminSubmissionsRoute
   '/_app/admin-waitlist': typeof AppAdminWaitlistRoute
   '/_app/administration': typeof AppAdministrationRouteWithChildren
@@ -942,6 +951,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/about'
     | '/account'
+    | '/admin-audit'
     | '/admin-submissions'
     | '/admin-waitlist'
     | '/administration'
@@ -1042,6 +1052,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/about'
+    | '/admin-audit'
     | '/admin-submissions'
     | '/admin-waitlist'
     | '/administration'
@@ -1143,6 +1154,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/_app/about'
     | '/_app/account'
+    | '/_app/admin-audit'
     | '/_app/admin-submissions'
     | '/_app/admin-waitlist'
     | '/_app/administration'
@@ -1317,6 +1329,13 @@ declare module '@tanstack/react-router' {
       path: '/account'
       fullPath: '/account'
       preLoaderRoute: typeof AppAccountRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin-audit': {
+      id: '/_app/admin-audit'
+      path: '/admin-audit'
+      fullPath: '/admin-audit'
+      preLoaderRoute: typeof AppAdminAuditRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/admin-submissions': {
@@ -2048,6 +2067,7 @@ const AppStudioRouteWithChildren = AppStudioRoute._addFileChildren(
 interface AppRouteChildren {
   AppAboutRoute: typeof AppAboutRoute
   AppAccountRoute: typeof AppAccountRouteWithChildren
+  AppAdminAuditRoute: typeof AppAdminAuditRoute
   AppAdminSubmissionsRoute: typeof AppAdminSubmissionsRoute
   AppAdminWaitlistRoute: typeof AppAdminWaitlistRoute
   AppAdministrationRoute: typeof AppAdministrationRouteWithChildren
@@ -2112,6 +2132,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAboutRoute: AppAboutRoute,
   AppAccountRoute: AppAccountRouteWithChildren,
+  AppAdminAuditRoute: AppAdminAuditRoute,
   AppAdminSubmissionsRoute: AppAdminSubmissionsRoute,
   AppAdminWaitlistRoute: AppAdminWaitlistRoute,
   AppAdministrationRoute: AppAdministrationRouteWithChildren,

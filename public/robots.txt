@@ -5,6 +5,7 @@ Allow: /
 Disallow: /account
 Disallow: /administration
 Disallow: /admin-submissions
+Disallow: /admin-audit
 Disallow: /admin-waitlist
 Disallow: /auth
 Disallow: /boards
