@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUseCaseXPro } from "@/hooks/usecasex-pro";
+import { ListCountNotice } from "@/components/usecasex/ListCountNotice";
 import {
   PORTFOLIO_STATUSES,
   PORTFOLIO_TYPES,
