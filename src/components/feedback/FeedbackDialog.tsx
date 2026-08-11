@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useRouterState } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { MessageSquarePlus } from "lucide-react";
+import { CheckCircle2, MessageSquarePlus } from "lucide-react";
 
 import { submitFeedback } from "@/lib/feedback/feedback.functions";
 import {
