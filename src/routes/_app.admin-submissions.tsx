@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import * as adminRepo from "@/lib/domain/admin.repository";
+import { useServerFn } from "@tanstack/react-start";
+import { reviewSubmission as reviewSubmissionFn } from "@/lib/submissions.functions";
 import { toUserMessage } from "@/lib/domain/errors";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { RequireRoles } from "@/components/RequireRoles";
@@ -67,6 +69,7 @@ function AdminSubmissions() {
   const [status, setStatus] = useState<string>("all");
   const [active, setActive] = useState<Submission | null>(null);
   const [notes, setNotes] = useState("");
+  const runReview = useServerFn(reviewSubmissionFn);
 
   const load = async () => {
     setLoading(true);
@@ -83,12 +86,18 @@ function AdminSubmissions() {
   }, []);
 
   const review = async (s: Submission, next: SubmissionStatus) => {
+    if (next === "draft") return;
     try {
-      await adminRepo.reviewSubmission({
-        id: s.id,
-        status: next,
-        reviewNotes: notes || s.review_notes,
+      const result = await runReview({
+        data: {
+          id: s.id,
+          status: next,
+          reviewNotes: notes || s.review_notes,
+          publish: next === "approved",
+        },
       });
+      if (result.published)
+        toast.success(`Published to the repository as “${result.published.slug}”.`);
     } catch (e) {
       toast.error(toUserMessage(e, "We could not update this submission."));
       return;

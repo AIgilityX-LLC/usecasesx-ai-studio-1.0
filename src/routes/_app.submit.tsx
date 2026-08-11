@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { PageHero } from "@/components/usecasex/PageHero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,11 +25,17 @@ import { toast } from "sonner";
 import { Send, Save, Trash2, Plus } from "lucide-react";
 import {
   type Submission,
-  type SubmissionStatus,
+  SubmissionInput,
   statusBadgeClass,
   statusLabel,
   parseList,
 } from "@/lib/submissions";
+import {
+  listMySubmissions,
+  saveSubmission,
+  submitDraft as submitDraftFn,
+  deleteDraft,
+} from "@/lib/submissions.functions";
 
 export const Route = createFileRoute("/_app/submit")({
   head: () => ({
@@ -63,71 +69,104 @@ function SubmitPage() {
   const [saving, setSaving] = useState(false);
   const [mine, setMine] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const set = (k: keyof typeof EMPTY, v: string) => setForm((f) => ({ ...f, [k]: v }));
+  const fetchMine = useServerFn(listMySubmissions);
+  const save = useServerFn(saveSubmission);
+  const promoteDraft = useServerFn(submitDraftFn);
+  const removeDraft = useServerFn(deleteDraft);
+
+  const set = (k: keyof typeof EMPTY, v: string) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    setErrors((e) => (e[k] ? { ...e, [k]: "" } : e));
+  };
 
   const load = async () => {
-    const { data } = await supabase
-      .from("use_case_submissions")
-      .select("*")
-      .order("created_at", { ascending: false });
-    setMine((data as Submission[]) ?? []);
+    try {
+      setMine((await fetchMine()) as unknown as Submission[]);
+    } catch {
+      toast.error("We could not load your submissions.");
+      setMine([]);
+    }
     setLoading(false);
   };
   useEffect(() => {
     if (session) load();
     else if (session === null) setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
-  const submit = async (status: SubmissionStatus) => {
+  const submit = async (status: "draft" | "submitted") => {
     if (!session) {
       toast.error("Please sign in to submit.");
       return;
     }
-    if (!form.title.trim()) {
-      toast.error("Title is required.");
-      return;
-    }
-    setSaving(true);
-    const { error } = await supabase.from("use_case_submissions").insert({
-      user_id: session.user.id,
-      title: form.title.trim(),
-      summary: form.summary || null,
-      business_problem: form.business_problem || null,
-      ai_solution: form.ai_solution || null,
-      industry: form.industry || null,
-      sector: form.sector || null,
+    const candidate = {
+      title: form.title,
+      summary: form.summary,
+      businessProblem: form.business_problem,
+      aiSolution: form.ai_solution,
+      industry: form.industry || undefined,
+      sector: form.sector || undefined,
       tags: parseList(form.tags),
       sources: parseList(form.sources),
       status,
-    });
-    setSaving(false);
-    if (error) {
-      toast.error("Failed: " + error.message);
+    };
+    // Drafts are intentionally lenient: only the title is enforced.
+    const parsed =
+      status === "draft"
+        ? SubmissionInput.pick({ title: true }).safeParse(candidate)
+        : SubmissionInput.safeParse(candidate);
+    if (!parsed.success) {
+      const fieldMap: Record<string, keyof typeof EMPTY> = {
+        title: "title",
+        summary: "summary",
+        businessProblem: "business_problem",
+        aiSolution: "ai_solution",
+        industry: "industry",
+        sector: "sector",
+      };
+      const next: Record<string, string> = {};
+      for (const issue of parsed.error.issues) {
+        const key = fieldMap[String(issue.path[0])] ?? String(issue.path[0]);
+        next[key] = issue.message;
+      }
+      setErrors(next);
+      toast.error("Please fix the highlighted fields.");
       return;
     }
-    toast.success(status === "draft" ? "Draft saved" : "Submitted for review");
-    setForm({ ...EMPTY });
-    load();
+
+    setSaving(true);
+    try {
+      await save({ data: { ...candidate, status } });
+      toast.success(
+        status === "draft" ? "Draft saved" : "Submitted for review — a reviewer will respond.",
+      );
+      setForm({ ...EMPTY });
+      setErrors({});
+      await load();
+    } catch (e) {
+      toast.error("Failed: " + (e instanceof Error ? e.message : "unknown error"));
+    }
+    setSaving(false);
   };
 
   const remove = async (id: string) => {
-    const { error } = await supabase.from("use_case_submissions").delete().eq("id", id);
-    if (error) {
-      toast.error("Delete failed: " + error.message);
+    try {
+      await removeDraft({ data: { id } });
+    } catch (e) {
+      toast.error("Delete failed: " + (e instanceof Error ? e.message : "unknown error"));
       return;
     }
     setMine((prev) => prev.filter((s) => s.id !== id));
     toast.success("Draft deleted");
   };
 
-  const submitDraft = async (s: Submission) => {
-    const { error } = await supabase
-      .from("use_case_submissions")
-      .update({ status: "submitted" })
-      .eq("id", s.id);
-    if (error) {
-      toast.error("Failed: " + error.message);
+  const sendDraft = async (s: Submission) => {
+    try {
+      await promoteDraft({ data: { id: s.id } });
+    } catch (e) {
+      toast.error("Failed: " + (e instanceof Error ? e.message : "unknown error"));
       return;
     }
     setMine((prev) => prev.map((x) => (x.id === s.id ? { ...x, status: "submitted" } : x)));
@@ -175,17 +214,23 @@ function SubmitPage() {
                   value={form.title}
                   onChange={(e) => set("title", e.target.value)}
                   maxLength={200}
+                  aria-invalid={!!errors.title}
+                  aria-describedby={errors.title ? "title-error" : undefined}
                   placeholder="e.g. Automated benefits eligibility triage"
                 />
+                <FieldError id="title-error" message={errors.title} />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="summary">Summary</Label>
+                <Label htmlFor="summary">Summary *</Label>
                 <Textarea
                   id="summary"
                   value={form.summary}
                   onChange={(e) => set("summary", e.target.value)}
-                  rows={2}
+                  rows={3}
+                  maxLength={1000}
+                  aria-invalid={!!errors.summary}
                 />
+                <FieldError id="summary-error" message={errors.summary} />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
@@ -208,22 +253,28 @@ function SubmitPage() {
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="problem">Business problem</Label>
+                <Label htmlFor="problem">Business problem *</Label>
                 <Textarea
                   id="problem"
                   value={form.business_problem}
                   onChange={(e) => set("business_problem", e.target.value)}
                   rows={3}
+                  maxLength={4000}
+                  aria-invalid={!!errors.business_problem}
                 />
+                <FieldError id="problem-error" message={errors.business_problem} />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="solution">AI solution</Label>
+                <Label htmlFor="solution">AI solution *</Label>
                 <Textarea
                   id="solution"
                   value={form.ai_solution}
                   onChange={(e) => set("ai_solution", e.target.value)}
                   rows={3}
+                  maxLength={4000}
+                  aria-invalid={!!errors.ai_solution}
                 />
+                <FieldError id="solution-error" message={errors.ai_solution} />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
@@ -253,6 +304,10 @@ function SubmitPage() {
                   <Save className="mr-2 h-4 w-4" /> Save as draft
                 </Button>
               </div>
+              <p className="text-xs text-muted-foreground">
+                Submitted use cases are reviewed before publication. Approved submissions are
+                published to the repository with a community-contribution provenance label.
+              </p>
             </CardContent>
           </Card>
 
@@ -295,7 +350,7 @@ function SubmitPage() {
                             size="sm"
                             variant="outline"
                             className="h-7 text-xs"
-                            onClick={() => submitDraft(s)}
+                            onClick={() => sendDraft(s)}
                           >
                             <Send className="mr-1 h-3 w-3" /> Submit
                           </Button>
@@ -335,5 +390,14 @@ function SubmitPage() {
         </div>
       </section>
     </>
+  );
+}
+
+function FieldError({ id, message }: { id: string; message?: string }) {
+  if (!message) return null;
+  return (
+    <p id={id} className="text-xs font-medium text-destructive">
+      {message}
+    </p>
   );
 }
