@@ -10,6 +10,7 @@ import { MobileNav } from "./MobileNav";
 import { UseCasesXFooter } from "./UseCasesXFooter";
 import brandMark from "@/assets/usecasesx-logo.png";
 import { EmailVerificationBanner } from "./EmailVerificationBanner";
+import { RequestAlertWatcher } from "./feedback/RequestAlertWatcher";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavLinkIntegrityCheck } from "@/lib/nav-integrity";
@@ -48,6 +49,8 @@ export function SiteShell({ children }: { children: ReactNode }) {
       w.__siteShellCount = (w.__siteShellCount ?? 1) - 1;
     };
   }, []);
+
+  const alertWatcher = <RequestAlertWatcher enabled={isAuthed} />;
 
   const headerInner = (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-border bg-background/85 px-4 backdrop-blur">
@@ -135,6 +138,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
         <SkipToContent />
         {headerInner}
         <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
+          {alertWatcher}
           {children}
         </main>
         <UseCasesXFooter />
@@ -153,7 +157,8 @@ export function SiteShell({ children }: { children: ReactNode }) {
           {headerInner}
           <EmailVerificationBanner />
           <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
-            {children}
+            {alertWatcher}
+          {children}
           </main>
           <UseCasesXFooter />
         </SidebarInset>
