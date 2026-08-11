@@ -456,6 +456,10 @@ export function useUseCaseXPro() {
       /** repository slug → repository use_cases.id (value/Studio lineage). */
       slugToId: data.slugToId,
       portfolios: data.portfolios,
+      /** Completeness of the saved list (loaded vs. total, cap applied). */
+      savedMeta: data.savedMeta,
+      /** Completeness of the portfolio list (loaded vs. total, cap applied). */
+      portfolioMeta: data.portfolioMeta,
       isLoading: query.isLoading,
       isAuthenticated: !!userId,
       error: query.error,
