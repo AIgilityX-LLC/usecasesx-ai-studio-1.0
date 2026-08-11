@@ -105,6 +105,7 @@ const ADMIN: Item[] = [
   { to: "/reports", label: "Reports", icon: FileBarChart },
   { to: "/administration", label: "Admin Panel", icon: Settings, admin: true },
   { to: "/administration/requests", label: "Requests Inbox", icon: Inbox, admin: true },
+  { to: "/administration/pilot", label: "Pilot Programme", icon: Rocket, admin: true },
   { to: "/admin-submissions", label: "Submission Review", icon: Inbox, admin: true },
   { to: "/admin-audit", label: "Submission Audit", icon: ShieldCheck, admin: true },
   { to: "/admin-observability", label: "Export & AI Activity", icon: LineChart },
