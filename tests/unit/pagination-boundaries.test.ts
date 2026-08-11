@@ -169,7 +169,10 @@ describe("keyset paging boundaries", () => {
       200,
     );
 
-    const expected = [...table.rows].sort(compare).slice(0, 200).map((row) => row.id);
+    const expected = [...table.rows]
+      .sort(compare)
+      .slice(0, 200)
+      .map((row) => row.id);
     expect(result.rows.map((row) => row.id)).toEqual(expected);
   });
 });

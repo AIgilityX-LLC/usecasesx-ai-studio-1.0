@@ -107,7 +107,8 @@ function RequestsInbox() {
       void queryClient.invalidateQueries({ queryKey: ["requests-inbox"] });
       void queryClient.invalidateQueries({ queryKey: ["feedback-queue"] });
     },
-    onError: (error: unknown) => toast.error(toUserMessage(error, "Could not update this request.")),
+    onError: (error: unknown) =>
+      toast.error(toUserMessage(error, "Could not update this request.")),
   });
 
   const setLeadStatus = useMutation({
@@ -413,9 +414,7 @@ function FeedbackList({
                 <Badge variant="outline">{item.category}</Badge>
                 {!item.isRealActivity ? <Badge variant="secondary">demo</Badge> : null}
                 <span className="text-xs text-muted-foreground">
-                  <time dateTime={item.createdAt}>
-                    {new Date(item.createdAt).toLocaleString()}
-                  </time>
+                  <time dateTime={item.createdAt}>{new Date(item.createdAt).toLocaleString()}</time>
                 </span>
               </div>
               <p className="whitespace-pre-wrap text-sm">{item.message}</p>

@@ -186,117 +186,125 @@ export function FeedbackDialog({
           </>
         ) : (
           <>
-        <DialogHeader>
-          <DialogTitle>Send product feedback</DialogTitle>
-          <DialogDescription>
-            Goes to the internal launch queue. We store the page you were on, not your work content.
-          </DialogDescription>
-        </DialogHeader>
+            <DialogHeader>
+              <DialogTitle>Send product feedback</DialogTitle>
+              <DialogDescription>
+                Goes to the internal launch queue. We store the page you were on, not your work
+                content.
+              </DialogDescription>
+            </DialogHeader>
 
-        <div className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="feedback-category">Category</Label>
-              <Select value={category} onValueChange={(v) => setCategory(v as FeedbackCategory)}>
-                <SelectTrigger id="feedback-category">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {FEEDBACK_CATEGORIES.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      {item.label}
-                    </SelectItem>
+            <div className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="feedback-category">Category</Label>
+                  <Select
+                    value={category}
+                    onValueChange={(v) => setCategory(v as FeedbackCategory)}
+                  >
+                    <SelectTrigger id="feedback-category">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FEEDBACK_CATEGORIES.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="feedback-severity">Severity</Label>
+                  <Select
+                    value={severity}
+                    onValueChange={(v) => setSeverity(v as FeedbackSeverity)}
+                  >
+                    <SelectTrigger id="feedback-severity">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FEEDBACK_SEVERITIES.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="feedback-message">What happened?</Label>
+                <Textarea
+                  id="feedback-message"
+                  rows={5}
+                  value={message}
+                  maxLength={FEEDBACK_MESSAGE_MAX}
+                  onChange={(event) => setMessage(event.target.value)}
+                  placeholder="Describe what you expected and what you saw."
+                />
+                <p className="text-xs text-muted-foreground">
+                  Context: <span className="font-mono">{pathname}</span>
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="feedback-evidence">Evidence link (optional)</Label>
+                <Input
+                  id="feedback-evidence"
+                  type="url"
+                  value={evidenceUrl}
+                  onChange={(event) => setEvidenceUrl(event.target.value)}
+                  placeholder="https://…"
+                />
+              </div>
+
+              <div className="space-y-3 rounded-md border border-border p-3">
+                <div className="flex items-start gap-2">
+                  <Checkbox
+                    id="feedback-consent"
+                    checked={allowContact}
+                    onCheckedChange={(value) => setAllowContact(value === true)}
+                  />
+                  <Label htmlFor="feedback-consent" className="text-sm font-normal leading-snug">
+                    You may contact me about this feedback.
+                  </Label>
+                </div>
+                {allowContact ? (
+                  <Input
+                    type="email"
+                    aria-label="Contact email"
+                    value={contactEmail}
+                    onChange={(event) => setContactEmail(event.target.value)}
+                    placeholder="you@company.com"
+                  />
+                ) : null}
+                <ul className="space-y-1 text-xs text-muted-foreground">
+                  {SUPPORT_EXPECTATIONS.map((item) => (
+                    <li key={item.title}>
+                      <span className="font-medium text-foreground">{item.title}:</span>{" "}
+                      {item.detail}
+                    </li>
                   ))}
-                </SelectContent>
-              </Select>
+                </ul>
+              </div>
+
+              {error ? (
+                <p role="alert" className="text-sm text-destructive">
+                  {error}
+                </p>
+              ) : null}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="feedback-severity">Severity</Label>
-              <Select value={severity} onValueChange={(v) => setSeverity(v as FeedbackSeverity)}>
-                <SelectTrigger id="feedback-severity">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {FEEDBACK_SEVERITIES.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      {item.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="feedback-message">What happened?</Label>
-            <Textarea
-              id="feedback-message"
-              rows={5}
-              value={message}
-              maxLength={FEEDBACK_MESSAGE_MAX}
-              onChange={(event) => setMessage(event.target.value)}
-              placeholder="Describe what you expected and what you saw."
-            />
-            <p className="text-xs text-muted-foreground">
-              Context: <span className="font-mono">{pathname}</span>
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="feedback-evidence">Evidence link (optional)</Label>
-            <Input
-              id="feedback-evidence"
-              type="url"
-              value={evidenceUrl}
-              onChange={(event) => setEvidenceUrl(event.target.value)}
-              placeholder="https://…"
-            />
-          </div>
-
-          <div className="space-y-3 rounded-md border border-border p-3">
-            <div className="flex items-start gap-2">
-              <Checkbox
-                id="feedback-consent"
-                checked={allowContact}
-                onCheckedChange={(value) => setAllowContact(value === true)}
-              />
-              <Label htmlFor="feedback-consent" className="text-sm font-normal leading-snug">
-                You may contact me about this feedback.
-              </Label>
-            </div>
-            {allowContact ? (
-              <Input
-                type="email"
-                aria-label="Contact email"
-                value={contactEmail}
-                onChange={(event) => setContactEmail(event.target.value)}
-                placeholder="you@company.com"
-              />
-            ) : null}
-            <ul className="space-y-1 text-xs text-muted-foreground">
-              {SUPPORT_EXPECTATIONS.map((item) => (
-                <li key={item.title}>
-                  <span className="font-medium text-foreground">{item.title}:</span> {item.detail}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {error ? (
-            <p role="alert" className="text-sm text-destructive">
-              {error}
-            </p>
-          ) : null}
-        </div>
-
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => handleOpenChange(false)} disabled={busy}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={busy || tooShort}>
-            {busy ? "Sending…" : "Send feedback"}
-          </Button>
-        </DialogFooter>
+            <DialogFooter>
+              <Button variant="ghost" onClick={() => handleOpenChange(false)} disabled={busy}>
+                Cancel
+              </Button>
+              <Button onClick={handleSubmit} disabled={busy || tooShort}>
+                {busy ? "Sending…" : "Send feedback"}
+              </Button>
+            </DialogFooter>
           </>
         )}
       </DialogContent>

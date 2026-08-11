@@ -124,14 +124,16 @@ function SupportPage() {
               <ul className="divide-y divide-border">
                 {(mine.data ?? []).map((item) => (
                   <li key={item.id} className="flex flex-wrap items-start gap-3 py-3">
-                    <Badge variant={FEEDBACK_STATUS_TONE[item.status as FeedbackStatus] ?? "outline"}>
+                    <Badge
+                      variant={FEEDBACK_STATUS_TONE[item.status as FeedbackStatus] ?? "outline"}
+                    >
                       {feedbackStatusLabel(item.status)}
                     </Badge>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm">{item.message}</p>
                       <p className="text-xs text-muted-foreground">
-                        Ref {item.id.slice(0, 8).toUpperCase()} · {item.category} · {item.severity} ·
-                        submitted{" "}
+                        Ref {item.id.slice(0, 8).toUpperCase()} · {item.category} · {item.severity}{" "}
+                        · submitted{" "}
                         <time dateTime={item.createdAt}>
                           {new Date(item.createdAt).toLocaleString()}
                         </time>
