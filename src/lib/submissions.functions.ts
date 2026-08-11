@@ -165,7 +165,7 @@ export const reviewSubmission = createServerFn({ method: "POST" })
     // contributors can never publish their own drafts.
     const { data: published, error: pubErr } = await supabase.rpc("publish_use_case_submission", {
       _submission_id: data.id,
-      _review_notes: data.reviewNotes ?? null,
+      _review_notes: data.reviewNotes ?? undefined,
     });
     if (pubErr)
       throw logDbFailure("publish_use_case_submission", pubErr, {
