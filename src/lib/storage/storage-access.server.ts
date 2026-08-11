@@ -47,7 +47,9 @@ export async function issueEvidenceSignedUrl(
 
   const ttl = signedUrlTtl(EVIDENCE_BUCKET);
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin.storage.from(EVIDENCE_BUCKET).createSignedUrl(path, ttl);
+  const { data, error } = await supabaseAdmin.storage
+    .from(EVIDENCE_BUCKET)
+    .createSignedUrl(path, ttl);
   if (error || !data?.signedUrl) {
     console.error("[storage] signed url failed", { bucket: EVIDENCE_BUCKET });
     return { ok: false, reason: "That evidence file could not be opened." };

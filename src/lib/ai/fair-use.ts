@@ -103,9 +103,8 @@ export function evaluateBurst(
   return {
     allowed: !userExceeded && !workspaceExceeded,
     used: workspaceExceeded && !userExceeded ? usedByWorkspace : usedByUser,
-    limit: workspaceExceeded && !userExceeded
-      ? limits.perWorkspacePerMinute
-      : limits.perUserPerMinute,
+    limit:
+      workspaceExceeded && !userExceeded ? limits.perWorkspacePerMinute : limits.perUserPerMinute,
     resetsAt,
   };
 }

@@ -31,10 +31,7 @@ const NEUTRALISE: Array<[RegExp, string]> = [
     /\b(ignore|disregard|forget|override)\b[^.\n]{0,40}\b(previous|prior|above|earlier|all)\b[^.\n]{0,40}\b(instruction|instructions|prompt|prompts|rules?)\b/gi,
     "[instruction-override removed]",
   ],
-  [
-    /\b(you are now|act as|pretend to be|from now on you)\b[^.\n]{0,60}/gi,
-    "[role-change removed]",
-  ],
+  [/\b(you are now|act as|pretend to be|from now on you)\b[^.\n]{0,60}/gi, "[role-change removed]"],
   // Exfiltration probes.
   [
     /\b(reveal|print|show|repeat|output)\b[^.\n]{0,30}\b(system prompt|your instructions|api[_ -]?key|secret)\b/gi,

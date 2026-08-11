@@ -270,7 +270,10 @@ async function main() {
     // must not let a foreign session read the underlying rows.
     assertDenied(
       "a share token does not grant B table access",
-      await b.client.from("portfolio_items").select("portfolio_id").eq("portfolio_id", portfolioA.id),
+      await b.client
+        .from("portfolio_items")
+        .select("portfolio_id")
+        .eq("portfolio_id", portfolioA.id),
     );
     assertDenied(
       "anon cannot resolve a share token against the table",

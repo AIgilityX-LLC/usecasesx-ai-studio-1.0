@@ -74,9 +74,8 @@ export const Route = createFileRoute("/api/public/usecasex/roadmap/export")({
 
         // A valid bearer token is not authorization: re-derive the caller's
         // workspace role and entitlement server-side before producing a file.
-        const { authorizeExport, portfolioWorkspaceId } = await import(
-          "@/lib/reports/report-access.server"
-        );
+        const { authorizeExport, portfolioWorkspaceId } =
+          await import("@/lib/reports/report-access.server");
         const workspaceId = await portfolioWorkspaceId(client as never, parsed.portfolioId);
         if (!workspaceId) {
           return new Response("Not found", { status: 404, headers: CORS });

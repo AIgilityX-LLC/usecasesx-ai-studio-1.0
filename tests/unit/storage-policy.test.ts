@@ -76,16 +76,16 @@ describe("upload validation", () => {
   });
 
   it("rejects an empty file and a missing MIME type", () => {
-    expect(
-      validateUpload("avatars", { name: "a.png", size: 0, type: "image/png" }).allowed,
-    ).toBe(false);
+    expect(validateUpload("avatars", { name: "a.png", size: 0, type: "image/png" }).allowed).toBe(
+      false,
+    );
     expect(validateUpload("avatars", { name: "a.png", size: 10, type: "" }).allowed).toBe(false);
   });
 
   it("keeps avatars to images only", () => {
-    expect(validateUpload("avatars", { name: "x.pdf", size: 10, type: "application/pdf" }).allowed).toBe(
-      false,
-    );
+    expect(
+      validateUpload("avatars", { name: "x.pdf", size: 10, type: "application/pdf" }).allowed,
+    ).toBe(false);
     expect(validateUpload("avatars", { name: "x.png", size: 10, type: "image/png" }).allowed).toBe(
       true,
     );

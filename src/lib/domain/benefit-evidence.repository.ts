@@ -11,11 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { DomainError, normalizeError } from "./errors";
 import type { BenefitEvidenceItem } from "@/lib/value/benefits.model";
 import { EVIDENCE_BUCKET as EVIDENCE_BUCKET_ID } from "@/lib/storage/buckets";
-import {
-  BUCKET_POLICIES,
-  safeObjectName,
-  validateUpload,
-} from "@/lib/storage/storage-policy";
+import { BUCKET_POLICIES, safeObjectName, validateUpload } from "@/lib/storage/storage-policy";
 import { createEvidenceSignedUrlFn } from "@/lib/storage.functions";
 
 export const EVIDENCE_BUCKET = EVIDENCE_BUCKET_ID;
