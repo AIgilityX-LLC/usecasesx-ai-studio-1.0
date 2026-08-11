@@ -76,9 +76,9 @@ function PilotPage() {
         </p>
         <h1 className="text-3xl font-semibold tracking-tight">Your pilot mission</h1>
         <p className="text-sm text-muted-foreground">
-          A controlled pilot of {PILOT_SEAT_TARGET_MIN}–{PILOT_SEAT_TARGET_MAX} practitioners
-          ahead of the 14 August 2026 release. One mission, five steps: create three use cases,
-          score them, build a portfolio and export the summary.
+          A controlled pilot of {PILOT_SEAT_TARGET_MIN}–{PILOT_SEAT_TARGET_MAX} practitioners ahead
+          of the 14 August 2026 release. One mission, five steps: create three use cases, score
+          them, build a portfolio and export the summary.
         </p>
         {invitation ? (
           <div className="flex flex-wrap items-center gap-2">
@@ -140,15 +140,14 @@ function PilotPage() {
                   {step.done ? (
                     <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
                   ) : (
-                    <Circle
-                      className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground"
-                      aria-hidden
-                    />
+                    <Circle className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />
                   )}
                   <div>
                     <p className="text-sm font-medium">
                       {index + 1}. {step.label}
-                      <span className="sr-only">{step.done ? " (complete)" : " (not started)"}</span>
+                      <span className="sr-only">
+                        {step.done ? " (complete)" : " (not started)"}
+                      </span>
                     </p>
                     <p className="text-xs text-muted-foreground">{step.helper}</p>
                     <p className="mt-1 text-xs font-medium">

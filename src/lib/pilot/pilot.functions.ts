@@ -128,9 +128,8 @@ export const invitePilotParticipantFn = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => InviteInput.parse(d))
   .handler(async ({ data, context }) => {
     await assertPlatformAdmin(context.supabase, context.userId);
-    const { getPilotSettings, createInvitation, listInvitations } = await import(
-      "@/lib/pilot/pilot.server"
-    );
+    const { getPilotSettings, createInvitation, listInvitations } =
+      await import("@/lib/pilot/pilot.server");
     const settings = await getPilotSettings(context.supabase);
     if (settings.invitationsPaused) {
       throw new Error(

@@ -114,9 +114,7 @@ function PilotAdmin() {
     mutationFn: (paused: boolean) =>
       setPaused({ data: { paused, reason: paused ? pauseReason.trim() || null : null } }),
     onSuccess: (settings) => {
-      toast.success(
-        settings.invitationsPaused ? "New invitations paused" : "Invitations resumed",
-      );
+      toast.success(settings.invitationsPaused ? "New invitations paused" : "Invitations resumed");
       void refresh();
     },
     onError: (error: unknown) =>
@@ -181,9 +179,7 @@ function PilotAdmin() {
           <AlertTitle>New pilot invitations are paused</AlertTitle>
           <AlertDescription>
             {settings.pauseReason ?? "No reason recorded."}
-            {settings.pausedAt
-              ? ` · paused ${new Date(settings.pausedAt).toLocaleString()}`
-              : ""}
+            {settings.pausedAt ? ` · paused ${new Date(settings.pausedAt).toLocaleString()}` : ""}
           </AlertDescription>
         </Alert>
       )}
@@ -193,7 +189,11 @@ function PilotAdmin() {
         <Stat label="Registered" value={String(summary.registered)} />
         <Stat label="Activated" value={String(summary.activated)} hint="first mission step" />
         <Stat label="Completed" value={String(summary.completed)} hint="full mission" />
-        <Stat label="Blockers" value={String(summary.blockersReported)} hint="reported at checkpoints" />
+        <Stat
+          label="Blockers"
+          value={String(summary.blockersReported)}
+          hint="reported at checkpoints"
+        />
         <Stat label="Advisory interest" value={String(summary.advisoryInterest)} />
       </section>
 
@@ -310,13 +310,27 @@ function PilotAdmin() {
                 </caption>
                 <thead>
                   <tr className="border-b text-left text-xs uppercase text-muted-foreground">
-                    <th scope="col" className="py-2 pr-4">Participant</th>
-                    <th scope="col" className="py-2 pr-4">Status</th>
-                    <th scope="col" className="py-2 pr-4">Mission</th>
-                    <th scope="col" className="py-2 pr-4">Checkpoints</th>
-                    <th scope="col" className="py-2 pr-4">Blockers</th>
-                    <th scope="col" className="py-2 pr-4">Advisory</th>
-                    <th scope="col" className="py-2">Set status</th>
+                    <th scope="col" className="py-2 pr-4">
+                      Participant
+                    </th>
+                    <th scope="col" className="py-2 pr-4">
+                      Status
+                    </th>
+                    <th scope="col" className="py-2 pr-4">
+                      Mission
+                    </th>
+                    <th scope="col" className="py-2 pr-4">
+                      Checkpoints
+                    </th>
+                    <th scope="col" className="py-2 pr-4">
+                      Blockers
+                    </th>
+                    <th scope="col" className="py-2 pr-4">
+                      Advisory
+                    </th>
+                    <th scope="col" className="py-2">
+                      Set status
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -353,7 +367,10 @@ function PilotAdmin() {
                             statusMutation.mutate({ id: row.id, status: value as PilotStatus })
                           }
                         >
-                          <SelectTrigger className="w-[150px]" aria-label={`Status for ${row.email}`}>
+                          <SelectTrigger
+                            className="w-[150px]"
+                            aria-label={`Status for ${row.email}`}
+                          >
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
