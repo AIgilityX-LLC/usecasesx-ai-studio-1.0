@@ -36,6 +36,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Trash2, FileText, Target, Gauge, FolderPlus } from "lucide-react";
 import { Can } from "@/components/Can";
+import { MyContributions } from "@/components/usecasex/MyContributions";
 import { useState } from "react";
 
 const PRIORITIES: Priority[] = ["Low", "Medium", "High", "Strategic"];
@@ -112,6 +113,7 @@ function SavedPage() {
       />
       <section className="bg-secondary/40">
         <div className="mx-auto max-w-[1280px] px-6 py-12 space-y-8">
+          <MyContributions />
           {items.length === 0 ? (
             <Card className="border-dashed">
               <CardContent className="py-16 text-center space-y-3">
