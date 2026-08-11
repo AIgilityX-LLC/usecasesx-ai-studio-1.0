@@ -12,7 +12,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 
   if (session === undefined) {
     return (
-      <div className="grid min-h-screen place-items-center bg-background text-sm text-muted-foreground">
+      <div className="grid min-h-dvh place-items-center bg-background text-sm text-muted-foreground">
         Verifying session…
       </div>
     );
