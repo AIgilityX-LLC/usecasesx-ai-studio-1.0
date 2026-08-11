@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getUseCase, listUseCases } from "@/lib/use-cases.functions";
 import { CtaTriad } from "@/components/usecasex/CtaTriad";
 import { segmentsForIndustries } from "@/lib/usecasex.derive";
+import { SITE_NAME, SITE_URL } from "@/lib/seo";
 import {
   DollarSign,
   Clock,
@@ -146,17 +147,19 @@ export const Route = createFileRoute("/_app/use-cases/$slug")({
       loaderData?.summary ??
       "AI use case detail — business problem, AI solution, value, data, KPIs, implementation, governance and risk."
     ).slice(0, 158);
-    const url = `https://usecasesx.aigilityx.com/use-cases/${params.slug}`;
+    const url = `${SITE_URL}/use-cases/${params.slug}`;
     // Template-only share card rendered on demand by /og/use-case/$slug.
-    const image = `https://usecasesx.aigilityx.com/og/use-case/${params.slug}`;
+    const image = `${SITE_URL}/og/use-case/${params.slug}`;
     return {
       meta: [
         { title },
         { name: "description", content: description },
+        { name: "robots", content: "index, follow" },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "article" },
         { property: "og:url", content: url },
+        { property: "og:site_name", content: SITE_NAME },
         { name: "twitter:card", content: "summary_large_image" },
         { property: "og:image", content: image },
         { property: "og:image:width", content: "1200" },

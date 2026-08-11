@@ -11,6 +11,8 @@ import { useEffect, type ReactNode } from "react";
 
 import { Toaster } from "@/components/ui/sonner";
 import { ConsentBanner } from "@/components/legal/ConsentBanner";
+import { captureAttribution } from "@/lib/analytics/attribution";
+import { ensureAnalyticsSession } from "@/lib/analytics/session";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
@@ -146,6 +148,13 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  // First-touch campaign attribution and the analytics session are captured on
+  // load, before any navigation can strip the query string.
+  useEffect(() => {
+    ensureAnalyticsSession();
+    captureAttribution();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
