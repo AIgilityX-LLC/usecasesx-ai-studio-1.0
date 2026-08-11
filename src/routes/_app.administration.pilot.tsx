@@ -13,6 +13,7 @@ import { Link } from "@tanstack/react-router";
 import {
   getPilotCohortFn,
   invitePilotParticipantFn,
+  invitePilotCohortFn,
   sendPilotRemindersFn,
   setPilotInvitationStatusFn,
   setPilotInvitationsPausedFn,
@@ -33,6 +34,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -66,6 +68,7 @@ function Stat({ label, value, hint }: { label: string; value: string; hint?: str
 function PilotAdmin() {
   const loadCohort = useServerFn(getPilotCohortFn);
   const invite = useServerFn(invitePilotParticipantFn);
+  const inviteCohort = useServerFn(invitePilotCohortFn);
   const setStatus = useServerFn(setPilotInvitationStatusFn);
   const setPaused = useServerFn(setPilotInvitationsPausedFn);
   const sendReminders = useServerFn(sendPilotRemindersFn);
@@ -76,6 +79,21 @@ function PilotAdmin() {
   const [organization, setOrganization] = useState("");
   const [pauseReason, setPauseReason] = useState("");
   const [statusReason, setStatusReason] = useState("");
+  const [bulkEmails, setBulkEmails] = useState("");
+  const [bulkOrganization, setBulkOrganization] = useState("");
+
+  const parsedBulkEmails = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          bulkEmails
+            .split(/[\s,;]+/)
+            .map((value) => value.trim().toLowerCase())
+            .filter((value) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)),
+        ),
+      ),
+    [bulkEmails],
+  );
 
   const cohort = useQuery({
     queryKey: ["pilot-cohort"],
@@ -108,6 +126,52 @@ function PilotAdmin() {
   });
 
   const remindersMutation = useMutation({
+    mutationFn: () => sendReminders(),
+    onSuccess: (result) => {
+      toast.success(
+        result.remindersCreated > 0
+          ? `${result.remindersCreated} reminder${result.remindersCreated === 1 ? "" : "s"} sent`
+          : "Everyone is already up to date",
+        {
+          description: `${result.participantsConsidered} participants checked · ${result.alreadyPending} already pending`,
+        },
+      );
+      void refresh();
+    },
+    onError: (error: unknown) =>
+      toast.error("Reminders not sent", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      }),
+  });
+
+  const bulkInviteMutation = useMutation({
+    mutationFn: () =>
+      inviteCohort({
+        data: {
+          emails: parsedBulkEmails,
+          organization: bulkOrganization.trim() || null,
+        },
+      }),
+    onSuccess: (result) => {
+      toast.success(
+        `${result.created.length} seat${result.created.length === 1 ? "" : "s"} enrolled`,
+        {
+          description:
+            result.skipped.length > 0
+              ? `${result.seatsUsed}/${result.seatTarget} seats used · ${result.skipped.length} skipped (${result.skipped[0]!.reason})`
+              : `${result.seatsUsed}/${result.seatTarget} seats used`,
+        },
+      );
+      setBulkEmails("");
+      void refresh();
+    },
+    onError: (error: unknown) =>
+      toast.error("Cohort not enrolled", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      }),
+  });
+
+  const _legacyReminders = useMutation({
     mutationFn: () => sendReminders(),
     onSuccess: (result) => {
       toast.success(
