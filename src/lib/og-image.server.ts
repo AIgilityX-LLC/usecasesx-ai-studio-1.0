@@ -131,7 +131,16 @@ export async function loadOgTemplateData(slug: string): Promise<OgTemplateData |
 }
 
 let fontCache: { regular: ArrayBuffer; bold: ArrayBuffer } | null = null;
-let resvgReady: Promise<typeof import("@resvg/resvg-wasm")> | null = null;
+/**
+ * The WASM module keeps init state per *isolate*, while this module can be
+ * re-evaluated (dev HMR, split server bundles). A module-scoped promise then
+ * calls `initWasm()` a second time and the renderer throws "Already
+ * initialized", turning every share-card request into a 500. Cache the ready
+ * promise on `globalThis` and treat a redundant init as success.
+ */
+const RESVG_READY_KEY = "__usecasesx_resvg_ready__";
+type ResvgModule = typeof import("@resvg/resvg-wasm");
+type ResvgGlobal = typeof globalThis & { [RESVG_READY_KEY]?: Promise<ResvgModule> };
 
 async function loadFonts(origin: string) {
   if (fontCache) return fontCache;
@@ -144,15 +153,20 @@ async function loadFonts(origin: string) {
 }
 
 async function loadResvg(origin: string) {
-  if (!resvgReady) {
-    resvgReady = (async () => {
+  const scope = globalThis as ResvgGlobal;
+  if (!scope[RESVG_READY_KEY]) {
+    scope[RESVG_READY_KEY] = (async () => {
       const mod = await import("@resvg/resvg-wasm");
       // Served as a static asset from public/wasm — never imported into the bundle.
-      await mod.initWasm(fetch(`${origin}/wasm/resvg.wasm`));
+      try {
+        await mod.initWasm(fetch(`${origin}/wasm/resvg.wasm`));
+      } catch (error) {
+        if (!/already initialized/i.test(String(error))) throw error;
+      }
       return mod;
     })();
   }
-  return resvgReady;
+  return scope[RESVG_READY_KEY];
 }
 
 /** Renders the PNG share card; unknown slugs get the generic branded card. */
