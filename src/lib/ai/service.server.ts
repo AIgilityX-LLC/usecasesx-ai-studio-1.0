@@ -156,9 +156,7 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
     ]);
     const burst = evaluateBurst(burstUser, burstWorkspace, burstLimits, burstStart);
     if (!burst.allowed) {
-      const { recordRateLimitEnforced } = await import(
-        "@/lib/observability/observability.server"
-      );
+      const { recordRateLimitEnforced } = await import("@/lib/observability/observability.server");
       await recordRateLimitEnforced(ctx.supabase, ctx.userId, {
         task,
         kind: "burst",
@@ -187,9 +185,7 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
     const verdict = evaluateFairUse(usedByUser, usedByWorkspace, limits, windowStart);
     fairUse = { used: verdict.used, limit: verdict.limit, resetsAt: verdict.resetsAt };
     if (!verdict.allowed) {
-      const { recordRateLimitEnforced } = await import(
-        "@/lib/observability/observability.server"
-      );
+      const { recordRateLimitEnforced } = await import("@/lib/observability/observability.server");
       await recordRateLimitEnforced(ctx.supabase, ctx.userId, {
         task,
         kind: "fair_use",
