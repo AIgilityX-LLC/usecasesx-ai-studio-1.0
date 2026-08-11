@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import {
   DRILL_MAX_AGE_DAYS,
   RECOVERY_DRILL,
