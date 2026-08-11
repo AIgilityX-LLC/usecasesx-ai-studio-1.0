@@ -164,6 +164,21 @@ Repeat sections 3.1–3.6 in each of the following. Note the browser version in 
 
 ---
 
+## 9a. Pilot evidence & release freeze
+
+| #    | Check                      | Expected                                                                                                 | Priority | Result |
+| ---- | -------------------------- | -------------------------------------------------------------------------------------------------------- | -------- | ------ |
+| 9a.1 | Triage panel loads         | Administration → Pilot programme shows "Triage & release readiness" for platform admins only.            | P0       |        |
+| 9a.2 | Non-admin cannot read it   | A contributor/viewer sees the access message, never the findings or the verdict.                         | P0       |        |
+| 9a.3 | Verdict is explicit        | The panel states Go / Conditional Go / No-Go / No-Go on evidence with the reasons behind it.             | P0       |        |
+| 9a.4 | Reported blockers are P0   | A checkpoint answered with "I was blocked" appears as a P0 finding naming the mission step.              | P0       |        |
+| 9a.5 | No fabricated metrics      | With no evidence the panel shows an empty state, not zeros presented as findings.                        | P0       |        |
+| 9a.6 | Evidence deep links work   | "View evidence" opens the pilot, requests, observability or launch-learning surface behind each finding. | P1       |        |
+| 9a.7 | Known issues match reality | `docs/product/known-issues-2026-08-14.md` matches what the triage panel currently reports.               | P0       |        |
+| 9a.8 | Freeze respected           | After the freeze date, only P0 fixes and evidence-backed copy corrections have been merged.              | P0       |        |
+
+---
+
 ## 10. Sign-off
 
 | Field                         | Value              |

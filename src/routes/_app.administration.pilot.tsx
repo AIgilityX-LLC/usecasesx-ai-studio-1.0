@@ -27,6 +27,7 @@ import {
   type PilotStatus,
 } from "@/lib/pilot/pilot.model";
 import { PilotExportMenu } from "@/components/pilot/PilotExportMenu";
+import { PilotTriagePanel } from "@/components/pilot/PilotTriagePanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -226,6 +227,8 @@ function PilotAdmin() {
         />
         <Stat label="Advisory interest" value={String(summary.advisoryInterest)} />
       </section>
+
+      <PilotTriagePanel />
 
       <Card>
         <CardHeader className="gap-3">

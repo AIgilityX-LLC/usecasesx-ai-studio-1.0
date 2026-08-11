@@ -45,6 +45,8 @@ const StatusInput = z.object({
 
 const ReminderIdInput = z.object({ id: z.string().uuid() });
 
+const TriageInput = z.object({ windowDays: z.number().int().min(7).max(90).default(30) });
+
 /** Participant view: own invitation, measured mission progress, own answers. */
 export const getMyPilotFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -138,6 +140,16 @@ export const getPilotCohortFn = createServerFn({ method: "GET" })
       listPilotAudit(context.supabase, settings.cohort),
     ]);
     return { settings, rows, checkpoints, emailByUserId, audit };
+  });
+
+/** Read-only stabilisation view: classified pilot evidence + freeze verdict. */
+export const getPilotTriageFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => TriageInput.parse(d ?? {}))
+  .handler(async ({ data, context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { buildPilotTriageReport } = await import("@/lib/pilot/pilot.triage.server");
+    return buildPilotTriageReport(context.supabase, { windowDays: data.windowDays });
   });
 
 export const invitePilotParticipantFn = createServerFn({ method: "POST" })
