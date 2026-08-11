@@ -94,11 +94,7 @@ function LaunchChecks() {
           disabled={!run_}
           onClick={() =>
             run_ &&
-            download(
-              `launch-checks-${stamp}.csv`,
-              "text/csv",
-              harnessResultsToCsv(run_.results),
-            )
+            download(`launch-checks-${stamp}.csv`, "text/csv", harnessResultsToCsv(run_.results))
           }
         >
           <Download className="mr-2 h-4 w-4" aria-hidden /> Results CSV

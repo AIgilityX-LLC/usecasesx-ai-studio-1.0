@@ -134,7 +134,9 @@ export async function grantWaiver(
   if (error) {
     // The partial unique index guarantees one active waiver per scope.
     if (error.code === "23505") {
-      throw new Error("An active waiver already covers this scope. Revoke it before granting another.");
+      throw new Error(
+        "An active waiver already covers this scope. Revoke it before granting another.",
+      );
     }
     throw new Error(error.message);
   }

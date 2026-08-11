@@ -217,7 +217,8 @@ function PilotAdmin() {
       setRosterFileName(file.name);
       if (parsed.participants.length === 0) {
         toast.error("No usable rows in that file", {
-          description: parsed.issues[0]?.reason ?? "Expected an email column or one email per line.",
+          description:
+            parsed.issues[0]?.reason ?? "Expected an email column or one email per line.",
         });
       }
     } catch (error) {

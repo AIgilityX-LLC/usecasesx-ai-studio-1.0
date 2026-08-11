@@ -415,9 +415,8 @@ export const getPilotGovernanceFn = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     await assertPlatformAdmin(context.supabase, context.userId);
     const { getPilotSettings } = await import("@/lib/pilot/pilot.server");
-    const { listWaivers, listVerdictSnapshots, listReminderDispatches } = await import(
-      "@/lib/pilot/pilot.governance.server"
-    );
+    const { listWaivers, listVerdictSnapshots, listReminderDispatches } =
+      await import("@/lib/pilot/pilot.governance.server");
     const settings = await getPilotSettings(context.supabase);
     const [waivers, snapshots, dispatches] = await Promise.all([
       listWaivers(context.supabase, settings.cohort),
@@ -494,9 +493,8 @@ export const recordPilotVerdictFn = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     await assertPlatformAdmin(context.supabase, context.userId);
     const { buildPilotTriageReport } = await import("@/lib/pilot/pilot.triage.server");
-    const { listWaivers, recordVerdictSnapshot } = await import(
-      "@/lib/pilot/pilot.governance.server"
-    );
+    const { listWaivers, recordVerdictSnapshot } =
+      await import("@/lib/pilot/pilot.governance.server");
     const { activeWaiver, applyLaunchWaiver } = await import("@/lib/pilot/pilot.governance");
     const report = await buildPilotTriageReport(context.supabase, { windowDays: 30 });
     const waivers = await listWaivers(context.supabase, report.cohort);

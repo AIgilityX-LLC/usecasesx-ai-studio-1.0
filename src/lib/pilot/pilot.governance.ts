@@ -78,9 +78,7 @@ export function activeWaiver(
 ): LaunchWaiver | null {
   const scope = options.scope ?? "pilot_evidence";
   const now = options.now ?? new Date();
-  return (
-    waivers.find((waiver) => waiver.scope === scope && isWaiverActive(waiver, now)) ?? null
-  );
+  return waivers.find((waiver) => waiver.scope === scope && isWaiverActive(waiver, now)) ?? null;
 }
 
 export type WaivedVerdict = {
@@ -118,7 +116,11 @@ export function applyLaunchWaiver(
 
   if (!waiver) return base;
   if (!isWaiverActive(waiver, now)) {
-    return { ...base, waiver, note: "The recorded waiver is revoked or expired; it does not apply." };
+    return {
+      ...base,
+      waiver,
+      note: "The recorded waiver is revoked or expired; it does not apply.",
+    };
   }
   if (freeze.counts.p0 > 0) {
     return {

@@ -237,9 +237,9 @@ export function PilotLaunchGovernanceCard({
           <BadgeCheck className="h-4 w-4" aria-hidden /> Launch governance
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          A waiver is an explicit, named override for missing pilot evidence only. It can never clear
-          an open P0 finding, and every grant, revocation and recorded verdict enters the audit
-          trail.
+          A waiver is an explicit, named override for missing pilot evidence only. It can never
+          clear an open P0 finding, and every grant, revocation and recorded verdict enters the
+          audit trail.
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -442,8 +442,8 @@ export function PilotLaunchGovernanceCard({
               {blockedDispatches.length} reminder email(s) waiting on a sender domain
             </AlertTitle>
             <AlertDescription>
-              The nudges are logged and participants still see them in the app. Email delivery starts
-              once a verified sender domain is set up for this project.
+              The nudges are logged and participants still see them in the app. Email delivery
+              starts once a verified sender domain is set up for this project.
             </AlertDescription>
           </Alert>
         )}
@@ -484,8 +484,8 @@ export function PilotLaunchGovernanceCard({
                     </span>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {snapshot.checkpointAnswers} answer(s) · {snapshot.registered}/{snapshot.invited}{" "}
-                    seats claimed · P0 {snapshot.p0Count} / P1 {snapshot.p1Count}
+                    {snapshot.checkpointAnswers} answer(s) · {snapshot.registered}/
+                    {snapshot.invited} seats claimed · P0 {snapshot.p0Count} / P1 {snapshot.p1Count}
                     {snapshot.waiverId ? " · recorded under a waiver" : ""}
                   </p>
                 </li>

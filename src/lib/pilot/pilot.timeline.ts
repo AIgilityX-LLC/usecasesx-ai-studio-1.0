@@ -72,10 +72,7 @@ const iso = (value: string | null | undefined): string | null =>
 export function buildPilotTimeline(input: TimelineInput): PilotTimelineEvent[] {
   const emailByUserId = input.emailByUserId ?? {};
   const events: PilotTimelineEvent[] = [];
-  const push = (
-    at: string | null,
-    event: Omit<PilotTimelineEvent, "at">,
-  ) => {
+  const push = (at: string | null, event: Omit<PilotTimelineEvent, "at">) => {
     if (!at) return;
     events.push({ at, ...event });
   };
@@ -112,19 +109,20 @@ export function buildPilotTimeline(input: TimelineInput): PilotTimelineEvent[] {
   }
 
   for (const response of input.checkpoints) {
-    const email = response.userId ? emailByUserId[response.userId] ?? null : null;
+    const email = response.userId ? (emailByUserId[response.userId] ?? null) : null;
     push(iso(response.createdAt), {
       category: "checkpoint",
       title: `Checkpoint answered — ${response.checkpoint}`,
-      detail: [
-        response.missionStep ? `step ${response.missionStep}` : null,
-        response.rating === null || response.rating === undefined
-          ? null
-          : `clarity ${response.rating}/5`,
-        response.blocked ? "reported blocked" : null,
-      ]
-        .filter(Boolean)
-        .join(" · ") || "No structured ratings recorded",
+      detail:
+        [
+          response.missionStep ? `step ${response.missionStep}` : null,
+          response.rating === null || response.rating === undefined
+            ? null
+            : `clarity ${response.rating}/5`,
+          response.blocked ? "reported blocked" : null,
+        ]
+          .filter(Boolean)
+          .join(" · ") || "No structured ratings recorded",
       participant: email,
       actor: null,
     });
@@ -134,14 +132,15 @@ export function buildPilotTimeline(input: TimelineInput): PilotTimelineEvent[] {
     push(iso(event.createdAt), {
       category: "admin",
       title: pilotAuditActionLabel(event.action),
-      detail: [
-        event.fromStatus || event.toStatus
-          ? `${event.fromStatus ?? "—"} → ${event.toStatus ?? "—"}`
-          : null,
-        event.reason,
-      ]
-        .filter(Boolean)
-        .join(" · ") || "No reason recorded",
+      detail:
+        [
+          event.fromStatus || event.toStatus
+            ? `${event.fromStatus ?? "—"} → ${event.toStatus ?? "—"}`
+            : null,
+          event.reason,
+        ]
+          .filter(Boolean)
+          .join(" · ") || "No reason recorded",
       participant: event.subjectEmail ?? null,
       actor: event.actorId ?? event.actorKind,
     });
@@ -247,7 +246,10 @@ export function buildTimelineMarkdown(input: {
     return lines.join("\n");
   }
 
-  lines.push(`| Occurred at | Category | Event | Participant | Detail |`, `| --- | --- | --- | --- | --- |`);
+  lines.push(
+    `| Occurred at | Category | Event | Participant | Detail |`,
+    `| --- | --- | --- | --- | --- |`,
+  );
   for (const event of input.events) {
     const cell = (value: string) => value.replace(/\|/g, "\\|");
     lines.push(

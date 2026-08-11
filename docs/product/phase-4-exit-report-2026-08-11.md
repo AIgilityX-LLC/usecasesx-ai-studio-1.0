@@ -10,29 +10,29 @@ The build, tests and isolation gates pass. Release-candidate freeze can begin, c
 
 Automated gates — all green:
 
-| Gate | Result |
-| --- | --- |
-| Unit/integration suite | 388 pass, 0 fail (40 files) |
-| Nav integrity | 45 nav targets + 6 redirects resolve, 0 dead links |
-| /compare analytics wiring | 7/7 events wired, compiles |
-| Typecheck (tsgo) | clean |
-| Lint | 0 errors, 258 warnings |
-| Production build | success (Workers bundle generated) |
-| Playwright | v1.61.1 available; browser P0 needs a signed-in preview session |
+| Gate                      | Result                                                          |
+| ------------------------- | --------------------------------------------------------------- |
+| Unit/integration suite    | 388 pass, 0 fail (40 files)                                     |
+| Nav integrity             | 45 nav targets + 6 redirects resolve, 0 dead links              |
+| /compare analytics wiring | 7/7 events wired, compiles                                      |
+| Typecheck (tsgo)          | clean                                                           |
+| Lint                      | 0 errors, 258 warnings                                          |
+| Production build          | success (Workers bundle generated)                              |
+| Playwright                | v1.61.1 available; browser P0 needs a signed-in preview session |
 
 Production data state:
 
-| Signal | Count |
-| --- | --- |
-| Published use cases | 54 |
-| Submissions | 2 |
-| Profiles | 5 |
-| Portfolios | 1 |
+| Signal                                    | Count     |
+| ----------------------------------------- | --------- |
+| Published use cases                       | 54        |
+| Submissions                               | 2         |
+| Profiles                                  | 5         |
+| Portfolios                                | 1         |
 | Opportunities / reports / AI usage events | 0 / 0 / 0 |
-| Audit events / product events | 64 / 26 |
-| Pilot invitations | 0 |
-| Pilot checkpoint responses | 0 |
-| Open blocking/high feedback | 0 |
+| Audit events / product events             | 64 / 26   |
+| Pilot invitations                         | 0         |
+| Pilot checkpoint responses                | 0         |
+| Open blocking/high feedback               | 0         |
 
 ---
 
@@ -70,15 +70,15 @@ No data-loss, auth, migration or build issue found. All migrations to date are a
 
 ## 4. Open risks and owner/decision
 
-| ID | Risk | Sev | Decision |
-| --- | --- | --- | --- |
-| R1 | Pilot never activated; core-journey usability unproven | P1 (release-gating for the acceptance criterion) | Owner: product. Issue 15–25 seats immediately or accept an explicit "launch without pilot evidence" waiver. |
-| R2 | `workshop_items` author self-approval | P1 | Fix before freeze — tighten `WITH CHECK` to pin `status = 'submitted'` for non-facilitators. Additive policy change. |
-| R3 | `module_events` / `cta_events` user_id spoofing | P2 | Fix before freeze (cheap, additive `WITH CHECK`). Analytics integrity only, no PII exposure. |
-| R4 | `SECURITY DEFINER` execute surface | P2 | Owner: engineering. Enumerate functions, revoke EXECUTE from `authenticated` where callers should be server-only. |
-| R5 | Browser P0 suite not executed against a signed-in preview | P2 | Owner: QA. Run the authenticated release regression pass once a preview session exists; unit/integration coverage stands in until then. |
-| R6 | 258 lint warnings | P3 | Accept for RC; burn down post-launch. |
-| R7 | Near-empty product tables (0 opportunities/reports) | P3 | Expected pre-launch; do not seed fake production records. |
+| ID  | Risk                                                      | Sev                                              | Decision                                                                                                                                |
+| --- | --------------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| R1  | Pilot never activated; core-journey usability unproven    | P1 (release-gating for the acceptance criterion) | Owner: product. Issue 15–25 seats immediately or accept an explicit "launch without pilot evidence" waiver.                             |
+| R2  | `workshop_items` author self-approval                     | P1                                               | Fix before freeze — tighten `WITH CHECK` to pin `status = 'submitted'` for non-facilitators. Additive policy change.                    |
+| R3  | `module_events` / `cta_events` user_id spoofing           | P2                                               | Fix before freeze (cheap, additive `WITH CHECK`). Analytics integrity only, no PII exposure.                                            |
+| R4  | `SECURITY DEFINER` execute surface                        | P2                                               | Owner: engineering. Enumerate functions, revoke EXECUTE from `authenticated` where callers should be server-only.                       |
+| R5  | Browser P0 suite not executed against a signed-in preview | P2                                               | Owner: QA. Run the authenticated release regression pass once a preview session exists; unit/integration coverage stands in until then. |
+| R6  | 258 lint warnings                                         | P3                                               | Accept for RC; burn down post-launch.                                                                                                   |
+| R7  | Near-empty product tables (0 opportunities/reports)       | P3                                               | Expected pre-launch; do not seed fake production records.                                                                               |
 
 ---
 

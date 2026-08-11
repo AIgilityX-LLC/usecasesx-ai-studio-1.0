@@ -38,10 +38,7 @@ describe("participant roster parsing", () => {
 
   it("accepts a plain list of emails without a header", () => {
     const result = parseParticipantRoster("one@example.com\ntwo@example.com");
-    expect(result.participants.map((p) => p.email)).toEqual([
-      "one@example.com",
-      "two@example.com",
-    ]);
+    expect(result.participants.map((p) => p.email)).toEqual(["one@example.com", "two@example.com"]);
   });
 
   it("reports invalid and duplicated rows instead of enrolling them", () => {
@@ -105,7 +102,10 @@ describe("launch waivers", () => {
   });
 
   it("picks the active waiver for the scope", () => {
-    const list = [waiver({ id: "old", revokedAt: "2026-08-02T00:00:00.000Z" }), waiver({ id: "new" })];
+    const list = [
+      waiver({ id: "old", revokedAt: "2026-08-02T00:00:00.000Z" }),
+      waiver({ id: "new" }),
+    ];
     expect(activeWaiver(list)?.id).toBe("new");
     expect(activeWaiver(list, { scope: "something_else" })).toBeNull();
   });
@@ -291,7 +291,9 @@ describe("launch check harness summary", () => {
   });
 
   it("flags attention for P1-only problems and passes when clean", () => {
-    expect(summarizeResults([result({ severity: "p1", status: "fail" })]).verdict).toBe("attention");
+    expect(summarizeResults([result({ severity: "p1", status: "fail" })]).verdict).toBe(
+      "attention",
+    );
     expect(summarizeResults([result({}), result({ status: "skipped" })]).verdict).toBe("pass");
   });
 

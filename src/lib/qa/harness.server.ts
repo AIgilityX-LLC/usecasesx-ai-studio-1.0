@@ -233,7 +233,10 @@ export async function runLaunchChecks(
           })
           .select("id");
         if (error) {
-          return { status: "pass", observed: `Database refused the spoofed insert: ${error.code ?? "denied"}.` };
+          return {
+            status: "pass",
+            observed: `Database refused the spoofed insert: ${error.code ?? "denied"}.`,
+          };
         }
         const inserted = ((data ?? []) as { id: string }[])[0]?.id ?? "unknown";
         return {

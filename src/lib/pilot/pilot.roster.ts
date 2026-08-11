@@ -133,7 +133,8 @@ export function parseParticipantRoster(
     if (mapping === null) {
       const lowered = cells.map((cell) => cell.toLowerCase());
       const looksLikeHeader =
-        lowered.some((cell) => cell in HEADER_ALIASES) && !lowered.some((cell) => EMAIL_RE.test(cell));
+        lowered.some((cell) => cell in HEADER_ALIASES) &&
+        !lowered.some((cell) => EMAIL_RE.test(cell));
       if (looksLikeHeader) {
         mapping = lowered.map((cell) => HEADER_ALIASES[cell] ?? null);
         if (!mapping.includes("email")) {

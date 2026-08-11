@@ -13,7 +13,10 @@ import { z } from "zod";
 import { isAuthorizedCron, unauthorized } from "@/lib/cron-auth.server";
 
 const bodySchema = z
-  .object({ dryRun: z.boolean().optional(), windowDays: z.number().int().min(1).max(90).optional() })
+  .object({
+    dryRun: z.boolean().optional(),
+    windowDays: z.number().int().min(1).max(90).optional(),
+  })
   .default({});
 
 export const Route = createFileRoute("/api/public/hooks/pilot-evidence-reminders")({
