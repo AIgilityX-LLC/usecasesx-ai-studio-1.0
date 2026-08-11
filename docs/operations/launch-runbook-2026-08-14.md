@@ -94,8 +94,10 @@ A failed smoke check is triaged with §4 severities before any further change la
 
 - **Method A (fastest):** Lovable chat revert / History → select the last known-good version, then
   Publish/Update. Use for a launch-surface regression.
-- **Method B:** redeploy the previous tag from source control. The previous artefact must be
-  identified **before** publish and recorded here: previous good tag **TO BE RECORDED**.
+- **Method B:** redeploy the previous tag from source control. **Not available for this launch:**
+  `v1.0.0-rc.1` is the first public artefact, so there is no earlier good tag. Method A is the
+  rollback path on 14 August; Method B becomes available from `v1.0.0-rc.2` onward, whose
+  previous-good tag is `v1.0.0-rc.1`.
 - Rollback authority: technical owner, on the launch decision owner's call.
 - After rollback: re-run §2 smoke checks 1–4 and record the outcome in the release notes.
 
@@ -103,7 +105,9 @@ A failed smoke check is triaged with §4 severities before any further change la
 
 Schema changes are never rolled back by reverting the application.
 
-- All 15 candidate migrations are **additive** (enforced by `bun run verify:release`), so the schema
+- All 16 candidate migrations are **additive** apart from the single analytics data correction
+  recorded as an exception in the migration manifest (enforced by `bun run verify:release`, which
+  now honours manifest-recorded exceptions and fails on anything else), so the schema
   may stay ahead of an older application version and the previous app runs unchanged against it.
 - **No `DROP TABLE`, `DROP COLUMN`, `TRUNCATE`, `DELETE FROM`, `RENAME COLUMN` or
   `DISABLE ROW LEVEL SECURITY` is authorised during the launch window.**
