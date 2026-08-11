@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getUseCase, listUseCases } from "@/lib/use-cases.functions";
 import { CtaTriad } from "@/components/usecasex/CtaTriad";
 import { segmentsForIndustries } from "@/lib/usecasex.derive";
+import { SITE_NAME, SITE_URL } from "@/lib/seo";
 import {
   DollarSign,
   Clock,
