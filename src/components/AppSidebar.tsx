@@ -107,6 +107,12 @@ const ADMIN: Item[] = [
   { to: "/administration/requests", label: "Requests Inbox", icon: Inbox, admin: true },
   { to: "/administration/pilot", label: "Pilot Programme", icon: Rocket, admin: true },
   { to: "/administration/launch-checks", label: "Launch Checks", icon: ShieldCheck, admin: true },
+  {
+    to: "/administration/release-candidate",
+    label: "Release Candidate",
+    icon: Lock,
+    admin: true,
+  },
   { to: "/admin-submissions", label: "Submission Review", icon: Inbox, admin: true },
   { to: "/admin-audit", label: "Submission Audit", icon: ShieldCheck, admin: true },
   { to: "/admin-observability", label: "Export & AI Activity", icon: LineChart },
