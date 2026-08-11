@@ -506,7 +506,9 @@ function PilotAdmin() {
                   if (links.length === 0) return null;
                   return (
                     <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <span className="text-xs text-muted-foreground">Open the work behind it:</span>
+                      <span className="text-xs text-muted-foreground">
+                        Open the work behind it:
+                      </span>
                       {links.map((link) => (
                         <Button
                           key={`${link.kind}-${link.label}`}

@@ -74,10 +74,7 @@ export async function writePilotAudit(input: PilotAuditInput): Promise<void> {
   }
 }
 
-export async function listPilotAudit(
-  supabase: Client,
-  cohort: string,
-): Promise<PilotAuditEvent[]> {
+export async function listPilotAudit(supabase: Client, cohort: string): Promise<PilotAuditEvent[]> {
   const { data, error } = await supabase
     .from("pilot_audit_events")
     .select("*")

@@ -31,10 +31,7 @@ function mapReminder(row: any): PilotReminder {
   };
 }
 
-export async function listMyReminders(
-  supabase: Client,
-  userId: string,
-): Promise<PilotReminder[]> {
+export async function listMyReminders(supabase: Client, userId: string): Promise<PilotReminder[]> {
   const { data, error } = await supabase
     .from("pilot_reminders")
     .select("*")
