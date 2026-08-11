@@ -1972,6 +1972,60 @@ export type Database = {
         }
         Relationships: []
       }
+      pilot_launch_check_runs: {
+        Row: {
+          actor_email: string | null
+          actor_id: string | null
+          cohort: string
+          created_at: string
+          errored: number
+          failed: number
+          id: string
+          p0_failures: number
+          passed: number
+          results: Json
+          skipped: number
+          total: number
+          trigger: string
+          trigger_detail: string | null
+          updated_at: string
+        }
+        Insert: {
+          actor_email?: string | null
+          actor_id?: string | null
+          cohort: string
+          created_at?: string
+          errored?: number
+          failed?: number
+          id?: string
+          p0_failures?: number
+          passed?: number
+          results?: Json
+          skipped?: number
+          total?: number
+          trigger?: string
+          trigger_detail?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actor_email?: string | null
+          actor_id?: string | null
+          cohort?: string
+          created_at?: string
+          errored?: number
+          failed?: number
+          id?: string
+          p0_failures?: number
+          passed?: number
+          results?: Json
+          skipped?: number
+          total?: number
+          trigger?: string
+          trigger_detail?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       pilot_rc_waivers: {
         Row: {
           approved_by: string
@@ -4776,6 +4830,44 @@ export type Database = {
             foreignKeyName: "workshop_participants_workshop_id_fkey"
             columns: ["workshop_id"]
             isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workshop_public_value_canvas: {
+        Row: {
+          completeness: number
+          created_at: string
+          id: string
+          sections: Json
+          updated_at: string
+          updated_by: string | null
+          workshop_id: string
+        }
+        Insert: {
+          completeness?: number
+          created_at?: string
+          id?: string
+          sections?: Json
+          updated_at?: string
+          updated_by?: string | null
+          workshop_id: string
+        }
+        Update: {
+          completeness?: number
+          created_at?: string
+          id?: string
+          sections?: Json
+          updated_at?: string
+          updated_by?: string | null
+          workshop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workshop_public_value_canvas_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: true
             referencedRelation: "workshops"
             referencedColumns: ["id"]
           },
