@@ -49,6 +49,8 @@ export type PilotInvitation = {
   status: PilotStatus;
   userId: string | null;
   notes: string | null;
+  /** Secret claim token. Only ever exposed to a platform admin or the holder. */
+  inviteToken: string | null;
   invitedAt: string;
   registeredAt: string | null;
   activatedAt: string | null;
@@ -281,6 +283,7 @@ export const PILOT_AUDIT_ACTIONS = [
   "invitation.linked",
   "invitation.status_changed",
   "invitation.revoked",
+  "invitations.dispatched",
   "invitations.paused",
   "invitations.resumed",
 ] as const;
@@ -296,6 +299,8 @@ export function pilotAuditActionLabel(action: string): string {
       return "Status changed";
     case "invitation.revoked":
       return "Seat revoked";
+    case "invitations.dispatched":
+      return "Invitations sent";
     case "invitations.paused":
       return "New invitations paused";
     case "invitations.resumed":

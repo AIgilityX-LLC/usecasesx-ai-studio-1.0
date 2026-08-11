@@ -1,10 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { BellRing, CheckCircle2, Circle, Lock, ShieldCheck } from "lucide-react";
 
 import { privateHead } from "@/lib/seo";
-import { dismissPilotReminderFn, getMyPilotFn } from "@/lib/pilot/pilot.functions";
+import {
+  claimPilotInvitationFn,
+  dismissPilotReminderFn,
+  getMyPilotFn,
+} from "@/lib/pilot/pilot.functions";
+import { INVITE_QUERY_PARAM } from "@/lib/pilot/pilot.invites";
 import {
   PILOT_SEAT_TARGET_MAX,
   PILOT_SEAT_TARGET_MIN,
@@ -23,11 +30,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_app/pilot")({
   head: () => privateHead("Pilot mission"),
+  validateSearch: (search: Record<string, unknown>) => ({
+    [INVITE_QUERY_PARAM]:
+      typeof search[INVITE_QUERY_PARAM] === "string"
+        ? (search[INVITE_QUERY_PARAM] as string)
+        : undefined,
+  }),
   component: PilotPage,
 });
 
 function PilotPage() {
   const load = useServerFn(getMyPilotFn);
+  const claimSeat = useServerFn(claimPilotInvitationFn);
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
   const dismiss = useServerFn(dismissPilotReminderFn);
   const queryClient = useQueryClient();
   const dismissReminder = useMutation({
@@ -39,6 +55,38 @@ function PilotPage() {
     queryFn: () => load(),
     retry: false,
   });
+
+  /**
+   * Invitation links land here with a token. Claiming attaches this account to
+   * the seat once, then the token is dropped from the URL so a shared screenshot
+   * or browser history entry cannot re-use it.
+   */
+  const claim = useMutation({
+    mutationFn: (token: string) => claimSeat({ data: { token } }),
+    onSuccess: (result) => {
+      toast[result.linked ? "success" : "info"](
+        result.linked ? "Your pilot seat is confirmed" : "This seat is already yours",
+        { description: `Cohort ${result.invitation.cohort}` },
+      );
+      void queryClient.invalidateQueries({ queryKey: ["my-pilot"] });
+    },
+    onError: (error: unknown) =>
+      toast.error("That invitation link could not be used", {
+        description:
+          error instanceof Error ? error.message : "Ask your facilitator for a new link.",
+      }),
+  });
+
+  const claimed = useRef<string | null>(null);
+  const token = search[INVITE_QUERY_PARAM];
+  useEffect(() => {
+    if (!token || claimed.current === token) return;
+    claimed.current = token;
+    claim.mutate(token);
+    void navigate({ search: {}, replace: true });
+    // `claim` and `navigate` are stable for the lifetime of this page.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   if (pilot.isLoading) {
     return (

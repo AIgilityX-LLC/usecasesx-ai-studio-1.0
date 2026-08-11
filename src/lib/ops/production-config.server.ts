@@ -26,6 +26,7 @@ import {
   INFRA_LIMITATIONS,
 } from "./production-config";
 import { MIGRATION_MANIFEST } from "@/lib/release/candidate";
+import { RECOVERY_DRILL, drillProbeStatus, drillSummary } from "./recovery-drill";
 
 /** True when the name resolves to a non-empty value. The value is discarded. */
 function present(name: string): boolean {
@@ -222,6 +223,17 @@ function dataProbes(): ConfigProbe[] {
         "Backups and point-in-time recovery are operated by the managed platform; the product team cannot trigger a restore itself.",
       action:
         "Recovery runs as a platform support request. Keep the ordered migration set as the schema rebuild path and the launch-corpus script as the reference-data rebuild path.",
+    },
+    {
+      id: "data.restore_drill",
+      area: "data",
+      label: "Restore rehearsal into a recovery environment",
+      status: drillProbeStatus(RECOVERY_DRILL),
+      observed: `${drillSummary(RECOVERY_DRILL)} Owner: ${RECOVERY_DRILL.owner}. Restore executed by: ${RECOVERY_DRILL.restoreExecutedBy}.`,
+      action:
+        RECOVERY_DRILL.baselineGaps.length > 0
+          ? `Capture a baseline schema migration for ${RECOVERY_DRILL.baselineGaps.length} pre-migration object(s) so the rebuild path stands alone, and re-run ${RECOVERY_DRILL.reproduceWith}.`
+          : undefined,
     },
   ];
 }

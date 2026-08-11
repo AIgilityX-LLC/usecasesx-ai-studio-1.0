@@ -36,6 +36,7 @@ function mapInvitation(row: any): PilotInvitation {
     status: (row.status ?? "invited") as PilotStatus,
     userId: row.user_id ?? null,
     notes: row.notes ?? null,
+    inviteToken: row.invite_token ?? null,
     invitedAt: String(row.invited_at ?? row.created_at),
     registeredAt: row.registered_at ?? null,
     activatedAt: row.activated_at ?? null,
@@ -120,6 +121,12 @@ export async function setInvitationsPaused(
 }
 
 /* ---------------------------------------------------------- invitations */
+
+/** Row mapper shared with the invitation delivery module. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function mapInvitationRow(row: any): PilotInvitation {
+  return mapInvitation(row);
+}
 
 export async function createInvitation(
   supabase: Client,
