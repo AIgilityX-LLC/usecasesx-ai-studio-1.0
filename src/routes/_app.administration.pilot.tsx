@@ -137,7 +137,8 @@ function PilotAdmin() {
         },
       });
       const description = `${run.summary.passed}/${run.summary.total} passed · P0 failures ${run.summary.p0Failures}`;
-      if (run.summary.verdict === "pass") toast.success("Launch checks re-run — pass", { description });
+      if (run.summary.verdict === "pass")
+        toast.success("Launch checks re-run — pass", { description });
       else if (run.summary.verdict === "attention")
         toast.warning("Launch checks re-run — needs attention", { description });
       else toast.error("Launch checks re-run — P0 failure", { description });

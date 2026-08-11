@@ -36,7 +36,8 @@ export const CANVAS_META: readonly CanvasSectionMeta[] = [
   {
     key: "mandate",
     label: "Service mandate and legitimate public purpose",
-    purpose: "Name the legal or policy mandate the service operates under, and the public good it exists to deliver.",
+    purpose:
+      "Name the legal or policy mandate the service operates under, and the public good it exists to deliver.",
     prompts: [
       "Which statute, regulation, policy or ministerial mandate authorises this service?",
       "What legitimate public purpose does the intervention serve?",
@@ -46,7 +47,8 @@ export const CANVAS_META: readonly CanvasSectionMeta[] = [
   {
     key: "beneficiaries",
     label: "Beneficiaries, affected groups and inclusion needs",
-    purpose: "Separate who benefits from who is affected, and state the access needs that must be met.",
+    purpose:
+      "Separate who benefits from who is affected, and state the access needs that must be met.",
     prompts: [
       "Who benefits directly, and who is affected without choosing to be?",
       "Which groups risk exclusion (language, disability, digital access, literacy, remoteness)?",
@@ -76,7 +78,8 @@ export const CANVAS_META: readonly CanvasSectionMeta[] = [
   {
     key: "ai_versus_alternatives",
     label: "Role of AI versus simpler process, policy or technology options",
-    purpose: "Prove AI is the proportionate option by comparing it against the cheaper alternatives.",
+    purpose:
+      "Prove AI is the proportionate option by comparing it against the cheaper alternatives.",
     prompts: [
       "What exactly would AI do — draft, classify, rank, extract, summarise, forecast?",
       "Which process fix, policy change, rules engine or integration was considered instead?",
@@ -86,7 +89,8 @@ export const CANVAS_META: readonly CanvasSectionMeta[] = [
   {
     key: "authority_and_redress",
     label: "Human authority, transparency, contestability and redress",
-    purpose: "Keep a named human accountable for the decision and give people a real route to challenge it.",
+    purpose:
+      "Keep a named human accountable for the decision and give people a real route to challenge it.",
     prompts: [
       "Who takes the decision, and what can they override or refuse?",
       "What is disclosed to the person affected about the use of AI?",
@@ -128,7 +132,10 @@ export type CanvasEntry = z.infer<typeof canvasEntrySchema>;
 
 export const canvasSectionsSchema = z.object(
   CANVAS_SECTIONS.reduce(
-    (acc, key) => ({ ...acc, [key]: canvasEntrySchema.default({ text: "", confidence: "unknown" }) }),
+    (acc, key) => ({
+      ...acc,
+      [key]: canvasEntrySchema.default({ text: "", confidence: "unknown" }),
+    }),
     {} as Record<CanvasSection, typeof canvasEntrySchema>,
   ),
 );

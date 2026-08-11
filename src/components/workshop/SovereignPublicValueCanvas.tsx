@@ -38,10 +38,7 @@ import {
   type CanvasSection,
   type CanvasSections,
 } from "@/lib/workshops.public-value";
-import {
-  getPublicValueCanvasFn,
-  savePublicValueCanvasFn,
-} from "@/lib/workshops.functions";
+import { getPublicValueCanvasFn, savePublicValueCanvasFn } from "@/lib/workshops.functions";
 
 function download(filename: string, mime: string, text: string) {
   const blob = new Blob([`\uFEFF${text}`], { type: `${mime};charset=utf-8;` });
@@ -86,7 +83,9 @@ export function SovereignPublicValueCanvas({
     mutationFn: () => savePublicValueCanvasFn({ data: { workshopId, sections: draft } }),
     onSuccess: () => {
       setDirty(false);
-      void queryClient.invalidateQueries({ queryKey: ["workshop-public-value-canvas", workshopId] });
+      void queryClient.invalidateQueries({
+        queryKey: ["workshop-public-value-canvas", workshopId],
+      });
       toast.success("Canvas saved");
     },
     onError: (error) =>
@@ -95,13 +94,20 @@ export function SovereignPublicValueCanvas({
       }),
   });
 
-  const update = (key: CanvasSection, patch: Partial<{ text: string; confidence: CanvasConfidence }>) => {
+  const update = (
+    key: CanvasSection,
+    patch: Partial<{ text: string; confidence: CanvasConfidence }>,
+  ) => {
     setDirty(true);
     setDraft((current) => ({ ...current, [key]: { ...current[key], ...patch } }));
   };
 
   const stamp = new Date().toISOString().slice(0, 10);
-  const slug = workshopTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "workshop";
+  const slug =
+    workshopTitle
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "workshop";
 
   return (
     <Card>
@@ -121,7 +127,9 @@ export function SovereignPublicValueCanvas({
             <Button
               size="sm"
               variant="outline"
-              onClick={() => download(`public-value-canvas-${slug}-${stamp}.csv`, "text/csv", canvasToCsv(draft))}
+              onClick={() =>
+                download(`public-value-canvas-${slug}-${stamp}.csv`, "text/csv", canvasToCsv(draft))
+              }
             >
               <Download className="mr-2 h-4 w-4" aria-hidden /> CSV
             </Button>
@@ -165,7 +173,8 @@ export function SovereignPublicValueCanvas({
           />
           {readiness.missing.length > 0 && (
             <p className="text-xs text-muted-foreground">
-              Still to answer: {readiness.missing.map((key) => CANVAS_SECTION_LABEL[key]).join(" · ")}
+              Still to answer:{" "}
+              {readiness.missing.map((key) => CANVAS_SECTION_LABEL[key]).join(" · ")}
             </p>
           )}
         </div>
@@ -176,7 +185,9 @@ export function SovereignPublicValueCanvas({
           <p className="text-sm text-muted-foreground">Loading the canvas…</p>
         ) : canvas.isError ? (
           <p className="text-sm text-destructive">
-            {canvas.error instanceof Error ? canvas.error.message : "The canvas could not be loaded."}
+            {canvas.error instanceof Error
+              ? canvas.error.message
+              : "The canvas could not be loaded."}
           </p>
         ) : (
           CANVAS_META.map((meta, index) => {
@@ -233,8 +244,8 @@ export function SovereignPublicValueCanvas({
                   onChange={(event) => update(meta.key, { text: event.target.value })}
                 />
                 <p className="text-xs text-muted-foreground">
-                  {entry.text.trim().length}/4000 characters · at least {MIN_ANSWER_LENGTH} needed to
-                  count as answered
+                  {entry.text.trim().length}/4000 characters · at least {MIN_ANSWER_LENGTH} needed
+                  to count as answered
                 </p>
               </section>
             );

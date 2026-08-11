@@ -564,7 +564,9 @@ export function PilotLaunchGovernanceCard({
                   >
                     {runVerdict(run)}
                   </Badge>
-                  <span className="font-medium">{RUN_TRIGGER_LABEL[run.trigger] ?? run.trigger}</span>
+                  <span className="font-medium">
+                    {RUN_TRIGGER_LABEL[run.trigger] ?? run.trigger}
+                  </span>
                   <span className="min-w-0 flex-1 text-muted-foreground">{describeRun(run)}</span>
                   <time dateTime={run.createdAt} className="tabular-nums text-muted-foreground">
                     {new Date(run.createdAt).toLocaleString()}
