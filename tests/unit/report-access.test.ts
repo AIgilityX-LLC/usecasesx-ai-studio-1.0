@@ -1,5 +1,16 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 
+/**
+ * The download helpers now re-check permission on the server. Stub that call so
+ * this suite still tests the client-side matrix in isolation; the server-side
+ * decision has its own coverage.
+ */
+const serverVerdict = { allowed: true as boolean, reason: "Access denied." };
+vi.mock("@/lib/reports/report-export.functions", () => ({
+  authorizeReportExportFn: async () =>
+    serverVerdict.allowed ? { allowed: true } : { allowed: false, reason: serverVerdict.reason },
+}));
+
 import {
   canExportReport,
   assertCanExportReport,
@@ -130,26 +141,41 @@ describe("export helpers enforce access, not just the UI", () => {
     }
   });
 
-  it("produces files for a permitted role", () => {
-    expect(downloadUseCaseCsv(ITEMS, "AI Use Case Summary Report", "owner")).toMatch(/\.csv$/);
-    expect(downloadBenefitsCsv(ITEMS, "AI Use Case Summary Report", "admin")).toMatch(
+  it("produces files for a permitted role", async () => {
+    serverVerdict.allowed = true;
+    expect(await downloadUseCaseCsv(ITEMS, "AI Use Case Summary Report", "owner")).toMatch(
+      /\.csv$/,
+    );
+    expect(await downloadBenefitsCsv(ITEMS, "AI Use Case Summary Report", "admin")).toMatch(
       /benefits-\d{4}-\d{2}-\d{2}\.csv$/,
     );
     expect(clicks).toHaveLength(2);
-    printReport("viewer");
+    await printReport("viewer");
     expect(printed).toHaveLength(1);
   });
 
-  it("refuses CSV for a viewer and writes no file", () => {
-    expect(() => downloadUseCaseCsv(ITEMS, "report", "viewer")).toThrow(ReportExportDeniedError);
-    expect(() => downloadBenefitsCsv(ITEMS, "report", "viewer")).toThrow(ReportExportDeniedError);
+  it("refuses CSV for a viewer and writes no file", async () => {
+    await expect(downloadUseCaseCsv(ITEMS, "report", "viewer")).rejects.toBeInstanceOf(
+      ReportExportDeniedError,
+    );
+    await expect(downloadBenefitsCsv(ITEMS, "report", "viewer")).rejects.toBeInstanceOf(
+      ReportExportDeniedError,
+    );
     expect(clicks).toHaveLength(0);
   });
 
-  it("refuses every export for a non-member and never opens the print dialog", () => {
-    expect(() => downloadUseCaseCsv(ITEMS, "report", null)).toThrow(/Access denied/);
-    expect(() => printReport(null)).toThrow(/Access denied/);
+  it("refuses every export for a non-member and never opens the print dialog", async () => {
+    await expect(downloadUseCaseCsv(ITEMS, "report", null)).rejects.toThrow(/Access denied/);
+    await expect(printReport(null)).rejects.toThrow(/Access denied/);
     expect(clicks).toHaveLength(0);
     expect(printed).toHaveLength(0);
+  });
+
+  it("refuses an export the server denies even when the local role allows it", async () => {
+    serverVerdict.allowed = false;
+    serverVerdict.reason = "Access denied. Your plan does not include report exports.";
+    await expect(downloadUseCaseCsv(ITEMS, "report", "owner")).rejects.toThrow(/Access denied/);
+    expect(clicks).toHaveLength(0);
+    serverVerdict.allowed = true;
   });
 });

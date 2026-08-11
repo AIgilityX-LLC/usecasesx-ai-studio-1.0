@@ -3,6 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { privateHead } from "@/lib/seo";
+import { AVATAR_BUCKET } from "@/lib/storage/buckets";
+import {
+  BUCKET_POLICIES,
+  extensionOf,
+  signedUrlTtl,
+  validateUpload,
+} from "@/lib/storage/storage-policy";
 
 export const Route = createFileRoute("/_app/account/")({
   head: () => privateHead("Account"),
@@ -55,8 +62,8 @@ const ROLES = [
 
 const inputCls =
   "w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm focus:border-primary focus:outline-none";
-const MAX_AVATAR_BYTES = 2 * 1024 * 1024; // 2 MB
-const ACCEPTED = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const AVATAR_POLICY = BUCKET_POLICIES[AVATAR_BUCKET];
+const ACCEPTED = AVATAR_POLICY.mimeTypes;
 
 function AccountProfilePage() {
   const navigate = useNavigate();
@@ -122,7 +129,9 @@ function AccountProfilePage() {
     }
     let active = true;
     (async () => {
-      const { data } = await supabase.storage.from("avatars").createSignedUrl(avatarPath, 3600);
+      const { data } = await supabase.storage
+        .from(AVATAR_BUCKET)
+        .createSignedUrl(avatarPath, signedUrlTtl(AVATAR_BUCKET));
       if (active) setAvatarUrl(data?.signedUrl ?? null);
     })();
     return () => {
@@ -138,12 +147,13 @@ function AccountProfilePage() {
     setAvatarErr(null);
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!ACCEPTED.includes(file.type)) {
-      setAvatarErr("Please choose a JPG, PNG, WEBP, or GIF image.");
-      return;
-    }
-    if (file.size > MAX_AVATAR_BYTES) {
-      setAvatarErr("Image must be 2 MB or smaller.");
+    const decision = validateUpload(AVATAR_BUCKET, {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+    });
+    if (!decision.allowed) {
+      setAvatarErr(decision.reason);
       return;
     }
     const { data: u } = await supabase.auth.getUser();
@@ -155,10 +165,9 @@ function AccountProfilePage() {
     // instant local preview
     setAvatarUrl(URL.createObjectURL(file));
     try {
-      const ext = file.name.split(".").pop()?.toLowerCase() || "png";
-      const path = `${u.user.id}/avatar.${ext}`;
+      const path = `${u.user.id}/avatar.${extensionOf(file.name) || "png"}`;
       const { error: upErr } = await supabase.storage
-        .from("avatars")
+        .from(AVATAR_BUCKET)
         .upload(path, file, { upsert: true, contentType: file.type });
       if (upErr) throw upErr;
       const { error: dbErr } = await supabase
@@ -182,7 +191,7 @@ function AccountProfilePage() {
     if (!u.user || !avatarPath) return;
     setUploading(true);
     try {
-      await supabase.storage.from("avatars").remove([avatarPath]);
+      await supabase.storage.from(AVATAR_BUCKET).remove([avatarPath]);
       await supabase.from("profiles").update({ avatar_url: null }).eq("user_id", u.user.id);
       setAvatarPath(null);
       setAvatarUrl(null);

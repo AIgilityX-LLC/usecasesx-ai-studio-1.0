@@ -19,7 +19,15 @@ import type { z } from "zod";
 import { evaluate } from "@/lib/authz/permission-service";
 import { resolveSubject } from "@/lib/authz.server";
 import { callGateway } from "./gateway.server";
-import { evaluateFairUse, isMetered, limitsForEdition } from "./fair-use";
+import {
+  BURST_WINDOW_MS,
+  burstLimitsForEdition,
+  evaluateBurst,
+  evaluateFairUse,
+  isMetered,
+  limitsForEdition,
+} from "./fair-use";
+import { FENCE_NOTICE, fenceUntrusted } from "./sanitize";
 import { resolveModel, type ProviderAlias } from "./models";
 import { promptFor, type AiTask } from "./prompts";
 import { OUTPUT_SCHEMAS, TOOL_SCHEMAS } from "./schemas";
@@ -51,13 +59,16 @@ async function countUsage(
   column: "user_id" | "workspace_id",
   value: string,
   since: string,
+  /** Burst counting includes failures: a failed call still costs a request. */
+  onlySuccess = true,
 ): Promise<number> {
-  const { count, error } = await supabase
+  let query = supabase
     .from("ai_usage_events")
     .select("id", { count: "exact", head: true })
     .eq(column, value)
-    .eq("status", "ok")
     .gte("created_at", since);
+  if (onlySuccess) query = query.eq("status", "ok");
+  const { count, error } = await query;
   if (error) {
     console.error("[ai] fair-use count failed", { column, code: error.code });
     return 0;
@@ -133,6 +144,25 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
   // 2. Fair use.
   let fairUse: AiFairUse | null = null;
   if (isMetered(task)) {
+    // 2a. Burst window first — it is the cheapest way to stop cost abuse.
+    const burstStart = new Date(Date.now() - BURST_WINDOW_MS);
+    const burstSince = burstStart.toISOString();
+    const burstLimits = burstLimitsForEdition(subject.edition, process.env);
+    const [burstUser, burstWorkspace] = await Promise.all([
+      countUsage(ctx.supabase, "user_id", ctx.userId, burstSince, false),
+      subject.workspaceId
+        ? countUsage(ctx.supabase, "workspace_id", subject.workspaceId, burstSince, false)
+        : Promise.resolve(0),
+    ]);
+    const burst = evaluateBurst(burstUser, burstWorkspace, burstLimits, burstStart);
+    if (!burst.allowed) {
+      return aiFailure("rate_limited", {
+        used: burst.used,
+        limit: burst.limit,
+        resetsAt: burst.resetsAt,
+      });
+    }
+
     const windowStart = new Date(Date.now() - WINDOW_MS);
     const since = windowStart.toISOString();
     const limits = limitsForEdition(subject.edition, process.env);
@@ -151,8 +181,8 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
   const startedAt = Date.now();
   const response = await callGateway({
     model,
-    system: prompt.system,
-    user: userPrompt,
+    system: `${prompt.system}\n\n${FENCE_NOTICE}`,
+    user: fenceUntrusted(userPrompt),
     tool: TOOL_SCHEMAS[task],
     toolName: (TOOL_SCHEMAS[task] as any).function.name,
     timeoutMs: prompt.timeoutMs,

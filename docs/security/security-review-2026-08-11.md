@@ -87,3 +87,43 @@ output validation, fair-use quota checks before the provider call
 PASS — no critical finding open; all private tables enforce RLS; unauthenticated
 cross-tenant reads return no rows; no secret in the client bundle; privileged
 scheduled endpoints require a server-only shared secret.
+
+## Addendum — storage TTLs, export authorization, AI abuse controls (2026-08-11, part 2)
+
+### Storage
+- `src/lib/storage/storage-policy.ts` is the single policy: per-bucket MIME
+  allowlist, byte cap, and signed-URL TTL (evidence 60 s, avatars 300 s —
+  previously 3600 s). Extension/MIME mismatch is rejected, object names are
+  sanitised, and `parseEvidencePath` rejects traversal and absolute paths.
+- Private evidence URLs are no longer signed in the browser.
+  `createEvidenceSignedUrlFn` re-checks the caller's access to the parent use
+  case through their RLS-scoped client, then mints the URL server-side.
+
+### Exports and reports
+- `authorizeExport` (`report-access.server.ts`) re-resolves role, workspace
+  membership and edition from the database, applies the `reports.generate`
+  entitlement, then the format matrix. Called by every CSV/PDF helper via
+  `authorizeReportExportFn`, and by the streaming roadmap export route — a
+  valid bearer token alone no longer produces a file (403 otherwise).
+
+### AI endpoints
+- Burst limits (60 s rolling window, counting successes *and* failures) sit in
+  front of the existing 24 h fair-use budget; overridable via
+  `AI_BURST_PER_USER_PER_MINUTE` / `AI_BURST_PER_WORKSPACE_PER_MINUTE`.
+- All untrusted input is sanitised and fenced (`src/lib/ai/sanitize.ts`) at the
+  single `AIService.run` choke point, with a system-prompt notice that fenced
+  content is data. Outputs remain schema-validated before use.
+
+### Evidence
+- `bun run tests/cross-workspace-abuse.e2e.ts` — 28/28 controls held
+  (anon reads, cross-tenant reads/writes, workspace re-parenting, share-link
+  scoping and revocation).
+- `tests/unit/storage-policy.test.ts` + `tests/unit/ai-abuse-controls.test.ts`
+  — 26 tests. Full unit suite 238 pass / 0 fail. Lint 0 errors, typecheck and
+  build clean. No secret name appears in `dist/client`.
+
+### Accepted risks (unchanged)
+- Share links remain capability-based by design: possession of a live token
+  grants the redacted read-only projection only, never table access.
+- Avatars stay in a private bucket with 300 s signed URLs; a copied URL is
+  valid for that window.

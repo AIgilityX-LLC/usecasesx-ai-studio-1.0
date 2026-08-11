@@ -135,6 +135,7 @@ function ReportsPage() {
 
   /** Workspace membership role decides which export formats are permitted. */
   const exportRole = workspace.data?.workspaceRole ?? null;
+  const workspaceId = workspace.data?.workspace?.id ?? null;
   const exportAllowed = (format: ExportFormat) => canExportReport(exportRole, format).allowed;
 
   const printRef = useRef<HTMLDivElement>(null);
@@ -336,9 +337,12 @@ function ReportsPage() {
   };
 
   /** Runs an export helper and turns a denied role into a clear message. */
-  const runExport = (format: "pdf" | "csv" | "csv_benefits", run: () => string | void) => {
+  const runExport = async (
+    format: "pdf" | "csv" | "csv_benefits",
+    run: () => Promise<string | void>,
+  ) => {
     try {
-      const filename = run() ?? undefined;
+      const filename = (await run()) ?? undefined;
       void recordExport(format, filename);
       if (filename) toast.success(`Exported ${filename}`);
     } catch (error) {
@@ -355,13 +359,16 @@ function ReportsPage() {
 
   const handlePrint = () => {
     trackCTAEvent("report_printed", { reportType });
-    runExport("pdf", () => printReport(exportRole));
+    void runExport("pdf", () => printReport(exportRole, workspaceId));
   };
 
-  const handleCsv = () => runExport("csv", () => downloadUseCaseCsv(items, reportType, exportRole));
+  const handleCsv = () =>
+    void runExport("csv", () => downloadUseCaseCsv(items, reportType, exportRole, workspaceId));
 
   const handleBenefitsCsv = () =>
-    runExport("csv_benefits", () => downloadBenefitsCsv(items, reportType, exportRole));
+    void runExport("csv_benefits", () =>
+      downloadBenefitsCsv(items, reportType, exportRole, workspaceId),
+    );
 
   if (loading) {
     return (

@@ -10,15 +10,14 @@
 import { supabase } from "@/integrations/supabase/client";
 import { DomainError, normalizeError } from "./errors";
 import type { BenefitEvidenceItem } from "@/lib/value/benefits.model";
+import { EVIDENCE_BUCKET as EVIDENCE_BUCKET_ID } from "@/lib/storage/buckets";
+import { BUCKET_POLICIES, safeObjectName, validateUpload } from "@/lib/storage/storage-policy";
+import { createEvidenceSignedUrlFn } from "@/lib/storage.functions";
 
-export const EVIDENCE_BUCKET = "benefit-evidence";
+export const EVIDENCE_BUCKET = EVIDENCE_BUCKET_ID;
 
-/** 10 MB keeps a proof document reasonable without blocking real exports. */
-export const MAX_EVIDENCE_BYTES = 10 * 1024 * 1024;
-
-function safeName(name: string): string {
-  return name.replace(/[^a-zA-Z0-9._-]+/g, "-").slice(-80);
-}
+/** Size and MIME rules live in the shared storage policy. */
+export const MAX_EVIDENCE_BYTES = BUCKET_POLICIES[EVIDENCE_BUCKET_ID].maxBytes;
 
 export function newEvidenceId(): string {
   return typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -30,18 +29,21 @@ export async function uploadEvidenceFile(
   useCaseId: string,
   file: File,
 ): Promise<BenefitEvidenceItem> {
-  if (file.size > MAX_EVIDENCE_BYTES) {
-    throw new DomainError("validation", "That file is larger than the 10 MB evidence limit.");
-  }
+  const decision = validateUpload(EVIDENCE_BUCKET_ID, {
+    name: file.name,
+    size: file.size,
+    type: file.type,
+  });
+  if (!decision.allowed) throw new DomainError("validation", decision.reason);
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id;
   if (!userId) {
     throw new DomainError("unauthenticated", "Sign in to attach evidence.");
   }
-  const path = `${userId}/${useCaseId}/${Date.now()}-${safeName(file.name)}`;
+  const path = `${userId}/${useCaseId}/${Date.now()}-${safeObjectName(file.name)}`;
   const result = await supabase.storage
     .from(EVIDENCE_BUCKET)
-    .upload(path, file, { upsert: false, contentType: file.type || undefined });
+    .upload(path, file, { upsert: false, contentType: file.type });
   if (result.error) throw normalizeError(result.error);
   return {
     id: newEvidenceId(),
@@ -53,11 +55,15 @@ export async function uploadEvidenceFile(
   };
 }
 
-/** Short-lived signed URL so a reviewer can open an uploaded proof document. */
+/**
+ * Short-lived signed URL so a reviewer can open an uploaded proof document.
+ * Minted server-side after the caller's access to the parent use case is
+ * re-checked — the browser cannot sign a URL for an object it merely names.
+ */
 export async function getEvidenceUrl(path: string): Promise<string> {
-  const result = await supabase.storage.from(EVIDENCE_BUCKET).createSignedUrl(path, 300);
-  if (result.error) throw normalizeError(result.error);
-  return result.data.signedUrl;
+  const result = await createEvidenceSignedUrlFn({ data: { path } });
+  if (!result.ok) throw new DomainError("forbidden", result.reason);
+  return result.url;
 }
 
 export async function removeEvidenceFile(path: string): Promise<void> {
