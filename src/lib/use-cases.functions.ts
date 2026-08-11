@@ -232,16 +232,23 @@ export const listRepositoryFacets = createServerFn({ method: "GET" }).handler(as
     );
   }
 
-  const [industries, capabilities, businessFunctions, objectives, processes, countries, govFunctions] =
-    await Promise.all([
-      countsFor("industries"),
-      countsFor("capabilities"),
-      countsFor("businessFunctions"),
-      countsFor("objectives"),
-      countsFor("processes"),
-      countsFor("countries"),
-      countsFor("govFunctions"),
-    ]);
+  const [
+    industries,
+    capabilities,
+    businessFunctions,
+    objectives,
+    processes,
+    countries,
+    govFunctions,
+  ] = await Promise.all([
+    countsFor("industries"),
+    countsFor("capabilities"),
+    countsFor("businessFunctions"),
+    countsFor("objectives"),
+    countsFor("processes"),
+    countsFor("countries"),
+    countsFor("govFunctions"),
+  ]);
 
   return {
     industries,
