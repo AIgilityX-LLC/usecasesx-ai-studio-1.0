@@ -13,6 +13,7 @@ import { Link } from "@tanstack/react-router";
 import {
   getPilotCohortFn,
   invitePilotParticipantFn,
+  invitePilotCohortFn,
   sendPilotRemindersFn,
   setPilotInvitationStatusFn,
   setPilotInvitationsPausedFn,
@@ -33,6 +34,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -66,6 +68,7 @@ function Stat({ label, value, hint }: { label: string; value: string; hint?: str
 function PilotAdmin() {
   const loadCohort = useServerFn(getPilotCohortFn);
   const invite = useServerFn(invitePilotParticipantFn);
+  const inviteCohort = useServerFn(invitePilotCohortFn);
   const setStatus = useServerFn(setPilotInvitationStatusFn);
   const setPaused = useServerFn(setPilotInvitationsPausedFn);
   const sendReminders = useServerFn(sendPilotRemindersFn);
@@ -76,6 +79,21 @@ function PilotAdmin() {
   const [organization, setOrganization] = useState("");
   const [pauseReason, setPauseReason] = useState("");
   const [statusReason, setStatusReason] = useState("");
+  const [bulkEmails, setBulkEmails] = useState("");
+  const [bulkOrganization, setBulkOrganization] = useState("");
+
+  const parsedBulkEmails = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          bulkEmails
+            .split(/[\s,;]+/)
+            .map((value) => value.trim().toLowerCase())
+            .filter((value) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)),
+        ),
+      ),
+    [bulkEmails],
+  );
 
   const cohort = useQuery({
     queryKey: ["pilot-cohort"],
@@ -122,6 +140,33 @@ function PilotAdmin() {
     },
     onError: (error: unknown) =>
       toast.error("Reminders not sent", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      }),
+  });
+
+  const bulkInviteMutation = useMutation({
+    mutationFn: () =>
+      inviteCohort({
+        data: {
+          emails: parsedBulkEmails,
+          organization: bulkOrganization.trim() || null,
+        },
+      }),
+    onSuccess: (result) => {
+      toast.success(
+        `${result.created.length} seat${result.created.length === 1 ? "" : "s"} enrolled`,
+        {
+          description:
+            result.skipped.length > 0
+              ? `${result.seatsUsed}/${result.seatTarget} seats used · ${result.skipped.length} skipped (${result.skipped[0]!.reason})`
+              : `${result.seatsUsed}/${result.seatTarget} seats used`,
+        },
+      );
+      setBulkEmails("");
+      void refresh();
+    },
+    onError: (error: unknown) =>
+      toast.error("Cohort not enrolled", {
         description: error instanceof Error ? error.message : "Please try again.",
       }),
   });
@@ -311,6 +356,49 @@ function PilotAdmin() {
               The invitation is claimed automatically when that email registers and opens the pilot
               mission page. No account is created here.
             </p>
+            <div className="space-y-3 rounded-lg border border-dashed p-4">
+              <div className="space-y-1">
+                <Label htmlFor="pilot-bulk-emails">Enrol the cohort (bulk)</Label>
+                <Textarea
+                  id="pilot-bulk-emails"
+                  rows={4}
+                  placeholder="Paste 15–25 work emails, separated by commas, spaces or new lines"
+                  value={bulkEmails}
+                  onChange={(event) => setBulkEmails(event.target.value)}
+                  disabled={settings?.invitationsPaused}
+                  aria-describedby="pilot-bulk-help"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="pilot-bulk-org">Organisation (optional, applied to all)</Label>
+                <Input
+                  id="pilot-bulk-org"
+                  value={bulkOrganization}
+                  onChange={(event) => setBulkOrganization(event.target.value)}
+                  disabled={settings?.invitationsPaused}
+                />
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button
+                  variant="secondary"
+                  onClick={() => bulkInviteMutation.mutate()}
+                  disabled={
+                    bulkInviteMutation.isPending ||
+                    parsedBulkEmails.length === 0 ||
+                    Boolean(settings?.invitationsPaused)
+                  }
+                >
+                  {bulkInviteMutation.isPending
+                    ? "Enrolling…"
+                    : `Enrol ${parsedBulkEmails.length || ""} seat${parsedBulkEmails.length === 1 ? "" : "s"}`.trim()}
+                </Button>
+                <p id="pilot-bulk-help" className="text-xs text-muted-foreground">
+                  {parsedBulkEmails.length === 0
+                    ? "No valid email addresses detected yet — max 25 per batch."
+                    : `${parsedBulkEmails.length} valid address${parsedBulkEmails.length === 1 ? "" : "es"} detected. Duplicates and full-cohort overflow are skipped and reported.`}
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
 

@@ -73,12 +73,14 @@ export type PilotSettings = {
   pauseReason: string | null;
   pausedAt: string | null;
   seatTarget: number;
+  /** Last change to the cohort configuration — used as the evidence-gap clock. */
+  updatedAt: string | null;
 };
 
 export async function getPilotSettings(supabase: Client): Promise<PilotSettings> {
   const { data, error } = await supabase
     .from("pilot_settings")
-    .select("cohort, invitations_paused, pause_reason, paused_at, seat_target")
+    .select("cohort, invitations_paused, pause_reason, paused_at, seat_target, updated_at")
     .eq("id", true)
     .maybeSingle();
   if (error) throw new Error(error.message);
@@ -88,6 +90,7 @@ export async function getPilotSettings(supabase: Client): Promise<PilotSettings>
     pauseReason: data?.pause_reason ?? null,
     pausedAt: data?.paused_at ?? null,
     seatTarget: Number(data?.seat_target ?? 25),
+    updatedAt: data?.updated_at ?? null,
   };
 }
 

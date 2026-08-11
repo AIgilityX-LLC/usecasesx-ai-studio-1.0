@@ -8,10 +8,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Link } from "@tanstack/react-router";
-import { ShieldAlert } from "lucide-react";
+import { AlertTriangle, Download, FileText, ShieldAlert } from "lucide-react";
+import { toast } from "sonner";
 
 import { getPilotTriageFn } from "@/lib/pilot/pilot.functions";
 import { TRIAGE_CLASSES, TRIAGE_CLASS_LABEL, TRIAGE_CLASS_TONE } from "@/lib/pilot/pilot.triage";
+import { buildTriageReportMarkdown, triageFindingsToCsv } from "@/lib/pilot/pilot.export";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -58,7 +60,21 @@ export function PilotTriagePanel() {
 
   const report = triage.data;
   if (!report) return null;
-  const { findings, freeze } = report;
+  const { findings, freeze, evidenceGap } = report;
+  const stamp = report.generatedAt.slice(0, 10);
+
+  const download = (filename: string, mime: string, text: string) => {
+    const blob = new Blob([`\uFEFF${text}`], { type: `${mime};charset=utf-8;` });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+    toast.success("Triage report downloaded", { description: filename });
+  };
 
   return (
     <Card>
@@ -72,6 +88,21 @@ export function PilotTriagePanel() {
         </span>
       </CardHeader>
       <CardContent className="space-y-5">
+        {evidenceGap.state !== "none" && (
+          <Alert variant={evidenceGap.triggered ? "destructive" : "default"}>
+            <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+            <AlertTitle>{evidenceGap.title}</AlertTitle>
+            <AlertDescription>
+              <p>{evidenceGap.detail}</p>
+              <p className="mt-1">
+                {evidenceGap.triggered
+                  ? `The ${evidenceGap.windowDays}-day evidence window has elapsed. ${evidenceGap.action}`
+                  : `Watchdog fires after ${evidenceGap.windowDays} days without evidence. ${evidenceGap.action}`}
+              </p>
+            </AlertDescription>
+          </Alert>
+        )}
+
         <Alert variant={freeze.verdict === "go" ? "default" : "destructive"}>
           <AlertTitle>{freeze.headline}</AlertTitle>
           <AlertDescription>
@@ -91,6 +122,36 @@ export function PilotTriagePanel() {
             </p>
           </AlertDescription>
         </Alert>
+
+        <div className="flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              download(
+                `pilot-triage-${report.cohort}-${stamp}.md`,
+                "text/markdown",
+                buildTriageReportMarkdown(report),
+              )
+            }
+          >
+            <FileText className="mr-2 h-4 w-4" aria-hidden /> Triage report (Markdown)
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={findings.length === 0}
+            onClick={() =>
+              download(
+                `pilot-triage-findings-${report.cohort}-${stamp}.csv`,
+                "text/csv",
+                triageFindingsToCsv(findings),
+              )
+            }
+          >
+            <Download className="mr-2 h-4 w-4" aria-hidden /> Findings CSV
+          </Button>
+        </div>
 
         <div
           className="grid gap-2 sm:grid-cols-5"

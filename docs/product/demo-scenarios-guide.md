@@ -8,11 +8,11 @@ are invented for illustration. Nothing in this material is a real client case st
 
 ## Scenarios
 
-| Key | Archetype | Fictional organisation |
-| --- | --- | --- |
-| `diversified-group` | Diversified group | Meridian Holdings (Demo) |
-| `financial-services` | Financial services | Northport Mutual Bank (Demo) |
-| `manufacturing` | Manufacturing | Kestrel Industrials (Demo) |
+| Key                         | Archetype                   | Fictional organisation        |
+| --------------------------- | --------------------------- | ----------------------------- |
+| `diversified-group`         | Diversified group           | Meridian Holdings (Demo)      |
+| `financial-services`        | Financial services          | Northport Mutual Bank (Demo)  |
+| `manufacturing`             | Manufacturing               | Kestrel Industrials (Demo)    |
 | `sme-professional-services` | SME / professional services | Calder & Ross Advisory (Demo) |
 
 Each scenario carries a complete journey: organisation → opportunities → use cases →
@@ -43,7 +43,7 @@ the opportunity business function and strategic objective) → a pre-generated r
 `is_demo`, and events from accounts on the `@demo.usecasex.app` domain. Demonstration
 traffic therefore cannot inflate activation metrics.
 
-Sample copies live in real user workspaces and are intentionally *not* excluded — they
+Sample copies live in real user workspaces and are intentionally _not_ excluded — they
 are genuine user activity, and their template lineage is recorded for auditing.
 
 ## Reset

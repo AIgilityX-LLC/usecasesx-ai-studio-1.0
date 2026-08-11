@@ -5,17 +5,17 @@ AI boundary, secrets, storage/export links.
 
 ## 1. Security results
 
-| Check | Result |
-| --- | --- |
-| Lovable security scan | 0 critical, 5 warnings (tenancy model + definer functions) |
-| Supabase linter (before) | 82 issues |
-| Supabase linter (after) | 31 issues — all accepted (see §4) |
-| RLS coverage | 100% of `public` base tables have RLS enabled |
-| `anon` write grants on `public` tables | none |
-| Secrets in client bundle | none (only a redaction keyword list and a key-prefix helper matched) |
-| Password breach protection (HIBP) | enabled |
-| Anonymous sign-ups | disabled |
-| Auto-confirm email | disabled |
+| Check                                  | Result                                                               |
+| -------------------------------------- | -------------------------------------------------------------------- |
+| Lovable security scan                  | 0 critical, 5 warnings (tenancy model + definer functions)           |
+| Supabase linter (before)               | 82 issues                                                            |
+| Supabase linter (after)                | 31 issues — all accepted (see §4)                                    |
+| RLS coverage                           | 100% of `public` base tables have RLS enabled                        |
+| `anon` write grants on `public` tables | none                                                                 |
+| Secrets in client bundle               | none (only a redaction keyword list and a key-prefix helper matched) |
+| Password breach protection (HIBP)      | enabled                                                              |
+| Anonymous sign-ups                     | disabled                                                             |
+| Auto-confirm email                     | disabled                                                             |
 
 ## 2. RLS / authorization evidence
 
@@ -45,7 +45,7 @@ POST /api/public/hooks/erp-reconciliation   (publishable key)    -> 401
 ## 3. Fixes applied
 
 1. **Privileged endpoint auth (high).** `/api/public/hooks/evidence-cleanup`
-   and `/api/public/hooks/erp-reconciliation` authenticated on the *publishable*
+   and `/api/public/hooks/erp-reconciliation` authenticated on the _publishable_
    key, which is public by design — any caller could trigger storage deletion
    and ERP reconciliation. Now gated on `CRON_HOOK_SECRET`
    (`Authorization: Bearer …` or `x-cron-secret`) with a constant-time compare
@@ -66,13 +66,13 @@ POST /api/public/hooks/erp-reconciliation   (publishable key)    -> 401
 
 ## 4. Accepted-risk register
 
-| ID | Finding | Decision |
-| --- | --- | --- |
-| AR-1 | `authenticated` can execute `SECURITY DEFINER` helpers (`has_role`, `is_admin_tier`, `workspace_*`, `publish_use_case_submission`, `accept_*_invitation`, …) | Accepted. These are the app's RPC surface; each re-checks `auth.uid()`/role internally and returns only booleans or the caller's own scope. `publish_use_case_submission` raises unless `is_admin_tier(auth.uid())`. |
-| AR-2 | `user_in_workspace` / `user_can_access_use_case` resolve access org-wide, not per `workspace_members` row | Accepted for launch. The tenant boundary is the organization; workspaces are a grouping inside a tenant. Tightening to strict membership is a behaviour change for Lite/Pro and needs a staged migration + membership backfill. Tracked for Enterprise design-partner work. |
-| AR-3 | `pg_trgm`/extensions installed in `public` | Accepted. Platform-managed; relocating requires index rebuilds. No data exposure. |
-| AR-4 | Public catalogue endpoints allow `*` CORS | Accepted. Read-only published content, no credentials accepted. |
-| AR-5 | Portfolio share links are capability URLs (unguessable UUID token) | Accepted. Server verifies revocation/expiry and returns a redacted projection with no tenant identifiers or internal notes. |
+| ID   | Finding                                                                                                                                                      | Decision                                                                                                                                                                                                                                                                    |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AR-1 | `authenticated` can execute `SECURITY DEFINER` helpers (`has_role`, `is_admin_tier`, `workspace_*`, `publish_use_case_submission`, `accept_*_invitation`, …) | Accepted. These are the app's RPC surface; each re-checks `auth.uid()`/role internally and returns only booleans or the caller's own scope. `publish_use_case_submission` raises unless `is_admin_tier(auth.uid())`.                                                        |
+| AR-2 | `user_in_workspace` / `user_can_access_use_case` resolve access org-wide, not per `workspace_members` row                                                    | Accepted for launch. The tenant boundary is the organization; workspaces are a grouping inside a tenant. Tightening to strict membership is a behaviour change for Lite/Pro and needs a staged migration + membership backfill. Tracked for Enterprise design-partner work. |
+| AR-3 | `pg_trgm`/extensions installed in `public`                                                                                                                   | Accepted. Platform-managed; relocating requires index rebuilds. No data exposure.                                                                                                                                                                                           |
+| AR-4 | Public catalogue endpoints allow `*` CORS                                                                                                                    | Accepted. Read-only published content, no credentials accepted.                                                                                                                                                                                                             |
+| AR-5 | Portfolio share links are capability URLs (unguessable UUID token)                                                                                           | Accepted. Server verifies revocation/expiry and returns a redacted projection with no tenant identifiers or internal notes.                                                                                                                                                 |
 
 ## 5. AI boundary
 
@@ -91,6 +91,7 @@ scheduled endpoints require a server-only shared secret.
 ## Addendum — storage TTLs, export authorization, AI abuse controls (2026-08-11, part 2)
 
 ### Storage
+
 - `src/lib/storage/storage-policy.ts` is the single policy: per-bucket MIME
   allowlist, byte cap, and signed-URL TTL (evidence 60 s, avatars 300 s —
   previously 3600 s). Extension/MIME mismatch is rejected, object names are
@@ -100,6 +101,7 @@ scheduled endpoints require a server-only shared secret.
   case through their RLS-scoped client, then mints the URL server-side.
 
 ### Exports and reports
+
 - `authorizeExport` (`report-access.server.ts`) re-resolves role, workspace
   membership and edition from the database, applies the `reports.generate`
   entitlement, then the format matrix. Called by every CSV/PDF helper via
@@ -107,7 +109,8 @@ scheduled endpoints require a server-only shared secret.
   valid bearer token alone no longer produces a file (403 otherwise).
 
 ### AI endpoints
-- Burst limits (60 s rolling window, counting successes *and* failures) sit in
+
+- Burst limits (60 s rolling window, counting successes _and_ failures) sit in
   front of the existing 24 h fair-use budget; overridable via
   `AI_BURST_PER_USER_PER_MINUTE` / `AI_BURST_PER_WORKSPACE_PER_MINUTE`.
 - All untrusted input is sanitised and fenced (`src/lib/ai/sanitize.ts`) at the
@@ -115,6 +118,7 @@ scheduled endpoints require a server-only shared secret.
   content is data. Outputs remain schema-validated before use.
 
 ### Evidence
+
 - `bun run tests/cross-workspace-abuse.e2e.ts` — 28/28 controls held
   (anon reads, cross-tenant reads/writes, workspace re-parenting, share-link
   scoping and revocation).
@@ -123,6 +127,7 @@ scheduled endpoints require a server-only shared secret.
   build clean. No secret name appears in `dist/client`.
 
 ### Accepted risks (unchanged)
+
 - Share links remain capability-based by design: possession of a live token
   grants the redacted read-only projection only, never table access.
 - Avatars stay in a private bucket with 300 s signed URLs; a copied URL is
