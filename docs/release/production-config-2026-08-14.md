@@ -7,13 +7,13 @@ only; no value is read into the report, the UI, or any log line.
 
 ## 1. Domain, HTTPS and environment separation
 
-| Item | State |
-| --- | --- |
-| Canonical origin | `https://usecasesx.aigilityx.com` — every canonical tag, `og:url` and sitemap entry is built from it |
-| HTTPS | Enforced by the hosting platform; certificates are provisioned automatically |
-| Redirects | Non-primary hosts (including `www` and the `.lovable.app` subdomain) must be added to the project and the canonical host set as primary so all others redirect to it |
-| Environment separation | Preview and published builds resolve the same backend project reference; the readiness probe fails if the server-side and browser-side backend URLs diverge |
-| Dev callbacks | No localhost or preview host is hardcoded; auth callbacks are derived from the serving origin at call time |
+| Item                   | State                                                                                                                                                                |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Canonical origin       | `https://usecasesx.aigilityx.com` — every canonical tag, `og:url` and sitemap entry is built from it                                                                 |
+| HTTPS                  | Enforced by the hosting platform; certificates are provisioned automatically                                                                                         |
+| Redirects              | Non-primary hosts (including `www` and the `.lovable.app` subdomain) must be added to the project and the canonical host set as primary so all others redirect to it |
+| Environment separation | Preview and published builds resolve the same backend project reference; the readiness probe fails if the server-side and browser-side backend URLs diverge          |
+| Dev callbacks          | No localhost or preview host is hardcoded; auth callbacks are derived from the serving origin at call time                                                           |
 
 **Action before announcement:** connect `usecasesx.aigilityx.com` (and `www`) to the published
 project, mark the apex as primary, and re-run the readiness report from that host so the "served
@@ -35,11 +35,11 @@ boolean at the point of read, so a value cannot reach the client or an artifact.
 Flows verified as origin-derived: sign-up verification, password reset, email change confirmation,
 workspace/pilot invitation, founding-access upgrade confirmation.
 
-| Item | State | Mitigation |
-| --- | --- | --- |
-| Sender identity | No project sender domain provisioned; auth email uses the platform default sender | Provision a sender subdomain (e.g. `notify.aigilityx.com`) and verify DNS before public announcement |
-| Throughput | Bounded by the platform hourly auth-email allowance | Invite in batches of 25 or fewer per hour; raise the hourly allowance once sending is active |
-| Deliverability | **Not measured** — needs a live send from the published canonical host | Run one sign-up, one reset and one invitation to a real inbox and attach results to the release record |
+| Item            | State                                                                             | Mitigation                                                                                             |
+| --------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Sender identity | No project sender domain provisioned; auth email uses the platform default sender | Provision a sender subdomain (e.g. `notify.aigilityx.com`) and verify DNS before public announcement   |
+| Throughput      | Bounded by the platform hourly auth-email allowance                               | Invite in batches of 25 or fewer per hour; raise the hourly allowance once sending is active           |
+| Deliverability  | **Not measured** — needs a live send from the published canonical host            | Run one sign-up, one reset and one invitation to a real inbox and attach results to the release record |
 
 ## 4. Database, migrations, storage and recovery
 

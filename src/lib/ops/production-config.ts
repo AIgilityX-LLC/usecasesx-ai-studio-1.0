@@ -155,8 +155,7 @@ export const INFRA_LIMITATIONS: readonly InfraLimitation[] = [
   },
   {
     id: "ai-provider",
-    limitation:
-      "AI capability depends on an upstream gateway with no second provider wired in.",
+    limitation: "AI capability depends on an upstream gateway with no second provider wired in.",
     impact: "Medium",
     mitigation:
       "Every AI surface is assistive only: the core journey works without it, calls are time-boxed with bounded retry, and failures degrade to manual entry rather than blocking.",
@@ -186,8 +185,7 @@ export const INCIDENT_CONTACTS: readonly IncidentContact[] = [
     role: "Security and abuse",
     owner: "AIgilityX platform owner",
     channel: SUPPORT_EMAIL,
-    scope:
-      "Acts on cross-workspace, storage-denied and rate-limit alerts on Export & AI Activity.",
+    scope: "Acts on cross-workspace, storage-denied and rate-limit alerts on Export & AI Activity.",
   },
 ];
 
@@ -324,7 +322,13 @@ export function buildProductionConfigMarkdown(report: ProductionConfigReport): s
     lines.push(`| ${item.limitation} | ${item.impact} | ${item.mitigation} |`);
   }
 
-  lines.push("", "## Incident contacts", "", "| Role | Owner | Channel | Scope |", "| --- | --- | --- | --- |");
+  lines.push(
+    "",
+    "## Incident contacts",
+    "",
+    "| Role | Owner | Channel | Scope |",
+    "| --- | --- | --- | --- |",
+  );
   for (const contact of report.contacts) {
     lines.push(`| ${contact.role} | ${contact.owner} | ${contact.channel} | ${contact.scope} |`);
   }

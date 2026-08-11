@@ -129,10 +129,9 @@ function secretProbes(): ConfigProbe[] {
         missingOptional.length === 0
           ? "All optional overrides are set."
           : `Not set (defaults apply): ${missingOptional.join(", ")}.`,
-      action:
-        missingOptional.includes("EMAIL_SENDER_DOMAIN")
-          ? "Provision a sender domain before announcement so auth email comes from an AIgilityX address."
-          : undefined,
+      action: missingOptional.includes("EMAIL_SENDER_DOMAIN")
+        ? "Provision a sender domain before announcement so auth email comes from an AIgilityX address."
+        : undefined,
     },
     {
       id: "secrets.no_browser_leak",

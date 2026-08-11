@@ -28,7 +28,9 @@ const report = (probes: ConfigProbe[]): ProductionConfigReport => ({
   release: { version: "1.0.0-rc.1", marker: "release/2026-08-14", targetDate: "2026-08-14" },
   probes,
   capacity: [{ id: "c", label: "Cohort", value: "25 seats", bound: "Email allowance" }],
-  limitations: [{ id: "l", limitation: "Single provider", impact: "Medium", mitigation: "Assistive only" }],
+  limitations: [
+    { id: "l", limitation: "Single provider", impact: "Medium", mitigation: "Assistive only" },
+  ],
   contacts: [{ role: "Incident owner", owner: "Owner", channel: "support@x", scope: "P0" }],
 });
 
