@@ -100,14 +100,13 @@ type DeliveryOutcome = { delivered: boolean; reason: string };
  * recorded as blocked with the reason rather than faked. Once the sender domain
  * and its reminder template exist, this is the single place delivery is wired.
  */
-// eslint-disable-next-line @typescript-eslint/require-await
 async function deliver(_row: GapEmailPlanRow): Promise<DeliveryOutcome> {
-  return {
+  return Promise.resolve({
     delivered: false,
     reason:
       "No verified sender domain is configured, so no reminder email was sent. " +
       "The nudge is queued in the dispatch log and the participant still sees it in the app.",
-  };
+  });
 }
 
 /**
