@@ -63,12 +63,20 @@ const indexable = ["/", "/repository", "/pricing"];
 for (const path of indexable) {
   const res = await get(path);
   const noindex = /name=["']robots["'][^>]*noindex|noindex[^>]*name=["']robots["']/i.test(res.body);
-  record(`indexable ${path}`, res.status < 500 && !noindex, noindex ? "noindex present" : "index, follow");
+  record(
+    `indexable ${path}`,
+    res.status < 500 && !noindex,
+    noindex ? "noindex present" : "index, follow",
+  );
 }
 for (const path of ["/administration", "/my-use-cases"]) {
   const res = await get(path);
   const noindex = /noindex/i.test(res.body);
-  record(`private noindex ${path}`, res.status >= 400 || noindex, noindex ? "noindex present" : `status ${res.status}`);
+  record(
+    `private noindex ${path}`,
+    res.status >= 400 || noindex,
+    noindex ? "noindex present" : `status ${res.status}`,
+  );
 }
 
 /** Crawl configuration. */
@@ -81,7 +89,9 @@ record(
 
 const sitemap = await get("/sitemap.xml");
 const urlCount = (sitemap.body.match(/<loc>/g) ?? []).length;
-record("sitemap.xml", sitemap.status === 200 && urlCount > 0, `${urlCount} url entries`, { urlCount });
+record("sitemap.xml", sitemap.status === 200 && urlCount > 0, `${urlCount} url entries`, {
+  urlCount,
+});
 
 /** Public API contract. */
 const api = await get("/api/public/usecasex/use-cases");
@@ -108,7 +118,11 @@ record("public api taxonomy", taxonomy.status === 200, `status ${taxonomy.status
 /** Social preview, using a real slug when the API gave us one. */
 if (firstSlug) {
   const og = await get(`/og/use-case/${encodeURIComponent(firstSlug)}`);
-  record("og image", og.status === 200 && og.body.length > 0, `status ${og.status} for ${firstSlug}`);
+  record(
+    "og image",
+    og.status === 200 && og.body.length > 0,
+    `status ${og.status} for ${firstSlug}`,
+  );
 } else {
   record("og image", false, "skipped — no slug available from the public API");
 }
