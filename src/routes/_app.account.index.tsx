@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { privateHead } from "@/lib/seo";
 import { AVATAR_BUCKET } from "@/lib/storage/buckets";
+import { UploadConstraints, UploadError } from "@/components/storage/UploadConstraints";
 import {
   BUCKET_POLICIES,
   extensionOf,
@@ -278,8 +279,10 @@ function AccountProfilePage() {
                   </button>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground">JPG, PNG, WEBP or GIF. Max 2 MB.</p>
-              {avatarErr ? <p className="text-xs text-destructive">{avatarErr}</p> : null}
+              <UploadConstraints bucket={AVATAR_BUCKET} />
+              {avatarErr ? (
+                <UploadError bucket={AVATAR_BUCKET} message={avatarErr} className="max-w-sm" />
+              ) : null}
             </div>
             <input
               ref={fileRef}

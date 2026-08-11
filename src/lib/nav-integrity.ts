@@ -43,6 +43,7 @@ export const SIDEBAR_NAV_TARGETS = [
   "/administration",
   "/admin-submissions",
   "/admin-audit",
+  "/admin-observability",
   "/admin-waitlist",
   "/account",
   "/account/security",

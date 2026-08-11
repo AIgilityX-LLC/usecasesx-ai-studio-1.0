@@ -23,6 +23,13 @@ import {
   uploadEvidenceFile,
 } from "@/lib/domain/benefit-evidence.repository";
 import type { BenefitEvidenceItem } from "@/lib/value/benefits.model";
+import { EVIDENCE_BUCKET } from "@/lib/storage/buckets";
+import { acceptAttribute, validateUpload } from "@/lib/storage/storage-policy";
+import {
+  UploadConstraints,
+  UploadError,
+  uploadConstraintsText,
+} from "@/components/storage/UploadConstraints";
 
 export function BenefitEvidenceEditor({
   useCaseId,
@@ -38,6 +45,7 @@ export function BenefitEvidenceEditor({
   const [label, setLabel] = useState("");
   const [url, setUrl] = useState("");
   const [busy, setBusy] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [opening, setOpening] = useState<string | null>(null);
 
   const addLink = () => {
@@ -63,13 +71,27 @@ export function BenefitEvidenceEditor({
 
   const addFile = async (file: File | undefined) => {
     if (!file) return;
+    const decision = validateUpload(EVIDENCE_BUCKET, {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+    });
+    if (!decision.allowed) {
+      // Say what was wrong *and* what would be accepted.
+      setUploadError(decision.reason);
+      toast.error(decision.reason, { description: uploadConstraintsText(EVIDENCE_BUCKET) });
+      return;
+    }
+    setUploadError(null);
     setBusy(true);
     try {
       const item = await uploadEvidenceFile(useCaseId, file);
       onChange([...items, item]);
       toast.success("Evidence uploaded");
     } catch (err) {
-      toast.error(toUserMessage(err));
+      const message = toUserMessage(err);
+      setUploadError(message);
+      toast.error(message);
     } finally {
       setBusy(false);
     }
@@ -204,6 +226,7 @@ export function BenefitEvidenceEditor({
         <input
           id="benefit-evidence-file"
           type="file"
+          accept={acceptAttribute(EVIDENCE_BUCKET)}
           className="sr-only"
           disabled={disabled || busy}
           onChange={(e) => {
@@ -212,8 +235,12 @@ export function BenefitEvidenceEditor({
           }}
         />
         <p className="mt-1 text-[11px] text-muted-foreground">
-          Files stay private to your account and open through a short-lived link. Max 10 MB.
+          Files stay private to your account and open through a short-lived link.
         </p>
+        <UploadConstraints bucket={EVIDENCE_BUCKET} className="mt-0.5 text-[11px]" />
+        {uploadError ? (
+          <UploadError bucket={EVIDENCE_BUCKET} message={uploadError} className="mt-2" />
+        ) : null}
       </div>
     </div>
   );
