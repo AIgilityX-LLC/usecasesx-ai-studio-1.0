@@ -6,6 +6,7 @@ import {
   FEEDBACK_MESSAGE_MIN,
   FEEDBACK_STATUSES,
 } from "@/lib/feedback/feedback.model";
+import { REQUEST_PRIORITIES } from "@/lib/feedback/sla";
 
 const SubmitInput = z.object({
   category: z.enum([
