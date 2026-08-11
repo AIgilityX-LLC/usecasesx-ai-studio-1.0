@@ -7,7 +7,8 @@
  *  2. package.json version matches src/lib/release.ts.
  *  3. Every migration filename is timestamp-ordered and unique.
  *  4. Migrations contain no destructive statements (DROP TABLE/COLUMN, TRUNCATE,
- *     DELETE FROM, ALTER ... RENAME COLUMN, DISABLE ROW LEVEL SECURITY).
+ *     DELETE FROM, ALTER ... RENAME COLUMN, DISABLE ROW LEVEL SECURITY), unless
+ *     the migration manifest marks that exact file as a recorded exception.
  *  5. Migrations carry no demo/sample seed INSERTs (seeds live in scripts/seed).
  *  6. The migration manifest lists exactly the migrations on disk.
  *
