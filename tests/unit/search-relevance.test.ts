@@ -8,7 +8,7 @@
  */
 import { describe, expect, it } from "bun:test";
 import { rankByRelevance, relevanceScore, searchTerms } from "@/lib/use-cases.search";
-import { searchCorpus, useCaseRow } from "../fixtures/deterministic";
+import { searchCorpus, repositoryRow } from "../fixtures/deterministic";
 
 describe("searchTerms", () => {
   it("lowercases, de-duplicates and drops single characters", () => {
@@ -31,39 +31,39 @@ describe("searchTerms", () => {
 
 describe("relevanceScore", () => {
   it("is zero when there are no terms", () => {
-    expect(relevanceScore(useCaseRow(), [], "")).toBe(0);
+    expect(relevanceScore(repositoryRow(), [], "")).toBe(0);
   });
 
   it("weights a title hit above the same word in the body", () => {
-    const inTitle = useCaseRow({ title: "Invoice triage", business_problem: "Nothing here." });
-    const inBody = useCaseRow({ title: "Generic assistant", business_problem: "Invoice backlog." });
+    const inTitle = repositoryRow({ title: "Invoice triage", business_problem: "Nothing here." });
+    const inBody = repositoryRow({ title: "Generic assistant", business_problem: "Invoice backlog." });
     expect(relevanceScore(inTitle, ["invoice"], "invoice")).toBeGreaterThan(
       relevanceScore(inBody, ["invoice"], "invoice"),
     );
   });
 
   it("rewards covering every term over matching just one", () => {
-    const both = useCaseRow({ title: "Invoice fraud detection" });
-    const one = useCaseRow({ title: "Invoice capture" });
+    const both = repositoryRow({ title: "Invoice fraud detection" });
+    const one = repositoryRow({ title: "Invoice capture" });
     expect(relevanceScore(both, ["invoice", "fraud"], "invoice fraud")).toBeGreaterThan(
       relevanceScore(one, ["invoice", "fraud"], "invoice fraud"),
     );
   });
 
   it("applies diminishing returns so repetition cannot beat a title match", () => {
-    const stuffed = useCaseRow({
+    const stuffed = repositoryRow({
       title: "Generic assistant",
       business_problem: Array.from({ length: 40 }, () => "invoice").join(" "),
     });
-    const honest = useCaseRow({ title: "Invoice fraud detection" });
+    const honest = repositoryRow({ title: "Invoice fraud detection" });
     expect(relevanceScore(honest, ["invoice"], "invoice")).toBeGreaterThan(
       relevanceScore(stuffed, ["invoice"], "invoice"),
     );
   });
 
   it("treats an exact title phrase as the strongest signal", () => {
-    const exact = useCaseRow({ title: "Invoice fraud detection" });
-    const scattered = useCaseRow({ title: "Fraud review and invoice archive" });
+    const exact = repositoryRow({ title: "Invoice fraud detection" });
+    const scattered = repositoryRow({ title: "Fraud review and invoice archive" });
     expect(relevanceScore(exact, ["invoice", "fraud"], "invoice fraud")).toBeGreaterThan(
       relevanceScore(scattered, ["invoice", "fraud"], "invoice fraud"),
     );
@@ -89,9 +89,9 @@ describe("rankByRelevance", () => {
 
   it("preserves input order for equally scored rows", () => {
     const rows = [
-      useCaseRow({ slug: "first" }),
-      useCaseRow({ slug: "second" }),
-      useCaseRow({ slug: "third" }),
+      repositoryRow({ slug: "first" }),
+      repositoryRow({ slug: "second" }),
+      repositoryRow({ slug: "third" }),
     ];
     expect(rankByRelevance(rows, "unmatched", ["unmatched"]).map((r) => r.slug)).toEqual([
       "first",

@@ -22,7 +22,7 @@ export type UseCaseRow = {
 };
 
 /** One repository row; every field has a stable default so ranking is testable. */
-export function useCaseRow(overrides: Partial<UseCaseRow> = {}): UseCaseRow {
+export function repositoryRow(overrides: Partial<UseCaseRow> = {}): UseCaseRow {
   return {
     id: "00000000-0000-4000-8000-000000000001",
     slug: "fixture-use-case",
@@ -39,7 +39,7 @@ export function useCaseRow(overrides: Partial<UseCaseRow> = {}): UseCaseRow {
 /** A small, intentionally overlapping corpus for relevance-ranking assertions. */
 export function searchCorpus(): UseCaseRow[] {
   return [
-    useCaseRow({
+    repositoryRow({
       id: "00000000-0000-4000-8000-00000000000a",
       slug: "invoice-fraud-detection",
       title: "Invoice fraud detection",
@@ -47,7 +47,7 @@ export function searchCorpus(): UseCaseRow[] {
       business_problem: "Fraudulent invoices slip through manual checks.",
       impact_score: 70,
     }),
-    useCaseRow({
+    repositoryRow({
       id: "00000000-0000-4000-8000-00000000000b",
       slug: "procurement-assistant",
       title: "Procurement assistant",
@@ -55,7 +55,7 @@ export function searchCorpus(): UseCaseRow[] {
       business_problem: "Buyers spend hours on invoice queries.",
       impact_score: 60,
     }),
-    useCaseRow({
+    repositoryRow({
       id: "00000000-0000-4000-8000-00000000000c",
       slug: "citizen-permit-triage",
       title: "Citizen permit triage",
