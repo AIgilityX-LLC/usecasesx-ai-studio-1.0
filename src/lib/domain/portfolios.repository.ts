@@ -186,7 +186,7 @@ export async function listPortfoliosPageForUser(
   }
 
   const result = await query;
-  const fetched = (unwrapResult(result, { allowNull: true }) ?? []) as (PortfolioRow & {
+  const fetched = (unwrapResult(result, { allowNull: true }) ?? []) as unknown as (PortfolioRow & {
     id: string;
     created_at: string;
   })[];
