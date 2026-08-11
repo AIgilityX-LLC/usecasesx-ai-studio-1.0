@@ -19,6 +19,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AppAboutRouteImport } from './routes/_app.about'
 import { Route as AppAccountRouteImport } from './routes/_app.account'
 import { Route as AppAdminAuditRouteImport } from './routes/_app.admin-audit'
+import { Route as AppAdminObservabilityRouteImport } from './routes/_app.admin-observability'
 import { Route as AppAdminSubmissionsRouteImport } from './routes/_app.admin-submissions'
 import { Route as AppAdminWaitlistRouteImport } from './routes/_app.admin-waitlist'
 import { Route as AppAdministrationRouteImport } from './routes/_app.administration'
@@ -158,6 +159,11 @@ const AppAccountRoute = AppAccountRouteImport.update({
 const AppAdminAuditRoute = AppAdminAuditRouteImport.update({
   id: '/admin-audit',
   path: '/admin-audit',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminObservabilityRoute = AppAdminObservabilityRouteImport.update({
+  id: '/admin-observability',
+  path: '/admin-observability',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAdminSubmissionsRoute = AppAdminSubmissionsRouteImport.update({
@@ -644,6 +650,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AppAboutRoute
   '/account': typeof AppAccountRouteWithChildren
   '/admin-audit': typeof AppAdminAuditRoute
+  '/admin-observability': typeof AppAdminObservabilityRoute
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRouteWithChildren
@@ -745,6 +752,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/about': typeof AppAboutRoute
   '/admin-audit': typeof AppAdminAuditRoute
+  '/admin-observability': typeof AppAdminObservabilityRoute
   '/admin-submissions': typeof AppAdminSubmissionsRoute
   '/admin-waitlist': typeof AppAdminWaitlistRoute
   '/administration': typeof AppAdministrationRouteWithChildren
@@ -848,6 +856,7 @@ export interface FileRoutesById {
   '/_app/about': typeof AppAboutRoute
   '/_app/account': typeof AppAccountRouteWithChildren
   '/_app/admin-audit': typeof AppAdminAuditRoute
+  '/_app/admin-observability': typeof AppAdminObservabilityRoute
   '/_app/admin-submissions': typeof AppAdminSubmissionsRoute
   '/_app/admin-waitlist': typeof AppAdminWaitlistRoute
   '/_app/administration': typeof AppAdministrationRouteWithChildren
@@ -952,6 +961,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/account'
     | '/admin-audit'
+    | '/admin-observability'
     | '/admin-submissions'
     | '/admin-waitlist'
     | '/administration'
@@ -1053,6 +1063,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/about'
     | '/admin-audit'
+    | '/admin-observability'
     | '/admin-submissions'
     | '/admin-waitlist'
     | '/administration'
@@ -1155,6 +1166,7 @@ export interface FileRouteTypes {
     | '/_app/about'
     | '/_app/account'
     | '/_app/admin-audit'
+    | '/_app/admin-observability'
     | '/_app/admin-submissions'
     | '/_app/admin-waitlist'
     | '/_app/administration'
@@ -1336,6 +1348,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-audit'
       fullPath: '/admin-audit'
       preLoaderRoute: typeof AppAdminAuditRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin-observability': {
+      id: '/_app/admin-observability'
+      path: '/admin-observability'
+      fullPath: '/admin-observability'
+      preLoaderRoute: typeof AppAdminObservabilityRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/admin-submissions': {
@@ -2068,6 +2087,7 @@ interface AppRouteChildren {
   AppAboutRoute: typeof AppAboutRoute
   AppAccountRoute: typeof AppAccountRouteWithChildren
   AppAdminAuditRoute: typeof AppAdminAuditRoute
+  AppAdminObservabilityRoute: typeof AppAdminObservabilityRoute
   AppAdminSubmissionsRoute: typeof AppAdminSubmissionsRoute
   AppAdminWaitlistRoute: typeof AppAdminWaitlistRoute
   AppAdministrationRoute: typeof AppAdministrationRouteWithChildren
@@ -2133,6 +2153,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAboutRoute: AppAboutRoute,
   AppAccountRoute: AppAccountRouteWithChildren,
   AppAdminAuditRoute: AppAdminAuditRoute,
+  AppAdminObservabilityRoute: AppAdminObservabilityRoute,
   AppAdminSubmissionsRoute: AppAdminSubmissionsRoute,
   AppAdminWaitlistRoute: AppAdminWaitlistRoute,
   AppAdministrationRoute: AppAdministrationRouteWithChildren,
