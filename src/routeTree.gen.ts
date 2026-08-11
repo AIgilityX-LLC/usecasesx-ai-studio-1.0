@@ -74,6 +74,7 @@ import { Route as AppAccountTeamRouteImport } from './routes/_app.account.team'
 import { Route as AppAdministrationAnalyticsRouteImport } from './routes/_app.administration.analytics'
 import { Route as AppAdministrationFeedbackRouteImport } from './routes/_app.administration.feedback'
 import { Route as AppAdministrationLaunchLearningRouteImport } from './routes/_app.administration.launch-learning'
+import { Route as AppAdministrationPilotRouteImport } from './routes/_app.administration.pilot'
 import { Route as AppAdministrationRequestsRouteImport } from './routes/_app.administration.requests'
 import { Route as AppBoardsIndexRouteImport } from './routes/_app.boards.index'
 import { Route as AppBoardsBoardIdRouteImport } from './routes/_app.boards.$boardId'
@@ -441,6 +442,11 @@ const AppAdministrationLaunchLearningRoute =
     path: '/launch-learning',
     getParentRoute: () => AppAdministrationRoute,
   } as any)
+const AppAdministrationPilotRoute = AppAdministrationPilotRouteImport.update({
+  id: '/pilot',
+  path: '/pilot',
+  getParentRoute: () => AppAdministrationRoute,
+} as any)
 const AppAdministrationRequestsRoute =
   AppAdministrationRequestsRouteImport.update({
     id: '/requests',
@@ -717,6 +723,7 @@ export interface FileRoutesByFullPath {
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
+  '/administration/pilot': typeof AppAdministrationPilotRoute
   '/administration/requests': typeof AppAdministrationRequestsRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
@@ -820,6 +827,7 @@ export interface FileRoutesByTo {
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
+  '/administration/pilot': typeof AppAdministrationPilotRoute
   '/administration/requests': typeof AppAdministrationRequestsRoute
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
@@ -927,6 +935,7 @@ export interface FileRoutesById {
   '/_app/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/_app/administration/feedback': typeof AppAdministrationFeedbackRoute
   '/_app/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
+  '/_app/administration/pilot': typeof AppAdministrationPilotRoute
   '/_app/administration/requests': typeof AppAdministrationRequestsRoute
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/boards/collections': typeof AppBoardsCollectionsRoute
@@ -1034,6 +1043,7 @@ export interface FileRouteTypes {
     | '/administration/analytics'
     | '/administration/feedback'
     | '/administration/launch-learning'
+    | '/administration/pilot'
     | '/administration/requests'
     | '/boards/$boardId'
     | '/boards/collections'
@@ -1137,6 +1147,7 @@ export interface FileRouteTypes {
     | '/administration/analytics'
     | '/administration/feedback'
     | '/administration/launch-learning'
+    | '/administration/pilot'
     | '/administration/requests'
     | '/boards/$boardId'
     | '/boards/collections'
@@ -1243,6 +1254,7 @@ export interface FileRouteTypes {
     | '/_app/administration/analytics'
     | '/_app/administration/feedback'
     | '/_app/administration/launch-learning'
+    | '/_app/administration/pilot'
     | '/_app/administration/requests'
     | '/_app/boards/$boardId'
     | '/_app/boards/collections'
@@ -1760,6 +1772,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdministrationLaunchLearningRouteImport
       parentRoute: typeof AppAdministrationRoute
     }
+    '/_app/administration/pilot': {
+      id: '/_app/administration/pilot'
+      path: '/pilot'
+      fullPath: '/administration/pilot'
+      preLoaderRoute: typeof AppAdministrationPilotRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/administration/requests': {
       id: '/_app/administration/requests'
       path: '/requests'
@@ -2058,6 +2077,7 @@ interface AppAdministrationRouteChildren {
   AppAdministrationAnalyticsRoute: typeof AppAdministrationAnalyticsRoute
   AppAdministrationFeedbackRoute: typeof AppAdministrationFeedbackRoute
   AppAdministrationLaunchLearningRoute: typeof AppAdministrationLaunchLearningRoute
+  AppAdministrationPilotRoute: typeof AppAdministrationPilotRoute
   AppAdministrationRequestsRoute: typeof AppAdministrationRequestsRoute
 }
 
@@ -2065,6 +2085,7 @@ const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationAnalyticsRoute: AppAdministrationAnalyticsRoute,
   AppAdministrationFeedbackRoute: AppAdministrationFeedbackRoute,
   AppAdministrationLaunchLearningRoute: AppAdministrationLaunchLearningRoute,
+  AppAdministrationPilotRoute: AppAdministrationPilotRoute,
   AppAdministrationRequestsRoute: AppAdministrationRequestsRoute,
 }
 
