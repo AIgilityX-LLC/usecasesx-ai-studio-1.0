@@ -23,6 +23,8 @@ jobs:
         run: bun install --frozen-lockfile
       - name: Prepare test-mode env
         run: node scripts/ci-test-env.mjs
+      - name: Verify release candidate integrity
+        run: bun run verify:release
       - name: Lint
         run: bun run lint
       - name: Typecheck
