@@ -18,6 +18,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   listSavedForUser,
   listScoresForUser,
+  listSavedWithMetaForUser,
   resolveUseCaseIdBySlug,
   saveUseCase,
   unsaveUseCase,
@@ -30,7 +31,7 @@ import {
   addUseCasesToPortfolio,
   createPortfolio,
   deletePortfolio,
-  listPortfoliosForUser,
+  listPortfoliosWithMetaForUser,
   removeUseCaseFromPortfolio,
   removeUseCasesFromPortfolio,
   updatePortfolio,
@@ -68,9 +69,22 @@ interface ProData {
   slugToId: Record<string, string>;
   /** slug → live use-case content (title, summary, classification, industry…). */
   useCaseContent: Record<string, UseCaseContent>;
+  /** Completeness of the saved list — loaded vs. exact total, and whether the cap applied. */
+  savedMeta: ListMeta;
+  /** Completeness of the portfolio list — loaded vs. exact total, and whether the cap applied. */
+  portfolioMeta: ListMeta;
 }
 
-const EMPTY: ProData = { saved: [], portfolios: [], slugToId: {}, useCaseContent: {} };
+const EMPTY_META: ListMeta = { loaded: 0, total: null, cap: 0, truncated: false };
+
+const EMPTY: ProData = {
+  saved: [],
+  portfolios: [],
+  slugToId: {},
+  useCaseContent: {},
+  savedMeta: EMPTY_META,
+  portfolioMeta: EMPTY_META,
+};
 
 function normalizeScore(
   row: {
