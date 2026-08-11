@@ -1972,6 +1972,110 @@ export type Database = {
         }
         Relationships: []
       }
+      pilot_rc_waivers: {
+        Row: {
+          approved_by: string
+          approver_name: string
+          approver_role: string
+          cohort: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          metadata: Json
+          reason: string
+          revoke_reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          scope: string
+          updated_at: string
+        }
+        Insert: {
+          approved_by: string
+          approver_name: string
+          approver_role: string
+          cohort?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          metadata?: Json
+          reason: string
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          scope?: string
+          updated_at?: string
+        }
+        Update: {
+          approved_by?: string
+          approver_name?: string
+          approver_role?: string
+          cohort?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          metadata?: Json
+          reason?: string
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          scope?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pilot_reminder_dispatches: {
+        Row: {
+          channel: string
+          cohort: string
+          created_at: string
+          detail: string | null
+          id: string
+          idempotency_key: string
+          invitation_id: string | null
+          kind: string
+          recipient_email: string
+          status: string
+          updated_at: string
+          window_days: number | null
+        }
+        Insert: {
+          channel?: string
+          cohort?: string
+          created_at?: string
+          detail?: string | null
+          id?: string
+          idempotency_key: string
+          invitation_id?: string | null
+          kind: string
+          recipient_email: string
+          status?: string
+          updated_at?: string
+          window_days?: number | null
+        }
+        Update: {
+          channel?: string
+          cohort?: string
+          created_at?: string
+          detail?: string | null
+          id?: string
+          idempotency_key?: string
+          invitation_id?: string | null
+          kind?: string
+          recipient_email?: string
+          status?: string
+          updated_at?: string
+          window_days?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pilot_reminder_dispatches_invitation_id_fkey"
+            columns: ["invitation_id"]
+            isOneToOne: false
+            referencedRelation: "pilot_invitations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pilot_reminders: {
         Row: {
           actor_id: string | null
@@ -2060,6 +2164,68 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      pilot_verdict_snapshots: {
+        Row: {
+          checkpoint_answers: number
+          cohort: string
+          created_at: string
+          evidence_gap_state: string | null
+          freeze_recommended: boolean
+          headline: string
+          id: string
+          invited: number
+          p0_count: number
+          p1_count: number
+          reasons: Json
+          recorded_by: string | null
+          registered: number
+          verdict: string
+          waiver_id: string | null
+        }
+        Insert: {
+          checkpoint_answers?: number
+          cohort?: string
+          created_at?: string
+          evidence_gap_state?: string | null
+          freeze_recommended?: boolean
+          headline: string
+          id?: string
+          invited?: number
+          p0_count?: number
+          p1_count?: number
+          reasons?: Json
+          recorded_by?: string | null
+          registered?: number
+          verdict: string
+          waiver_id?: string | null
+        }
+        Update: {
+          checkpoint_answers?: number
+          cohort?: string
+          created_at?: string
+          evidence_gap_state?: string | null
+          freeze_recommended?: boolean
+          headline?: string
+          id?: string
+          invited?: number
+          p0_count?: number
+          p1_count?: number
+          reasons?: Json
+          recorded_by?: string | null
+          registered?: number
+          verdict?: string
+          waiver_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pilot_verdict_snapshots_waiver_id_fkey"
+            columns: ["waiver_id"]
+            isOneToOne: false
+            referencedRelation: "pilot_rc_waivers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       plans: {
         Row: {

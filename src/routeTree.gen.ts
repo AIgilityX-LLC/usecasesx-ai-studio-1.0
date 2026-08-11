@@ -107,6 +107,7 @@ import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g
 import { Route as AppWorkshopsJoinTokenRouteImport } from './routes/_app.workshops.join.$token'
 import { Route as ApiPublicHooksErpReconciliationRouteImport } from './routes/api/public/hooks/erp-reconciliation'
 import { Route as ApiPublicHooksEvidenceCleanupRouteImport } from './routes/api/public/hooks/evidence-cleanup'
+import { Route as ApiPublicHooksPilotEvidenceRemindersRouteImport } from './routes/api/public/hooks/pilot-evidence-reminders'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
 import { Route as AppStudioUseCaseIdIndexRouteImport } from './routes/_app.studio.use-case.$id.index'
@@ -619,6 +620,12 @@ const ApiPublicHooksEvidenceCleanupRoute =
     path: '/api/public/hooks/evidence-cleanup',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksPilotEvidenceRemindersRoute =
+  ApiPublicHooksPilotEvidenceRemindersRouteImport.update({
+    id: '/api/public/hooks/pilot-evidence-reminders',
+    path: '/api/public/hooks/pilot-evidence-reminders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicUsecasexTaxonomyRoute =
   ApiPublicUsecasexTaxonomyRouteImport.update({
     id: '/api/public/usecasex/taxonomy',
@@ -811,6 +818,7 @@ export interface FileRoutesByFullPath {
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
+  '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
@@ -924,6 +932,7 @@ export interface FileRoutesByTo {
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
+  '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
@@ -1041,6 +1050,7 @@ export interface FileRoutesById {
   '/_app/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
+  '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/_app/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
@@ -1158,6 +1168,7 @@ export interface FileRouteTypes {
     | '/workshops/join/$token'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
+    | '/api/public/hooks/pilot-evidence-reminders'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/studio/use-case/$id/advisorx'
@@ -1271,6 +1282,7 @@ export interface FileRouteTypes {
     | '/workshops/join/$token'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
+    | '/api/public/hooks/pilot-evidence-reminders'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/studio/use-case/$id/advisorx'
@@ -1387,6 +1399,7 @@ export interface FileRouteTypes {
     | '/_app/workshops/join/$token'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
+    | '/api/public/hooks/pilot-evidence-reminders'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/_app/studio/use-case/$id/advisorx'
@@ -1418,6 +1431,7 @@ export interface RootRouteChildren {
   OgUseCaseSlugRoute: typeof OgUseCaseSlugRoute
   ApiPublicHooksErpReconciliationRoute: typeof ApiPublicHooksErpReconciliationRoute
   ApiPublicHooksEvidenceCleanupRoute: typeof ApiPublicHooksEvidenceCleanupRoute
+  ApiPublicHooksPilotEvidenceRemindersRoute: typeof ApiPublicHooksPilotEvidenceRemindersRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
   ApiPublicUsecasexRoadmapExportRoute: typeof ApiPublicUsecasexRoadmapExportRoute
@@ -2111,6 +2125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksEvidenceCleanupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/pilot-evidence-reminders': {
+      id: '/api/public/hooks/pilot-evidence-reminders'
+      path: '/api/public/hooks/pilot-evidence-reminders'
+      fullPath: '/api/public/hooks/pilot-evidence-reminders'
+      preLoaderRoute: typeof ApiPublicHooksPilotEvidenceRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/usecasex/taxonomy': {
       id: '/api/public/usecasex/taxonomy'
       path: '/api/public/usecasex/taxonomy'
@@ -2497,6 +2518,8 @@ const rootRouteChildren: RootRouteChildren = {
   OgUseCaseSlugRoute: OgUseCaseSlugRoute,
   ApiPublicHooksErpReconciliationRoute: ApiPublicHooksErpReconciliationRoute,
   ApiPublicHooksEvidenceCleanupRoute: ApiPublicHooksEvidenceCleanupRoute,
+  ApiPublicHooksPilotEvidenceRemindersRoute:
+    ApiPublicHooksPilotEvidenceRemindersRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
   ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRouteWithChildren,
   ApiPublicUsecasexRoadmapExportRoute: ApiPublicUsecasexRoadmapExportRoute,
@@ -2504,13 +2527,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
