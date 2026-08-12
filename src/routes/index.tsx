@@ -262,6 +262,31 @@ function Hero() {
             "linear-gradient(180deg, oklch(0.18 0.05 258 / 0.88) 0%, oklch(0.18 0.05 258 / 0.78) 60%, oklch(0.18 0.05 258 / 0.95) 100%)",
         }}
       />
+      <div aria-hidden className="pointer-events-none absolute inset-0 hero-aurora" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 hero-grid" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 hero-scan" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        {[
+          { l: "12%", t: "24%", s: 6, d: "0s" },
+          { l: "31%", t: "68%", s: 4, d: "1.4s" },
+          { l: "48%", t: "18%", s: 5, d: "2.6s" },
+          { l: "63%", t: "74%", s: 7, d: "0.8s" },
+          { l: "78%", t: "34%", s: 4, d: "3.4s" },
+          { l: "89%", t: "62%", s: 6, d: "2s" },
+        ].map((n) => (
+          <span
+            key={n.l}
+            className="hero-node absolute"
+            style={{
+              left: n.l,
+              top: n.t,
+              width: n.s,
+              height: n.s,
+              animationDelay: n.d,
+            }}
+          />
+        ))}
+      </div>
       <div className="relative mx-auto max-w-[1400px] px-6 pb-24 pt-24 sm:pt-32">
         <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary backdrop-blur">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
