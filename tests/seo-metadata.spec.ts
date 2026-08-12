@@ -109,7 +109,7 @@ test("sitemap lists public hubs and no private routes", async ({ request }) => {
   expect(xml).toContain("/categories");
   expect(xml).toContain("/collections");
   for (const prefix of ["/administration", "/dashboard", "/studio"]) {
-    expect(xml).not.toContain(`<loc>https://usecasesx.aigilityx.com${prefix}`);
+    expect(xml).not.toContain(`<loc>https://ai-venture-atlas.lovable.app${prefix}`);
   }
 });
 
