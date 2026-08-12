@@ -145,7 +145,7 @@
    Dark surfaces (.dark theme, .surface-dark, .on-dark) keep brand gold.
    ------------------------------------------------------------------ */
 :root {
-  --gold-ink: oklch(0.52 0.115 78);
+  --gold-ink: oklch(0.44 0.1 78);
 }
 .text-primary {
   color: var(--gold-ink);
