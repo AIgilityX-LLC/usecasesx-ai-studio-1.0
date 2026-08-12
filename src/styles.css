@@ -188,6 +188,11 @@ footer .text-primary,
 .bg-sidebar .text-primary {
   color: var(--primary);
 }
+/* Amber "fair-use" badges: dark ink on light bands, light amber on dark. */
+main#main-content > section:nth-of-type(odd) .text-amber-800,
+main#main-content > article > section:nth-of-type(odd) .text-amber-800 {
+  color: oklch(0.86 0.13 85);
+}
 
 .dark {
   /* Executive black-navy with gold accent */
