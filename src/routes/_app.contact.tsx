@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { track, trackCTAEvent } from "@/lib/usecasex.tracking";
+import { saveLeadCapture } from "@/lib/leadCapture";
 
 const INTERESTS = [
   { value: "pro", label: "Pro Founding Access" },
@@ -47,20 +48,38 @@ function ContactPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     setSubmitting(true);
 
-    // Conversion telemetry: the enquiry itself is routed by the marketing inbox.
-    track("contact_form_submitted", {
-      interest,
-      has_organization: Boolean(form.get("organization")),
-    });
+    try {
+      // Persist the enquiry itself so the team can action it, then record
+      // conversion telemetry (which deliberately carries no message content).
+      await saveLeadCapture({
+        fullName: String(form.get("name") ?? "").trim(),
+        email: String(form.get("email") ?? "").trim(),
+        organization: (String(form.get("organization") ?? "").trim() || null) as string | null,
+        interestArea: interest,
+        message: (String(form.get("message") ?? "").trim() || null) as string | null,
+        consent: true,
+        triggerCase: "contact_form",
+        sourcePage: "/contact",
+      });
 
-    setSubmitting(false);
-    setSubmitted(true);
-    toast.success("Thanks — your enquiry has been recorded. We'll be in touch by email.");
+      track("contact_form_submitted", {
+        interest,
+        has_organization: Boolean(form.get("organization")),
+      });
+
+      setSubmitted(true);
+      toast.success("Thanks — your enquiry has been recorded. We'll be in touch by email.");
+    } catch (error) {
+      console.error("[contact] enquiry submission failed", error);
+      toast.error("We couldn't send your enquiry. Please try again or email us directly.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (

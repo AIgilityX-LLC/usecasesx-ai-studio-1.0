@@ -81,33 +81,33 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "AIgilityX UseCasesX™ — AI Use Case Discovery & Value Design Studio" },
+      { title: "UseCasesX™ — AI Use Case Discovery & Design" },
       {
         name: "description",
         content:
-          "Discover, design, validate, govern, prioritize, and scale AI use cases with AIgilityX UseCasesX™ — an enterprise-grade, sovereign-ready AI use case discovery and value design studio.",
+          "Discover, design, score and prioritize AI use cases with UseCasesX™ — an enterprise-grade, sovereign-ready AI value design studio.",
       },
       { name: "author", content: "AIgilityX™" },
       { property: "og:site_name", content: "AIgilityX UseCasesX™" },
       {
         property: "og:title",
-        content: "AIgilityX UseCasesX™ — AI Use Case Discovery & Value Design Studio",
+        content: "UseCasesX™ — AI Use Case Discovery & Design",
       },
       {
         property: "og:description",
         content:
-          "Discover, design, validate, govern, prioritize, and scale AI use cases with AIgilityX UseCasesX™ — an enterprise-grade, sovereign-ready AI use case discovery and value design studio.",
+          "Discover, design, score and prioritize AI use cases with UseCasesX™ — an enterprise-grade, sovereign-ready AI value design studio.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:title",
-        content: "AIgilityX UseCasesX™ — AI Use Case Discovery & Value Design Studio",
+        content: "UseCasesX™ — AI Use Case Discovery & Design",
       },
       {
         name: "twitter:description",
         content:
-          "Discover, design, validate, govern, prioritize, and scale AI use cases with AIgilityX UseCasesX™ — an enterprise-grade, sovereign-ready AI use case discovery and value design studio.",
+          "Discover, design, score and prioritize AI use cases with UseCasesX™ — an enterprise-grade, sovereign-ready AI value design studio.",
       },
     ],
 
