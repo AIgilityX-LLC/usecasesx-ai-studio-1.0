@@ -34,4 +34,4 @@ Disallow: /submit
 Disallow: /workshops
 Disallow: /api/
 
-Sitemap: https://usecasesx.aigilityx.com/sitemap.xml
+Sitemap: https://ai-venture-atlas.lovable.app/sitemap.xml
