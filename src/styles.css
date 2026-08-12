@@ -138,6 +138,35 @@
   background-color: oklch(0.22 0.045 262);
 }
 
+/* --------------------------------------------------------------------
+   Accessible gold for TEXT on light surfaces.
+   Brand gold (--primary) stays untouched for fills, borders, rings and
+   icons; only text colour is darkened so 10-13px labels clear WCAG AA.
+   Dark surfaces (.dark theme, .surface-dark, .on-dark) keep brand gold.
+   ------------------------------------------------------------------ */
+:root {
+  --gold-ink: oklch(0.52 0.115 78);
+}
+.text-primary {
+  color: var(--gold-ink);
+}
+.text-primary\/30,
+.text-primary\/40,
+.text-primary\/50,
+.text-primary\/60,
+.text-primary\/70,
+.text-primary\/80 {
+  color: var(--gold-ink);
+}
+.dark .text-primary,
+.surface-dark .text-primary,
+.on-dark .text-primary,
+.dark [class*="text-primary/"],
+.surface-dark [class*="text-primary/"],
+.on-dark [class*="text-primary/"] {
+  color: var(--primary);
+}
+
 .dark {
   /* Executive black-navy with gold accent */
   --background: oklch(0.13 0.028 262);
