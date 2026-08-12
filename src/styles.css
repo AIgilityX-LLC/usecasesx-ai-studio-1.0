@@ -242,6 +242,28 @@ main#main-content > section:nth-of-type(even) .text-white,
 main#main-content > article > section:nth-of-type(even) .text-white {
   color: var(--navy-950);
 }
+/* Light bands must re-map dark-theme tokens so content stays readable */
+main#main-content > section:nth-of-type(even) .text-foreground,
+main#main-content > article > section:nth-of-type(even) .text-foreground {
+  color: var(--navy-950);
+}
+main#main-content > section:nth-of-type(even) .text-muted-foreground,
+main#main-content > article > section:nth-of-type(even) .text-muted-foreground {
+  color: oklch(0.44 0.02 262);
+}
+main#main-content > section:nth-of-type(even) .bg-card,
+main#main-content > article > section:nth-of-type(even) .bg-card {
+  background-color: oklch(0.985 0.003 262);
+  color: var(--navy-950);
+}
+main#main-content > section:nth-of-type(even) .bg-background,
+main#main-content > article > section:nth-of-type(even) .bg-background {
+  background-color: oklch(1 0 0);
+}
+main#main-content > section:nth-of-type(even) .border-border,
+main#main-content > article > section:nth-of-type(even) .border-border {
+  border-color: oklch(0.16 0.035 262 / 0.14);
+}
 
 /* ---- Animated hero background ---------------------------------------- */
 @keyframes hero-aurora {
