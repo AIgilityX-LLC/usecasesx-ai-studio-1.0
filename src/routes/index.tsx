@@ -6,6 +6,7 @@ import { getInsights } from "@/lib/insights.functions";
 import { SEGMENTS } from "@/lib/segments";
 import { TRUST_FACTS, FOUNDING_ACCESS_END } from "@/lib/founding-access";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
+import { SITE_NAME, SITE_URL } from "@/lib/seo";
 import heroImg from "@/assets/landing-hero.jpg";
 import repositoryImg from "@/assets/landing-repository.jpg";
 import studioImg from "@/assets/landing-studio.jpg";
@@ -24,23 +25,34 @@ export const Route = createFileRoute("/")({
         { name: "robots", content: "index, follow" },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
-        { property: "og:url", content: "https://usecasesx.aigilityx.com/" },
+        { property: "og:url", content: `${SITE_URL}/` },
         { property: "og:type", content: "website" },
         { property: "og:site_name", content: "UseCasesX™ by AIgilityX™" },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
       ],
-      links: [{ rel: "canonical", href: "https://usecasesx.aigilityx.com/" }],
+      links: [{ rel: "canonical", href: `${SITE_URL}/` }],
       scripts: [
         {
           type: "application/ld+json",
           children: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebSite",
-            name: "UseCasesX™ by AIgilityX™",
-            url: "https://usecasesx.aigilityx.com/",
+            name: SITE_NAME,
+            url: `${SITE_URL}/`,
             description,
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: SITE_NAME,
+            url: `${SITE_URL}/`,
+            description:
+              "UseCasesX is a global AI use case repository, AI Opportunity Map and AI Use Case Studio, part of the SovereignX AI Suite.",
           }),
         },
       ],
