@@ -988,16 +988,16 @@ function SovereignSection() {
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
             Government &amp; Sovereign AI
           </div>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Built for ministries, regulators &amp; sovereign AI programs.
           </h2>
-          <p className="mt-4 text-white/80">
+          <p className="mt-4 text-base text-muted-foreground md:text-lg">
             UseCasesX™ supports the full spectrum of sovereign deployment: Public SaaS, Enterprise
             SaaS, Private Cloud, GovCloud, On-Premises, and Air-Gapped Sovereign Deployment — with
             country-specific governance packs and a tamper-evident audit trail across the full use
             case lifecycle.
           </p>
-          <ul className="mt-6 grid grid-cols-2 gap-2 text-sm text-white">
+          <ul className="mt-6 grid grid-cols-2 gap-2 text-sm font-semibold text-foreground">
             {[
               "Public SaaS",
               "Enterprise SaaS",
@@ -1008,14 +1008,28 @@ function SovereignSection() {
             ].map((d) => (
               <li
                 key={d}
-                className="rounded-md border border-white/15 bg-white/5 px-3 py-2 text-center backdrop-blur"
+                className="rounded-md border border-primary/25 bg-card px-3 py-2 text-center shadow-[var(--shadow-card)]"
               >
                 {d}
               </li>
             ))}
           </ul>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              to="/enterprise"
+              className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110"
+            >
+              Explore Sovereign &amp; Enterprise →
+            </Link>
+            <Link
+              to="/governance"
+              className="rounded-md border border-border px-5 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
+            >
+              See governance model
+            </Link>
+          </div>
         </div>
-        <div className="overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
+        <div className="overflow-hidden rounded-2xl border border-border shadow-2xl">
           <img
             src={sovereignImg}
             alt="Sovereign AI deployment"
