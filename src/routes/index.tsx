@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Crown } from "lucide-react";
 import { SiteShell } from "@/components/SiteShell";
+import { LeadCaptureModal } from "@/components/LeadCaptureModal";
+import { AdvisorContactDialog } from "@/components/marketing/AdvisorContactDialog";
 import { getInsights } from "@/lib/insights.functions";
 import { SEGMENTS } from "@/lib/segments";
 import { TRUST_FACTS, FOUNDING_ACCESS_END } from "@/lib/founding-access";
