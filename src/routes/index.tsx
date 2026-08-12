@@ -356,7 +356,7 @@ function Hero() {
       <div aria-hidden className="pointer-events-none absolute inset-0 hero-aurora" />
       <div aria-hidden className="pointer-events-none absolute inset-0 hero-grid" />
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 hero-scan" />
-      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden contain-paint">
         {[
           { l: "12%", t: "24%", s: 6, d: "0s" },
           { l: "31%", t: "68%", s: 4, d: "1.4s" },
@@ -378,6 +378,16 @@ function Hero() {
           />
         ))}
       </div>
+      {/* Contrast scrim: keeps hero copy above 4.5:1 no matter where the
+          animated layers happen to be in their cycle. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(100deg, oklch(0.16 0.045 258 / 0.82) 0%, oklch(0.16 0.045 258 / 0.62) 55%, oklch(0.16 0.045 258 / 0.35) 100%)",
+        }}
+      />
       <div className="relative mx-auto max-w-[1400px] px-6 pb-24 pt-24 sm:pt-32">
         <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary backdrop-blur">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
