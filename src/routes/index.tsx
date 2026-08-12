@@ -84,8 +84,13 @@ function LandingPage() {
   );
 }
 
-/* FINAL CONVERSION CTA — sits directly above the footer */
+/* FINAL CONVERSION CTA — sits directly above the footer.
+   Both CTAs open their flow in place (same tab, no lost scroll position):
+   the waitlist opens the founding-member lead form, the advisor CTA opens the
+   short advisor routing form with email/contact fallbacks. */
 function FinalCta() {
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
+  const [advisorOpen, setAdvisorOpen] = useState(false);
   return (
     <section className="relative overflow-hidden border-b border-border">
       <div aria-hidden className="pointer-events-none absolute inset-0 hero-aurora opacity-70" />
@@ -104,41 +109,64 @@ function FinalCta() {
           prioritized use cases.
         </p>
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-          <Link
-            to="/pricing"
-            hash="founding"
-            onClick={() =>
+          <button
+            type="button"
+            onClick={() => {
               trackCTAEvent("waitlist_join_clicked", {
                 source_page: "/",
-                target_route: "/pricing#founding",
+                target_route: "waitlist_form",
                 location: "landing_final_cta",
-              })
-            }
+              });
+              setWaitlistOpen(true);
+            }}
             data-analytics-id="waitlist-cta-final"
-            className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-[var(--shadow-gold)] transition hover:brightness-110"
+            className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-[var(--shadow-gold)] transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <Crown className="h-4 w-4 shrink-0" aria-hidden />
             Join the Waitlist — Early Gratis (Free) Access
-          </Link>
-          <Link
-            to="/contact"
-            onClick={() =>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               trackCTAEvent("cta_clicked", {
                 source_page: "/",
-                target_route: "/contact",
+                target_route: "advisor_form",
                 location: "landing_final_cta_advisor",
-              })
-            }
+              });
+              setAdvisorOpen(true);
+            }}
             data-analytics-id="cta-landing-final-advisor"
-            className="inline-flex items-center justify-center gap-2 rounded-md border border-primary/40 bg-background/40 px-7 py-3.5 text-sm font-bold text-foreground backdrop-blur transition hover:border-primary hover:text-primary"
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-primary/40 bg-background/40 px-7 py-3.5 text-sm font-bold text-foreground backdrop-blur transition hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             Talk to Our Advisor →
-          </Link>
+          </button>
         </div>
         <p className="mt-5 text-xs text-muted-foreground">
           No payment details required. Fair-use limits apply. Enterprise runs on the same platform.
         </p>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Prefer a page?{" "}
+          <Link to="/pricing" hash="founding" className="underline hover:text-foreground">
+            Founding Access details
+          </Link>{" "}
+          ·{" "}
+          <Link to="/contact" className="underline hover:text-foreground">
+            Contact &amp; demo
+          </Link>
+        </p>
       </div>
+      <LeadCaptureModal
+        open={waitlistOpen}
+        onClose={() => setWaitlistOpen(false)}
+        triggerCase="founding-member"
+        sourcePage="/"
+      />
+      <AdvisorContactDialog
+        open={advisorOpen}
+        onOpenChange={setAdvisorOpen}
+        sourcePage="/"
+        location="landing_final_cta_advisor"
+      />
     </section>
   );
 }
