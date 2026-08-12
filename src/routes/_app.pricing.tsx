@@ -294,7 +294,7 @@ function PricingPage() {
                         <span>
                           {f}
                           {isComingSoon(f) && (
-                            <span className="ml-1.5 rounded bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                            <span className="ml-1.5 rounded bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400">
                               Coming {NEXT_RELEASE_LABEL}
                             </span>
                           )}
@@ -468,7 +468,7 @@ function Cell({
 }) {
   const hl = highlight ? "bg-emerald-500/10" : "";
   const soonBadge = soon ? (
-    <span className="ml-1.5 rounded bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+    <span className="ml-1.5 rounded bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400">
       {NEXT_RELEASE_LABEL}
     </span>
   ) : null;
