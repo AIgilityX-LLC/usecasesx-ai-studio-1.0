@@ -79,7 +79,67 @@ function LandingPage() {
       <PlansSection />
       <SovereignSection />
       <TrustSection />
+      <FinalCta />
     </SiteShell>
+  );
+}
+
+/* FINAL CONVERSION CTA — sits directly above the footer */
+function FinalCta() {
+  return (
+    <section className="relative overflow-hidden border-b border-border">
+      <div aria-hidden className="pointer-events-none absolute inset-0 hero-aurora opacity-70" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 hero-grid" />
+      <div className="relative mx-auto max-w-[1100px] px-6 py-20 text-center">
+        <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary backdrop-blur">
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+          Founding Access — free until {FOUNDING_ACCESS_END}
+        </div>
+        <h2 className="mt-5 text-balance text-3xl font-bold tracking-tight sm:text-5xl">
+          Your next AI decision deserves evidence, not opinion.
+        </h2>
+        <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+          Claim complimentary Pro Founding Access and start turning AI ideas into a scored,
+          governed, board-ready portfolio — or talk to an AIgilityX advisor about your first
+          prioritized use cases.
+        </p>
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            to="/pricing"
+            hash="founding"
+            onClick={() =>
+              trackCTAEvent("waitlist_join_clicked", {
+                source_page: "/",
+                target_route: "/pricing#founding",
+                location: "landing_final_cta",
+              })
+            }
+            data-analytics-id="waitlist-cta-final"
+            className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-[var(--shadow-gold)] transition hover:brightness-110"
+          >
+            <Crown className="h-4 w-4 shrink-0" aria-hidden />
+            Join the Waitlist — Early Gratis (Free) Access
+          </Link>
+          <Link
+            to="/contact"
+            onClick={() =>
+              trackCTAEvent("cta_clicked", {
+                source_page: "/",
+                target_route: "/contact",
+                location: "landing_final_cta_advisor",
+              })
+            }
+            data-analytics-id="cta-landing-final-advisor"
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-primary/40 bg-background/40 px-7 py-3.5 text-sm font-bold text-foreground backdrop-blur transition hover:border-primary hover:text-primary"
+          >
+            Talk to Our Advisor →
+          </Link>
+        </div>
+        <p className="mt-5 text-xs text-muted-foreground">
+          No payment details required. Fair-use limits apply. Enterprise runs on the same platform.
+        </p>
+      </div>
+    </section>
   );
 }
 
@@ -262,6 +322,31 @@ function Hero() {
             "linear-gradient(180deg, oklch(0.18 0.05 258 / 0.88) 0%, oklch(0.18 0.05 258 / 0.78) 60%, oklch(0.18 0.05 258 / 0.95) 100%)",
         }}
       />
+      <div aria-hidden className="pointer-events-none absolute inset-0 hero-aurora" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 hero-grid" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 hero-scan" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        {[
+          { l: "12%", t: "24%", s: 6, d: "0s" },
+          { l: "31%", t: "68%", s: 4, d: "1.4s" },
+          { l: "48%", t: "18%", s: 5, d: "2.6s" },
+          { l: "63%", t: "74%", s: 7, d: "0.8s" },
+          { l: "78%", t: "34%", s: 4, d: "3.4s" },
+          { l: "89%", t: "62%", s: 6, d: "2s" },
+        ].map((n) => (
+          <span
+            key={n.l}
+            className="hero-node absolute"
+            style={{
+              left: n.l,
+              top: n.t,
+              width: n.s,
+              height: n.s,
+              animationDelay: n.d,
+            }}
+          />
+        ))}
+      </div>
       <div className="relative mx-auto max-w-[1400px] px-6 pb-24 pt-24 sm:pt-32">
         <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary backdrop-blur">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
@@ -903,16 +988,16 @@ function SovereignSection() {
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
             Government &amp; Sovereign AI
           </div>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Built for ministries, regulators &amp; sovereign AI programs.
           </h2>
-          <p className="mt-4 text-white/80">
+          <p className="mt-4 text-base text-muted-foreground md:text-lg">
             UseCasesX™ supports the full spectrum of sovereign deployment: Public SaaS, Enterprise
             SaaS, Private Cloud, GovCloud, On-Premises, and Air-Gapped Sovereign Deployment — with
             country-specific governance packs and a tamper-evident audit trail across the full use
             case lifecycle.
           </p>
-          <ul className="mt-6 grid grid-cols-2 gap-2 text-sm text-white">
+          <ul className="mt-6 grid grid-cols-2 gap-2 text-sm font-semibold text-foreground">
             {[
               "Public SaaS",
               "Enterprise SaaS",
@@ -923,14 +1008,28 @@ function SovereignSection() {
             ].map((d) => (
               <li
                 key={d}
-                className="rounded-md border border-white/15 bg-white/5 px-3 py-2 text-center backdrop-blur"
+                className="rounded-md border border-primary/25 bg-card px-3 py-2 text-center shadow-[var(--shadow-card)]"
               >
                 {d}
               </li>
             ))}
           </ul>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              to="/enterprise"
+              className="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:brightness-110"
+            >
+              Explore Sovereign &amp; Enterprise →
+            </Link>
+            <Link
+              to="/governance"
+              className="rounded-md border border-border px-5 py-2.5 text-sm font-bold text-foreground hover:bg-secondary"
+            >
+              See governance model
+            </Link>
+          </div>
         </div>
-        <div className="overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
+        <div className="overflow-hidden rounded-2xl border border-border shadow-2xl">
           <img
             src={sovereignImg}
             alt="Sovereign AI deployment"
