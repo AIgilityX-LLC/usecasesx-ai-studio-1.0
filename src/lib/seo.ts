@@ -6,7 +6,12 @@
  * private surfaces can never drift into the index.
  */
 
-export const SITE_URL = "https://usecasesx.aigilityx.com";
+/**
+ * Canonical origin. Defaults to the live project host; override with
+ * VITE_SITE_URL once the custom domain (usecasesx.aigilityx.com) is connected.
+ */
+export const SITE_URL =
+  import.meta.env.VITE_SITE_URL?.replace(/\/$/, "") ?? "https://ai-venture-atlas.lovable.app";
 export const SITE_NAME = "UseCasesX™ by AIgilityX™";
 
 /** Public, indexable marketing and repository paths. */
