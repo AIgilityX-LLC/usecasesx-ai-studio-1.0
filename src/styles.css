@@ -166,6 +166,28 @@
 .on-dark [class*="text-primary/"] {
   color: var(--primary);
 }
+/* Dark bands of the alternating section system, plus the dark chrome
+   (sidebar, footer), keep the bright brand gold. These carry an id in the
+   selector, so they always beat the light-surface default above. */
+main#main-content > section:nth-of-type(odd) .text-primary,
+main#main-content > article > section:nth-of-type(odd) .text-primary,
+main#main-content > section:nth-of-type(odd) [class*="text-primary/"],
+main#main-content > article > section:nth-of-type(odd) [class*="text-primary/"] {
+  color: var(--primary);
+}
+/* Even (white) bands always use the accessible ink, even inside .on-dark
+   wrappers that the band system repaints white. */
+main#main-content > section:nth-of-type(even) .text-primary,
+main#main-content > article > section:nth-of-type(even) .text-primary,
+main#main-content > section:nth-of-type(even) [class*="text-primary/"],
+main#main-content > article > section:nth-of-type(even) [class*="text-primary/"] {
+  color: var(--gold-ink);
+}
+footer .text-primary,
+[data-sidebar] .text-primary,
+.bg-sidebar .text-primary {
+  color: var(--primary);
+}
 
 .dark {
   /* Executive black-navy with gold accent */
