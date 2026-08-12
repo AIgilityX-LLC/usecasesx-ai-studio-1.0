@@ -79,7 +79,67 @@ function LandingPage() {
       <PlansSection />
       <SovereignSection />
       <TrustSection />
+      <FinalCta />
     </SiteShell>
+  );
+}
+
+/* FINAL CONVERSION CTA — sits directly above the footer */
+function FinalCta() {
+  return (
+    <section className="relative overflow-hidden border-b border-border">
+      <div aria-hidden className="pointer-events-none absolute inset-0 hero-aurora opacity-70" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 hero-grid" />
+      <div className="relative mx-auto max-w-[1100px] px-6 py-20 text-center">
+        <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary backdrop-blur">
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+          Founding Access — free until {FOUNDING_ACCESS_END}
+        </div>
+        <h2 className="mt-5 text-balance text-3xl font-bold tracking-tight sm:text-5xl">
+          Your next AI decision deserves evidence, not opinion.
+        </h2>
+        <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+          Claim complimentary Pro Founding Access and start turning AI ideas into a scored,
+          governed, board-ready portfolio — or talk to an AIgilityX advisor about your first
+          prioritized use cases.
+        </p>
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            to="/pricing"
+            hash="founding"
+            onClick={() =>
+              trackCTAEvent("waitlist_join_clicked", {
+                source_page: "/",
+                target_route: "/pricing#founding",
+                location: "landing_final_cta",
+              })
+            }
+            data-analytics-id="waitlist-cta-final"
+            className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-[var(--shadow-gold)] transition hover:brightness-110"
+          >
+            <Crown className="h-4 w-4 shrink-0" aria-hidden />
+            Join the Waitlist — Early Gratis (Free) Access
+          </Link>
+          <Link
+            to="/contact"
+            onClick={() =>
+              trackCTAEvent("cta_clicked", {
+                source_page: "/",
+                target_route: "/contact",
+                location: "landing_final_cta_advisor",
+              })
+            }
+            data-analytics-id="cta-landing-final-advisor"
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-primary/40 bg-background/40 px-7 py-3.5 text-sm font-bold text-foreground backdrop-blur transition hover:border-primary hover:text-primary"
+          >
+            Talk to Our Advisor →
+          </Link>
+        </div>
+        <p className="mt-5 text-xs text-muted-foreground">
+          No payment details required. Fair-use limits apply. Enterprise runs on the same platform.
+        </p>
+      </div>
+    </section>
   );
 }
 
