@@ -356,7 +356,10 @@ function Hero() {
       <div aria-hidden className="pointer-events-none absolute inset-0 hero-aurora" />
       <div aria-hidden className="pointer-events-none absolute inset-0 hero-grid" />
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 hero-scan" />
-      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden contain-paint">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 overflow-hidden contain-paint"
+      >
         {[
           { l: "12%", t: "24%", s: 6, d: "0s" },
           { l: "31%", t: "68%", s: 4, d: "1.4s" },
