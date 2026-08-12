@@ -138,6 +138,62 @@
   background-color: oklch(0.22 0.045 262);
 }
 
+/* --------------------------------------------------------------------
+   Accessible gold for TEXT on light surfaces.
+   Brand gold (--primary) stays untouched for fills, borders, rings and
+   icons; only text colour is darkened so 10-13px labels clear WCAG AA.
+   Dark surfaces (.dark theme, .surface-dark, .on-dark) keep brand gold.
+   ------------------------------------------------------------------ */
+:root {
+  --gold-ink: oklch(0.44 0.1 78);
+}
+.text-primary {
+  color: var(--gold-ink);
+}
+.text-primary\/30,
+.text-primary\/40,
+.text-primary\/50,
+.text-primary\/60,
+.text-primary\/70,
+.text-primary\/80 {
+  color: var(--gold-ink);
+}
+.dark .text-primary,
+.surface-dark .text-primary,
+.on-dark .text-primary,
+.dark [class*="text-primary/"],
+.surface-dark [class*="text-primary/"],
+.on-dark [class*="text-primary/"] {
+  color: var(--primary);
+}
+/* Dark bands of the alternating section system, plus the dark chrome
+   (sidebar, footer), keep the bright brand gold. These carry an id in the
+   selector, so they always beat the light-surface default above. */
+main#main-content > section:nth-of-type(odd) .text-primary,
+main#main-content > article > section:nth-of-type(odd) .text-primary,
+main#main-content > section:nth-of-type(odd) [class*="text-primary/"],
+main#main-content > article > section:nth-of-type(odd) [class*="text-primary/"] {
+  color: var(--primary);
+}
+/* Even (white) bands always use the accessible ink, even inside .on-dark
+   wrappers that the band system repaints white. */
+main#main-content > section:nth-of-type(even) .text-primary,
+main#main-content > article > section:nth-of-type(even) .text-primary,
+main#main-content > section:nth-of-type(even) [class*="text-primary/"],
+main#main-content > article > section:nth-of-type(even) [class*="text-primary/"] {
+  color: var(--gold-ink);
+}
+footer .text-primary,
+[data-sidebar] .text-primary,
+.bg-sidebar .text-primary {
+  color: var(--primary);
+}
+/* Amber "fair-use" badges: dark ink on light bands, light amber on dark. */
+main#main-content > section:nth-of-type(odd) .text-amber-800,
+main#main-content > article > section:nth-of-type(odd) .text-amber-800 {
+  color: oklch(0.86 0.13 85);
+}
+
 .dark {
   /* Executive black-navy with gold accent */
   --background: oklch(0.13 0.028 262);
@@ -317,6 +373,7 @@ main#main-content > article > section:nth-of-type(even) .border-border {
     radial-gradient(42% 46% at 78% 32%, oklch(0.55 0.13 240 / 0.34), transparent 72%),
     radial-gradient(46% 50% at 55% 88%, oklch(0.78 0.13 215 / 0.24), transparent 74%);
   filter: blur(6px);
+  will-change: transform, opacity;
   animation: hero-aurora 22s ease-in-out infinite;
 }
 .hero-grid {
@@ -327,17 +384,20 @@ main#main-content > article > section:nth-of-type(even) .border-border {
     64px 64px,
     64px 64px;
   mask-image: radial-gradient(70% 70% at 50% 40%, #000 40%, transparent 100%);
+  will-change: background-position;
   animation: hero-grid-pan 18s linear infinite;
 }
 .hero-scan {
   background: linear-gradient(180deg, transparent, oklch(0.74 0.135 85 / 0.16), transparent);
   height: 25%;
+  will-change: transform;
   animation: hero-scan 11s ease-in-out infinite;
 }
 .hero-node {
   border-radius: 9999px;
   background: var(--gold);
   box-shadow: 0 0 18px 4px oklch(0.74 0.135 85 / 0.45);
+  will-change: transform, opacity;
   animation: hero-node 9s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -346,6 +406,16 @@ main#main-content > article > section:nth-of-type(even) .border-border {
   .hero-scan,
   .hero-node {
     animation: none !important;
+    transition: none !important;
+    will-change: auto;
+  }
+  /* Motion-derived decoration is removed entirely, not just frozen. */
+  .hero-scan,
+  .hero-node {
+    display: none !important;
+  }
+  .hero-aurora {
+    opacity: 0.6;
   }
 }
 

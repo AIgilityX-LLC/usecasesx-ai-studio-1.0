@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Crown } from "lucide-react";
 import { SiteShell } from "@/components/SiteShell";
+import { LeadCaptureModal } from "@/components/LeadCaptureModal";
+import { AdvisorContactDialog } from "@/components/marketing/AdvisorContactDialog";
 import { getInsights } from "@/lib/insights.functions";
 import { SEGMENTS } from "@/lib/segments";
 import { TRUST_FACTS, FOUNDING_ACCESS_END } from "@/lib/founding-access";
@@ -84,10 +87,15 @@ function LandingPage() {
   );
 }
 
-/* FINAL CONVERSION CTA — sits directly above the footer */
+/* FINAL CONVERSION CTA — sits directly above the footer.
+   Both CTAs open their flow in place (same tab, no lost scroll position):
+   the waitlist opens the founding-member lead form, the advisor CTA opens the
+   short advisor routing form with email/contact fallbacks. */
 function FinalCta() {
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
+  const [advisorOpen, setAdvisorOpen] = useState(false);
   return (
-    <section className="relative overflow-hidden border-b border-border">
+    <section className="on-dark relative overflow-hidden border-b border-border">
       <div aria-hidden className="pointer-events-none absolute inset-0 hero-aurora opacity-70" />
       <div aria-hidden className="pointer-events-none absolute inset-0 hero-grid" />
       <div className="relative mx-auto max-w-[1100px] px-6 py-20 text-center">
@@ -104,41 +112,64 @@ function FinalCta() {
           prioritized use cases.
         </p>
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-          <Link
-            to="/pricing"
-            hash="founding"
-            onClick={() =>
+          <button
+            type="button"
+            onClick={() => {
               trackCTAEvent("waitlist_join_clicked", {
                 source_page: "/",
-                target_route: "/pricing#founding",
+                target_route: "waitlist_form",
                 location: "landing_final_cta",
-              })
-            }
+              });
+              setWaitlistOpen(true);
+            }}
             data-analytics-id="waitlist-cta-final"
-            className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-[var(--shadow-gold)] transition hover:brightness-110"
+            className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-[var(--shadow-gold)] transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <Crown className="h-4 w-4 shrink-0" aria-hidden />
             Join the Waitlist — Early Gratis (Free) Access
-          </Link>
-          <Link
-            to="/contact"
-            onClick={() =>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               trackCTAEvent("cta_clicked", {
                 source_page: "/",
-                target_route: "/contact",
+                target_route: "advisor_form",
                 location: "landing_final_cta_advisor",
-              })
-            }
+              });
+              setAdvisorOpen(true);
+            }}
             data-analytics-id="cta-landing-final-advisor"
-            className="inline-flex items-center justify-center gap-2 rounded-md border border-primary/40 bg-background/40 px-7 py-3.5 text-sm font-bold text-foreground backdrop-blur transition hover:border-primary hover:text-primary"
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-primary/40 bg-background/40 px-7 py-3.5 text-sm font-bold text-foreground backdrop-blur transition hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             Talk to Our Advisor →
-          </Link>
+          </button>
         </div>
         <p className="mt-5 text-xs text-muted-foreground">
           No payment details required. Fair-use limits apply. Enterprise runs on the same platform.
         </p>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Prefer a page?{" "}
+          <Link to="/pricing" hash="founding" className="underline hover:text-foreground">
+            Founding Access details
+          </Link>{" "}
+          ·{" "}
+          <Link to="/contact" className="underline hover:text-foreground">
+            Contact &amp; demo
+          </Link>
+        </p>
       </div>
+      <LeadCaptureModal
+        open={waitlistOpen}
+        onClose={() => setWaitlistOpen(false)}
+        triggerCase="founding-member"
+        sourcePage="/"
+      />
+      <AdvisorContactDialog
+        open={advisorOpen}
+        onOpenChange={setAdvisorOpen}
+        sourcePage="/"
+        location="landing_final_cta_advisor"
+      />
     </section>
   );
 }
@@ -305,7 +336,7 @@ function Stat({ v, l }: { v: string | number; l: string }) {
 /* 1 — HERO */
 function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-border">
+    <section className="on-dark relative overflow-hidden border-b border-border">
       <img
         src={heroImg}
         alt=""
@@ -325,7 +356,10 @@ function Hero() {
       <div aria-hidden className="pointer-events-none absolute inset-0 hero-aurora" />
       <div aria-hidden className="pointer-events-none absolute inset-0 hero-grid" />
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 hero-scan" />
-      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 overflow-hidden contain-paint"
+      >
         {[
           { l: "12%", t: "24%", s: 6, d: "0s" },
           { l: "31%", t: "68%", s: 4, d: "1.4s" },
@@ -347,6 +381,16 @@ function Hero() {
           />
         ))}
       </div>
+      {/* Contrast scrim: keeps hero copy above 4.5:1 no matter where the
+          animated layers happen to be in their cycle. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(100deg, oklch(0.16 0.045 258 / 0.82) 0%, oklch(0.16 0.045 258 / 0.62) 55%, oklch(0.16 0.045 258 / 0.35) 100%)",
+        }}
+      />
       <div className="relative mx-auto max-w-[1400px] px-6 pb-24 pt-24 sm:pt-32">
         <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary backdrop-blur">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
