@@ -95,7 +95,7 @@ function FinalCta() {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   const [advisorOpen, setAdvisorOpen] = useState(false);
   return (
-    <section className="relative overflow-hidden border-b border-border">
+    <section className="on-dark relative overflow-hidden border-b border-border">
       <div aria-hidden className="pointer-events-none absolute inset-0 hero-aurora opacity-70" />
       <div aria-hidden className="pointer-events-none absolute inset-0 hero-grid" />
       <div className="relative mx-auto max-w-[1100px] px-6 py-20 text-center">
@@ -336,7 +336,7 @@ function Stat({ v, l }: { v: string | number; l: string }) {
 /* 1 — HERO */
 function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-border">
+    <section className="on-dark relative overflow-hidden border-b border-border">
       <img
         src={heroImg}
         alt=""
