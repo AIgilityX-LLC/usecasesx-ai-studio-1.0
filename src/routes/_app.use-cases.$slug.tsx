@@ -167,6 +167,21 @@ export const Route = createFileRoute("/_app/use-cases/$slug")({
         { name: "twitter:image", content: image },
       ],
       links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: loaderData?.title ?? title,
+            description,
+            url,
+            image,
+            isPartOf: { "@type": "WebSite", name: SITE_NAME },
+            publisher: { "@type": "Organization", name: SITE_NAME },
+          }),
+        },
+      ],
     };
   },
   component: UseCaseDetailPage,
