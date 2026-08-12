@@ -317,6 +317,7 @@ main#main-content > article > section:nth-of-type(even) .border-border {
     radial-gradient(42% 46% at 78% 32%, oklch(0.55 0.13 240 / 0.34), transparent 72%),
     radial-gradient(46% 50% at 55% 88%, oklch(0.78 0.13 215 / 0.24), transparent 74%);
   filter: blur(6px);
+  will-change: transform, opacity;
   animation: hero-aurora 22s ease-in-out infinite;
 }
 .hero-grid {
@@ -327,17 +328,20 @@ main#main-content > article > section:nth-of-type(even) .border-border {
     64px 64px,
     64px 64px;
   mask-image: radial-gradient(70% 70% at 50% 40%, #000 40%, transparent 100%);
+  will-change: background-position;
   animation: hero-grid-pan 18s linear infinite;
 }
 .hero-scan {
   background: linear-gradient(180deg, transparent, oklch(0.74 0.135 85 / 0.16), transparent);
   height: 25%;
+  will-change: transform;
   animation: hero-scan 11s ease-in-out infinite;
 }
 .hero-node {
   border-radius: 9999px;
   background: var(--gold);
   box-shadow: 0 0 18px 4px oklch(0.74 0.135 85 / 0.45);
+  will-change: transform, opacity;
   animation: hero-node 9s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -346,6 +350,16 @@ main#main-content > article > section:nth-of-type(even) .border-border {
   .hero-scan,
   .hero-node {
     animation: none !important;
+    transition: none !important;
+    will-change: auto;
+  }
+  /* Motion-derived decoration is removed entirely, not just frozen. */
+  .hero-scan,
+  .hero-node {
+    display: none !important;
+  }
+  .hero-aurora {
+    opacity: 0.6;
   }
 }
 
