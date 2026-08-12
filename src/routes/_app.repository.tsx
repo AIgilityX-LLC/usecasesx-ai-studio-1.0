@@ -179,6 +179,16 @@ export const Route = createFileRoute("/_app/repository")({
       title: "AI Use Case Repository — UseCasesX™",
       description:
         "Filter AI, GenAI, Agentic AI and automation use cases by industry, function, value, complexity, risk and readiness.",
+      jsonLd: [
+        {
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "AI Use Case Repository",
+          description:
+            "A curated, provenance-labelled collection of AI, GenAI, Agentic AI and automation use case patterns, filterable by industry, business function, value, complexity, risk and readiness.",
+          isPartOf: { "@type": "WebSite", name: "UseCasesX™ by AIgilityX™" },
+        },
+      ],
     }),
   validateSearch: searchSchema,
   loaderDeps: ({ search }) => ({ search }),
