@@ -301,12 +301,19 @@ export async function createLeadCapture(payload: LeadCapturePayload) {
     interest_area: payload.interestArea ?? null,
     source_use_case: payload.sourceUseCase ?? null,
     source_page: payload.sourcePage ?? null,
-    cta: payload.cta ?? null,
-    eligible: payload.eligible ?? null,
-    waitlist_status: payload.waitlistStatus ?? "pending",
-  });
+      cta: payload.cta ?? null,
+      eligible: payload.eligible ?? null,
+      waitlist_status: payload.waitlistStatus ?? "pending",
+      utm_source: payload.utmSource ?? null,
+      utm_medium: payload.utmMedium ?? null,
+      utm_campaign: payload.utmCampaign ?? null,
+      referrer_host: payload.referrerHost ?? null,
+    })
+    .select("id, reference_id")
+    .single();
   if (error) throw new ServiceError(error.message, error);
-  return { ok: true as const };
+  const row = (data ?? null) as { id: string; reference_id: string | null } | null;
+  return { ok: true as const, id: row?.id ?? null, referenceId: row?.reference_id ?? null };
 }
 
 export interface CTAEventPayload {
