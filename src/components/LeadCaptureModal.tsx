@@ -251,6 +251,8 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
 
       const result = await saveLeadCapture(payload);
       setEligibleResult(isEligibleEmail(parsed.data.email));
+      setReference(result.referenceId);
+      setEmailed(result.emailed);
       trackCTAEvent("lead_submitted", {
         trigger,
         interest: payload.interestArea,
@@ -296,6 +298,9 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
             triggerCase={trigger}
             message={copy.success}
             eligible={eligibleResult}
+            reference={reference}
+            emailed={emailed}
+            email={form.email}
             onClose={onClose}
           />
         ) : (
