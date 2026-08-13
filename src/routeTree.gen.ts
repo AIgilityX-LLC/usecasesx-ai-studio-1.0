@@ -84,6 +84,7 @@ import { Route as AppAdministrationAnalyticsRouteImport } from './routes/_app.ad
 import { Route as AppAdministrationFeedbackRouteImport } from './routes/_app.administration.feedback'
 import { Route as AppAdministrationLaunchChecksRouteImport } from './routes/_app.administration.launch-checks'
 import { Route as AppAdministrationLaunchLearningRouteImport } from './routes/_app.administration.launch-learning'
+import { Route as AppAdministrationLeadsRouteImport } from './routes/_app.administration.leads'
 import { Route as AppAdministrationPilotRouteImport } from './routes/_app.administration.pilot'
 import { Route as AppAdministrationProductionDataRouteImport } from './routes/_app.administration.production-data'
 import { Route as AppAdministrationProductionReadinessRouteImport } from './routes/_app.administration.production-readiness'
@@ -507,6 +508,11 @@ const AppAdministrationLaunchLearningRoute =
     path: '/launch-learning',
     getParentRoute: () => AppAdministrationRoute,
   } as any)
+const AppAdministrationLeadsRoute = AppAdministrationLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => AppAdministrationRoute,
+} as any)
 const AppAdministrationPilotRoute = AppAdministrationPilotRouteImport.update({
   id: '/pilot',
   path: '/pilot',
@@ -822,6 +828,7 @@ export interface FileRoutesByFullPath {
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
   '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
+  '/administration/leads': typeof AppAdministrationLeadsRoute
   '/administration/pilot': typeof AppAdministrationPilotRoute
   '/administration/production-data': typeof AppAdministrationProductionDataRoute
   '/administration/production-readiness': typeof AppAdministrationProductionReadinessRoute
@@ -940,6 +947,7 @@ export interface FileRoutesByTo {
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
   '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
+  '/administration/leads': typeof AppAdministrationLeadsRoute
   '/administration/pilot': typeof AppAdministrationPilotRoute
   '/administration/production-data': typeof AppAdministrationProductionDataRoute
   '/administration/production-readiness': typeof AppAdministrationProductionReadinessRoute
@@ -1062,6 +1070,7 @@ export interface FileRoutesById {
   '/_app/administration/feedback': typeof AppAdministrationFeedbackRoute
   '/_app/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/_app/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
+  '/_app/administration/leads': typeof AppAdministrationLeadsRoute
   '/_app/administration/pilot': typeof AppAdministrationPilotRoute
   '/_app/administration/production-data': typeof AppAdministrationProductionDataRoute
   '/_app/administration/production-readiness': typeof AppAdministrationProductionReadinessRoute
@@ -1184,6 +1193,7 @@ export interface FileRouteTypes {
     | '/administration/feedback'
     | '/administration/launch-checks'
     | '/administration/launch-learning'
+    | '/administration/leads'
     | '/administration/pilot'
     | '/administration/production-data'
     | '/administration/production-readiness'
@@ -1302,6 +1312,7 @@ export interface FileRouteTypes {
     | '/administration/feedback'
     | '/administration/launch-checks'
     | '/administration/launch-learning'
+    | '/administration/leads'
     | '/administration/pilot'
     | '/administration/production-data'
     | '/administration/production-readiness'
@@ -1423,6 +1434,7 @@ export interface FileRouteTypes {
     | '/_app/administration/feedback'
     | '/_app/administration/launch-checks'
     | '/_app/administration/launch-learning'
+    | '/_app/administration/leads'
     | '/_app/administration/pilot'
     | '/_app/administration/production-data'
     | '/_app/administration/production-readiness'
@@ -2016,6 +2028,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdministrationLaunchLearningRouteImport
       parentRoute: typeof AppAdministrationRoute
     }
+    '/_app/administration/leads': {
+      id: '/_app/administration/leads'
+      path: '/leads'
+      fullPath: '/administration/leads'
+      preLoaderRoute: typeof AppAdministrationLeadsRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/administration/pilot': {
       id: '/_app/administration/pilot'
       path: '/pilot'
@@ -2352,6 +2371,7 @@ interface AppAdministrationRouteChildren {
   AppAdministrationFeedbackRoute: typeof AppAdministrationFeedbackRoute
   AppAdministrationLaunchChecksRoute: typeof AppAdministrationLaunchChecksRoute
   AppAdministrationLaunchLearningRoute: typeof AppAdministrationLaunchLearningRoute
+  AppAdministrationLeadsRoute: typeof AppAdministrationLeadsRoute
   AppAdministrationPilotRoute: typeof AppAdministrationPilotRoute
   AppAdministrationProductionDataRoute: typeof AppAdministrationProductionDataRoute
   AppAdministrationProductionReadinessRoute: typeof AppAdministrationProductionReadinessRoute
@@ -2364,6 +2384,7 @@ const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationFeedbackRoute: AppAdministrationFeedbackRoute,
   AppAdministrationLaunchChecksRoute: AppAdministrationLaunchChecksRoute,
   AppAdministrationLaunchLearningRoute: AppAdministrationLaunchLearningRoute,
+  AppAdministrationLeadsRoute: AppAdministrationLeadsRoute,
   AppAdministrationPilotRoute: AppAdministrationPilotRoute,
   AppAdministrationProductionDataRoute: AppAdministrationProductionDataRoute,
   AppAdministrationProductionReadinessRoute:
