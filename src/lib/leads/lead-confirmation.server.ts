@@ -38,10 +38,11 @@ async function loadSender(): Promise<
     ) => Promise<{ sent: boolean; reason?: string }>)
   | null
 > {
+  // Resolved through a variable so the app still builds before the email
+  // sender domain is configured and the template module exists.
+  const moduleId = "../email-templates/send-email";
   try {
-    const mod = (await import(
-      /* @vite-ignore */ "@/lib/email-templates/send-email"
-    )) as unknown as {
+    const mod = (await import(/* @vite-ignore */ moduleId)) as {
       sendTemplateEmail?: (
         template: string,
         to: string,
