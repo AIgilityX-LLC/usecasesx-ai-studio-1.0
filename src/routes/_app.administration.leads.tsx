@@ -258,7 +258,7 @@ function LeadsDashboard() {
               <tbody className="divide-y divide-border">
                 {visible.map((lead) => {
                   const current = normalizeLeadStatus(lead.lead_status);
-                  const submissions = "submissions" in lead ? lead.submissions : 1;
+                  const submissions = lead.submissions;
                   return (
                     <tr key={lead.id}>
                       <td className="px-4 py-3">
