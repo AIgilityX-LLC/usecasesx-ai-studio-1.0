@@ -186,6 +186,8 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
   const [done, setDone] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [eligibleResult, setEligibleResult] = useState<boolean | null>(null);
+  const [reference, setReference] = useState<string | null>(null);
+  const [emailed, setEmailed] = useState(false);
 
   // Reset on close / trigger change.
   useEffect(() => {
