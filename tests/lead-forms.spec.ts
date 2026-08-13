@@ -19,13 +19,19 @@ async function openFooterCtas(page: import("@playwright/test").Page) {
 test.describe("waitlist CTA", () => {
   test("validates input, submits and shows a reference code", async ({ page }) => {
     await openFooterCtas(page);
-    await page.getByRole("button", { name: /Join the Waitlist/i }).first().click();
+    await page
+      .getByRole("button", { name: /Join the Waitlist/i })
+      .first()
+      .click();
 
     const dialog = page.locator('[aria-labelledby="lead-capture-title"]');
     await expect(dialog).toBeVisible();
 
     // Empty submit must be blocked client-side with a visible message.
-    await dialog.getByRole("button", { name: /submit|join|request/i }).first().click();
+    await dialog
+      .getByRole("button", { name: /submit|join|request/i })
+      .first()
+      .click();
     await expect(dialog.getByText(/required|enter/i).first()).toBeVisible();
 
     const stamp = Date.now();
@@ -34,7 +40,10 @@ test.describe("waitlist CTA", () => {
     await dialog.getByLabel(/Organization/i).fill("Public Sector Agency");
     const consent = dialog.getByRole("checkbox").first();
     if (await consent.isVisible().catch(() => false)) await consent.check();
-    await dialog.getByRole("button", { name: /submit|join|request/i }).first().click();
+    await dialog
+      .getByRole("button", { name: /submit|join|request/i })
+      .first()
+      .click();
 
     await expect(dialog.getByText(/Thank you/i)).toBeVisible({ timeout: 15000 });
     await expect(dialog.getByTestId("lead-reference")).toHaveText(REFERENCE);
@@ -44,7 +53,10 @@ test.describe("waitlist CTA", () => {
 test.describe("advisor CTA", () => {
   test("rejects an invalid email then confirms with a reference code", async ({ page }) => {
     await openFooterCtas(page);
-    await page.getByRole("button", { name: /Talk to Our Advisor/i }).first().click();
+    await page
+      .getByRole("button", { name: /Talk to Our Advisor/i })
+      .first()
+      .click();
 
     const dialog = page.getByRole("dialog");
     await expect(dialog.getByText(/Talk to our advisor/i)).toBeVisible();

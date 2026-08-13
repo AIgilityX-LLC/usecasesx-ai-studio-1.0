@@ -73,10 +73,7 @@ function LeadsDashboard() {
 
   const rows = leads.data ?? [];
 
-  const campaigns = useMemo(
-    () => Array.from(new Set(rows.map(campaignLabel))).sort(),
-    [rows],
-  );
+  const campaigns = useMemo(() => Array.from(new Set(rows.map(campaignLabel))).sort(), [rows]);
 
   const visible = useMemo(() => {
     const filtered = filterLeads(rows, { query, channel, status, campaign });
@@ -247,12 +244,24 @@ function LeadsDashboard() {
               <caption className="sr-only">Captured waitlist and advisor leads</caption>
               <thead className="bg-secondary/50 text-left">
                 <tr>
-                  <th scope="col" className="px-4 py-3 font-semibold">Lead</th>
-                  <th scope="col" className="px-4 py-3 font-semibold">Reference</th>
-                  <th scope="col" className="px-4 py-3 font-semibold">Channel</th>
-                  <th scope="col" className="px-4 py-3 font-semibold">Campaign</th>
-                  <th scope="col" className="px-4 py-3 font-semibold">Status</th>
-                  <th scope="col" className="px-4 py-3 font-semibold">Actions</th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    Lead
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    Reference
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    Channel
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    Campaign
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    Status
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">

@@ -56,8 +56,18 @@ describe("normalizeLeadStatus", () => {
 
 describe("dedupeByEmail", () => {
   const rows = [
-    lead({ id: "a", email: "exec@gov.se", created_at: "2026-08-01T10:00:00.000Z", lead_status: "converted" }),
-    lead({ id: "b", email: "EXEC@gov.se", created_at: "2026-08-03T10:00:00.000Z", cta: "ai-strategy-session" }),
+    lead({
+      id: "a",
+      email: "exec@gov.se",
+      created_at: "2026-08-01T10:00:00.000Z",
+      lead_status: "converted",
+    }),
+    lead({
+      id: "b",
+      email: "EXEC@gov.se",
+      created_at: "2026-08-03T10:00:00.000Z",
+      cta: "ai-strategy-session",
+    }),
     lead({ id: "c", email: "other@gov.se" }),
   ];
 
@@ -106,9 +116,15 @@ describe("conversionCounts", () => {
 
 describe("campaignLabel", () => {
   test("prefers campaign, then source, then referrer, then direct", () => {
-    expect(campaignLabel(lead({ id: "a", email: "a@b.se", utm_campaign: "launch" }))).toBe("launch");
-    expect(campaignLabel(lead({ id: "a", email: "a@b.se", utm_source: "linkedin" }))).toBe("linkedin");
-    expect(campaignLabel(lead({ id: "a", email: "a@b.se", referrer_host: "news.se" }))).toBe("news.se");
+    expect(campaignLabel(lead({ id: "a", email: "a@b.se", utm_campaign: "launch" }))).toBe(
+      "launch",
+    );
+    expect(campaignLabel(lead({ id: "a", email: "a@b.se", utm_source: "linkedin" }))).toBe(
+      "linkedin",
+    );
+    expect(campaignLabel(lead({ id: "a", email: "a@b.se", referrer_host: "news.se" }))).toBe(
+      "news.se",
+    );
     expect(campaignLabel(lead({ id: "a", email: "a@b.se" }))).toBe("direct");
   });
 });

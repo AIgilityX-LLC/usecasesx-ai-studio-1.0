@@ -462,7 +462,10 @@ function SuccessView({
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
             Your reference
           </p>
-          <p data-testid="lead-reference" className="mt-1 font-mono text-base font-bold text-foreground">
+          <p
+            data-testid="lead-reference"
+            className="mt-1 font-mono text-base font-bold text-foreground"
+          >
             {reference}
           </p>
           <p className="mt-2 text-xs text-muted-foreground">
