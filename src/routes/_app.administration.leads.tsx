@@ -80,7 +80,9 @@ function LeadsDashboard() {
 
   const visible = useMemo(() => {
     const filtered = filterLeads(rows, { query, channel, status, campaign });
-    return dedupe ? dedupeByEmail(filtered) : filtered.map((l) => ({ ...l, submissions: 1 }));
+    return dedupe
+      ? dedupeByEmail(filtered)
+      : filtered.map((l) => ({ ...l, submissions: 1, duplicateIds: [] as string[] }));
   }, [rows, query, channel, status, campaign, dedupe]);
 
   const counts = useMemo(() => conversionCounts(rows), [rows]);
@@ -289,10 +291,7 @@ function LeadsDashboard() {
                               disabled={mutate.isPending}
                               onClick={() =>
                                 mutate.mutate({
-                                  ids: [
-                                    lead.id,
-                                    ...("duplicateIds" in lead ? lead.duplicateIds : []),
-                                  ],
+                                  ids: [lead.id, ...(lead.duplicateIds ?? [])],
                                   status: s,
                                 })
                               }
