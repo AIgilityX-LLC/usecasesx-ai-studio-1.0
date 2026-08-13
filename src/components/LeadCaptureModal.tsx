@@ -186,6 +186,8 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
   const [done, setDone] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [eligibleResult, setEligibleResult] = useState<boolean | null>(null);
+  const [reference, setReference] = useState<string | null>(null);
+  const [emailed, setEmailed] = useState(false);
 
   // Reset on close / trigger change.
   useEffect(() => {
@@ -251,6 +253,8 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
 
       const result = await saveLeadCapture(payload);
       setEligibleResult(isEligibleEmail(parsed.data.email));
+      setReference(result.referenceId);
+      setEmailed(result.emailed);
       trackCTAEvent("lead_submitted", {
         trigger,
         interest: payload.interestArea,
@@ -296,6 +300,9 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
             triggerCase={trigger}
             message={copy.success}
             eligible={eligibleResult}
+            reference={reference}
+            emailed={emailed}
+            email={form.email}
             onClose={onClose}
           />
         ) : (
@@ -424,11 +431,17 @@ function SuccessView({
   triggerCase,
   message,
   eligible,
+  reference,
+  emailed,
+  email,
   onClose,
 }: {
   triggerCase: LeadTriggerCase;
   message: string;
   eligible?: boolean | null;
+  reference?: string | null;
+  emailed?: boolean;
+  email?: string;
   onClose: () => void;
 }) {
   const foundingMsg =
@@ -444,6 +457,24 @@ function SuccessView({
       </div>
       <h3 className="text-xl font-bold text-foreground">Thank you.</h3>
       <p className="mt-2 text-sm text-muted-foreground">{foundingMsg}</p>
+      {reference ? (
+        <div className="mx-auto mt-5 max-w-sm rounded-lg border border-border bg-secondary/40 px-4 py-3 text-left">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+            Your reference
+          </p>
+          <p
+            data-testid="lead-reference"
+            className="mt-1 font-mono text-base font-bold text-foreground"
+          >
+            {reference}
+          </p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            {emailed
+              ? `A confirmation with your next steps is on its way to ${email}.`
+              : `Quote this reference when you contact us at info@aigilityx.com. Next step: we review your request and reply within one business day.`}
+          </p>
+        </div>
+      ) : null}
       {triggerCase === "lite-pdf" && (
         <p className="mt-2 text-xs text-muted-foreground">
           If your download doesn't start, check your browser's download bar.

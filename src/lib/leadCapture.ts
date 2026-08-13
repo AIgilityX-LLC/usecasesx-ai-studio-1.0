@@ -6,8 +6,23 @@ import {
 } from "./usecasex.services";
 import { trackCTAEvent } from "./usecasex.tracking";
 import { isEligibleEmail } from "./entitlements";
+import { getAttribution } from "./analytics/attribution";
+import { sendLeadConfirmation } from "./leads/lead-confirmation.functions";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Short, shareable reference code the visitor can quote in support threads. */
+export function newLeadReference(): string {
+  const bytes =
+    typeof crypto !== "undefined" && "getRandomValues" in crypto
+      ? crypto.getRandomValues(new Uint8Array(4))
+      : new Uint8Array([0, 0, 0, 0]).map(() => Math.floor(Math.random() * 256));
+  const hex = Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+    .toUpperCase();
+  return `UCX-${hex}`;
+}
 
 export interface LeadCapturePayload {
   fullName: string;
@@ -29,7 +44,7 @@ export interface LeadCapturePayload {
 
 export async function saveLeadCapture(
   payload: LeadCapturePayload,
-): Promise<{ ok: true; id: string }> {
+): Promise<{ ok: true; id: string; referenceId: string; emailed: boolean }> {
   const sourceUuid =
     payload.sourceUseCaseId && UUID_RE.test(payload.sourceUseCaseId)
       ? payload.sourceUseCaseId
@@ -40,6 +55,8 @@ export async function saveLeadCapture(
   // Founding-member / waitlist submissions carry an eligibility flag so the
   // team can triage who qualifies for gratis Pro vs. the Free Pro waitlist.
   const eligible = isEligibleEmail(payload.email);
+  const attribution = getAttribution();
+  const referenceId = newLeadReference();
 
   // 1. lead_captures
   await createLeadCapture({
@@ -55,6 +72,11 @@ export async function saveLeadCapture(
     cta: payload.triggerCase,
     eligible,
     waitlistStatus: eligible ? "eligible" : "pending",
+    referenceId,
+    utmSource: attribution.utmSource,
+    utmMedium: attribution.utmMedium,
+    utmCampaign: attribution.utmCampaign,
+    referrerHost: attribution.referrerHost,
   });
 
   // 2. cta_events
@@ -80,5 +102,24 @@ export async function saveLeadCapture(
     source_use_case: payload.sourceUseCase,
   });
 
-  return { ok: true, id: `lead_${Date.now()}` };
+  // 4. Confirmation email. Delivery is best-effort: a mail failure must never
+  // lose a captured lead, so the caller still sees a success confirmation with
+  // the reference code.
+  let emailed = false;
+  try {
+    const result = await sendLeadConfirmation({
+      data: {
+        fullName: payload.fullName,
+        email: payload.email,
+        referenceId,
+        triggerCase: payload.triggerCase,
+        interestArea: payload.interestArea ?? null,
+      },
+    });
+    emailed = result.sent;
+  } catch (error) {
+    console.warn("[usecasex:leads] confirmation email skipped", error);
+  }
+
+  return { ok: true, id: referenceId, referenceId, emailed };
 }

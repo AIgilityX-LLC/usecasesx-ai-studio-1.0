@@ -1426,9 +1426,14 @@ export type Database = {
           interest_area: string | null
           lead_status: string
           notes: string | null
+          reference_id: string | null
+          referrer_host: string | null
           role: string | null
           source_page: string | null
           source_use_case: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
           waitlist_status: string
         }
         Insert: {
@@ -1444,9 +1449,14 @@ export type Database = {
           interest_area?: string | null
           lead_status?: string
           notes?: string | null
+          reference_id?: string | null
+          referrer_host?: string | null
           role?: string | null
           source_page?: string | null
           source_use_case?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
           waitlist_status?: string
         }
         Update: {
@@ -1462,9 +1472,14 @@ export type Database = {
           interest_area?: string | null
           lead_status?: string
           notes?: string | null
+          reference_id?: string | null
+          referrer_host?: string | null
           role?: string | null
           source_page?: string | null
           source_use_case?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
           waitlist_status?: string
         }
         Relationships: []

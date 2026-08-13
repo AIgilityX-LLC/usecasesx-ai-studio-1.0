@@ -82,6 +82,8 @@ export function AdvisorContactDialog({
   const [serverError, setServerError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [reference, setReference] = useState<string | null>(null);
+  const [emailed, setEmailed] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -107,7 +109,7 @@ export function AdvisorContactDialog({
 
     setSubmitting(true);
     try {
-      await saveLeadCapture({
+      const result = await saveLeadCapture({
         fullName: parsed.data.fullName,
         email: parsed.data.email,
         organization: parsed.data.organization,
@@ -119,10 +121,13 @@ export function AdvisorContactDialog({
         triggerCase: "ai-strategy-session",
         sourcePage,
       });
+      setReference(result.referenceId);
+      setEmailed(result.emailed);
       trackCTAEvent("advisor_request_submitted", {
         location,
         interest: parsed.data.focus,
         timing: parsed.data.timing,
+        target_platform: "usecasex",
       });
       setDone(true);
     } catch (error) {
@@ -148,9 +153,28 @@ export function AdvisorContactDialog({
               <DialogTitle className="text-center">Request received</DialogTitle>
               <DialogDescription className="text-center">
                 An AIgilityX advisor will reply to <span className="font-medium">{email}</span>{" "}
-                within one business day to confirm a time. Nothing else is needed from you now.
+                within one business day to confirm a time.
+                {emailed
+                  ? " A confirmation email with your next steps is on its way."
+                  : " Nothing else is needed from you now."}
               </DialogDescription>
             </DialogHeader>
+            {reference ? (
+              <div className="mx-auto mt-5 max-w-sm rounded-lg border border-border bg-secondary/40 px-4 py-3 text-left">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                  Your reference
+                </p>
+                <p
+                  data-testid="advisor-reference"
+                  className="mt-1 font-mono text-base font-bold text-foreground"
+                >
+                  {reference}
+                </p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Quote this reference in any reply so your request stays with the same advisor.
+                </p>
+              </div>
+            ) : null}
             <div className="mt-6 space-y-2 text-left">
               <ContactOption
                 icon={<Mail className="h-4 w-4" aria-hidden />}
