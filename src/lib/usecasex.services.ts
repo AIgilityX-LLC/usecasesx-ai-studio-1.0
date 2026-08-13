@@ -282,10 +282,16 @@ export interface LeadCapturePayload {
   cta?: string | null;
   eligible?: boolean | null;
   waitlistStatus?: string | null;
+  utmSource?: string | null;
+  utmMedium?: string | null;
+  utmCampaign?: string | null;
+  referrerHost?: string | null;
 }
 
 export async function createLeadCapture(payload: LeadCapturePayload) {
-  const { error } = await supabase.from("lead_captures").insert({
+  const { data, error } = await supabase
+    .from("lead_captures")
+    .insert({
     full_name: payload.fullName,
     email: payload.email,
     company: payload.company ?? null,
