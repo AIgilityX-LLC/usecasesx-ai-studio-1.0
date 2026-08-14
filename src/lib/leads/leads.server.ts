@@ -109,7 +109,9 @@ export async function retryDueConfirmations(
   supabase: Client,
   options: { limit?: number; actorId?: string | null; actorLabel?: string | null } = {},
 ): Promise<{ attempted: number; sent: number; failed: number }> {
-  const leads = (await listLeads(supabase, options.limit ?? 100)).filter(isRetryDue);
+  const leads = (await listLeads(supabase, options.limit ?? 100)).filter((lead) =>
+    isRetryDue(lead),
+  );
   const { deliverLeadConfirmation, recordDeliveryOutcome } = await import(
     "./lead-confirmation.server"
   );

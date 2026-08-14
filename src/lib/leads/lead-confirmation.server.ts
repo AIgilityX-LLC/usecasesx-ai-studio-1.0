@@ -18,6 +18,9 @@ export interface LeadConfirmationInput {
 
 export type LeadConfirmationResult = { sent: boolean; reason?: string };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Client = any;
+
 const ADVISOR_TRIGGERS = ["ai-strategy-session", "advisor", "contact"];
 
 export type LeadTemplate = "advisor-confirmation" | "waitlist-confirmation";
@@ -80,4 +83,61 @@ export async function deliverLeadConfirmation(
     });
     return { sent: false, reason: "delivery_failed" };
   }
+}
+
+/**
+ * Persists the outcome of one delivery attempt on the lead and appends it to
+ * the lead's timeline, scheduling the next retry with capped backoff.
+ */
+export async function recordDeliveryOutcome(
+  supabase: Client,
+  input: {
+    leadId: string;
+    attempts: number;
+    result: LeadConfirmationResult;
+    actorId?: string | null;
+    actorLabel?: string | null;
+    correlationId?: string | null;
+  },
+): Promise<void> {
+  const { nextRetryAt, MAX_DELIVERY_ATTEMPTS } = await import("./leads.model");
+  const now = new Date();
+  const suppressed = input.result.reason === "recipient_suppressed";
+  const status = input.result.sent
+    ? "sent"
+    : suppressed
+      ? "suppressed"
+      : input.attempts >= MAX_DELIVERY_ATTEMPTS
+        ? "failed"
+        : "pending";
+
+  const { error } = await supabase
+    .from("lead_captures")
+    .update({
+      confirmation_status: status,
+      confirmation_attempts: input.attempts,
+      confirmation_last_attempt_at: now.toISOString(),
+      confirmation_sent_at: input.result.sent ? now.toISOString() : null,
+      confirmation_next_retry_at:
+        status === "pending" ? nextRetryAt(input.attempts, now) : null,
+      confirmation_last_error: input.result.sent ? null : (input.result.reason ?? "not_sent"),
+    })
+    .eq("id", input.leadId);
+  if (error) console.warn("[usecasex:leads] delivery status write failed", error.message);
+
+  const { recordLeadEvents } = await import("./leads.server");
+  await recordLeadEvents(supabase, [
+    {
+      lead_id: input.leadId,
+      event_type: "email_attempt",
+      from_status: null,
+      to_status: status,
+      actor_id: input.actorId ?? null,
+      actor_label: input.actorLabel ?? "system",
+      detail: input.result.sent
+        ? `Confirmation email sent (attempt ${input.attempts})`
+        : `Attempt ${input.attempts} failed: ${input.result.reason ?? "not_sent"}`,
+      correlation_id: input.correlationId ?? null,
+    },
+  ]);
 }
