@@ -3,13 +3,19 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Download, Search, Users, MailCheck, Trophy } from "lucide-react";
+import { Download, Search, Users, MailCheck, Trophy, History, RefreshCw } from "lucide-react";
 
 import { privateHead } from "@/lib/seo";
 import { RequireRoles } from "@/components/RequireRoles";
 import { PLATFORM_ADMIN_ROLES } from "@/lib/admin/platform-admin";
-import { getLeadPipeline, setLeadPipelineStatus } from "@/lib/leads/leads.functions";
 import {
+  getLeadPipeline,
+  getLeadTimeline,
+  retryLeadConfirmations,
+  setLeadPipelineStatus,
+} from "@/lib/leads/leads.functions";
+import {
+  DEFAULT_CSV_OPTIONS,
   LEAD_STATUSES,
   campaignLabel,
   conversionCounts,
@@ -17,8 +23,12 @@ import {
   filterLeads,
   leadChannel,
   leadsToCsv,
+  normalizeDeliveryStatus,
   normalizeLeadStatus,
+  type CsvExportOptions,
+  type DeliveryStatus,
   type LeadChannel,
+  type LeadEvent,
   type LeadRecord,
   type LeadStatus,
 } from "@/lib/leads/leads.model";
@@ -28,6 +38,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -55,9 +73,18 @@ const STATUS_TONE: Record<LeadStatus, string> = {
   converted: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
 };
 
+const DELIVERY_TONE: Record<DeliveryStatus, string> = {
+  pending: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
+  sent: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+  failed: "bg-destructive/15 text-destructive",
+  suppressed: "bg-muted text-muted-foreground",
+  skipped: "bg-muted text-muted-foreground",
+};
+
 function LeadsDashboard() {
   const load = useServerFn(getLeadPipeline);
   const update = useServerFn(setLeadPipelineStatus);
+  const retry = useServerFn(retryLeadConfirmations);
   const queryClient = useQueryClient();
 
   const [query, setQuery] = useState("");
@@ -65,6 +92,8 @@ function LeadsDashboard() {
   const [status, setStatus] = useState<LeadStatus | "all">("all");
   const [campaign, setCampaign] = useState<string>("all");
   const [dedupe, setDedupe] = useState(true);
+  const [csvOptions, setCsvOptions] = useState<CsvExportOptions>(DEFAULT_CSV_OPTIONS);
+  const [timelineLead, setTimelineLead] = useState<LeadRecord | null>(null);
 
   const leads = useQuery({
     queryKey: ["lead-pipeline"],
@@ -94,8 +123,22 @@ function LeadsDashboard() {
       toast.error(error instanceof Error ? error.message : "We could not update that lead."),
   });
 
+  const retryMutation = useMutation({
+    mutationFn: () => retry({ data: undefined }),
+    onSuccess: (result) => {
+      if (result.attempted === 0) toast.info("No confirmation emails are due for retry.");
+      else
+        toast.success(
+          `Retried ${result.attempted} confirmation email(s): ${result.sent} sent, ${result.failed} still failing.`,
+        );
+      void queryClient.invalidateQueries({ queryKey: ["lead-pipeline"] });
+    },
+    onError: (error) =>
+      toast.error(error instanceof Error ? error.message : "The retry pass could not run."),
+  });
+
   const exportCsv = () => {
-    const csv = leadsToCsv(visible);
+    const csv = leadsToCsv(visible, csvOptions);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -116,10 +159,47 @@ function LeadsDashboard() {
               Waitlist and advisor leads with campaign attribution, deduped by work email.
             </p>
           </div>
-          <Button onClick={exportCsv} disabled={visible.length === 0} variant="outline">
-            <Download className="mr-2 h-4 w-4" aria-hidden /> Export CSV
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              onClick={() => retryMutation.mutate()}
+              disabled={retryMutation.isPending}
+              variant="outline"
+            >
+              <RefreshCw className="mr-2 h-4 w-4" aria-hidden />
+              {retryMutation.isPending ? "Retrying…" : "Retry due emails"}
+            </Button>
+            <Button onClick={exportCsv} disabled={visible.length === 0} variant="outline">
+              <Download className="mr-2 h-4 w-4" aria-hidden /> Export CSV
+            </Button>
+          </div>
         </header>
+
+        <fieldset className="flex flex-wrap items-center gap-4 rounded-xl border border-border px-4 py-3">
+          <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            CSV columns
+          </legend>
+          {(
+            [
+              ["reference", "Reference IDs"],
+              ["attribution", "Attribution (UTM, referrer)"],
+              ["campaignBreakdown", "Campaign breakdown"],
+              ["delivery", "Email delivery status"],
+            ] as [keyof CsvExportOptions, string][]
+          ).map(([key, label]) => (
+            <div key={key} className="flex items-center gap-2">
+              <Checkbox
+                id={`csv-${key}`}
+                checked={Boolean(csvOptions[key])}
+                onCheckedChange={(checked) =>
+                  setCsvOptions((prev) => ({ ...prev, [key]: checked === true }))
+                }
+              />
+              <Label htmlFor={`csv-${key}`} className="text-sm">
+                {label}
+              </Label>
+            </div>
+          ))}
+        </fieldset>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
@@ -260,6 +340,9 @@ function LeadsDashboard() {
                     Status
                   </th>
                   <th scope="col" className="px-4 py-3 font-semibold">
+                    Confirmation email
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-semibold">
                     Actions
                   </th>
                 </tr>
@@ -268,6 +351,7 @@ function LeadsDashboard() {
                 {visible.map((lead) => {
                   const current = normalizeLeadStatus(lead.lead_status);
                   const submissions = lead.submissions;
+                  const delivery = normalizeDeliveryStatus(lead.confirmation_status);
                   return (
                     <tr key={lead.id}>
                       <td className="px-4 py-3">
@@ -290,6 +374,20 @@ function LeadsDashboard() {
                         </Badge>
                       </td>
                       <td className="px-4 py-3">
+                        <Badge variant="secondary" className={DELIVERY_TONE[delivery]}>
+                          {delivery}
+                        </Badge>
+                        <div className="mt-1 text-xs text-muted-foreground">
+                          {lead.confirmation_attempts ?? 0} attempt
+                          {(lead.confirmation_attempts ?? 0) === 1 ? "" : "s"}
+                        </div>
+                        {lead.confirmation_last_error ? (
+                          <div className="mt-1 max-w-[220px] break-words text-xs text-destructive">
+                            {lead.confirmation_last_error}
+                          </div>
+                        ) : null}
+                      </td>
+                      <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-1">
                           {LEAD_STATUSES.filter((s) => s !== current).map((s) => (
                             <Button
@@ -308,6 +406,14 @@ function LeadsDashboard() {
                               {s}
                             </Button>
                           ))}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2 text-xs"
+                            onClick={() => setTimelineLead(lead)}
+                          >
+                            <History className="mr-1 h-3 w-3" aria-hidden /> Timeline
+                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -317,8 +423,72 @@ function LeadsDashboard() {
             </table>
           </div>
         )}
+
+        <LeadTimelineDialog lead={timelineLead} onClose={() => setTimelineLead(null)} />
       </div>
     </section>
+  );
+}
+
+/** Append-only audit timeline for one lead: who changed what, and when. */
+function LeadTimelineDialog({
+  lead,
+  onClose,
+}: {
+  lead: LeadRecord | null;
+  onClose: () => void;
+}) {
+  const loadTimeline = useServerFn(getLeadTimeline);
+  const timeline = useQuery({
+    queryKey: ["lead-timeline", lead?.id],
+    enabled: Boolean(lead),
+    queryFn: () => loadTimeline({ data: { leadId: lead!.id } }) as Promise<LeadEvent[]>,
+  });
+
+  return (
+    <Dialog open={Boolean(lead)} onOpenChange={(open) => (open ? null : onClose())}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Lead activity</DialogTitle>
+          <DialogDescription>
+            {lead ? `${lead.full_name} · ${lead.reference_id ?? "no reference"}` : ""}
+          </DialogDescription>
+        </DialogHeader>
+        {timeline.isLoading ? (
+          <p className="py-8 text-center text-sm text-muted-foreground">Loading activity…</p>
+        ) : timeline.isError ? (
+          <p className="py-8 text-center text-sm text-destructive">
+            We could not load this lead&apos;s activity.
+          </p>
+        ) : (timeline.data ?? []).length === 0 ? (
+          <p className="py-8 text-center text-sm text-muted-foreground">
+            No status changes or email attempts recorded yet.
+          </p>
+        ) : (
+          <ol className="max-h-[420px] space-y-3 overflow-y-auto pr-1">
+            {(timeline.data ?? []).map((event) => (
+              <li key={event.id} className="rounded-lg border border-border p-3 text-sm">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-medium capitalize">
+                    {event.event_type.replace(/_/g, " ")}
+                    {event.from_status || event.to_status
+                      ? `: ${event.from_status ?? "—"} → ${event.to_status ?? "—"}`
+                      : ""}
+                  </span>
+                  <time className="text-xs text-muted-foreground">
+                    {new Date(event.created_at).toLocaleString()}
+                  </time>
+                </div>
+                <div className="mt-1 text-xs text-muted-foreground">
+                  by {event.actor_label ?? "system"}
+                </div>
+                {event.detail ? <p className="mt-1 text-xs">{event.detail}</p> : null}
+              </li>
+            ))}
+          </ol>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
 

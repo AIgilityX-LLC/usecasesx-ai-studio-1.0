@@ -1415,6 +1415,12 @@ export type Database = {
       lead_captures: {
         Row: {
           company: string | null
+          confirmation_attempts: number
+          confirmation_last_attempt_at: string | null
+          confirmation_last_error: string | null
+          confirmation_next_retry_at: string | null
+          confirmation_sent_at: string | null
+          confirmation_status: string
           country: string | null
           created_at: string
           cta: string | null
@@ -1438,6 +1444,12 @@ export type Database = {
         }
         Insert: {
           company?: string | null
+          confirmation_attempts?: number
+          confirmation_last_attempt_at?: string | null
+          confirmation_last_error?: string | null
+          confirmation_next_retry_at?: string | null
+          confirmation_sent_at?: string | null
+          confirmation_status?: string
           country?: string | null
           created_at?: string
           cta?: string | null
@@ -1461,6 +1473,12 @@ export type Database = {
         }
         Update: {
           company?: string | null
+          confirmation_attempts?: number
+          confirmation_last_attempt_at?: string | null
+          confirmation_last_error?: string | null
+          confirmation_next_retry_at?: string | null
+          confirmation_sent_at?: string | null
+          confirmation_status?: string
           country?: string | null
           created_at?: string
           cta?: string | null
@@ -1483,6 +1501,53 @@ export type Database = {
           waitlist_status?: string
         }
         Relationships: []
+      }
+      lead_events: {
+        Row: {
+          actor_id: string | null
+          actor_label: string | null
+          correlation_id: string | null
+          created_at: string
+          detail: string | null
+          event_type: string
+          from_status: string | null
+          id: string
+          lead_id: string
+          to_status: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          actor_label?: string | null
+          correlation_id?: string | null
+          created_at?: string
+          detail?: string | null
+          event_type: string
+          from_status?: string | null
+          id?: string
+          lead_id: string
+          to_status?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          actor_label?: string | null
+          correlation_id?: string | null
+          created_at?: string
+          detail?: string | null
+          event_type?: string
+          from_status?: string | null
+          id?: string
+          lead_id?: string
+          to_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_events_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "lead_captures"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       module_events: {
         Row: {

@@ -29,6 +29,8 @@ export const setLeadPipelineStatus = createServerFn({ method: "POST" })
       ids: data.ids,
       status: data.status,
       note: data.note ?? null,
+      actorId: context.userId,
+      actorLabel: (context.claims as { email?: string } | null)?.email ?? context.userId,
     });
     const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
     await writeAuditEvent(
@@ -41,4 +43,29 @@ export const setLeadPipelineStatus = createServerFn({ method: "POST" })
       },
     );
     return { updated };
+  });
+
+const TimelineInput = z.object({ leadId: z.string().uuid() });
+
+export const getLeadTimeline = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => TimelineInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { assertAnalyticsReader } = await import("@/lib/cta-analytics-access.server");
+    await assertAnalyticsReader(context.supabase, context.userId);
+    const { listLeadEvents } = await import("@/lib/leads/leads.server");
+    return listLeadEvents(context.supabase, data.leadId);
+  });
+
+/** Runs the confirmation-email retry pass for every lead whose attempt is due. */
+export const retryLeadConfirmations = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { assertAnalyticsReader } = await import("@/lib/cta-analytics-access.server");
+    await assertAnalyticsReader(context.supabase, context.userId);
+    const { retryDueConfirmations } = await import("@/lib/leads/leads.server");
+    return retryDueConfirmations(context.supabase, {
+      actorId: context.userId,
+      actorLabel: (context.claims as { email?: string } | null)?.email ?? context.userId,
+    });
   });
