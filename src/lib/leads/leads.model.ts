@@ -6,6 +6,46 @@
 export const LEAD_STATUSES = ["new", "contacted", "converted"] as const;
 export type LeadStatus = (typeof LEAD_STATUSES)[number];
 
+/** Confirmation-email delivery states tracked per lead. */
+export const DELIVERY_STATUSES = ["pending", "sent", "failed", "suppressed", "skipped"] as const;
+export type DeliveryStatus = (typeof DELIVERY_STATUSES)[number];
+
+export function normalizeDeliveryStatus(value: string | null | undefined): DeliveryStatus {
+  const v = (value ?? "").toLowerCase();
+  return (DELIVERY_STATUSES as readonly string[]).includes(v) ? (v as DeliveryStatus) : "pending";
+}
+
+/**
+ * Retry schedule for confirmation emails. Delivery is retried with capped
+ * exponential backoff (5m, 15m, 45m, 2h15m, 6h45m) and abandoned after five
+ * attempts so a permanently bad address cannot be retried forever.
+ */
+export const MAX_DELIVERY_ATTEMPTS = 5;
+
+export function retryDelayMinutes(attempts: number): number {
+  return 5 * 3 ** Math.max(0, Math.min(attempts - 1, 4));
+}
+
+export function nextRetryAt(attempts: number, from: Date = new Date()): string | null {
+  if (attempts >= MAX_DELIVERY_ATTEMPTS) return null;
+  return new Date(from.getTime() + retryDelayMinutes(attempts) * 60_000).toISOString();
+}
+
+/** True when this lead's confirmation email is due for another attempt. */
+export function isRetryDue(
+  lead: Pick<
+    LeadRecord,
+    "confirmation_status" | "confirmation_attempts" | "confirmation_next_retry_at"
+  >,
+  now: Date = new Date(),
+): boolean {
+  const status = normalizeDeliveryStatus(lead.confirmation_status);
+  if (status !== "pending" && status !== "failed") return false;
+  if ((lead.confirmation_attempts ?? 0) >= MAX_DELIVERY_ATTEMPTS) return false;
+  if (!lead.confirmation_next_retry_at) return true;
+  return new Date(lead.confirmation_next_retry_at).getTime() <= now.getTime();
+}
+
 /** CTA values written by the two footer conversion flows. */
 export const WAITLIST_CTAS = ["waitlist", "founding-access", "free-pro", "lite-pdf"] as const;
 export const ADVISOR_CTAS = ["ai-strategy-session", "advisor", "contact"] as const;
@@ -29,6 +69,26 @@ export interface LeadRecord {
   utm_medium: string | null;
   utm_campaign: string | null;
   referrer_host: string | null;
+  created_at: string;
+  confirmation_status: string | null;
+  confirmation_attempts: number | null;
+  confirmation_last_attempt_at: string | null;
+  confirmation_sent_at: string | null;
+  confirmation_next_retry_at: string | null;
+  confirmation_last_error: string | null;
+}
+
+/** One append-only entry in a lead's activity timeline. */
+export interface LeadEvent {
+  id: string;
+  lead_id: string;
+  event_type: string;
+  from_status: string | null;
+  to_status: string | null;
+  actor_id: string | null;
+  actor_label: string | null;
+  detail: string | null;
+  correlation_id: string | null;
   created_at: string;
 }
 
