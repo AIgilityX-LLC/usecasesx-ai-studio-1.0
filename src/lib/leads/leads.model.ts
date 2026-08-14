@@ -233,8 +233,26 @@ export function conversionCounts(leads: LeadRecord[]): ConversionCounts {
   };
 }
 
-const CSV_HEADERS = [
-  "reference_id",
+/** Column groups the admin can toggle before exporting. */
+export interface CsvExportOptions {
+  /** Reference code + submission count columns. */
+  reference?: boolean;
+  /** UTM source/medium/campaign, referrer and landing page. */
+  attribution?: boolean;
+  /** Derived campaign label plus per-campaign lead/conversion totals. */
+  campaignBreakdown?: boolean;
+  /** Confirmation-email delivery status columns. */
+  delivery?: boolean;
+}
+
+export const DEFAULT_CSV_OPTIONS: CsvExportOptions = {
+  reference: true,
+  attribution: true,
+  campaignBreakdown: false,
+  delivery: true,
+};
+
+const BASE_HEADERS = [
   "created_at",
   "full_name",
   "email",
@@ -246,12 +264,21 @@ const CSV_HEADERS = [
   "lead_status",
   "waitlist_status",
   "eligible",
+] as const;
+const REFERENCE_HEADERS = ["reference_id", "submissions"] as const;
+const ATTRIBUTION_HEADERS = [
   "utm_source",
   "utm_medium",
   "utm_campaign",
   "referrer_host",
   "source_page",
-  "submissions",
+] as const;
+const CAMPAIGN_HEADERS = ["campaign", "campaign_leads", "campaign_converted"] as const;
+const DELIVERY_HEADERS = [
+  "confirmation_status",
+  "confirmation_attempts",
+  "confirmation_sent_at",
+  "confirmation_last_error",
 ] as const;
 
 function csvCell(value: unknown): string {
@@ -262,10 +289,26 @@ function csvCell(value: unknown): string {
   return `"${safe.replace(/"/g, '""')}"`;
 }
 
-export function leadsToCsv(leads: (LeadRecord & { submissions?: number })[]): string {
-  const rows = leads.map((lead) =>
-    [
-      lead.reference_id,
+export function csvHeaders(options: CsvExportOptions = DEFAULT_CSV_OPTIONS): string[] {
+  return [
+    ...(options.reference ? REFERENCE_HEADERS : []),
+    ...BASE_HEADERS,
+    ...(options.attribution ? ATTRIBUTION_HEADERS : []),
+    ...(options.campaignBreakdown ? CAMPAIGN_HEADERS : []),
+    ...(options.delivery ? DELIVERY_HEADERS : []),
+  ];
+}
+
+export function leadsToCsv(
+  leads: (LeadRecord & { submissions?: number })[],
+  options: CsvExportOptions = DEFAULT_CSV_OPTIONS,
+): string {
+  const campaigns = new Map(conversionCounts(leads).byCampaign.map((c) => [c.campaign, c]));
+  const rows = leads.map((lead) => {
+    const campaign = campaignLabel(lead);
+    const totals = campaigns.get(campaign);
+    return [
+      ...(options.reference ? [lead.reference_id, lead.submissions ?? 1] : []),
       lead.created_at,
       lead.full_name,
       lead.email,
@@ -277,15 +320,29 @@ export function leadsToCsv(leads: (LeadRecord & { submissions?: number })[]): st
       normalizeLeadStatus(lead.lead_status),
       lead.waitlist_status,
       lead.eligible,
-      lead.utm_source,
-      lead.utm_medium,
-      lead.utm_campaign,
-      lead.referrer_host,
-      lead.source_page,
-      lead.submissions ?? 1,
+      ...(options.attribution
+        ? [
+            lead.utm_source,
+            lead.utm_medium,
+            lead.utm_campaign,
+            lead.referrer_host,
+            lead.source_page,
+          ]
+        : []),
+      ...(options.campaignBreakdown
+        ? [campaign, totals?.leads ?? 0, totals?.converted ?? 0]
+        : []),
+      ...(options.delivery
+        ? [
+            normalizeDeliveryStatus(lead.confirmation_status),
+            lead.confirmation_attempts ?? 0,
+            lead.confirmation_sent_at,
+            lead.confirmation_last_error,
+          ]
+        : []),
     ]
       .map(csvCell)
-      .join(","),
-  );
-  return [CSV_HEADERS.join(","), ...rows].join("\n");
+      .join(",");
+  });
+  return [csvHeaders(options).join(","), ...rows].join("\n");
 }
