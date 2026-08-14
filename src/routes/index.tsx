@@ -466,12 +466,12 @@ function Hero() {
 
         <div className="mt-14 grid max-w-5xl grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {[
-            { v: "180", l: "Published Use Cases" },
-            { v: "18", l: "Industries" },
-            { v: "9", l: "Journey Stages" },
+            { v: "180+", l: "Published Use Cases" },
+            { v: "18+", l: "INDUSTRIES & DOMAINS" },
+            { v: "9", l: "AI DISCOVERY & JOURNEY STAGES" },
             { v: "12", l: "Export Deliverables" },
             { v: "100%", l: "Provenance Labelled" },
-            { v: "Free", l: "Until 31 Dec 2026" },
+            { v: "Free", l: "GRATIS UNTIL 31 DEC 2026" },
           ].map((s) => (
             <div
               key={s.l}
