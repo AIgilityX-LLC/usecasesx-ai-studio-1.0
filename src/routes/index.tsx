@@ -397,9 +397,9 @@ function Hero() {
           AI USE CASE STUDIO™ BY AIGILITYX™
         </div>
         <h1 className="max-w-5xl text-balance text-3xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
-          <span className="block">Turn AI ideas into a portfolio you can defend</span>
-          <span className="mt-2 block text-xl font-semibold tracking-tight text-white/90 sm:mt-3 sm:text-3xl lg:text-4xl">
-            Discover · Design · Prioritize · Manage
+          <span className="block">Build a Validated AI Use Case{"\n"}Before You Spend a Dollar Building It</span>
+          <span className="mt-2 block text-xl font-semibold tracking-tight text-white/90 sm:mt-3 sm:text-3xl lg:text-4xl whitespace-pre-line">
+            {"\n"}Turn any AI Ideas into a Value-Driven AI{"\u00a0"}{"\n"}Discover · Design · Prioritize · Manage
           </span>
         </h1>
         <p className="mt-5 max-w-3xl text-lg text-white/85 sm:text-xl">
@@ -466,12 +466,12 @@ function Hero() {
 
         <div className="mt-14 grid max-w-5xl grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {[
-            { v: "180", l: "Published Use Cases" },
-            { v: "18", l: "Industries" },
-            { v: "9", l: "Journey Stages" },
+            { v: "180+", l: "Published Use Cases" },
+            { v: "18+", l: "INDUSTRIES & DOMAINS" },
+            { v: "9", l: "AI DISCOVERY & JOURNEY STAGES" },
             { v: "12", l: "Export Deliverables" },
             { v: "100%", l: "Provenance Labelled" },
-            { v: "Free", l: "Until 31 Dec 2026" },
+            { v: "Free", l: "GRATIS UNTIL 31 DEC 2026" },
           ].map((s) => (
             <div
               key={s.l}
