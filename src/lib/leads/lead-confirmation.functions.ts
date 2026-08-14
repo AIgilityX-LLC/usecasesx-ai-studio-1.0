@@ -23,5 +23,30 @@ export const sendLeadConfirmation = createServerFn({ method: "POST" })
   .inputValidator((d) => Input.parse(d))
   .handler(async ({ data }) => {
     const { deliverLeadConfirmation } = await import("@/lib/leads/lead-confirmation.server");
-    return deliverLeadConfirmation(data);
+    const result = await deliverLeadConfirmation(data);
+    // Record the first delivery attempt so admins see pending/failed leads and
+    // the retry pass can pick them up. Privileged client is used because the
+    // capture itself is anonymous; the row is located by its reference code and
+    // only delivery-status columns are written.
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: lead } = await supabaseAdmin
+        .from("lead_captures")
+        .select("id, confirmation_attempts")
+        .eq("reference_id", data.referenceId)
+        .maybeSingle();
+      if (lead) {
+        const { recordDeliveryOutcome } = await import("@/lib/leads/lead-confirmation.server");
+        await recordDeliveryOutcome(supabaseAdmin, {
+          leadId: lead.id,
+          attempts: (lead.confirmation_attempts ?? 0) + 1,
+          result,
+          actorLabel: "system",
+          correlationId: data.referenceId,
+        });
+      }
+    } catch (error) {
+      console.warn("[usecasex:leads] delivery status not recorded", error);
+    }
+    return result;
   });
