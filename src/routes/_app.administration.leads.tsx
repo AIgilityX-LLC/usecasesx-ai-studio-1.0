@@ -431,13 +431,7 @@ function LeadsDashboard() {
 }
 
 /** Append-only audit timeline for one lead: who changed what, and when. */
-function LeadTimelineDialog({
-  lead,
-  onClose,
-}: {
-  lead: LeadRecord | null;
-  onClose: () => void;
-}) {
+function LeadTimelineDialog({ lead, onClose }: { lead: LeadRecord | null; onClose: () => void }) {
   const loadTimeline = useServerFn(getLeadTimeline);
   const timeline = useQuery({
     queryKey: ["lead-timeline", lead?.id],

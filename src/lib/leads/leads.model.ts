@@ -329,9 +329,7 @@ export function leadsToCsv(
             lead.source_page,
           ]
         : []),
-      ...(options.campaignBreakdown
-        ? [campaign, totals?.leads ?? 0, totals?.converted ?? 0]
-        : []),
+      ...(options.campaignBreakdown ? [campaign, totals?.leads ?? 0, totals?.converted ?? 0] : []),
       ...(options.delivery
         ? [
             normalizeDeliveryStatus(lead.confirmation_status),

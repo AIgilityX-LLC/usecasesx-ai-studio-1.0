@@ -118,8 +118,7 @@ export async function recordDeliveryOutcome(
       confirmation_attempts: input.attempts,
       confirmation_last_attempt_at: now.toISOString(),
       confirmation_sent_at: input.result.sent ? now.toISOString() : null,
-      confirmation_next_retry_at:
-        status === "pending" ? nextRetryAt(input.attempts, now) : null,
+      confirmation_next_retry_at: status === "pending" ? nextRetryAt(input.attempts, now) : null,
       confirmation_last_error: input.result.sent ? null : (input.result.reason ?? "not_sent"),
     })
     .eq("id", input.leadId);

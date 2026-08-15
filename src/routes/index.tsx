@@ -397,9 +397,12 @@ function Hero() {
           AI USE CASE STUDIO™ BY AIGILITYX™
         </div>
         <h1 className="max-w-5xl text-balance text-3xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
-          <span className="block">Build a Validated AI Use Case{"\n"}Before You Spend a Dollar Building It</span>
+          <span className="block">
+            Build a Validated AI Use Case{"\n"}Before You Spend a Dollar Building It
+          </span>
           <span className="mt-2 block text-xl font-semibold tracking-tight text-white/90 sm:mt-3 sm:text-3xl lg:text-4xl whitespace-pre-line">
-            {"\n"}Turn any AI Ideas into a Value-Driven AI{"\u00a0"}{"\n"}Discover · Design · Prioritize · Manage
+            {"\n"}Turn any AI Ideas into a Value-Driven AI{"\u00a0"}
+            {"\n"}Discover · Design · Prioritize · Manage
           </span>
         </h1>
         <p className="mt-5 max-w-3xl text-lg text-white/85 sm:text-xl">
