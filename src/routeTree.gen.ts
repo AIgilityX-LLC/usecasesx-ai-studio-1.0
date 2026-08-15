@@ -115,6 +115,7 @@ import { Route as ApiPublicHooksEvidenceCleanupRouteImport } from './routes/api/
 import { Route as ApiPublicHooksPilotEvidenceRemindersRouteImport } from './routes/api/public/hooks/pilot-evidence-reminders'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as AppStudioUseCaseIdIndexRouteImport } from './routes/_app.studio.use-case.$id.index'
 import { Route as AppStudioUseCaseIdAdvisorxRouteImport } from './routes/_app.studio.use-case.$id.advisorx'
 import { Route as AppStudioUseCaseIdBlueprintRouteImport } from './routes/_app.studio.use-case.$id.blueprint'
@@ -672,6 +673,12 @@ const ApiPublicUsecasexUseCasesRoute =
     path: '/api/public/usecasex/use-cases',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AppStudioUseCaseIdIndexRoute = AppStudioUseCaseIdIndexRouteImport.update({
   id: '/use-case/$id/',
   path: '/use-case/$id/',
@@ -860,6 +867,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/studio/use-case/$id/c3g-governance': typeof AppStudioUseCaseIdC3gGovernanceRoute
@@ -979,6 +987,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/studio/use-case/$id/c3g-governance': typeof AppStudioUseCaseIdC3gGovernanceRoute
@@ -1102,6 +1111,7 @@ export interface FileRoutesById {
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/_app/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/_app/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/_app/studio/use-case/$id/c3g-governance': typeof AppStudioUseCaseIdC3gGovernanceRoute
@@ -1225,6 +1235,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/pilot-evidence-reminders'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
+    | '/lovable/email/transactional/preview'
     | '/studio/use-case/$id/advisorx'
     | '/studio/use-case/$id/blueprint'
     | '/studio/use-case/$id/c3g-governance'
@@ -1344,6 +1355,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/pilot-evidence-reminders'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
+    | '/lovable/email/transactional/preview'
     | '/studio/use-case/$id/advisorx'
     | '/studio/use-case/$id/blueprint'
     | '/studio/use-case/$id/c3g-governance'
@@ -1466,6 +1478,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/pilot-evidence-reminders'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
+    | '/lovable/email/transactional/preview'
     | '/_app/studio/use-case/$id/advisorx'
     | '/_app/studio/use-case/$id/blueprint'
     | '/_app/studio/use-case/$id/c3g-governance'
@@ -1498,6 +1511,7 @@ export interface RootRouteChildren {
   ApiPublicHooksPilotEvidenceRemindersRoute: typeof ApiPublicHooksPilotEvidenceRemindersRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
   ApiPublicUsecasexRoadmapExportRoute: typeof ApiPublicUsecasexRoadmapExportRoute
 }
 
@@ -2245,6 +2259,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicUsecasexUseCasesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app/studio/use-case/$id/': {
       id: '/_app/studio/use-case/$id/'
       path: '/use-case/$id'
@@ -2633,6 +2654,7 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksPilotEvidenceRemindersRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
   ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRouteWithChildren,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
   ApiPublicUsecasexRoadmapExportRoute: ApiPublicUsecasexRoadmapExportRoute,
 }
 export const routeTree = rootRouteImport
