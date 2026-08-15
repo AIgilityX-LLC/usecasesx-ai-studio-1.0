@@ -106,6 +106,7 @@ import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.por
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
 import { Route as AppWorkshopsIndexRouteImport } from './routes/_app.workshops.index'
 import { Route as AppWorkshopsIdRouteImport } from './routes/_app.workshops.$id'
+import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as OgUseCaseSlugRouteImport } from './routes/og.use-case.$slug'
 import { Route as AppCategoriesTypeSlugRouteImport } from './routes/_app.categories.$type.$slug'
 import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
@@ -623,6 +624,11 @@ const AppWorkshopsIdRoute = AppWorkshopsIdRouteImport.update({
   path: '/workshops/$id',
   getParentRoute: () => AppRoute,
 } as any)
+const LovableEmailEventsRoute = LovableEmailEventsRouteImport.update({
+  id: '/lovable/email/events',
+  path: '/lovable/email/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OgUseCaseSlugRoute = OgUseCaseSlugRouteImport.update({
   id: '/og/use-case/$slug',
   path: '/og/use-case/$slug',
@@ -852,6 +858,7 @@ export interface FileRoutesByFullPath {
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/workshops/$id': typeof AppWorkshopsIdRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/og/use-case/$slug': typeof OgUseCaseSlugRoute
   '/account/': typeof AppAccountIndexRoute
   '/boards/': typeof AppBoardsIndexRoute
@@ -972,6 +979,7 @@ export interface FileRoutesByTo {
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/workshops/$id': typeof AppWorkshopsIdRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/og/use-case/$slug': typeof OgUseCaseSlugRoute
   '/account': typeof AppAccountIndexRoute
   '/boards': typeof AppBoardsIndexRoute
@@ -1096,6 +1104,7 @@ export interface FileRoutesById {
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/_app/workshops/$id': typeof AppWorkshopsIdRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/og/use-case/$slug': typeof OgUseCaseSlugRoute
   '/_app/account/': typeof AppAccountIndexRoute
   '/_app/boards/': typeof AppBoardsIndexRoute
@@ -1220,6 +1229,7 @@ export interface FileRouteTypes {
     | '/studio/portfolio'
     | '/use-cases/$slug'
     | '/workshops/$id'
+    | '/lovable/email/events'
     | '/og/use-case/$slug'
     | '/account/'
     | '/boards/'
@@ -1340,6 +1350,7 @@ export interface FileRouteTypes {
     | '/studio/portfolio'
     | '/use-cases/$slug'
     | '/workshops/$id'
+    | '/lovable/email/events'
     | '/og/use-case/$slug'
     | '/account'
     | '/boards'
@@ -1463,6 +1474,7 @@ export interface FileRouteTypes {
     | '/_app/studio/portfolio'
     | '/_app/use-cases/$slug'
     | '/_app/workshops/$id'
+    | '/lovable/email/events'
     | '/og/use-case/$slug'
     | '/_app/account/'
     | '/_app/boards/'
@@ -1505,6 +1517,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   CTokenRoute: typeof CTokenRoute
   PTokenRoute: typeof PTokenRoute
+  LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   OgUseCaseSlugRoute: typeof OgUseCaseSlugRoute
   ApiPublicHooksErpReconciliationRoute: typeof ApiPublicHooksErpReconciliationRoute
   ApiPublicHooksEvidenceCleanupRoute: typeof ApiPublicHooksEvidenceCleanupRoute
@@ -2196,6 +2209,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWorkshopsIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/lovable/email/events': {
+      id: '/lovable/email/events'
+      path: '/lovable/email/events'
+      fullPath: '/lovable/email/events'
+      preLoaderRoute: typeof LovableEmailEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/og/use-case/$slug': {
       id: '/og/use-case/$slug'
       path: '/og/use-case/$slug'
@@ -2647,6 +2667,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   CTokenRoute: CTokenRoute,
   PTokenRoute: PTokenRoute,
+  LovableEmailEventsRoute: LovableEmailEventsRoute,
   OgUseCaseSlugRoute: OgUseCaseSlugRoute,
   ApiPublicHooksErpReconciliationRoute: ApiPublicHooksErpReconciliationRoute,
   ApiPublicHooksEvidenceCleanupRoute: ApiPublicHooksEvidenceCleanupRoute,
