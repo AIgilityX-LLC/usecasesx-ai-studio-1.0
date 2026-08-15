@@ -5,6 +5,12 @@
 import { describe, expect, test } from "bun:test";
 
 import {
+  MAX_DELIVERY_ATTEMPTS,
+  csvHeaders,
+  isRetryDue,
+  nextRetryAt,
+  normalizeDeliveryStatus,
+  retryDelayMinutes,
   campaignLabel,
   conversionCounts,
   dedupeByEmail,
@@ -135,5 +141,52 @@ describe("leadsToCsv", () => {
     const [header, row] = csv.split("\n");
     expect(header).toContain("reference_id");
     expect(row).toContain('"\'=cmd()"');
+  });
+});
+
+describe("confirmation delivery retries", () => {
+  test("backoff grows and caps after five attempts", () => {
+    expect(retryDelayMinutes(1)).toBe(5);
+    expect(retryDelayMinutes(2)).toBe(15);
+    expect(retryDelayMinutes(5)).toBe(405);
+    expect(retryDelayMinutes(9)).toBe(405);
+    expect(nextRetryAt(MAX_DELIVERY_ATTEMPTS)).toBeNull();
+  });
+
+  test("only pending/failed leads under the attempt cap are due", () => {
+    const base = {
+      confirmation_status: "failed",
+      confirmation_attempts: 1,
+      confirmation_next_retry_at: null,
+    };
+    expect(isRetryDue(base)).toBe(true);
+    expect(isRetryDue({ ...base, confirmation_status: "sent" })).toBe(false);
+    expect(isRetryDue({ ...base, confirmation_attempts: MAX_DELIVERY_ATTEMPTS })).toBe(false);
+    expect(
+      isRetryDue({
+        ...base,
+        confirmation_next_retry_at: new Date(Date.now() + 60_000).toISOString(),
+      }),
+    ).toBe(false);
+  });
+
+  test("delivery status falls back to pending for unknown values", () => {
+    expect(normalizeDeliveryStatus("SENT")).toBe("sent");
+    expect(normalizeDeliveryStatus("weird")).toBe("pending");
+  });
+});
+
+describe("csv column options", () => {
+  test("toggles reference, attribution, campaign and delivery groups", () => {
+    const headers = csvHeaders({
+      reference: false,
+      attribution: false,
+      campaignBreakdown: true,
+      delivery: false,
+    });
+    expect(headers).not.toContain("reference_id");
+    expect(headers).not.toContain("utm_source");
+    expect(headers).toContain("campaign_leads");
+    expect(headers).not.toContain("confirmation_status");
   });
 });
