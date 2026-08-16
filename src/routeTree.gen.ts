@@ -81,6 +81,7 @@ import { Route as AppAccountOrganizationRouteImport } from './routes/_app.accoun
 import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.security'
 import { Route as AppAccountTeamRouteImport } from './routes/_app.account.team'
 import { Route as AppAdministrationAnalyticsRouteImport } from './routes/_app.administration.analytics'
+import { Route as AppAdministrationEmailDeliveryRouteImport } from './routes/_app.administration.email-delivery'
 import { Route as AppAdministrationFeedbackRouteImport } from './routes/_app.administration.feedback'
 import { Route as AppAdministrationLaunchChecksRouteImport } from './routes/_app.administration.launch-checks'
 import { Route as AppAdministrationLaunchLearningRouteImport } from './routes/_app.administration.launch-learning'
@@ -493,6 +494,12 @@ const AppAdministrationAnalyticsRoute =
     path: '/analytics',
     getParentRoute: () => AppAdministrationRoute,
   } as any)
+const AppAdministrationEmailDeliveryRoute =
+  AppAdministrationEmailDeliveryRouteImport.update({
+    id: '/email-delivery',
+    path: '/email-delivery',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
 const AppAdministrationFeedbackRoute =
   AppAdministrationFeedbackRouteImport.update({
     id: '/feedback',
@@ -845,6 +852,7 @@ export interface FileRoutesByFullPath {
   '/account/security': typeof AppAccountSecurityRoute
   '/account/team': typeof AppAccountTeamRoute
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
+  '/administration/email-delivery': typeof AppAdministrationEmailDeliveryRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
   '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
@@ -967,6 +975,7 @@ export interface FileRoutesByTo {
   '/account/security': typeof AppAccountSecurityRoute
   '/account/team': typeof AppAccountTeamRoute
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
+  '/administration/email-delivery': typeof AppAdministrationEmailDeliveryRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
   '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
@@ -1093,6 +1102,7 @@ export interface FileRoutesById {
   '/_app/account/security': typeof AppAccountSecurityRoute
   '/_app/account/team': typeof AppAccountTeamRoute
   '/_app/administration/analytics': typeof AppAdministrationAnalyticsRoute
+  '/_app/administration/email-delivery': typeof AppAdministrationEmailDeliveryRoute
   '/_app/administration/feedback': typeof AppAdministrationFeedbackRoute
   '/_app/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/_app/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
@@ -1219,6 +1229,7 @@ export interface FileRouteTypes {
     | '/account/security'
     | '/account/team'
     | '/administration/analytics'
+    | '/administration/email-delivery'
     | '/administration/feedback'
     | '/administration/launch-checks'
     | '/administration/launch-learning'
@@ -1341,6 +1352,7 @@ export interface FileRouteTypes {
     | '/account/security'
     | '/account/team'
     | '/administration/analytics'
+    | '/administration/email-delivery'
     | '/administration/feedback'
     | '/administration/launch-checks'
     | '/administration/launch-learning'
@@ -1466,6 +1478,7 @@ export interface FileRouteTypes {
     | '/_app/account/security'
     | '/_app/account/team'
     | '/_app/administration/analytics'
+    | '/_app/administration/email-delivery'
     | '/_app/administration/feedback'
     | '/_app/administration/launch-checks'
     | '/_app/administration/launch-learning'
@@ -2048,6 +2061,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdministrationAnalyticsRouteImport
       parentRoute: typeof AppAdministrationRoute
     }
+    '/_app/administration/email-delivery': {
+      id: '/_app/administration/email-delivery'
+      path: '/email-delivery'
+      fullPath: '/administration/email-delivery'
+      preLoaderRoute: typeof AppAdministrationEmailDeliveryRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/administration/feedback': {
       id: '/_app/administration/feedback'
       path: '/feedback'
@@ -2430,6 +2450,7 @@ const AppAccountRouteWithChildren = AppAccountRoute._addFileChildren(
 
 interface AppAdministrationRouteChildren {
   AppAdministrationAnalyticsRoute: typeof AppAdministrationAnalyticsRoute
+  AppAdministrationEmailDeliveryRoute: typeof AppAdministrationEmailDeliveryRoute
   AppAdministrationFeedbackRoute: typeof AppAdministrationFeedbackRoute
   AppAdministrationLaunchChecksRoute: typeof AppAdministrationLaunchChecksRoute
   AppAdministrationLaunchLearningRoute: typeof AppAdministrationLaunchLearningRoute
@@ -2443,6 +2464,7 @@ interface AppAdministrationRouteChildren {
 
 const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationAnalyticsRoute: AppAdministrationAnalyticsRoute,
+  AppAdministrationEmailDeliveryRoute: AppAdministrationEmailDeliveryRoute,
   AppAdministrationFeedbackRoute: AppAdministrationFeedbackRoute,
   AppAdministrationLaunchChecksRoute: AppAdministrationLaunchChecksRoute,
   AppAdministrationLaunchLearningRoute: AppAdministrationLaunchLearningRoute,
