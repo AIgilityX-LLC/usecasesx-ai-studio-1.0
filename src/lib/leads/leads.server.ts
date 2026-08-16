@@ -186,6 +186,7 @@ export async function resendConfirmationForLead(
     referenceId: lead.reference_id ?? "",
     triggerCase: lead.cta ?? "waitlist",
     interestArea: lead.interest_area,
+    idempotencyKey: correlationId,
   });
 
   await recordDeliveryOutcome(supabase, {
