@@ -32,6 +32,7 @@ import {
   UserCog,
   ShieldCheck,
   MessageSquarePlus,
+  MailCheck,
 } from "lucide-react";
 import {
   Sidebar,
