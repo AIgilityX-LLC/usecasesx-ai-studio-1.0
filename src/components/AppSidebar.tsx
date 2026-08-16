@@ -32,6 +32,7 @@ import {
   UserCog,
   ShieldCheck,
   MessageSquarePlus,
+  MailCheck,
 } from "lucide-react";
 import {
   Sidebar,
@@ -108,6 +109,12 @@ const ADMIN: Item[] = [
   { to: "/administration", label: "Admin Panel", icon: Settings, admin: true },
   { to: "/administration/requests", label: "Requests Inbox", icon: Inbox, admin: true },
   { to: "/administration/leads", label: "Lead Pipeline", icon: Users, admin: true },
+  {
+    to: "/administration/email-delivery",
+    label: "Email Delivery",
+    icon: MailCheck,
+    admin: true,
+  },
   { to: "/administration/pilot", label: "Pilot Programme", icon: Rocket, admin: true },
   { to: "/administration/launch-checks", label: "Launch Checks", icon: ShieldCheck, admin: true },
   {

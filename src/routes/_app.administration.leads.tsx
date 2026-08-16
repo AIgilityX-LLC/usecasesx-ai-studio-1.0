@@ -3,7 +3,16 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Download, Search, Users, MailCheck, Trophy, History, RefreshCw } from "lucide-react";
+import {
+  Download,
+  Search,
+  Users,
+  MailCheck,
+  Trophy,
+  History,
+  RefreshCw,
+  Send,
+} from "lucide-react";
 
 import { privateHead } from "@/lib/seo";
 import { RequireRoles } from "@/components/RequireRoles";
@@ -14,6 +23,7 @@ import {
   retryLeadConfirmations,
   setLeadPipelineStatus,
 } from "@/lib/leads/leads.functions";
+import { resendLeadConfirmation } from "@/lib/leads/email-admin.functions";
 import {
   DEFAULT_CSV_OPTIONS,
   LEAD_STATUSES,
@@ -38,6 +48,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
@@ -94,6 +105,7 @@ function LeadsDashboard() {
   const [dedupe, setDedupe] = useState(true);
   const [csvOptions, setCsvOptions] = useState<CsvExportOptions>(DEFAULT_CSV_OPTIONS);
   const [timelineLead, setTimelineLead] = useState<LeadRecord | null>(null);
+  const [resendLead, setResendLead] = useState<LeadRecord | null>(null);
 
   const leads = useQuery({
     queryKey: ["lead-pipeline"],
@@ -410,6 +422,14 @@ function LeadsDashboard() {
                             size="sm"
                             variant="ghost"
                             className="h-7 px-2 text-xs"
+                            onClick={() => setResendLead(lead)}
+                          >
+                            <Send className="mr-1 h-3 w-3" aria-hidden /> Resend
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2 text-xs"
                             onClick={() => setTimelineLead(lead)}
                           >
                             <History className="mr-1 h-3 w-3" aria-hidden /> Timeline
@@ -425,6 +445,11 @@ function LeadsDashboard() {
         )}
 
         <LeadTimelineDialog lead={timelineLead} onClose={() => setTimelineLead(null)} />
+        <ResendConfirmationDialog
+          lead={resendLead}
+          onClose={() => setResendLead(null)}
+          onSent={() => void queryClient.invalidateQueries({ queryKey: ["lead-pipeline"] })}
+        />
       </div>
     </section>
   );
@@ -481,6 +506,70 @@ function LeadTimelineDialog({ lead, onClose }: { lead: LeadRecord | null; onClos
             ))}
           </ol>
         )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/** On-demand resend of one lead's confirmation email, with an audit note. */
+function ResendConfirmationDialog({
+  lead,
+  onClose,
+  onSent,
+}: {
+  lead: LeadRecord | null;
+  onClose: () => void;
+  onSent: () => void;
+}) {
+  const resend = useServerFn(resendLeadConfirmation);
+  const [note, setNote] = useState("");
+
+  const mutation = useMutation({
+    mutationFn: () => resend({ data: { leadId: lead!.id, note: note.trim() || null } }),
+    onSuccess: (result) => {
+      if (result.sent) toast.success("Confirmation email sent again.");
+      else if (result.reason === "recipient_suppressed")
+        toast.warning("This address is suppressed (bounced, spam report or opt-out) — not sent.");
+      else toast.warning(`Attempt recorded but not delivered: ${result.reason ?? "unknown"}`);
+      onSent();
+      setNote("");
+      onClose();
+    },
+    onError: (error) =>
+      toast.error(error instanceof Error ? error.message : "The resend attempt failed."),
+  });
+
+  return (
+    <Dialog open={Boolean(lead)} onOpenChange={(open) => (open ? null : onClose())}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Resend confirmation</DialogTitle>
+          <DialogDescription>
+            {lead
+              ? `${lead.full_name} · ${lead.email} · ${lead.reference_id ?? "no reference"}`
+              : ""}
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2">
+          <Label htmlFor="resend-note">Note (optional)</Label>
+          <Textarea
+            id="resend-note"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Why are you resending? Recorded on the lead timeline."
+            maxLength={500}
+            rows={3}
+          />
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={onClose} disabled={mutation.isPending}>
+            Cancel
+          </Button>
+          <Button onClick={() => mutation.mutate()} disabled={mutation.isPending || !lead}>
+            <Send className="mr-2 h-4 w-4" aria-hidden />
+            {mutation.isPending ? "Sending…" : "Send now"}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

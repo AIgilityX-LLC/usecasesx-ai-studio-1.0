@@ -14,6 +14,8 @@ export interface LeadConfirmationInput {
   referenceId: string;
   triggerCase: string;
   interestArea?: string | null;
+  /** Overrides the default per-reference dedupe key (used by manual resends). */
+  idempotencyKey?: string;
 }
 
 export type LeadConfirmationResult = { sent: boolean; reason?: string };
@@ -69,6 +71,7 @@ export async function deliverLeadConfirmation(
         interestArea: input.interestArea ?? null,
       },
       idempotencyKey: `${template}-${input.referenceId}`,
+      ...(input.idempotencyKey ? { idempotencyKey: input.idempotencyKey } : {}),
     });
     return result.sent ? { sent: true } : { sent: false, reason: result.reason ?? "not_sent" };
   } catch (error) {

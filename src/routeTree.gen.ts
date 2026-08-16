@@ -81,6 +81,7 @@ import { Route as AppAccountOrganizationRouteImport } from './routes/_app.accoun
 import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.security'
 import { Route as AppAccountTeamRouteImport } from './routes/_app.account.team'
 import { Route as AppAdministrationAnalyticsRouteImport } from './routes/_app.administration.analytics'
+import { Route as AppAdministrationEmailDeliveryRouteImport } from './routes/_app.administration.email-delivery'
 import { Route as AppAdministrationFeedbackRouteImport } from './routes/_app.administration.feedback'
 import { Route as AppAdministrationLaunchChecksRouteImport } from './routes/_app.administration.launch-checks'
 import { Route as AppAdministrationLaunchLearningRouteImport } from './routes/_app.administration.launch-learning'
@@ -111,6 +112,7 @@ import { Route as OgUseCaseSlugRouteImport } from './routes/og.use-case.$slug'
 import { Route as AppCategoriesTypeSlugRouteImport } from './routes/_app.categories.$type.$slug'
 import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
 import { Route as AppWorkshopsJoinTokenRouteImport } from './routes/_app.workshops.join.$token'
+import { Route as ApiPublicHooksEmailDeliveryAlertsRouteImport } from './routes/api/public/hooks/email-delivery-alerts'
 import { Route as ApiPublicHooksErpReconciliationRouteImport } from './routes/api/public/hooks/erp-reconciliation'
 import { Route as ApiPublicHooksEvidenceCleanupRouteImport } from './routes/api/public/hooks/evidence-cleanup'
 import { Route as ApiPublicHooksPilotEvidenceRemindersRouteImport } from './routes/api/public/hooks/pilot-evidence-reminders'
@@ -492,6 +494,12 @@ const AppAdministrationAnalyticsRoute =
     path: '/analytics',
     getParentRoute: () => AppAdministrationRoute,
   } as any)
+const AppAdministrationEmailDeliveryRoute =
+  AppAdministrationEmailDeliveryRouteImport.update({
+    id: '/email-delivery',
+    path: '/email-delivery',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
 const AppAdministrationFeedbackRoute =
   AppAdministrationFeedbackRouteImport.update({
     id: '/feedback',
@@ -649,6 +657,12 @@ const AppWorkshopsJoinTokenRoute = AppWorkshopsJoinTokenRouteImport.update({
   path: '/workshops/join/$token',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiPublicHooksEmailDeliveryAlertsRoute =
+  ApiPublicHooksEmailDeliveryAlertsRouteImport.update({
+    id: '/api/public/hooks/email-delivery-alerts',
+    path: '/api/public/hooks/email-delivery-alerts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksErpReconciliationRoute =
   ApiPublicHooksErpReconciliationRouteImport.update({
     id: '/api/public/hooks/erp-reconciliation',
@@ -838,6 +852,7 @@ export interface FileRoutesByFullPath {
   '/account/security': typeof AppAccountSecurityRoute
   '/account/team': typeof AppAccountTeamRoute
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
+  '/administration/email-delivery': typeof AppAdministrationEmailDeliveryRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
   '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
@@ -869,6 +884,7 @@ export interface FileRoutesByFullPath {
   '/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
+  '/api/public/hooks/email-delivery-alerts': typeof ApiPublicHooksEmailDeliveryAlertsRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
@@ -959,6 +975,7 @@ export interface FileRoutesByTo {
   '/account/security': typeof AppAccountSecurityRoute
   '/account/team': typeof AppAccountTeamRoute
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
+  '/administration/email-delivery': typeof AppAdministrationEmailDeliveryRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
   '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
@@ -990,6 +1007,7 @@ export interface FileRoutesByTo {
   '/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
+  '/api/public/hooks/email-delivery-alerts': typeof ApiPublicHooksEmailDeliveryAlertsRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
@@ -1084,6 +1102,7 @@ export interface FileRoutesById {
   '/_app/account/security': typeof AppAccountSecurityRoute
   '/_app/account/team': typeof AppAccountTeamRoute
   '/_app/administration/analytics': typeof AppAdministrationAnalyticsRoute
+  '/_app/administration/email-delivery': typeof AppAdministrationEmailDeliveryRoute
   '/_app/administration/feedback': typeof AppAdministrationFeedbackRoute
   '/_app/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/_app/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
@@ -1115,6 +1134,7 @@ export interface FileRoutesById {
   '/_app/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/_app/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/_app/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
+  '/api/public/hooks/email-delivery-alerts': typeof ApiPublicHooksEmailDeliveryAlertsRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
@@ -1209,6 +1229,7 @@ export interface FileRouteTypes {
     | '/account/security'
     | '/account/team'
     | '/administration/analytics'
+    | '/administration/email-delivery'
     | '/administration/feedback'
     | '/administration/launch-checks'
     | '/administration/launch-learning'
@@ -1240,6 +1261,7 @@ export interface FileRouteTypes {
     | '/categories/$type/$slug'
     | '/cyberx/c3g/intake'
     | '/workshops/join/$token'
+    | '/api/public/hooks/email-delivery-alerts'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
     | '/api/public/hooks/pilot-evidence-reminders'
@@ -1330,6 +1352,7 @@ export interface FileRouteTypes {
     | '/account/security'
     | '/account/team'
     | '/administration/analytics'
+    | '/administration/email-delivery'
     | '/administration/feedback'
     | '/administration/launch-checks'
     | '/administration/launch-learning'
@@ -1361,6 +1384,7 @@ export interface FileRouteTypes {
     | '/categories/$type/$slug'
     | '/cyberx/c3g/intake'
     | '/workshops/join/$token'
+    | '/api/public/hooks/email-delivery-alerts'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
     | '/api/public/hooks/pilot-evidence-reminders'
@@ -1454,6 +1478,7 @@ export interface FileRouteTypes {
     | '/_app/account/security'
     | '/_app/account/team'
     | '/_app/administration/analytics'
+    | '/_app/administration/email-delivery'
     | '/_app/administration/feedback'
     | '/_app/administration/launch-checks'
     | '/_app/administration/launch-learning'
@@ -1485,6 +1510,7 @@ export interface FileRouteTypes {
     | '/_app/categories/$type/$slug'
     | '/_app/cyberx/c3g/intake'
     | '/_app/workshops/join/$token'
+    | '/api/public/hooks/email-delivery-alerts'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
     | '/api/public/hooks/pilot-evidence-reminders'
@@ -1519,6 +1545,7 @@ export interface RootRouteChildren {
   PTokenRoute: typeof PTokenRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   OgUseCaseSlugRoute: typeof OgUseCaseSlugRoute
+  ApiPublicHooksEmailDeliveryAlertsRoute: typeof ApiPublicHooksEmailDeliveryAlertsRoute
   ApiPublicHooksErpReconciliationRoute: typeof ApiPublicHooksErpReconciliationRoute
   ApiPublicHooksEvidenceCleanupRoute: typeof ApiPublicHooksEvidenceCleanupRoute
   ApiPublicHooksPilotEvidenceRemindersRoute: typeof ApiPublicHooksPilotEvidenceRemindersRoute
@@ -2034,6 +2061,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdministrationAnalyticsRouteImport
       parentRoute: typeof AppAdministrationRoute
     }
+    '/_app/administration/email-delivery': {
+      id: '/_app/administration/email-delivery'
+      path: '/email-delivery'
+      fullPath: '/administration/email-delivery'
+      preLoaderRoute: typeof AppAdministrationEmailDeliveryRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/administration/feedback': {
       id: '/_app/administration/feedback'
       path: '/feedback'
@@ -2244,6 +2278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWorkshopsJoinTokenRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/public/hooks/email-delivery-alerts': {
+      id: '/api/public/hooks/email-delivery-alerts'
+      path: '/api/public/hooks/email-delivery-alerts'
+      fullPath: '/api/public/hooks/email-delivery-alerts'
+      preLoaderRoute: typeof ApiPublicHooksEmailDeliveryAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/erp-reconciliation': {
       id: '/api/public/hooks/erp-reconciliation'
       path: '/api/public/hooks/erp-reconciliation'
@@ -2409,6 +2450,7 @@ const AppAccountRouteWithChildren = AppAccountRoute._addFileChildren(
 
 interface AppAdministrationRouteChildren {
   AppAdministrationAnalyticsRoute: typeof AppAdministrationAnalyticsRoute
+  AppAdministrationEmailDeliveryRoute: typeof AppAdministrationEmailDeliveryRoute
   AppAdministrationFeedbackRoute: typeof AppAdministrationFeedbackRoute
   AppAdministrationLaunchChecksRoute: typeof AppAdministrationLaunchChecksRoute
   AppAdministrationLaunchLearningRoute: typeof AppAdministrationLaunchLearningRoute
@@ -2422,6 +2464,7 @@ interface AppAdministrationRouteChildren {
 
 const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationAnalyticsRoute: AppAdministrationAnalyticsRoute,
+  AppAdministrationEmailDeliveryRoute: AppAdministrationEmailDeliveryRoute,
   AppAdministrationFeedbackRoute: AppAdministrationFeedbackRoute,
   AppAdministrationLaunchChecksRoute: AppAdministrationLaunchChecksRoute,
   AppAdministrationLaunchLearningRoute: AppAdministrationLaunchLearningRoute,
@@ -2669,6 +2712,8 @@ const rootRouteChildren: RootRouteChildren = {
   PTokenRoute: PTokenRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,
   OgUseCaseSlugRoute: OgUseCaseSlugRoute,
+  ApiPublicHooksEmailDeliveryAlertsRoute:
+    ApiPublicHooksEmailDeliveryAlertsRoute,
   ApiPublicHooksErpReconciliationRoute: ApiPublicHooksErpReconciliationRoute,
   ApiPublicHooksEvidenceCleanupRoute: ApiPublicHooksEvidenceCleanupRoute,
   ApiPublicHooksPilotEvidenceRemindersRoute:
