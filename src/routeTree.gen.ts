@@ -111,6 +111,7 @@ import { Route as OgUseCaseSlugRouteImport } from './routes/og.use-case.$slug'
 import { Route as AppCategoriesTypeSlugRouteImport } from './routes/_app.categories.$type.$slug'
 import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
 import { Route as AppWorkshopsJoinTokenRouteImport } from './routes/_app.workshops.join.$token'
+import { Route as ApiPublicHooksEmailDeliveryAlertsRouteImport } from './routes/api/public/hooks/email-delivery-alerts'
 import { Route as ApiPublicHooksErpReconciliationRouteImport } from './routes/api/public/hooks/erp-reconciliation'
 import { Route as ApiPublicHooksEvidenceCleanupRouteImport } from './routes/api/public/hooks/evidence-cleanup'
 import { Route as ApiPublicHooksPilotEvidenceRemindersRouteImport } from './routes/api/public/hooks/pilot-evidence-reminders'
@@ -649,6 +650,12 @@ const AppWorkshopsJoinTokenRoute = AppWorkshopsJoinTokenRouteImport.update({
   path: '/workshops/join/$token',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiPublicHooksEmailDeliveryAlertsRoute =
+  ApiPublicHooksEmailDeliveryAlertsRouteImport.update({
+    id: '/api/public/hooks/email-delivery-alerts',
+    path: '/api/public/hooks/email-delivery-alerts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksErpReconciliationRoute =
   ApiPublicHooksErpReconciliationRouteImport.update({
     id: '/api/public/hooks/erp-reconciliation',
@@ -869,6 +876,7 @@ export interface FileRoutesByFullPath {
   '/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
+  '/api/public/hooks/email-delivery-alerts': typeof ApiPublicHooksEmailDeliveryAlertsRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
@@ -990,6 +998,7 @@ export interface FileRoutesByTo {
   '/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
+  '/api/public/hooks/email-delivery-alerts': typeof ApiPublicHooksEmailDeliveryAlertsRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
@@ -1115,6 +1124,7 @@ export interface FileRoutesById {
   '/_app/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/_app/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/_app/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
+  '/api/public/hooks/email-delivery-alerts': typeof ApiPublicHooksEmailDeliveryAlertsRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
@@ -1240,6 +1250,7 @@ export interface FileRouteTypes {
     | '/categories/$type/$slug'
     | '/cyberx/c3g/intake'
     | '/workshops/join/$token'
+    | '/api/public/hooks/email-delivery-alerts'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
     | '/api/public/hooks/pilot-evidence-reminders'
@@ -1361,6 +1372,7 @@ export interface FileRouteTypes {
     | '/categories/$type/$slug'
     | '/cyberx/c3g/intake'
     | '/workshops/join/$token'
+    | '/api/public/hooks/email-delivery-alerts'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
     | '/api/public/hooks/pilot-evidence-reminders'
@@ -1485,6 +1497,7 @@ export interface FileRouteTypes {
     | '/_app/categories/$type/$slug'
     | '/_app/cyberx/c3g/intake'
     | '/_app/workshops/join/$token'
+    | '/api/public/hooks/email-delivery-alerts'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
     | '/api/public/hooks/pilot-evidence-reminders'
@@ -1519,6 +1532,7 @@ export interface RootRouteChildren {
   PTokenRoute: typeof PTokenRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   OgUseCaseSlugRoute: typeof OgUseCaseSlugRoute
+  ApiPublicHooksEmailDeliveryAlertsRoute: typeof ApiPublicHooksEmailDeliveryAlertsRoute
   ApiPublicHooksErpReconciliationRoute: typeof ApiPublicHooksErpReconciliationRoute
   ApiPublicHooksEvidenceCleanupRoute: typeof ApiPublicHooksEvidenceCleanupRoute
   ApiPublicHooksPilotEvidenceRemindersRoute: typeof ApiPublicHooksPilotEvidenceRemindersRoute
@@ -2244,6 +2258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWorkshopsJoinTokenRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/public/hooks/email-delivery-alerts': {
+      id: '/api/public/hooks/email-delivery-alerts'
+      path: '/api/public/hooks/email-delivery-alerts'
+      fullPath: '/api/public/hooks/email-delivery-alerts'
+      preLoaderRoute: typeof ApiPublicHooksEmailDeliveryAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/erp-reconciliation': {
       id: '/api/public/hooks/erp-reconciliation'
       path: '/api/public/hooks/erp-reconciliation'
@@ -2669,6 +2690,8 @@ const rootRouteChildren: RootRouteChildren = {
   PTokenRoute: PTokenRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,
   OgUseCaseSlugRoute: OgUseCaseSlugRoute,
+  ApiPublicHooksEmailDeliveryAlertsRoute:
+    ApiPublicHooksEmailDeliveryAlertsRoute,
   ApiPublicHooksErpReconciliationRoute: ApiPublicHooksErpReconciliationRoute,
   ApiPublicHooksEvidenceCleanupRoute: ApiPublicHooksEvidenceCleanupRoute,
   ApiPublicHooksPilotEvidenceRemindersRoute:
