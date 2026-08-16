@@ -1,6 +1,14 @@
 import { createEmailWebhookHandler } from '@lovable.dev/email-js'
 import { createFileRoute } from '@tanstack/react-router'
 
+/**
+ * Managed-delivery outcome receiver.
+ *
+ * Bounces, spam complaints and unsubscribes update the matching lead's
+ * confirmation status and timeline so the admin pipeline reflects reality.
+ * Suppression itself is enforced by the platform at send time — nothing here
+ * gates future sends.
+ */
 export const Route = createFileRoute("/lovable/email/events")({
   server: {
     handlers: {
@@ -10,19 +18,29 @@ export const Route = createFileRoute("/lovable/email/events")({
           console.error('Missing required environment variables')
           return Response.json({ error: 'Server configuration error' }, { status: 500 })
         }
+
+        const apply = async (
+          event: 'email.bounced' | 'email.complaint' | 'email.unsubscribed',
+          recipient: string,
+          eventId: string,
+        ) => {
+          const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+          const { applyDeliveryEvent } = await import('@/lib/leads/email-health.server')
+          const result = await applyDeliveryEvent(supabaseAdmin, { event, recipient, eventId })
+          console.log('[email-events] processed', { event, event_id: eventId, ...result })
+        }
+
         const handler = createEmailWebhookHandler({
           apiKey,
           on: {
-            // Placeholder handlers — replace each log with the feature's reaction.
-            // Throw on failure so the delivery is retried.
             'email.bounced': async (event) => {
-              console.log('Email bounced', { event_id: event.event_id })
+              await apply('email.bounced', event.data.recipient, event.event_id)
             },
             'email.complaint': async (event) => {
-              console.log('Email complaint', { event_id: event.event_id })
+              await apply('email.complaint', event.data.recipient, event.event_id)
             },
             'email.unsubscribed': async (event) => {
-              console.log('Email unsubscribed', { event_id: event.event_id })
+              await apply('email.unsubscribed', event.data.recipient, event.event_id)
             },
           },
         })
