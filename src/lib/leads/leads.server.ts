@@ -137,3 +137,65 @@ export async function retryDueConfirmations(
   }
   return { attempted: leads.length, sent, failed };
 }
+
+/**
+ * Sends one more confirmation attempt for a single lead, on an admin's request.
+ *
+ * The recipient and template are derived from the stored lead — never from the
+ * caller — so this stays a resend, not a generic send. The optional note is
+ * recorded on the timeline next to the attempt outcome.
+ */
+export async function resendConfirmationForLead(
+  supabase: Client,
+  input: {
+    leadId: string;
+    note?: string | null;
+    actorId?: string | null;
+    actorLabel?: string | null;
+  },
+): Promise<{ sent: boolean; reason?: string }> {
+  const { data, error } = await supabase
+    .from("lead_captures")
+    .select(COLUMNS)
+    .eq("id", input.leadId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  const lead = data as LeadRecord | null;
+  if (!lead) throw new Error("That lead no longer exists.");
+
+  const { deliverLeadConfirmation, recordDeliveryOutcome } =
+    await import("./lead-confirmation.server");
+
+  const correlationId = `resend-${lead.id}-${Date.now()}`;
+  await recordLeadEvents(supabase, [
+    {
+      lead_id: lead.id,
+      event_type: "email_resend_requested",
+      from_status: lead.confirmation_status ?? null,
+      to_status: null,
+      actor_id: input.actorId ?? null,
+      actor_label: input.actorLabel ?? null,
+      detail: input.note?.trim() ? input.note.trim() : "Manual resend requested",
+      correlation_id: correlationId,
+    },
+  ]);
+
+  const result = await deliverLeadConfirmation({
+    fullName: lead.full_name,
+    email: lead.email,
+    referenceId: lead.reference_id ?? "",
+    triggerCase: lead.cta ?? "waitlist",
+    interestArea: lead.interest_area,
+  });
+
+  await recordDeliveryOutcome(supabase, {
+    leadId: lead.id,
+    attempts: (lead.confirmation_attempts ?? 0) + 1,
+    result,
+    actorId: input.actorId ?? null,
+    actorLabel: input.actorLabel ?? null,
+    correlationId,
+  });
+
+  return result;
+}
