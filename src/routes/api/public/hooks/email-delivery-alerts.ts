@@ -33,9 +33,8 @@ export const Route = createFileRoute("/api/public/hooks/email-delivery-alerts")(
 
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-          const { buildDeliveryHealthReport, dispatchDeliveryAlerts } = await import(
-            "@/lib/leads/email-health.server"
-          );
+          const { buildDeliveryHealthReport, dispatchDeliveryAlerts } =
+            await import("@/lib/leads/email-health.server");
           const report = await buildDeliveryHealthReport(supabaseAdmin, {
             windowHours: parsed.windowHours,
           });

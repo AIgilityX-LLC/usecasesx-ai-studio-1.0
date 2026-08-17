@@ -106,18 +106,16 @@ function EmailDeliveryDashboard() {
               {SENDER_DOMAIN}.
             </p>
           </div>
-          <Button
-            variant="outline"
-            onClick={() => alertNow.mutate()}
-            disabled={alertNow.isPending}
-          >
+          <Button variant="outline" onClick={() => alertNow.mutate()} disabled={alertNow.isPending}>
             <BellRing className="mr-2 h-4 w-4" aria-hidden />
             {alertNow.isPending ? "Sending…" : "Send alerts now"}
           </Button>
         </header>
 
         {health.isLoading ? (
-          <p className="py-10 text-center text-sm text-muted-foreground">Loading delivery health…</p>
+          <p className="py-10 text-center text-sm text-muted-foreground">
+            Loading delivery health…
+          </p>
         ) : health.isError ? (
           <p className="py-10 text-center text-sm text-destructive">
             We could not load delivery health.

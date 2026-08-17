@@ -1,5 +1,5 @@
-import { createEmailWebhookHandler } from '@lovable.dev/email-js'
-import { createFileRoute } from '@tanstack/react-router'
+import { createEmailWebhookHandler } from "@lovable.dev/email-js";
+import { createFileRoute } from "@tanstack/react-router";
 
 /**
  * Managed-delivery outcome receiver.
@@ -13,39 +13,39 @@ export const Route = createFileRoute("/lovable/email/events")({
   server: {
     handlers: {
       POST: ({ request }) => {
-        const apiKey = process.env['LOVABLE_API_KEY']
+        const apiKey = process.env["LOVABLE_API_KEY"];
         if (!apiKey) {
-          console.error('Missing required environment variables')
-          return Response.json({ error: 'Server configuration error' }, { status: 500 })
+          console.error("Missing required environment variables");
+          return Response.json({ error: "Server configuration error" }, { status: 500 });
         }
 
         const apply = async (
-          event: 'email.bounced' | 'email.complaint' | 'email.unsubscribed',
+          event: "email.bounced" | "email.complaint" | "email.unsubscribed",
           recipient: string,
           eventId: string,
         ) => {
-          const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-          const { applyDeliveryEvent } = await import('@/lib/leads/email-health.server')
-          const result = await applyDeliveryEvent(supabaseAdmin, { event, recipient, eventId })
-          console.log('[email-events] processed', { event, event_id: eventId, ...result })
-        }
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { applyDeliveryEvent } = await import("@/lib/leads/email-health.server");
+          const result = await applyDeliveryEvent(supabaseAdmin, { event, recipient, eventId });
+          console.log("[email-events] processed", { event, event_id: eventId, ...result });
+        };
 
         const handler = createEmailWebhookHandler({
           apiKey,
           on: {
-            'email.bounced': async (event) => {
-              await apply('email.bounced', event.data.recipient, event.event_id)
+            "email.bounced": async (event) => {
+              await apply("email.bounced", event.data.recipient, event.event_id);
             },
-            'email.complaint': async (event) => {
-              await apply('email.complaint', event.data.recipient, event.event_id)
+            "email.complaint": async (event) => {
+              await apply("email.complaint", event.data.recipient, event.event_id);
             },
-            'email.unsubscribed': async (event) => {
-              await apply('email.unsubscribed', event.data.recipient, event.event_id)
+            "email.unsubscribed": async (event) => {
+              await apply("email.unsubscribed", event.data.recipient, event.event_id);
             },
           },
-        })
-        return handler(request)
+        });
+        return handler(request);
       },
     },
   },
-})
+});
