@@ -33,10 +33,7 @@ export async function renderTemplatePreview(input: {
     name: input.name,
   });
   const element = React.createElement(entry.component, data);
-  const [html, text] = await Promise.all([
-    render(element),
-    render(element, { plainText: true }),
-  ]);
+  const [html, text] = await Promise.all([render(element), render(element, { plainText: true })]);
   const subject = typeof entry.subject === "function" ? entry.subject(data) : entry.subject;
 
   return {

@@ -51,9 +51,8 @@ export const notifyEmailDeliveryAlerts = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { assertAnalyticsReader } = await import("@/lib/cta-analytics-access.server");
     await assertAnalyticsReader(context.supabase, context.userId);
-    const { buildDeliveryHealthReport, dispatchDeliveryAlerts } = await import(
-      "@/lib/leads/email-health.server"
-    );
+    const { buildDeliveryHealthReport, dispatchDeliveryAlerts } =
+      await import("@/lib/leads/email-health.server");
     const report = await buildDeliveryHealthReport(context.supabase, {
       windowHours: data.windowHours,
     });
