@@ -118,6 +118,8 @@ import { Route as ApiPublicHooksEvidenceCleanupRouteImport } from './routes/api/
 import { Route as ApiPublicHooksPilotEvidenceRemindersRouteImport } from './routes/api/public/hooks/pilot-evidence-reminders'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
+import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as AppStudioUseCaseIdIndexRouteImport } from './routes/_app.studio.use-case.$id.index'
 import { Route as AppStudioUseCaseIdAdvisorxRouteImport } from './routes/_app.studio.use-case.$id.advisorx'
@@ -693,6 +695,16 @@ const ApiPublicUsecasexUseCasesRoute =
     path: '/api/public/usecasex/use-cases',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
+  id: '/lovable/email/auth/preview',
+  path: '/lovable/email/auth/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
@@ -890,6 +902,8 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
@@ -1013,6 +1027,8 @@ export interface FileRoutesByTo {
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
@@ -1140,6 +1156,8 @@ export interface FileRoutesById {
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/_app/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/_app/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
@@ -1267,6 +1285,8 @@ export interface FileRouteTypes {
     | '/api/public/hooks/pilot-evidence-reminders'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
     | '/studio/use-case/$id/advisorx'
     | '/studio/use-case/$id/blueprint'
@@ -1390,6 +1410,8 @@ export interface FileRouteTypes {
     | '/api/public/hooks/pilot-evidence-reminders'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
     | '/studio/use-case/$id/advisorx'
     | '/studio/use-case/$id/blueprint'
@@ -1516,6 +1538,8 @@ export interface FileRouteTypes {
     | '/api/public/hooks/pilot-evidence-reminders'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
     | '/_app/studio/use-case/$id/advisorx'
     | '/_app/studio/use-case/$id/blueprint'
@@ -1551,6 +1575,8 @@ export interface RootRouteChildren {
   ApiPublicHooksPilotEvidenceRemindersRoute: typeof ApiPublicHooksPilotEvidenceRemindersRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
+  LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
+  LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
   ApiPublicUsecasexRoadmapExportRoute: typeof ApiPublicUsecasexRoadmapExportRoute
 }
@@ -2320,6 +2346,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicUsecasexUseCasesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/auth/preview': {
+      id: '/lovable/email/auth/preview'
+      path: '/lovable/email/auth/preview'
+      fullPath: '/lovable/email/auth/preview'
+      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/webhook': {
+      id: '/lovable/email/auth/webhook'
+      path: '/lovable/email/auth/webhook'
+      fullPath: '/lovable/email/auth/webhook'
+      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
@@ -2720,6 +2760,8 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksPilotEvidenceRemindersRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
   ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRouteWithChildren,
+  LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
+  LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
   ApiPublicUsecasexRoadmapExportRoute: ApiPublicUsecasexRoadmapExportRoute,
 }
