@@ -1,10 +1,10 @@
-import * as React from 'react'
-import { Text } from '@react-email/components'
-import { AuthEmailLayout, text } from './auth-layout'
+import * as React from "react";
+import { Text } from "@react-email/components";
+import { AuthEmailLayout, text } from "./auth-layout";
 
 interface MagicLinkEmailProps {
-  siteName: string
-  confirmationUrl: string
+  siteName: string;
+  confirmationUrl: string;
 }
 
 export const MagicLinkEmail = ({ siteName, confirmationUrl }: MagicLinkEmailProps) => (
@@ -16,10 +16,10 @@ export const MagicLinkEmail = ({ siteName, confirmationUrl }: MagicLinkEmailProp
     footerNote="This link expires shortly and can be used once."
   >
     <Text style={text}>
-      Use the button below to sign in to {siteName}. If you did not request this link, you
-      can ignore this email.
+      Use the button below to sign in to {siteName}. If you did not request this link, you can
+      ignore this email.
     </Text>
   </AuthEmailLayout>
-)
+);
 
-export default MagicLinkEmail
+export default MagicLinkEmail;

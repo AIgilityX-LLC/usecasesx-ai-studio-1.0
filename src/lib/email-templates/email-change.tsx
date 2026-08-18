@@ -1,15 +1,15 @@
-import * as React from 'react'
-import { Link, Text } from '@react-email/components'
-import { AuthEmailLayout, link, text } from './auth-layout'
+import * as React from "react";
+import { Link, Text } from "@react-email/components";
+import { AuthEmailLayout, link, text } from "./auth-layout";
 
 interface EmailChangeEmailProps {
-  siteName: string
+  siteName: string;
   // oldEmail is the user's current address; the email is delivered to the new
   // address, so the "from" line renders oldEmail.
-  oldEmail: string
-  email: string
-  newEmail: string
-  confirmationUrl: string
+  oldEmail: string;
+  email: string;
+  newEmail: string;
+  confirmationUrl: string;
 }
 
 export const EmailChangeEmail = ({
@@ -26,17 +26,17 @@ export const EmailChangeEmail = ({
     footerNote="If you did not request this change, contact us immediately."
   >
     <Text style={text}>
-      You requested to change the email address on your {siteName} account from{' '}
+      You requested to change the email address on your {siteName} account from{" "}
       <Link href={`mailto:${oldEmail}`} style={link}>
         {oldEmail}
-      </Link>{' '}
-      to{' '}
+      </Link>{" "}
+      to{" "}
       <Link href={`mailto:${newEmail}`} style={link}>
         {newEmail}
       </Link>
       .
     </Text>
   </AuthEmailLayout>
-)
+);
 
-export default EmailChangeEmail
+export default EmailChangeEmail;

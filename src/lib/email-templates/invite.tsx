@@ -1,11 +1,11 @@
-import * as React from 'react'
-import { Link, Text } from '@react-email/components'
-import { AuthEmailLayout, link, text } from './auth-layout'
+import * as React from "react";
+import { Link, Text } from "@react-email/components";
+import { AuthEmailLayout, link, text } from "./auth-layout";
 
 interface InviteEmailProps {
-  siteName: string
-  siteUrl: string
-  confirmationUrl: string
+  siteName: string;
+  siteUrl: string;
+  confirmationUrl: string;
 }
 
 export const InviteEmail = ({ siteName, siteUrl, confirmationUrl }: InviteEmailProps) => (
@@ -17,13 +17,13 @@ export const InviteEmail = ({ siteName, siteUrl, confirmationUrl }: InviteEmailP
     footerNote="Pro Founding Access is complimentary through 31 December 2026."
   >
     <Text style={text}>
-      You have been invited to join{' '}
+      You have been invited to join{" "}
       <Link href={siteUrl} style={link}>
         <strong>{siteName}</strong>
-      </Link>{' '}
+      </Link>{" "}
       — discover, design, prioritize and manage AI use cases with evidence.
     </Text>
   </AuthEmailLayout>
-)
+);
 
-export default InviteEmail
+export default InviteEmail;

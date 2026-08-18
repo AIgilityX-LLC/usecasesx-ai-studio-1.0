@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from "react";
 import {
   Body,
   Button,
@@ -10,7 +10,7 @@ import {
   Link,
   Preview,
   Text,
-} from '@react-email/components'
+} from "@react-email/components";
 
 /**
  * Shared brand shell for UseCasesX auth emails.
@@ -24,12 +24,12 @@ export const AuthEmailLayout = ({
   ctaUrl,
   footerNote,
 }: {
-  preview: string
-  heading: string
-  children: React.ReactNode
-  ctaLabel?: string
-  ctaUrl?: string
-  footerNote?: string
+  preview: string;
+  heading: string;
+  children: React.ReactNode;
+  ctaLabel?: string;
+  ctaUrl?: string;
+  footerNote?: string;
 }) => (
   <Html lang="en" dir="ltr">
     <Head />
@@ -46,7 +46,7 @@ export const AuthEmailLayout = ({
         ) : null}
         <Hr style={hr} />
         <Text style={footer}>
-          {footerNote ? `${footerNote} ` : ''}Questions? Write to{' '}
+          {footerNote ? `${footerNote} ` : ""}Questions? Write to{" "}
           <Link href="mailto:info@aigilityx.com" style={link}>
             info@aigilityx.com
           </Link>
@@ -55,49 +55,49 @@ export const AuthEmailLayout = ({
       </Container>
     </Body>
   </Html>
-)
+);
 
 export const text = {
-  fontSize: '15px',
-  lineHeight: '24px',
-  color: '#33415c',
-  margin: '0 0 14px',
-}
-export const link = { color: '#8a6a12' }
+  fontSize: "15px",
+  lineHeight: "24px",
+  color: "#33415c",
+  margin: "0 0 14px",
+};
+export const link = { color: "#8a6a12" };
 export const codeBox = {
-  backgroundColor: '#f6f7fb',
-  borderLeft: '3px solid #c9a227',
-  padding: '14px 18px',
-  margin: '18px 0',
-  fontSize: '26px',
-  letterSpacing: '4px',
+  backgroundColor: "#f6f7fb",
+  borderLeft: "3px solid #c9a227",
+  padding: "14px 18px",
+  margin: "18px 0",
+  fontSize: "26px",
+  letterSpacing: "4px",
   fontWeight: 700 as const,
-  color: '#111a2e',
-}
+  color: "#111a2e",
+};
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Helvetica, Arial, sans-serif' }
-const container = { padding: '32px 28px', maxWidth: '560px' }
+const main = { backgroundColor: "#ffffff", fontFamily: "Helvetica, Arial, sans-serif" };
+const container = { padding: "32px 28px", maxWidth: "560px" };
 const brand = {
-  fontSize: '12px',
-  letterSpacing: '1.5px',
-  textTransform: 'uppercase' as const,
-  color: '#8a6a12',
-  margin: '0 0 12px',
-}
+  fontSize: "12px",
+  letterSpacing: "1.5px",
+  textTransform: "uppercase" as const,
+  color: "#8a6a12",
+  margin: "0 0 12px",
+};
 const headingStyle = {
-  fontSize: '24px',
-  lineHeight: '32px',
-  color: '#111a2e',
-  margin: '0 0 16px',
-}
+  fontSize: "24px",
+  lineHeight: "32px",
+  color: "#111a2e",
+  margin: "0 0 16px",
+};
 const button = {
-  backgroundColor: '#111a2e',
-  color: '#ffffff',
-  fontSize: '15px',
-  borderRadius: '8px',
-  padding: '13px 22px',
-  textDecoration: 'none',
-  display: 'inline-block',
-}
-const hr = { borderColor: '#e5e7eb', margin: '26px 0' }
-const footer = { fontSize: '13px', lineHeight: '20px', color: '#6b7280', margin: '0' }
+  backgroundColor: "#111a2e",
+  color: "#ffffff",
+  fontSize: "15px",
+  borderRadius: "8px",
+  padding: "13px 22px",
+  textDecoration: "none",
+  display: "inline-block",
+};
+const hr = { borderColor: "#e5e7eb", margin: "26px 0" };
+const footer = { fontSize: "13px", lineHeight: "20px", color: "#6b7280", margin: "0" };
