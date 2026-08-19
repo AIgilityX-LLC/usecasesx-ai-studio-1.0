@@ -305,3 +305,150 @@ function Metric({
     </Card>
   );
 }
+
+interface AuthEmailLogEvent {
+  timestamp: string;
+  recipient: string;
+  event_type: string;
+  status?: string;
+}
+
+interface AuthEmailLog {
+  events: AuthEmailLogEvent[];
+  historyStartsAt: string | null;
+  note: string | null;
+}
+
+/**
+ * Sends one real branded auth email (magic link or password reset) and shows
+ * the delivery events Lovable recorded for that recipient.
+ */
+function AuthEmailTester() {
+  const sendTest = useServerFn(sendBrandedAuthTestEmail);
+  const loadLog = useServerFn(getAuthEmailDeliveryLog);
+
+  const [recipient, setRecipient] = useState("");
+  const [log, setLog] = useState<AuthEmailLog | null>(null);
+  const [sendNote, setSendNote] = useState<string | null>(null);
+
+  const refreshLog = useMutation({
+    mutationFn: () =>
+      loadLog({ data: { recipient: recipient.trim() || undefined } }) as Promise<AuthEmailLog>,
+    onSuccess: setLog,
+    onError: (error) =>
+      toast.error(error instanceof Error ? error.message : "We could not read delivery events."),
+  });
+
+  const send = useMutation({
+    mutationFn: (type: "magiclink" | "recovery") =>
+      sendTest({
+        data: {
+          type,
+          recipient: recipient.trim(),
+          redirectTo: `${window.location.origin}/auth`,
+        },
+      }) as Promise<{
+        send: { accepted: boolean; message: string; type: string };
+        logs: AuthEmailLog;
+      }>,
+    onSuccess: (result) => {
+      setLog(result.logs);
+      setSendNote(result.send.message);
+      if (result.send.accepted) toast.success("Auth email requested.");
+      else toast.warning(result.send.message);
+    },
+    onError: (error) =>
+      toast.error(error instanceof Error ? error.message : "The test send failed."),
+  });
+
+  const disabled = send.isPending || recipient.trim().length < 5;
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Triggers a real branded auth email from {SENDER_DOMAIN} to an existing account, then reads
+        the delivery events recorded for that address.
+      </p>
+      <div className="grid gap-3 sm:grid-cols-[2fr_auto_auto_auto]">
+        <div className="space-y-1">
+          <Label htmlFor="auth-test-recipient">Recipient (existing account)</Label>
+          <Input
+            id="auth-test-recipient"
+            type="email"
+            value={recipient}
+            placeholder="admin@demo.usecasex.app"
+            onChange={(event) => setRecipient(event.target.value)}
+          />
+        </div>
+        <Button
+          className="self-end"
+          onClick={() => send.mutate("magiclink")}
+          disabled={disabled}
+          data-testid="auth-test-magiclink"
+        >
+          <MailCheck className="mr-2 h-4 w-4" aria-hidden />
+          Send magic link
+        </Button>
+        <Button
+          className="self-end"
+          variant="outline"
+          onClick={() => send.mutate("recovery")}
+          disabled={disabled}
+          data-testid="auth-test-recovery"
+        >
+          Send password reset
+        </Button>
+        <Button
+          className="self-end"
+          variant="ghost"
+          onClick={() => refreshLog.mutate()}
+          disabled={refreshLog.isPending}
+        >
+          <Eye className="mr-2 h-4 w-4" aria-hidden />
+          Refresh events
+        </Button>
+      </div>
+
+      {sendNote ? (
+        <p role="status" className="text-xs text-muted-foreground">
+          {sendNote}
+        </p>
+      ) : null}
+
+      {log ? (
+        <div className="space-y-2">
+          {log.note ? <p className="text-xs text-destructive">{log.note}</p> : null}
+          {log.events.length === 0 ? (
+            <p className="text-xs text-muted-foreground">
+              No delivery events recorded yet
+              {log.historyStartsAt
+                ? ` (history visible from ${new Date(log.historyStartsAt).toLocaleString()})`
+                : ""}
+              . Auth emails only send once the sender domain finishes verifying.
+            </p>
+          ) : (
+            <ul className="space-y-2" data-testid="auth-test-events">
+              {log.events.map((event, index) => (
+                <li
+                  key={`${event.timestamp}-${index}`}
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border p-2 text-xs"
+                >
+                  <span className="font-mono">{event.recipient}</span>
+                  <span className="flex items-center gap-2">
+                    <Badge variant="outline">{event.event_type}</Badge>
+                    {event.status ? (
+                      <span className="text-muted-foreground">{event.status}</span>
+                    ) : null}
+                    <span className="text-muted-foreground">
+                      {new Date(event.timestamp).toLocaleString()}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ) : null}
+    </div>
+  );
+}
