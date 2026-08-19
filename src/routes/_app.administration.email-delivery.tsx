@@ -194,7 +194,7 @@ function EmailDeliveryDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Template preview</CardTitle>
+            <CardTitle className="text-base">Branded auth email test</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <AuthEmailTester />
