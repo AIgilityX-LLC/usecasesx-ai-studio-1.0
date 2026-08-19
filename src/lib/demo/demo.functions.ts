@@ -18,3 +18,27 @@ export const listDemoArtifactsFn = createServerFn({ method: "GET" }).handler(asy
   const { listDemoArtifacts } = await import("@/lib/demo/demo-reset.server");
   return listDemoArtifacts();
 });
+
+/** Personas that actually exist in this environment (demonstration accounts only). */
+export const listSeededPersonasFn = createServerFn({ method: "POST" })
+  .inputValidator((data) => z.object({ password: z.string().min(1) }).parse(data))
+  .handler(async ({ data }) => {
+    const { demoResetAuthorized } = await import("@/lib/demo/demo-reset.server");
+    if (!demoResetAuthorized(data.password)) {
+      throw new Error("Demonstration persona inventory is not authorized in this environment.");
+    }
+    const { listSeededPersonas } = await import("@/lib/demo/demo-personas.server");
+    return listSeededPersonas();
+  });
+
+/** Resets every demonstration account to the known demonstration password. */
+export const resetPersonaPasswordsFn = createServerFn({ method: "POST" })
+  .inputValidator((data) => z.object({ password: z.string().min(1) }).parse(data))
+  .handler(async ({ data }) => {
+    const { demoResetAuthorized } = await import("@/lib/demo/demo-reset.server");
+    if (!demoResetAuthorized(data.password)) {
+      throw new Error("Demonstration credential reset is not authorized in this environment.");
+    }
+    const { resetSeededPersonaPasswords } = await import("@/lib/demo/demo-personas.server");
+    return resetSeededPersonaPasswords();
+  });

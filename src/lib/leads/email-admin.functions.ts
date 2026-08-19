@@ -81,3 +81,37 @@ export const resendLeadConfirmation = createServerFn({ method: "POST" })
       actorLabel,
     });
   });
+
+const AuthTestInput = z.object({
+  type: z.enum(["magiclink", "recovery"]),
+  recipient: z.string().trim().email().max(200),
+  redirectTo: z.string().trim().url().max(300),
+});
+
+/** Sends one branded auth email (magic link or password reset) for verification. */
+export const sendBrandedAuthTestEmail = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => AuthTestInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { assertAnalyticsReader } = await import("@/lib/cta-analytics-access.server");
+    await assertAnalyticsReader(context.supabase, context.userId);
+    const { sendAuthTestEmail, readAuthEmailLogs } = await import(
+      "@/lib/leads/auth-email-test.server"
+    );
+    const send = await sendAuthTestEmail(data.type, data.recipient, data.redirectTo);
+    const logs = await readAuthEmailLogs(data.recipient);
+    return { send, logs };
+  });
+
+const AuthLogInput = z.object({ recipient: z.string().trim().max(200).optional() }).default({});
+
+/** Delivery events Lovable recorded, optionally narrowed to one recipient. */
+export const getAuthEmailDeliveryLog = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => AuthLogInput.parse(d ?? {}))
+  .handler(async ({ data, context }) => {
+    const { assertAnalyticsReader } = await import("@/lib/cta-analytics-access.server");
+    await assertAnalyticsReader(context.supabase, context.userId);
+    const { readAuthEmailLogs } = await import("@/lib/leads/auth-email-test.server");
+    return readAuthEmailLogs(data.recipient?.trim() || undefined);
+  });
