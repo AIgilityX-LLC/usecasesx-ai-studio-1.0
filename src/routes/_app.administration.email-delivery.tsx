@@ -10,8 +10,10 @@ import { RequireRoles } from "@/components/RequireRoles";
 import { PLATFORM_ADMIN_ROLES } from "@/lib/admin/platform-admin";
 import {
   getEmailDeliveryHealth,
+  getAuthEmailDeliveryLog,
   notifyEmailDeliveryAlerts,
   previewConfirmationTemplates,
+  sendBrandedAuthTestEmail,
 } from "@/lib/leads/email-admin.functions";
 import {
   DELIVERY_ALERT_THRESHOLDS,
@@ -193,6 +195,15 @@ function EmailDeliveryDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Template preview</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <AuthEmailTester />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Confirmation template preview</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-3">
