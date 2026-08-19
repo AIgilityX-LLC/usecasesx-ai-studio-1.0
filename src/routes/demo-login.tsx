@@ -7,10 +7,16 @@ import { SiteShell } from "@/components/SiteShell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { listDemoArtifactsFn, resetDemoTenantsFn } from "@/lib/demo/demo.functions";
+import {
+  listDemoArtifactsFn,
+  listSeededPersonasFn,
+  resetDemoTenantsFn,
+  resetPersonaPasswordsFn,
+} from "@/lib/demo/demo.functions";
 import { DEMO_WALKTHROUGH, type DemoEdition } from "@/lib/demo/demo-content";
 
 type DemoArtifact = Awaited<ReturnType<typeof listDemoArtifactsFn>>[number];
+type SeededPersona = Awaited<ReturnType<typeof listSeededPersonasFn>>[number];
 
 function download(filename: string, mime: string, contents: string) {
   const url = URL.createObjectURL(new Blob([contents], { type: mime }));
@@ -133,6 +139,9 @@ function DemoLoginPage() {
   const [artifacts, setArtifacts] = useState<DemoArtifact[]>([]);
   const [resetting, setResetting] = useState(false);
   const [resetMessage, setResetMessage] = useState<string | null>(null);
+  const [seeded, setSeeded] = useState<SeededPersona[] | null>(null);
+  const [seededNote, setSeededNote] = useState<string | null>(null);
+  const [credentialBusy, setCredentialBusy] = useState(false);
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -152,6 +161,46 @@ function DemoLoginPage() {
   useEffect(() => {
     void loadArtifacts();
   }, [loadArtifacts]);
+
+  const loadSeeded = useCallback(async () => {
+    try {
+      setSeeded(await listSeededPersonasFn({ data: { password: DEMO_PASSWORD } }));
+      setSeededNote(null);
+    } catch (loadError) {
+      setSeeded(null);
+      setSeededNote(
+        loadError instanceof Error
+          ? loadError.message
+          : "The seeded account inventory is unavailable.",
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadSeeded();
+  }, [loadSeeded]);
+
+  const resetCredentials = async () => {
+    setError(null);
+    setCredentialBusy(true);
+    try {
+      const result = await resetPersonaPasswordsFn({ data: { password: DEMO_PASSWORD } });
+      setSeeded(result.personas);
+      setSeededNote(
+        result.failures.length > 0
+          ? `Reset ${result.personas.length - result.failures.length} of ${result.personas.length} accounts — failures: ${result.failures
+              .map((f) => `${f.email} (${f.message})`)
+              .join(", ")}`
+          : `All ${result.personas.length} demonstration accounts now use the password shown above.`,
+      );
+    } catch (resetError) {
+      setError(
+        resetError instanceof Error ? resetError.message : "Credential reset failed.",
+      );
+    } finally {
+      setCredentialBusy(false);
+    }
+  };
 
   const signIn = async (email: string) => {
     setError(null);
@@ -203,6 +252,75 @@ function DemoLoginPage() {
             <code className="rounded bg-muted px-1.5 py-0.5">{DEMO_PASSWORD}</code>
           </p>
         </header>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Seeded accounts in this environment</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <p className="text-muted-foreground">
+              Only the accounts listed here exist in this backend. Reset their credentials to the
+              demonstration password above if a sign-in fails.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                onClick={() => void resetCredentials()}
+                disabled={credentialBusy}
+                data-testid="demo-credential-reset"
+              >
+                {credentialBusy ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                )}
+                Reset demonstration passwords
+              </Button>
+              <Button variant="ghost" onClick={() => void loadSeeded()} disabled={credentialBusy}>
+                Refresh list
+              </Button>
+            </div>
+            {seededNote && (
+              <p role="status" className="text-xs text-muted-foreground">
+                {seededNote}
+              </p>
+            )}
+            {seeded && seeded.length > 0 && (
+              <ul className="space-y-2" data-testid="demo-seeded-accounts">
+                {seeded.map((persona) => (
+                  <li
+                    key={persona.id}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-3"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-mono text-xs">{persona.email}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Password <code className="font-mono">{DEMO_PASSWORD}</code> ·{" "}
+                        {persona.roles.length > 0 ? persona.roles.join(", ") : "no platform role"} ·{" "}
+                        {persona.emailConfirmed ? "email confirmed" : "email unconfirmed"}
+                      </p>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => void signIn(persona.email)}
+                      disabled={busy !== null}
+                    >
+                      {busy === persona.email && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Sign in
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {seeded && seeded.length === 0 && (
+              <p className="text-xs text-muted-foreground">
+                No demonstration accounts exist in this environment yet.
+              </p>
+            )}
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader className="pb-2">
