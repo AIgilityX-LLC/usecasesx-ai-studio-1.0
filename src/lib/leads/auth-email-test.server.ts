@@ -77,7 +77,11 @@ export async function readAuthEmailLogs(
 ): Promise<AuthEmailLogResult> {
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) {
-    return { events: [], historyStartsAt: null, note: "Email logs are unavailable in this environment." };
+    return {
+      events: [],
+      historyStartsAt: null,
+      note: "Email logs are unavailable in this environment.",
+    };
   }
   try {
     const response = await listEmailLogs(

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useChildMatches } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import * as adminRepo from "@/lib/domain/admin.repository";
@@ -106,6 +106,11 @@ export const Route = createFileRoute("/_app/administration")({
 });
 
 function AdminPage() {
+  // `/administration` is also the parent of every admin sub-route, so nested
+  // routes must be given the outlet instead of the overview screen.
+  const childMatches = useChildMatches();
+  if (childMatches.length > 0) return <Outlet />;
+
   return (
     <RequireRoles anyOf={PLATFORM_ADMIN_ROLES} action="open the UseCasesX platform admin">
       <AdminPageInner />
