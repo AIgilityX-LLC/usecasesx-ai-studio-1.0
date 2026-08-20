@@ -95,9 +95,8 @@ export const sendBrandedAuthTestEmail = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { assertAnalyticsReader } = await import("@/lib/cta-analytics-access.server");
     await assertAnalyticsReader(context.supabase, context.userId);
-    const { sendAuthTestEmail, readAuthEmailLogs } = await import(
-      "@/lib/leads/auth-email-test.server"
-    );
+    const { sendAuthTestEmail, readAuthEmailLogs } =
+      await import("@/lib/leads/auth-email-test.server");
     const send = await sendAuthTestEmail(data.type, data.recipient, data.redirectTo);
     const logs = await readAuthEmailLogs(data.recipient);
     return { send, logs };

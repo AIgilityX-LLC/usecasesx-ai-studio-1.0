@@ -194,9 +194,7 @@ function DemoLoginPage() {
           : `All ${result.personas.length} demonstration accounts now use the password shown above.`,
       );
     } catch (resetError) {
-      setError(
-        resetError instanceof Error ? resetError.message : "Credential reset failed.",
-      );
+      setError(resetError instanceof Error ? resetError.message : "Credential reset failed.");
     } finally {
       setCredentialBusy(false);
     }
@@ -305,9 +303,7 @@ function DemoLoginPage() {
                       onClick={() => void signIn(persona.email)}
                       disabled={busy !== null}
                     >
-                      {busy === persona.email && (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      )}
+                      {busy === persona.email && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       Sign in
                     </Button>
                   </li>

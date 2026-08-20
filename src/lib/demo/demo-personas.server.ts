@@ -24,7 +24,8 @@ function isDemoEmail(email: string | undefined | null) {
 }
 
 async function loadDemoUsers() {
-  const users: { id: string; email: string; confirmed: boolean; lastSignInAt: string | null }[] = [];
+  const users: { id: string; email: string; confirmed: boolean; lastSignInAt: string | null }[] =
+    [];
   for (let page = 1; page <= 10; page += 1) {
     const { data, error } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 200 });
     if (error) throw new Error(`Could not list demonstration accounts: ${error.message}`);
@@ -46,7 +47,10 @@ async function loadDemoUsers() {
 async function rolesByUser(userIds: string[]) {
   const map = new Map<string, string[]>();
   if (userIds.length === 0) return map;
-  const { data } = await supabaseAdmin.from("user_roles").select("user_id, role").in("user_id", userIds);
+  const { data } = await supabaseAdmin
+    .from("user_roles")
+    .select("user_id, role")
+    .in("user_id", userIds);
   for (const row of data ?? []) {
     const list = map.get(row.user_id) ?? [];
     list.push(String(row.role));
