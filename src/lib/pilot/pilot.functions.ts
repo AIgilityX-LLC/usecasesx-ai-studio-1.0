@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PILOT_STATUSES } from "@/lib/pilot/pilot.model";
 import { CANONICAL_ORIGIN } from "@/lib/ops/production-config";
+import { PilotOnboardingSchema } from "@/lib/pilot/pilot.onboarding";
 
 const CheckpointInput = z.object({
   checkpoint: z.enum(["welcome", "scoring", "final"]),
@@ -187,11 +188,13 @@ export const getPilotCohortFn = createServerFn({ method: "GET" })
     const { getPilotSettings, buildCohortView } = await import("@/lib/pilot/pilot.server");
     const { listPilotAudit } = await import("@/lib/pilot/pilot.audit.server");
     const settings = await getPilotSettings(context.supabase);
-    const [{ rows, checkpoints, emailByUserId }, audit] = await Promise.all([
+    const { listCohortOnboarding } = await import("@/lib/pilot/pilot.onboarding.server");
+    const [{ rows, checkpoints, emailByUserId }, audit, onboarding] = await Promise.all([
       buildCohortView(context.supabase, settings.cohort),
       listPilotAudit(context.supabase, settings.cohort),
+      listCohortOnboarding(context.supabase, settings.cohort),
     ]);
-    return { settings, rows, checkpoints, emailByUserId, audit };
+    return { settings, rows, checkpoints, emailByUserId, audit, onboarding };
   });
 
 /** Read-only stabilisation view: classified pilot evidence + freeze verdict. */
@@ -574,5 +577,46 @@ export const runEvidenceGapEmailsFn = createServerFn({ method: "POST" })
       cohort: report.cohort,
       gap: report.evidenceGap,
       dryRun: data.dryRun,
+    });
+  });
+
+/* ------------------------------------------------------- onboarding intake */
+
+/** The caller's own pilot intake, plus the seat it belongs to. */
+export const getMyPilotOnboardingFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { getPilotSettings, resolvePilotForUser } = await import("@/lib/pilot/pilot.server");
+    const { getMyOnboarding } = await import("@/lib/pilot/pilot.onboarding.server");
+    const email =
+      (context.claims as { email?: string } | undefined)?.email ??
+      (await context.supabase.auth.getUser()).data?.user?.email ??
+      null;
+    const settings = await getPilotSettings(context.supabase);
+    const [{ invitation }, profile] = await Promise.all([
+      resolvePilotForUser(context.supabase, context.userId, email),
+      getMyOnboarding(context.supabase, context.userId, settings.cohort),
+    ]);
+    return { cohort: settings.cohort, invitation, profile };
+  });
+
+/** Saves the intake and activates the seat. Re-submitting updates in place. */
+export const savePilotOnboardingFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => PilotOnboardingSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { getPilotSettings, resolvePilotForUser } = await import("@/lib/pilot/pilot.server");
+    const { saveOnboarding } = await import("@/lib/pilot/pilot.onboarding.server");
+    const email =
+      (context.claims as { email?: string } | undefined)?.email ??
+      (await context.supabase.auth.getUser()).data?.user?.email ??
+      null;
+    const settings = await getPilotSettings(context.supabase);
+    const { invitation } = await resolvePilotForUser(context.supabase, context.userId, email);
+    return saveOnboarding(context.supabase, {
+      userId: context.userId,
+      cohort: settings.cohort,
+      invitationId: invitation?.id ?? null,
+      values: data,
     });
   });

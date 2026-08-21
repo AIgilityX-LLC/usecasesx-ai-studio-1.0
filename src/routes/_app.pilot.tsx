@@ -20,6 +20,7 @@ import {
   willingnessLabel,
 } from "@/lib/pilot/pilot.model";
 import { PilotCheckpointForm } from "@/components/pilot/PilotCheckpointForm";
+import { PilotOnboardingForm } from "@/components/pilot/PilotOnboardingForm";
 import { RESERVED_MAP_OVERLAYS } from "@/lib/feature-flags";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -168,6 +169,9 @@ function PilotPage() {
           use case content.
         </AlertDescription>
       </Alert>
+
+      <PilotOnboardingForm />
+
 
       {reminders.length > 0 && (
         <Card>

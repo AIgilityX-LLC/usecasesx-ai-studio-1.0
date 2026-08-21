@@ -310,6 +310,15 @@ function PilotAdmin() {
   const checkpoints = cohort.data?.checkpoints ?? [];
   const audit = cohort.data?.audit ?? [];
   const emailByUserId = cohort.data?.emailByUserId ?? {};
+  const onboarding = cohort.data?.onboarding ?? [];
+  const funnel = useMemo(
+    () =>
+      enrollmentFunnel(
+        rows,
+        onboarding.map((profile) => profile.userId),
+      ),
+    [rows, onboarding],
+  );
 
   if (cohort.isLoading) {
     return (
