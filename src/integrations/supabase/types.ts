@@ -2106,6 +2106,77 @@ export type Database = {
         }
         Relationships: []
       }
+      pilot_onboarding_profiles: {
+        Row: {
+          ai_experience: string
+          availability: string | null
+          cohort: string
+          completed_at: string
+          contact_consent: boolean
+          country: string | null
+          created_at: string
+          expected_use_cases: string | null
+          full_name: string
+          id: string
+          invitation_id: string | null
+          organization: string
+          primary_goal: string
+          role_title: string
+          sector: string
+          team_size: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_experience: string
+          availability?: string | null
+          cohort: string
+          completed_at?: string
+          contact_consent?: boolean
+          country?: string | null
+          created_at?: string
+          expected_use_cases?: string | null
+          full_name: string
+          id?: string
+          invitation_id?: string | null
+          organization: string
+          primary_goal: string
+          role_title: string
+          sector: string
+          team_size?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_experience?: string
+          availability?: string | null
+          cohort?: string
+          completed_at?: string
+          contact_consent?: boolean
+          country?: string | null
+          created_at?: string
+          expected_use_cases?: string | null
+          full_name?: string
+          id?: string
+          invitation_id?: string | null
+          organization?: string
+          primary_goal?: string
+          role_title?: string
+          sector?: string
+          team_size?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pilot_onboarding_profiles_invitation_id_fkey"
+            columns: ["invitation_id"]
+            isOneToOne: false
+            referencedRelation: "pilot_invitations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pilot_rc_waivers: {
         Row: {
           approved_by: string
