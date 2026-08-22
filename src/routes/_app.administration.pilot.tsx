@@ -47,6 +47,11 @@ import {
   willingnessLabel,
   type PilotStatus,
 } from "@/lib/pilot/pilot.model";
+import {
+  aiExperienceLabel,
+  availabilityLabel,
+  enrollmentFunnel,
+} from "@/lib/pilot/pilot.onboarding";
 import { PilotInvitationDispatchCard } from "@/components/pilot/PilotInvitationDispatchCard";
 import { PilotExportMenu } from "@/components/pilot/PilotExportMenu";
 import { PilotTriagePanel } from "@/components/pilot/PilotTriagePanel";
