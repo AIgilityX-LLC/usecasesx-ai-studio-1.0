@@ -408,6 +408,49 @@ function PilotAdmin() {
       />
 
       <Card>
+        <CardHeader className="gap-2">
+          <CardTitle className="text-base">Enrolment funnel and onboarding</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {funnel.invited} invited · {funnel.claimed} claimed a seat · {funnel.onboarded} completed
+            onboarding
+            {funnel.revoked > 0 ? ` · ${funnel.revoked} revoked` : ""}. Completing onboarding is what
+            activates a seat.
+          </p>
+        </CardHeader>
+        <CardContent>
+          {onboarding.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No participant has completed onboarding yet. Send invitations, then the intake appears
+              on each participant&apos;s pilot page.
+            </p>
+          ) : (
+            <ul className="space-y-3">
+              {onboarding.map((profile) => (
+                <li key={profile.id} className="rounded-lg border p-3 text-sm">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-medium">{profile.fullName}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {profile.roleTitle} · {profile.organization}
+                    </span>
+                    <Badge variant="outline">{profile.sector}</Badge>
+                    {profile.contactConsent && <Badge variant="secondary">Contactable</Badge>}
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {aiExperienceLabel(profile.aiExperience)} · time{" "}
+                    {availabilityLabel(profile.availability)}
+                    {profile.country ? ` · ${profile.country}` : ""} ·{" "}
+                    {new Date(profile.completedAt).toLocaleString()}
+                  </p>
+                  <p className="mt-2">{profile.primaryGoal}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+
+
+      <Card>
         <CardHeader className="gap-3">
           <CardTitle className="text-base">Evidence and nudges</CardTitle>
           <p className="text-sm text-muted-foreground">
