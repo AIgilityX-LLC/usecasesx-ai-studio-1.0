@@ -39,10 +39,7 @@ import {
   onboardingDefaults,
   type PilotOnboardingInput,
 } from "@/lib/pilot/pilot.onboarding";
-import {
-  getMyPilotOnboardingFn,
-  savePilotOnboardingFn,
-} from "@/lib/pilot/pilot.functions";
+import { getMyPilotOnboardingFn, savePilotOnboardingFn } from "@/lib/pilot/pilot.functions";
 
 export function PilotOnboardingForm() {
   const load = useServerFn(getMyPilotOnboardingFn);
@@ -274,10 +271,7 @@ export function PilotOnboardingForm() {
                 htmlFor="pilot-experience"
                 error={fieldError("aiExperience")}
               >
-                <Select
-                  value={form.aiExperience}
-                  onValueChange={(v) => set("aiExperience", v)}
-                >
+                <Select value={form.aiExperience} onValueChange={(v) => set("aiExperience", v)}>
                   <SelectTrigger id="pilot-experience">
                     <SelectValue placeholder="Choose one" />
                   </SelectTrigger>
@@ -348,11 +342,7 @@ export function PilotOnboardingForm() {
 
             <div className="flex flex-wrap gap-2">
               <Button type="submit" disabled={submit.isPending}>
-                {submit.isPending
-                  ? "Saving…"
-                  : profile
-                    ? "Save changes"
-                    : "Complete onboarding"}
+                {submit.isPending ? "Saving…" : profile ? "Save changes" : "Complete onboarding"}
               </Button>
               {profile && (
                 <Button

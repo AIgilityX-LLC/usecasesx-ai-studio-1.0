@@ -172,7 +172,6 @@ function PilotPage() {
 
       <PilotOnboardingForm />
 
-
       {reminders.length > 0 && (
         <Card>
           <CardHeader>
