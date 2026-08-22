@@ -411,10 +411,10 @@ function PilotAdmin() {
         <CardHeader className="gap-2">
           <CardTitle className="text-base">Enrolment funnel and onboarding</CardTitle>
           <p className="text-sm text-muted-foreground">
-            {funnel.invited} invited · {funnel.claimed} claimed a seat · {funnel.onboarded} completed
-            onboarding
-            {funnel.revoked > 0 ? ` · ${funnel.revoked} revoked` : ""}. Completing onboarding is what
-            activates a seat.
+            {funnel.invited} invited · {funnel.claimed} claimed a seat · {funnel.onboarded}{" "}
+            completed onboarding
+            {funnel.revoked > 0 ? ` · ${funnel.revoked} revoked` : ""}. Completing onboarding is
+            what activates a seat.
           </p>
         </CardHeader>
         <CardContent>
@@ -448,7 +448,6 @@ function PilotAdmin() {
           )}
         </CardContent>
       </Card>
-
 
       <Card>
         <CardHeader className="gap-3">
