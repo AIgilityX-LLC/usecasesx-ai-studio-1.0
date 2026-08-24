@@ -55,6 +55,14 @@ import {
 import { PilotInvitationDispatchCard } from "@/components/pilot/PilotInvitationDispatchCard";
 import { PilotFunnelAnalytics } from "@/components/pilot/PilotFunnelAnalytics";
 import { PilotParticipantTimeline } from "@/components/pilot/PilotParticipantTimeline";
+import { PilotCohortFilters } from "@/components/pilot/PilotCohortFilters";
+import {
+  EMPTY_COHORT_FILTERS,
+  cohortFilterOptions,
+  filterCohortRows,
+  hasActiveCohortFilters,
+  type CohortFilterState,
+} from "@/lib/pilot/pilot.cohort-filters";
 import { PilotExportMenu } from "@/components/pilot/PilotExportMenu";
 import { PilotTriagePanel } from "@/components/pilot/PilotTriagePanel";
 import { PilotLaunchGovernanceCard } from "@/components/pilot/PilotLaunchGovernanceCard";
@@ -329,6 +337,13 @@ function PilotAdmin() {
   const onboardingByUser = useMemo(
     () => Object.fromEntries(onboarding.map((profile) => [profile.userId, profile])),
     [onboarding],
+  );
+  const [cohortFilters, setCohortFilters] = useState<CohortFilterState>(EMPTY_COHORT_FILTERS);
+  const sectorOptions = useMemo(() => cohortFilterOptions(onboarding, "sector"), [onboarding]);
+  const countryOptions = useMemo(() => cohortFilterOptions(onboarding, "country"), [onboarding]);
+  const visibleRows = useMemo(
+    () => filterCohortRows(rows, onboardingByUser, cohortFilters),
+    [rows, onboardingByUser, cohortFilters],
   );
 
   if (cohort.isLoading) {
@@ -803,13 +818,29 @@ function PilotAdmin() {
             </p>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
+          {rows.length > 0 && (
+            <PilotCohortFilters
+              filters={cohortFilters}
+              onChange={setCohortFilters}
+              sectors={sectorOptions}
+              countries={countryOptions}
+              shown={visibleRows.length}
+              total={rows.length}
+            />
+          )}
           {rows.length === 0 ? (
             <p className="py-6 text-sm text-muted-foreground">
               No one is invited yet. Create the first invitation above.
             </p>
+          ) : visibleRows.length === 0 ? (
+            <p className="py-6 text-sm text-muted-foreground">
+              No seats match these filters
+              {hasActiveCohortFilters(cohortFilters) ? " — clear them to see the full cohort." : "."}
+            </p>
           ) : (
             <div className="overflow-x-auto">
+
               <table className="w-full text-sm">
                 <caption className="sr-only">
                   Pilot cohort with status, measured mission progress and feedback counts
