@@ -55,6 +55,14 @@ import {
 import { PilotInvitationDispatchCard } from "@/components/pilot/PilotInvitationDispatchCard";
 import { PilotFunnelAnalytics } from "@/components/pilot/PilotFunnelAnalytics";
 import { PilotParticipantTimeline } from "@/components/pilot/PilotParticipantTimeline";
+import { PilotCohortFilters } from "@/components/pilot/PilotCohortFilters";
+import {
+  EMPTY_COHORT_FILTERS,
+  cohortFilterOptions,
+  filterCohortRows,
+  hasActiveCohortFilters,
+  type CohortFilterState,
+} from "@/lib/pilot/pilot.cohort-filters";
 import { PilotExportMenu } from "@/components/pilot/PilotExportMenu";
 import { PilotTriagePanel } from "@/components/pilot/PilotTriagePanel";
 import { PilotLaunchGovernanceCard } from "@/components/pilot/PilotLaunchGovernanceCard";
