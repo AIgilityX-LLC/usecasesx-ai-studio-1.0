@@ -846,6 +846,13 @@ function PilotAdmin() {
                         {row.organization && (
                           <p className="text-xs text-muted-foreground">{row.organization}</p>
                         )}
+                        <div className="mt-2">
+                          <PilotParticipantTimeline
+                            row={row}
+                            audit={audit}
+                            onboarding={row.userId ? (onboardingByUser[row.userId] ?? null) : null}
+                          />
+                        </div>
                       </td>
                       <td className="py-3 pr-4">
                         <Badge variant={row.status === "revoked" ? "destructive" : "secondary"}>
