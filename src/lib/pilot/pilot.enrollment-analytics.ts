@@ -226,7 +226,10 @@ export function buildFunnelSeries(
   onboarding: readonly CohortOnboardingProfile[],
 ): FunnelSeriesPoint[] {
   const active = rows.filter((row) => row.status !== "revoked");
-  const byDay = new Map<string, { invited: number; claimed: number; onboarded: number; activated: number }>();
+  const byDay = new Map<
+    string,
+    { invited: number; claimed: number; onboarded: number; activated: number }
+  >();
   const bump = (date: string | null, stage: FunnelStage) => {
     if (!date) return;
     const entry = byDay.get(date) ?? { invited: 0, claimed: 0, onboarded: 0, activated: 0 };
@@ -246,16 +249,14 @@ export function buildFunnelSeries(
   }
 
   const running = { invited: 0, claimed: 0, onboarded: 0, activated: 0 };
-  return [...byDay.keys()]
-    .sort()
-    .map((date) => {
-      const entry = byDay.get(date)!;
-      running.invited += entry.invited;
-      running.claimed += entry.claimed;
-      running.onboarded += entry.onboarded;
-      running.activated += entry.activated;
-      return { date, ...running };
-    });
+  return [...byDay.keys()].sort().map((date) => {
+    const entry = byDay.get(date)!;
+    running.invited += entry.invited;
+    running.claimed += entry.claimed;
+    running.onboarded += entry.onboarded;
+    running.activated += entry.activated;
+    return { date, ...running };
+  });
 }
 
 /* -------------------------------------------------------- funnel breakdown */
@@ -290,8 +291,7 @@ export function buildFunnelBreakdown(
     const profile = row.userId ? profileByUser.get(row.userId) : undefined;
     const raw = profile ? (dimension === "sector" ? profile.sector : profile.country) : null;
     const key = raw && String(raw).trim() ? String(raw).trim() : NOT_RECORDED;
-    const bucket =
-      buckets.get(key) ?? { key, invited: 0, claimed: 0, onboarded: 0, activated: 0 };
+    const bucket = buckets.get(key) ?? { key, invited: 0, claimed: 0, onboarded: 0, activated: 0 };
     bucket.invited += 1;
     if (row.userId) bucket.claimed += 1;
     if (profile) bucket.onboarded += 1;
@@ -299,9 +299,7 @@ export function buildFunnelBreakdown(
     buckets.set(key, bucket);
   }
 
-  return [...buckets.values()].sort(
-    (a, b) => b.invited - a.invited || a.key.localeCompare(b.key),
-  );
+  return [...buckets.values()].sort((a, b) => b.invited - a.invited || a.key.localeCompare(b.key));
 }
 
 /** Conversion percentage, guarded against an empty cohort. */

@@ -12,11 +12,7 @@ import { ChevronDown, Download } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import type { PilotAuditEvent, PilotCohortRow } from "@/lib/pilot/pilot.model";
 import {
   buildParticipantTimeline,
@@ -26,18 +22,20 @@ import {
   type ParticipantEventKind,
 } from "@/lib/pilot/pilot.enrollment-analytics";
 
-const KIND_VARIANT: Record<ParticipantEventKind, "default" | "secondary" | "outline" | "destructive"> =
-  {
-    invited: "outline",
-    claimed: "secondary",
-    onboarded: "secondary",
-    onboarding_updated: "outline",
-    activated: "default",
-    completed: "default",
-    revoked: "destructive",
-    status_changed: "outline",
-    admin: "outline",
-  };
+const KIND_VARIANT: Record<
+  ParticipantEventKind,
+  "default" | "secondary" | "outline" | "destructive"
+> = {
+  invited: "outline",
+  claimed: "secondary",
+  onboarded: "secondary",
+  onboarding_updated: "outline",
+  activated: "default",
+  completed: "default",
+  revoked: "destructive",
+  status_changed: "outline",
+  admin: "outline",
+};
 
 function downloadCsv(filename: string, text: string) {
   const blob = new Blob([`\uFEFF${text}`], { type: "text/csv;charset=utf-8;" });
@@ -96,9 +94,7 @@ export function PilotParticipantTimeline({
       </div>
       <CollapsibleContent>
         {events.length === 0 ? (
-          <p className="py-2 text-xs text-muted-foreground">
-            Nothing recorded for this seat yet.
-          </p>
+          <p className="py-2 text-xs text-muted-foreground">Nothing recorded for this seat yet.</p>
         ) : (
           <ol className="mt-2 space-y-2 border-l pl-4">
             {events.map((event, index) => (
@@ -113,9 +109,7 @@ export function PilotParticipantTimeline({
                   </span>
                 </div>
                 <p className="mt-1 text-muted-foreground">{event.detail}</p>
-                {event.actor && (
-                  <p className="text-muted-foreground">Actor: {event.actor}</p>
-                )}
+                {event.actor && <p className="text-muted-foreground">Actor: {event.actor}</p>}
               </li>
             ))}
           </ol>

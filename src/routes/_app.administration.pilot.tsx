@@ -53,6 +53,8 @@ import {
   enrollmentFunnel,
 } from "@/lib/pilot/pilot.onboarding";
 import { PilotInvitationDispatchCard } from "@/components/pilot/PilotInvitationDispatchCard";
+import { PilotFunnelAnalytics } from "@/components/pilot/PilotFunnelAnalytics";
+import { PilotParticipantTimeline } from "@/components/pilot/PilotParticipantTimeline";
 import { PilotExportMenu } from "@/components/pilot/PilotExportMenu";
 import { PilotTriagePanel } from "@/components/pilot/PilotTriagePanel";
 import { PilotLaunchGovernanceCard } from "@/components/pilot/PilotLaunchGovernanceCard";
@@ -324,6 +326,10 @@ function PilotAdmin() {
       ),
     [rows, onboarding],
   );
+  const onboardingByUser = useMemo(
+    () => Object.fromEntries(onboarding.map((profile) => [profile.userId, profile])),
+    [onboarding],
+  );
 
   if (cohort.isLoading) {
     return (
@@ -448,6 +454,8 @@ function PilotAdmin() {
           )}
         </CardContent>
       </Card>
+
+      <PilotFunnelAnalytics rows={rows} onboarding={onboarding} />
 
       <Card>
         <CardHeader className="gap-3">
@@ -840,6 +848,13 @@ function PilotAdmin() {
                         {row.organization && (
                           <p className="text-xs text-muted-foreground">{row.organization}</p>
                         )}
+                        <div className="mt-2">
+                          <PilotParticipantTimeline
+                            row={row}
+                            audit={audit}
+                            onboarding={row.userId ? (onboardingByUser[row.userId] ?? null) : null}
+                          />
+                        </div>
                       </td>
                       <td className="py-3 pr-4">
                         <Badge variant={row.status === "revoked" ? "destructive" : "secondary"}>

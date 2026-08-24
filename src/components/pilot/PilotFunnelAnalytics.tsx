@@ -35,9 +35,7 @@ function downloadCsv(filename: string, text: string) {
 function BreakdownTable({ rows, label }: { rows: FunnelBreakdownRow[]; label: string }) {
   if (rows.length === 0) {
     return (
-      <p className="py-4 text-sm text-muted-foreground">
-        No seats to break down by {label} yet.
-      </p>
+      <p className="py-4 text-sm text-muted-foreground">No seats to break down by {label} yet.</p>
     );
   }
   return (
@@ -131,8 +129,7 @@ export function PilotFunnelAnalytics({
           </Button>
         </div>
         <p className="text-sm text-muted-foreground">
-          Counted from recorded seat, intake and activation timestamps. Revoked seats are
-          excluded.
+          Counted from recorded seat, intake and activation timestamps. Revoked seats are excluded.
         </p>
       </CardHeader>
       <CardContent className="space-y-5">
