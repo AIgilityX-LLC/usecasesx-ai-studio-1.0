@@ -338,6 +338,13 @@ function PilotAdmin() {
     () => Object.fromEntries(onboarding.map((profile) => [profile.userId, profile])),
     [onboarding],
   );
+  const [cohortFilters, setCohortFilters] = useState<CohortFilterState>(EMPTY_COHORT_FILTERS);
+  const sectorOptions = useMemo(() => cohortFilterOptions(onboarding, "sector"), [onboarding]);
+  const countryOptions = useMemo(() => cohortFilterOptions(onboarding, "country"), [onboarding]);
+  const visibleRows = useMemo(
+    () => filterCohortRows(rows, onboardingByUser, cohortFilters),
+    [rows, onboardingByUser, cohortFilters],
+  );
 
   if (cohort.isLoading) {
     return (
