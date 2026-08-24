@@ -156,7 +156,16 @@ describe("funnel breakdown", () => {
   });
 
   test("seats without an intake are grouped, not dropped", () => {
-    const rows = [row(), row({ id: "i2", email: "b@example.com", userId: null, registeredAt: null, activatedAt: null })];
+    const rows = [
+      row(),
+      row({
+        id: "i2",
+        email: "b@example.com",
+        userId: null,
+        registeredAt: null,
+        activatedAt: null,
+      }),
+    ];
     const bySector = buildFunnelBreakdown(rows, [profile()], "sector");
     expect(bySector.reduce((sum, r) => sum + r.invited, 0)).toBe(2);
     expect(bySector.some((r) => r.key === NOT_RECORDED)).toBe(true);
