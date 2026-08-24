@@ -326,6 +326,10 @@ function PilotAdmin() {
       ),
     [rows, onboarding],
   );
+  const onboardingByUser = useMemo(
+    () => Object.fromEntries(onboarding.map((profile) => [profile.userId, profile])),
+    [onboarding],
+  );
 
   if (cohort.isLoading) {
     return (
