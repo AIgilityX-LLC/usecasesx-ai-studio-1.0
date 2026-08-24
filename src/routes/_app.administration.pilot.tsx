@@ -53,6 +53,8 @@ import {
   enrollmentFunnel,
 } from "@/lib/pilot/pilot.onboarding";
 import { PilotInvitationDispatchCard } from "@/components/pilot/PilotInvitationDispatchCard";
+import { PilotFunnelAnalytics } from "@/components/pilot/PilotFunnelAnalytics";
+import { PilotParticipantTimeline } from "@/components/pilot/PilotParticipantTimeline";
 import { PilotExportMenu } from "@/components/pilot/PilotExportMenu";
 import { PilotTriagePanel } from "@/components/pilot/PilotTriagePanel";
 import { PilotLaunchGovernanceCard } from "@/components/pilot/PilotLaunchGovernanceCard";
