@@ -818,13 +818,29 @@ function PilotAdmin() {
             </p>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
+          {rows.length > 0 && (
+            <PilotCohortFilters
+              filters={cohortFilters}
+              onChange={setCohortFilters}
+              sectors={sectorOptions}
+              countries={countryOptions}
+              shown={visibleRows.length}
+              total={rows.length}
+            />
+          )}
           {rows.length === 0 ? (
             <p className="py-6 text-sm text-muted-foreground">
               No one is invited yet. Create the first invitation above.
             </p>
+          ) : visibleRows.length === 0 ? (
+            <p className="py-6 text-sm text-muted-foreground">
+              No seats match these filters
+              {hasActiveCohortFilters(cohortFilters) ? " — clear them to see the full cohort." : "."}
+            </p>
           ) : (
             <div className="overflow-x-auto">
+
               <table className="w-full text-sm">
                 <caption className="sr-only">
                   Pilot cohort with status, measured mission progress and feedback counts
