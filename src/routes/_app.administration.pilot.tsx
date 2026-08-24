@@ -451,6 +451,10 @@ function PilotAdmin() {
         </CardContent>
       </Card>
 
+      <PilotFunnelAnalytics rows={rows} onboarding={onboarding} />
+
+
+
       <Card>
         <CardHeader className="gap-3">
           <CardTitle className="text-base">Evidence and nudges</CardTitle>
