@@ -871,7 +871,7 @@ function PilotAdmin() {
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((row) => (
+                  {visibleRows.map((row) => (
                     <tr key={row.id} className="border-b last:border-0">
                       <td className="py-3 pr-4">
                         <p className="font-medium">{row.fullName ?? row.email}</p>
