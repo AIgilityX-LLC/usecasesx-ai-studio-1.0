@@ -264,9 +264,7 @@ function ReleaseCandidatePage() {
                     <div key={entry.audience} className="rounded-lg border p-3">
                       <div className="flex items-baseline justify-between gap-2">
                         <span className="text-sm font-medium">{entry.label}</span>
-                        <span className="text-xl font-semibold tabular-nums">
-                          {entry.percent}%
-                        </span>
+                        <span className="text-xl font-semibold tabular-nums">{entry.percent}%</span>
                       </div>
                       <Progress
                         className="mt-2"
@@ -295,8 +293,6 @@ function ReleaseCandidatePage() {
                   audience depends on. Unmeasured gates never score full marks.
                 </p>
               </section>
-
-
 
               <ul className="divide-y">
                 {gates.map((gate) => (

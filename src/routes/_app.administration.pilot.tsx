@@ -836,11 +836,12 @@ function PilotAdmin() {
           ) : visibleRows.length === 0 ? (
             <p className="py-6 text-sm text-muted-foreground">
               No seats match these filters
-              {hasActiveCohortFilters(cohortFilters) ? " — clear them to see the full cohort." : "."}
+              {hasActiveCohortFilters(cohortFilters)
+                ? " — clear them to see the full cohort."
+                : "."}
             </p>
           ) : (
             <div className="overflow-x-auto">
-
               <table className="w-full text-sm">
                 <caption className="sr-only">
                   Pilot cohort with status, measured mission progress and feedback counts
