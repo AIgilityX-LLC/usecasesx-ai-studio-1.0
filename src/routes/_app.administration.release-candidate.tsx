@@ -38,6 +38,7 @@ import {
 } from "@/lib/release/candidate";
 import {
   READINESS_VERDICT_LABEL,
+  audienceReadiness,
   buildReadinessGates,
   buildReadinessMarkdown,
   failingAssertions,
@@ -51,6 +52,7 @@ import { RUN_TRIGGER_LABEL, describeRun } from "@/lib/qa/launch-runs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 
