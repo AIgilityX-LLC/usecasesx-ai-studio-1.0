@@ -42,7 +42,16 @@ const profile = (over: Record<string, unknown> = {}) =>
   }) as never;
 
 describe("cohort filters", () => {
-  const rows = [row(), row({ id: "inv-2", email: "bo@health.example", userId: "user-2" })];
+  const rows = [
+    row(),
+    row({
+      id: "inv-2",
+      email: "bo@health.example",
+      userId: "user-2",
+      fullName: "Bo Chen",
+      organization: "Health Agency",
+    }),
+  ];
   const byUser = { "user-1": profile() } as never;
 
   it("treats empty state as inactive", () => {
