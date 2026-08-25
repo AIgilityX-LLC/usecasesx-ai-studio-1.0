@@ -262,3 +262,109 @@ export function buildReadinessMarkdown(input: ReadinessInput): string {
   );
   return lines.join("\n");
 }
+
+/* ------------------------------------------------- audience readiness (%) */
+
+export const READINESS_AUDIENCES = ["investor", "demo", "client", "production"] as const;
+export type ReadinessAudience = (typeof READINESS_AUDIENCES)[number];
+
+export const READINESS_AUDIENCE_LABEL: Record<ReadinessAudience, string> = {
+  investor: "Investor ready",
+  demo: "Demo ready",
+  client: "Client ready",
+  production: "Production ready",
+};
+
+export type AudienceReadiness = {
+  audience: ReadinessAudience;
+  label: string;
+  /** 0–100, rounded. */
+  percent: number;
+  verdict: ReadinessVerdict;
+  detail: string;
+};
+
+/** How much each gate matters to each audience. Zero weight = not in scope. */
+const AUDIENCE_WEIGHTS: Record<ReadinessAudience, Record<string, number>> = {
+  investor: {
+    "checks.p0": 3,
+    "checks.p1": 1,
+    "pipeline.verification": 3,
+    "pilot.seats": 1,
+    "pilot.evidence": 2,
+  },
+  demo: {
+    "checks.p0": 3,
+    "checks.p1": 1,
+    "pipeline.verification": 3,
+    "pilot.seats": 0,
+    "pilot.evidence": 0,
+  },
+  client: {
+    "checks.p0": 3,
+    "checks.p1": 2,
+    "pipeline.verification": 2,
+    "pilot.seats": 2,
+    "pilot.evidence": 3,
+  },
+  production: {
+    "checks.p0": 4,
+    "checks.p1": 2,
+    "pipeline.verification": 3,
+    "pilot.seats": 2,
+    "pilot.evidence": 3,
+  },
+};
+
+/** Credit given per gate status — an unmeasured gate cannot score full marks. */
+const STATUS_SCORE: Record<GateStatus, number> = {
+  pass: 1,
+  attention: 0.6,
+  unknown: 0.3,
+  fail: 0,
+};
+
+/**
+ * Readiness percentage per audience, derived only from the measured gates.
+ * A gate that failed for an audience that depends on it drags that audience's
+ * score down; gates outside an audience's scope are excluded entirely.
+ */
+export function audienceReadiness(gates: readonly ReadinessGate[]): AudienceReadiness[] {
+  return READINESS_AUDIENCES.map((audience) => {
+    const weights = AUDIENCE_WEIGHTS[audience];
+    const inScope = gates.filter((gate) => (weights[gate.id] ?? 0) > 0);
+    const totalWeight = inScope.reduce((sum, gate) => sum + (weights[gate.id] ?? 0), 0);
+    const score = inScope.reduce(
+      (sum, gate) => sum + (weights[gate.id] ?? 0) * STATUS_SCORE[gate.status],
+      0,
+    );
+    const percent = totalWeight > 0 ? Math.round((score / totalWeight) * 100) : 0;
+    const blocking = inScope.filter((gate) => gate.status === "fail");
+    const watching = inScope.filter(
+      (gate) => gate.status === "attention" || gate.status === "unknown",
+    );
+    const verdict: ReadinessVerdict =
+      blocking.length > 0 ? "blocked" : watching.length > 0 ? "conditional" : "ready";
+    const detail =
+      totalWeight === 0
+        ? "No gates in scope for this audience."
+        : blocking.length > 0
+          ? `Blocked by ${blocking.map((gate) => gate.label).join(", ")}.`
+          : watching.length > 0
+            ? `Open items: ${watching.map((gate) => gate.label).join(", ")}.`
+            : "Every gate in scope passed.";
+    return { audience, label: READINESS_AUDIENCE_LABEL[audience], percent, verdict, detail };
+  });
+}
+
+/** Audience percentages as CSV rows for the release record. */
+export function audienceReadinessToCsv(gates: readonly ReadinessGate[]): string {
+  const header = ["Audience", "Readiness %", "Verdict", "Detail"];
+  const rows = audienceReadiness(gates).map((entry) => [
+    entry.label,
+    String(entry.percent),
+    entry.verdict,
+    entry.detail,
+  ]);
+  return [header, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n");
+}

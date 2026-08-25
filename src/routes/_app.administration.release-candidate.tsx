@@ -38,6 +38,7 @@ import {
 } from "@/lib/release/candidate";
 import {
   READINESS_VERDICT_LABEL,
+  audienceReadiness,
   buildReadinessGates,
   buildReadinessMarkdown,
   failingAssertions,
@@ -51,6 +52,7 @@ import { RUN_TRIGGER_LABEL, describeRun } from "@/lib/qa/launch-runs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -132,6 +134,7 @@ function ReleaseCandidatePage() {
     : null;
   const gates = input ? buildReadinessGates(input) : [];
   const verdict = input ? readinessVerdict(gates) : null;
+  const audiences = input ? audienceReadiness(gates) : [];
   const failing = failingAssertions(latestRun);
   const stamp = new Date().toISOString().slice(0, 10);
 
@@ -253,6 +256,43 @@ function ReleaseCandidatePage() {
                   {latestRun ? describeRun(latestRun) : "no recorded launch-check run yet"}.
                 </AlertDescription>
               </Alert>
+
+              <section className="space-y-3" aria-label="Readiness by audience">
+                <p className="text-sm font-medium">Readiness by audience</p>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {audiences.map((entry) => (
+                    <div key={entry.audience} className="rounded-lg border p-3">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <span className="text-sm font-medium">{entry.label}</span>
+                        <span className="text-xl font-semibold tabular-nums">{entry.percent}%</span>
+                      </div>
+                      <Progress
+                        className="mt-2"
+                        value={entry.percent}
+                        aria-label={`${entry.label} ${entry.percent} percent`}
+                      />
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <Badge
+                          variant={
+                            entry.verdict === "ready"
+                              ? "default"
+                              : entry.verdict === "conditional"
+                                ? "secondary"
+                                : "destructive"
+                          }
+                        >
+                          {READINESS_VERDICT_LABEL[entry.verdict]}
+                        </Badge>
+                      </div>
+                      <p className="mt-2 text-xs text-muted-foreground">{entry.detail}</p>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Percentages are computed from the measured gates below, weighted by what each
+                  audience depends on. Unmeasured gates never score full marks.
+                </p>
+              </section>
 
               <ul className="divide-y">
                 {gates.map((gate) => (
