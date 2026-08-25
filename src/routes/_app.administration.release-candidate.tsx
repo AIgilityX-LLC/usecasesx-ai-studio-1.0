@@ -134,6 +134,7 @@ function ReleaseCandidatePage() {
     : null;
   const gates = input ? buildReadinessGates(input) : [];
   const verdict = input ? readinessVerdict(gates) : null;
+  const audiences = input ? audienceReadiness(gates) : [];
   const failing = failingAssertions(latestRun);
   const stamp = new Date().toISOString().slice(0, 10);
 
