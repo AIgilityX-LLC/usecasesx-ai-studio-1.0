@@ -368,3 +368,108 @@ export function audienceReadinessToCsv(gates: readonly ReadinessGate[]): string 
   ]);
   return [header, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n");
 }
+
+/* -------------------------------------------------- audience drilldown */
+
+export type GateContribution = {
+  gate: ReadinessGate;
+  /** Weight this audience places on the gate (>0 only when in scope). */
+  weight: number;
+  /** Credit awarded for the gate's status, 0–1. */
+  statusScore: number;
+  /** Weighted points earned. */
+  earned: number;
+  /** Percentage points of the audience score this gate contributes. */
+  contributedPercent: number;
+  /** Percentage points lost on this gate. */
+  lostPercent: number;
+};
+
+export function isReadinessAudience(value: string): value is ReadinessAudience {
+  return (READINESS_AUDIENCES as readonly string[]).includes(value);
+}
+
+/** Per-gate contribution breakdown behind one audience percentage. */
+export function audienceContributions(
+  audience: ReadinessAudience,
+  gates: readonly ReadinessGate[],
+): GateContribution[] {
+  const weights = AUDIENCE_WEIGHTS[audience];
+  const totalWeight = gates.reduce((sum, gate) => sum + (weights[gate.id] ?? 0), 0);
+  return gates.map((gate) => {
+    const weight = weights[gate.id] ?? 0;
+    const statusScore = STATUS_SCORE[gate.status];
+    const earned = weight * statusScore;
+    const share = totalWeight > 0 ? (weight / totalWeight) * 100 : 0;
+    return {
+      gate,
+      weight,
+      statusScore,
+      earned,
+      contributedPercent: Math.round(share * statusScore * 10) / 10,
+      lostPercent: Math.round(share * (1 - statusScore) * 10) / 10,
+    };
+  });
+}
+
+/** Measured counts behind the readiness gates, for the drilldown view. */
+export type MeasuredCount = { label: string; value: string; source: string };
+
+export function measuredCounts(input: ReadinessInput): MeasuredCount[] {
+  const run = input.run;
+  const cohort = input.cohort;
+  return [
+    {
+      label: "Checks passed",
+      value: run ? `${run.passed}/${run.total}` : "not measured",
+      source: run ? `Run ${run.createdAt}` : "No recorded launch-check run",
+    },
+    {
+      label: "P0 failures",
+      value: run ? String(run.p0Failures) : "not measured",
+      source: "Signed-in P0 harness",
+    },
+    {
+      label: "P1 failures / errors / skips",
+      value: run ? `${run.failed} / ${run.errored} / ${run.skipped}` : "not measured",
+      source: "Signed-in P1 harness",
+    },
+    {
+      label: "Pilot seats active",
+      value: cohort
+        ? `${cohort.invited} (target ${PILOT_SEAT_TARGET_MIN}–${PILOT_SEAT_TARGET_MAX})`
+        : "not readable",
+      source: "Pilot cohort roll-up",
+    },
+    {
+      label: "Checkpoint responses",
+      value: cohort ? String(cohort.checkpointResponses) : "not readable",
+      source: "Pilot evidence records",
+    },
+    {
+      label: "Pipeline steps passed",
+      value: `${VERIFICATION_STEPS.filter((step) => step.result === "pass").length}/${VERIFICATION_STEPS.length}`,
+      source: "Recorded verification run",
+    },
+  ];
+}
+
+/** Participant funnel behind the pilot gates. */
+export type ParticipantBreakdown = { label: string; count: number | null; note: string };
+
+export function participantBreakdown(cohort: PilotCohortSummary | null): ParticipantBreakdown[] {
+  if (!cohort)
+    return [
+      { label: "Cohort", count: null, note: "Cohort figures were not readable for this account." },
+    ];
+  return [
+    { label: "Invited (active seats)", count: cohort.invited, note: `Seat target ${cohort.seatTarget}` },
+    { label: "Registered", count: cohort.registered, note: "Invitation claimed with an account" },
+    { label: "Activated", count: cohort.activated, note: "Mission started" },
+    { label: "Completed", count: cohort.completed, note: "Mission finished" },
+    { label: "Revoked", count: cohort.revoked, note: "Seats withdrawn" },
+    { label: "Checkpoint responses", count: cohort.checkpointResponses, note: "Evidence submitted" },
+    { label: "Blockers reported", count: cohort.blockersReported, note: "Participant-reported blockers" },
+    { label: "Advisory interest", count: cohort.advisoryInterest, note: "Requested advisory follow-up" },
+  ];
+}
