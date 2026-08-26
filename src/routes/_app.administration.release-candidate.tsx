@@ -4,7 +4,7 @@
  * live launch-readiness picture. The one-click action re-runs the signed-in
  * P0/P1 checks and writes the run to the audit ledger.
  */
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -261,7 +261,13 @@ function ReleaseCandidatePage() {
                 <p className="text-sm font-medium">Readiness by audience</p>
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   {audiences.map((entry) => (
-                    <div key={entry.audience} className="rounded-lg border p-3">
+                    <Link
+                      key={entry.audience}
+                      to="/administration/readiness/$audience"
+                      params={{ audience: entry.audience }}
+                      className="rounded-lg border p-3 text-left transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                      aria-label={`Open ${entry.label} drilldown — ${entry.percent} percent`}
+                    >
                       <div className="flex items-baseline justify-between gap-2">
                         <span className="text-sm font-medium">{entry.label}</span>
                         <span className="text-xl font-semibold tabular-nums">{entry.percent}%</span>
@@ -285,8 +291,10 @@ function ReleaseCandidatePage() {
                         </Badge>
                       </div>
                       <p className="mt-2 text-xs text-muted-foreground">{entry.detail}</p>
-                    </div>
+                      <p className="mt-2 text-xs font-medium text-primary">View drilldown →</p>
+                    </Link>
                   ))}
+
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Percentages are computed from the measured gates below, weighted by what each

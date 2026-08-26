@@ -109,6 +109,7 @@ import { Route as AppWorkshopsIndexRouteImport } from './routes/_app.workshops.i
 import { Route as AppWorkshopsIdRouteImport } from './routes/_app.workshops.$id'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as OgUseCaseSlugRouteImport } from './routes/og.use-case.$slug'
+import { Route as AppAdministrationReadinessAudienceRouteImport } from './routes/_app.administration.readiness.$audience'
 import { Route as AppCategoriesTypeSlugRouteImport } from './routes/_app.categories.$type.$slug'
 import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
 import { Route as AppWorkshopsJoinTokenRouteImport } from './routes/_app.workshops.join.$token'
@@ -644,6 +645,12 @@ const OgUseCaseSlugRoute = OgUseCaseSlugRouteImport.update({
   path: '/og/use-case/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppAdministrationReadinessAudienceRoute =
+  AppAdministrationReadinessAudienceRouteImport.update({
+    id: '/readiness/$audience',
+    path: '/readiness/$audience',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
 const AppCategoriesTypeSlugRoute = AppCategoriesTypeSlugRouteImport.update({
   id: '/categories/$type/$slug',
   path: '/categories/$type/$slug',
@@ -893,6 +900,7 @@ export interface FileRoutesByFullPath {
   '/collections/': typeof AppCollectionsIndexRoute
   '/opportunities/': typeof AppOpportunitiesIndexRoute
   '/workshops/': typeof AppWorkshopsIndexRoute
+  '/administration/readiness/$audience': typeof AppAdministrationReadinessAudienceRoute
   '/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
@@ -1018,6 +1026,7 @@ export interface FileRoutesByTo {
   '/collections': typeof AppCollectionsIndexRoute
   '/opportunities': typeof AppOpportunitiesIndexRoute
   '/workshops': typeof AppWorkshopsIndexRoute
+  '/administration/readiness/$audience': typeof AppAdministrationReadinessAudienceRoute
   '/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
@@ -1147,6 +1156,7 @@ export interface FileRoutesById {
   '/_app/collections/': typeof AppCollectionsIndexRoute
   '/_app/opportunities/': typeof AppOpportunitiesIndexRoute
   '/_app/workshops/': typeof AppWorkshopsIndexRoute
+  '/_app/administration/readiness/$audience': typeof AppAdministrationReadinessAudienceRoute
   '/_app/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/_app/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
   '/_app/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
@@ -1276,6 +1286,7 @@ export interface FileRouteTypes {
     | '/collections/'
     | '/opportunities/'
     | '/workshops/'
+    | '/administration/readiness/$audience'
     | '/categories/$type/$slug'
     | '/cyberx/c3g/intake'
     | '/workshops/join/$token'
@@ -1401,6 +1412,7 @@ export interface FileRouteTypes {
     | '/collections'
     | '/opportunities'
     | '/workshops'
+    | '/administration/readiness/$audience'
     | '/categories/$type/$slug'
     | '/cyberx/c3g/intake'
     | '/workshops/join/$token'
@@ -1529,6 +1541,7 @@ export interface FileRouteTypes {
     | '/_app/collections/'
     | '/_app/opportunities/'
     | '/_app/workshops/'
+    | '/_app/administration/readiness/$audience'
     | '/_app/categories/$type/$slug'
     | '/_app/cyberx/c3g/intake'
     | '/_app/workshops/join/$token'
@@ -2283,6 +2296,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OgUseCaseSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/administration/readiness/$audience': {
+      id: '/_app/administration/readiness/$audience'
+      path: '/readiness/$audience'
+      fullPath: '/administration/readiness/$audience'
+      preLoaderRoute: typeof AppAdministrationReadinessAudienceRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/categories/$type/$slug': {
       id: '/_app/categories/$type/$slug'
       path: '/categories/$type/$slug'
@@ -2500,6 +2520,7 @@ interface AppAdministrationRouteChildren {
   AppAdministrationProductionReadinessRoute: typeof AppAdministrationProductionReadinessRoute
   AppAdministrationReleaseCandidateRoute: typeof AppAdministrationReleaseCandidateRoute
   AppAdministrationRequestsRoute: typeof AppAdministrationRequestsRoute
+  AppAdministrationReadinessAudienceRoute: typeof AppAdministrationReadinessAudienceRoute
 }
 
 const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
@@ -2516,6 +2537,8 @@ const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationReleaseCandidateRoute:
     AppAdministrationReleaseCandidateRoute,
   AppAdministrationRequestsRoute: AppAdministrationRequestsRoute,
+  AppAdministrationReadinessAudienceRoute:
+    AppAdministrationReadinessAudienceRoute,
 }
 
 const AppAdministrationRouteWithChildren =
