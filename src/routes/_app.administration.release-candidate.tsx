@@ -4,7 +4,7 @@
  * live launch-readiness picture. The one-click action re-runs the signed-in
  * P0/P1 checks and writes the run to the audit ledger.
  */
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
