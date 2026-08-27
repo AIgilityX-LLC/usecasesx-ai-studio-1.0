@@ -294,7 +294,6 @@ function ReleaseCandidatePage() {
                       <p className="mt-2 text-xs font-medium text-primary">View drilldown →</p>
                     </Link>
                   ))}
-
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Percentages are computed from the measured gates below, weighted by what each
