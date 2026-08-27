@@ -68,7 +68,7 @@ Content is applied separately so a schema apply never writes rows:
 
 - **Backup before apply** — Lovable Cloud takes automatic daily backups; request an on-demand
   data export from Cloud → Advanced settings immediately before applying to production.
-- **Rollback posture** — all 15 migrations are additive, so the safe rollback for the *application*
+- **Rollback posture** — all 21 migrations are additive (entry 16 is the one recorded data correction), so the safe rollback for the *application*
   is to revert the app to the previous version; the schema can stay ahead. No `DROP` is required
   and none is authorised.
 - **Forward-fix** — defects in a policy or routine are corrected with a new additive migration
