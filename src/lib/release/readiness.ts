@@ -463,13 +463,29 @@ export function participantBreakdown(cohort: PilotCohortSummary | null): Partici
       { label: "Cohort", count: null, note: "Cohort figures were not readable for this account." },
     ];
   return [
-    { label: "Invited (active seats)", count: cohort.invited, note: `Seat target ${cohort.seatTarget}` },
+    {
+      label: "Invited (active seats)",
+      count: cohort.invited,
+      note: `Seat target ${cohort.seatTarget}`,
+    },
     { label: "Registered", count: cohort.registered, note: "Invitation claimed with an account" },
     { label: "Activated", count: cohort.activated, note: "Mission started" },
     { label: "Completed", count: cohort.completed, note: "Mission finished" },
     { label: "Revoked", count: cohort.revoked, note: "Seats withdrawn" },
-    { label: "Checkpoint responses", count: cohort.checkpointResponses, note: "Evidence submitted" },
-    { label: "Blockers reported", count: cohort.blockersReported, note: "Participant-reported blockers" },
-    { label: "Advisory interest", count: cohort.advisoryInterest, note: "Requested advisory follow-up" },
+    {
+      label: "Checkpoint responses",
+      count: cohort.checkpointResponses,
+      note: "Evidence submitted",
+    },
+    {
+      label: "Blockers reported",
+      count: cohort.blockersReported,
+      note: "Participant-reported blockers",
+    },
+    {
+      label: "Advisory interest",
+      count: cohort.advisoryInterest,
+      note: "Requested advisory follow-up",
+    },
   ];
 }

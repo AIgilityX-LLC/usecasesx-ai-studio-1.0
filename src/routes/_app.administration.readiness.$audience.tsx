@@ -196,7 +196,10 @@ function AudienceDrilldownPage() {
             <CardContent>
               <ul className="divide-y">
                 {measuredCounts(input).map((count) => (
-                  <li key={count.label} className="flex flex-wrap items-baseline gap-2 py-2 text-sm">
+                  <li
+                    key={count.label}
+                    className="flex flex-wrap items-baseline gap-2 py-2 text-sm"
+                  >
                     <span className="font-medium">{count.label}</span>
                     <span className="font-mono">{count.value}</span>
                     <span className="text-muted-foreground">{count.source}</span>
