@@ -34,6 +34,13 @@ Properties enforced for every entry:
 | 14  | `20260811070036_e855aa33-0e99-40ac-9942-3e5a35acfe44.sql` | Canvas document attachments and append-only version snapshots                            | Tables + RLS     |
 | 15  | `20260811070115_ba4c9269-48cb-4a58-84b0-29e7bd1acb54.sql` | Storage policies for the private `canvas-documents` bucket                               | Storage policy   |
 | 16  | `20260811091632_f71f9e0a-3264-4cbb-943e-b3d30828ce00.sql` | Removes synthetic release-verification rows from `cta_events` (analytics-only, no customer content) | Data correction — **recorded exception** |
+| 17  | `20260813005243_4a29d843-9a41-4b73-95f9-10db8e83bcdf.sql` | `lead_captures` attribution and status columns for waitlist/advisor leads                | Additive columns |
+| 18  | `20260814002125_10f5f58d-cd55-417d-ad52-624e626a7168.sql` | Lead confirmation-delivery columns, `lead_events` audit trail, draft-submission edit policy | Tables + RLS     |
+| 19  | `20260821042802_de814f1b-51c2-476f-98f2-768f067e2aa0.sql` | `pilot_onboarding_profiles` participant onboarding record                                | Tables + RLS     |
+| 20  | `20260822042302_ab02cdb5-2047-439d-a31f-2d498b1692d8.sql` | `prevent_profile_org_self_change()` trigger blocking self-service tenant reassignment    | Function         |
+| 21  | `20260822042319_59b8f3b8-1f86-4141-99bb-79dac76ab328.sql` | Revokes API-role EXECUTE on the new trigger routine                                     | Hardening        |
+
+
 
 ### Recorded exception for entry 16
 
