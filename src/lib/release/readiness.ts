@@ -84,15 +84,22 @@ function evidenceGate(cohort: PilotCohortSummary | null, waiverActive: boolean):
       label: "Pilot evidence recorded",
       status: "unknown",
       detail: "Checkpoint figures were not readable for this account.",
+      verifiedAt: null,
     };
   }
   const responses = cohort.checkpointResponses;
-  if (responses > 0) {
+  const intakes = cohort.onboardingProfiles ?? 0;
+  const verifiedAt = cohort.latestEvidenceAt ?? null;
+  if (responses > 0 || intakes > 0) {
     return {
       id: "pilot.evidence",
       label: "Pilot evidence recorded",
-      status: "pass",
-      detail: `${responses} checkpoint response(s) from ${cohort.activated} activated seat(s).`,
+      status: responses > 0 ? "pass" : "attention",
+      detail:
+        responses > 0
+          ? `${responses} checkpoint response(s) and ${intakes} onboarding intake(s) from ${cohort.activated} activated seat(s).`
+          : `${intakes} onboarding intake(s) collected; no checkpoint responses yet.`,
+      verifiedAt,
     };
   }
   return {
@@ -100,8 +107,9 @@ function evidenceGate(cohort: PilotCohortSummary | null, waiverActive: boolean):
     label: "Pilot evidence recorded",
     status: waiverActive ? "attention" : "fail",
     detail: waiverActive
-      ? "No checkpoint responses yet; an approved evidence waiver is in force."
-      : "No checkpoint responses recorded, so the verdict cannot be evidence-backed.",
+      ? "No checkpoint responses or onboarding intakes yet; an approved evidence waiver is in force."
+      : "No checkpoint responses or onboarding intakes recorded, so the verdict cannot be evidence-backed.",
+    verifiedAt,
   };
 }
 
@@ -116,12 +124,14 @@ export function buildReadinessGates(input: ReadinessInput): ReadinessGate[] {
           run.p0Failures > 0
             ? `${run.p0Failures} P0 failure(s) in the run of ${new Date(run.createdAt).toISOString()}.`
             : `No P0 failures — ${run.passed}/${run.total} checks passed.`,
+        verifiedAt: run.createdAt,
       }
     : {
         id: "checks.p0",
         label: "P0 launch checks",
         status: "unknown",
         detail: "No launch-check run has been recorded for this cohort yet.",
+        verifiedAt: null,
       };
 
   const p1: ReadinessGate = run
@@ -130,12 +140,14 @@ export function buildReadinessGates(input: ReadinessInput): ReadinessGate[] {
         label: "P1 launch checks",
         status: run.failed + run.errored - run.p0Failures > 0 ? "attention" : "pass",
         detail: `${run.failed} failed · ${run.errored} errored · ${run.skipped} skipped.`,
+        verifiedAt: run.createdAt,
       }
     : {
         id: "checks.p1",
         label: "P1 launch checks",
         status: "unknown",
         detail: "No recorded run to read P1 results from.",
+        verifiedAt: null,
       };
 
   const browser = VERIFICATION_STEPS.find((step) => step.id === "browser");
@@ -147,7 +159,9 @@ export function buildReadinessGates(input: ReadinessInput): ReadinessGate[] {
       browser && browser.result !== "pass"
         ? "Static, unit and build gates passed; the browser P0 suite runs in CI."
         : "All recorded verification steps passed.",
+    verifiedAt: RELEASE_FREEZE_DATE,
   };
+
 
   return [
     p0,
