@@ -318,14 +318,22 @@ function PilotAdmin() {
 
   const rows = cohort.data?.rows ?? [];
   const settings = cohort.data?.settings;
-  const summary = useMemo(
-    () => summarizeCohort(rows, settings?.seatTarget ?? 25),
-    [rows, settings?.seatTarget],
-  );
   const checkpoints = cohort.data?.checkpoints ?? [];
   const audit = cohort.data?.audit ?? [];
   const emailByUserId = cohort.data?.emailByUserId ?? {};
   const onboarding = cohort.data?.onboarding ?? [];
+  const summary = useMemo(
+    () =>
+      summarizeCohort(rows, settings?.seatTarget ?? 25, {
+        onboardingProfiles: onboarding.length,
+        latestEvidenceAt: latestEvidenceTimestamp(
+          checkpoints.map((c) => c.createdAt),
+          onboarding.map((p) => p.completedAt),
+        ),
+      }),
+    [rows, settings?.seatTarget, onboarding, checkpoints],
+  );
+
   const funnel = useMemo(
     () =>
       enrollmentFunnel(
