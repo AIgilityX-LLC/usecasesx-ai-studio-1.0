@@ -12,7 +12,12 @@ import type { LaunchCheckRun } from "@/lib/qa/launch-runs";
 import { runVerdict, RUN_TRIGGER_LABEL } from "@/lib/qa/launch-runs";
 import { PILOT_SEAT_TARGET_MIN, PILOT_SEAT_TARGET_MAX } from "@/lib/pilot/pilot.model";
 import type { PilotCohortSummary } from "@/lib/pilot/pilot.model";
-import { RELEASE_MARKER, RELEASE_TARGET_DATE, RELEASE_VERSION } from "@/lib/release";
+import {
+  RELEASE_FREEZE_DATE,
+  RELEASE_MARKER,
+  RELEASE_TARGET_DATE,
+  RELEASE_VERSION,
+} from "@/lib/release";
 import { VERIFICATION_STEPS } from "./candidate";
 
 export type GateStatus = "pass" | "attention" | "fail" | "unknown";
@@ -54,6 +59,7 @@ function seatGate(cohort: PilotCohortSummary | null, waiverActive: boolean): Rea
       label: "Pilot cohort enrolled",
       status: "unknown",
       detail: "Cohort figures were not readable for this account.",
+      verifiedAt: null,
     };
   }
   const seats = cohort.invited;
@@ -63,6 +69,7 @@ function seatGate(cohort: PilotCohortSummary | null, waiverActive: boolean): Rea
       label: "Pilot cohort enrolled",
       status: "pass",
       detail: `${seats} active seat(s) within the ${PILOT_SEAT_TARGET_MIN}–${PILOT_SEAT_TARGET_MAX} target.`,
+      verifiedAt: cohort.latestEvidenceAt ?? null,
     };
   }
   const detail =
@@ -74,6 +81,7 @@ function seatGate(cohort: PilotCohortSummary | null, waiverActive: boolean): Rea
     label: "Pilot cohort enrolled",
     status: waiverActive ? "attention" : "fail",
     detail: waiverActive ? `${detail} An approved evidence waiver is in force.` : detail,
+    verifiedAt: cohort.latestEvidenceAt ?? null,
   };
 }
 
