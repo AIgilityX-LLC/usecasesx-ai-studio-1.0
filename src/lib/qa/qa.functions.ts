@@ -99,21 +99,31 @@ export const getLaunchReadinessFn = createServerFn({ method: "GET" })
     if (!isAdmin) throw new Error("Platform administrator access is required.");
 
     const { getPilotSettings, buildCohortView } = await import("@/lib/pilot/pilot.server");
-    const { summarizeCohort } = await import("@/lib/pilot/pilot.model");
+    const { summarizeCohort, latestEvidenceTimestamp } = await import("@/lib/pilot/pilot.model");
+    const { listCohortOnboarding } = await import("@/lib/pilot/pilot.onboarding.server");
     const { listLaunchCheckRuns } = await import("@/lib/qa/launch-runs.server");
     const { listWaivers } = await import("@/lib/pilot/pilot.governance.server");
     const { activeWaiver } = await import("@/lib/pilot/pilot.governance");
 
     const settings = await getPilotSettings(context.supabase);
-    const [cohortView, runs, waivers] = await Promise.all([
+    const [cohortView, runs, waivers, onboarding] = await Promise.all([
       buildCohortView(context.supabase, settings.cohort),
       listLaunchCheckRuns(context.supabase, settings.cohort, 10),
       listWaivers(context.supabase, settings.cohort),
+      listCohortOnboarding(context.supabase, settings.cohort),
     ]);
     const waiver = activeWaiver(waivers);
+    const evidence = {
+      onboardingProfiles: onboarding.length,
+      latestEvidenceAt: latestEvidenceTimestamp(
+        cohortView.checkpoints.map((c) => c.createdAt),
+        onboarding.map((p) => p.completedAt),
+      ),
+    };
     return {
       cohort: settings.cohort,
-      summary: summarizeCohort(cohortView.rows, settings.seatTarget),
+      summary: summarizeCohort(cohortView.rows, settings.seatTarget, evidence),
+      evidence,
       runs,
       waiverActive: Boolean(waiver),
       waiverNote: waiver
@@ -121,3 +131,4 @@ export const getLaunchReadinessFn = createServerFn({ method: "GET" })
         : null,
     };
   });
+
