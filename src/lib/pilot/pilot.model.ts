@@ -429,9 +429,23 @@ export type PilotCohortSummary = {
   blockersReported: number;
   advisoryInterest: number;
   checkpointResponses: number;
+  /** Onboarding intakes completed by participants, when readable. */
+  onboardingProfiles?: number;
+  /** Most recent participant evidence timestamp (checkpoint or onboarding). */
+  latestEvidenceAt?: string | null;
 };
 
-export function summarizeCohort(rows: PilotCohortRow[], seatTarget: number): PilotCohortSummary {
+/** Participant-side evidence that arrives automatically as steps complete. */
+export type PilotEvidenceSignals = {
+  onboardingProfiles: number;
+  latestEvidenceAt: string | null;
+};
+
+export function summarizeCohort(
+  rows: PilotCohortRow[],
+  seatTarget: number,
+  evidence?: PilotEvidenceSignals,
+): PilotCohortSummary {
   const active = rows.filter((r) => r.status !== "revoked");
   return {
     invited: active.length,
@@ -443,5 +457,20 @@ export function summarizeCohort(rows: PilotCohortRow[], seatTarget: number): Pil
     blockersReported: rows.reduce((sum, r) => sum + r.blockersReported, 0),
     advisoryInterest: rows.filter((r) => r.advisoryInterest).length,
     checkpointResponses: rows.reduce((sum, r) => sum + r.checkpointCount, 0),
+    onboardingProfiles: evidence?.onboardingProfiles ?? 0,
+    latestEvidenceAt: evidence?.latestEvidenceAt ?? null,
   };
 }
+
+/** Latest participant evidence timestamp across checkpoints and intakes. */
+export function latestEvidenceTimestamp(
+  checkpointDates: readonly (string | null | undefined)[],
+  onboardingDates: readonly (string | null | undefined)[],
+): string | null {
+  const stamps = [...checkpointDates, ...onboardingDates].filter(
+    (value): value is string => typeof value === "string" && value.length > 0,
+  );
+  if (stamps.length === 0) return null;
+  return stamps.reduce((latest, value) => (value > latest ? value : latest));
+}
+
