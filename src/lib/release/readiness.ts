@@ -22,7 +22,10 @@ export type ReadinessGate = {
   label: string;
   status: GateStatus;
   detail: string;
+  /** When this gate was last measured, if it was measured at all. */
+  verifiedAt?: string | null;
 };
+
 
 export type ReadinessVerdict = "ready" | "conditional" | "blocked";
 
