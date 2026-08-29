@@ -473,4 +473,3 @@ export function latestEvidenceTimestamp(
   if (stamps.length === 0) return null;
   return stamps.reduce((latest, value) => (value > latest ? value : latest));
 }
-

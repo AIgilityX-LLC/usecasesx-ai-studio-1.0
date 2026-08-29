@@ -31,7 +31,6 @@ export type ReadinessGate = {
   verifiedAt?: string | null;
 };
 
-
 export type ReadinessVerdict = "ready" | "conditional" | "blocked";
 
 export type ReadinessInput = {
@@ -169,7 +168,6 @@ export function buildReadinessGates(input: ReadinessInput): ReadinessGate[] {
         : "All recorded verification steps passed.",
     verifiedAt: RELEASE_FREEZE_DATE,
   };
-
 
   return [
     p0,

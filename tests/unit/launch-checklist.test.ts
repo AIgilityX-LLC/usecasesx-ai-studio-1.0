@@ -49,9 +49,9 @@ describe("launch checklist", () => {
   it("never claims a verification that has no timestamp", () => {
     expect(verifiedLabel(null)).toBe("Never verified");
     expect(verifiedLabel("not-a-date")).toBe("Never verified");
-    expect(
-      verifiedLabel("2026-08-27T00:00:00.000Z", new Date("2026-08-27T02:00:00.000Z")),
-    ).toBe("Verified 2 hours ago");
+    expect(verifiedLabel("2026-08-27T00:00:00.000Z", new Date("2026-08-27T02:00:00.000Z"))).toBe(
+      "Verified 2 hours ago",
+    );
   });
 });
 
