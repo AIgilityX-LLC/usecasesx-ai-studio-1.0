@@ -33,6 +33,7 @@ import {
   ShieldCheck,
   MessageSquarePlus,
   MailCheck,
+  ListChecks,
 } from "lucide-react";
 import {
   Sidebar,
