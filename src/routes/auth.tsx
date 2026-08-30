@@ -5,6 +5,13 @@ import { fallback, zodValidator } from "@tanstack/zod-adapter";
 
 import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/SiteShell";
+import {
+  PLATFORM_PASSWORD_MIN_LENGTH,
+  describeSignInError,
+  validatePlatformPassword,
+  validateSignInForm,
+} from "@/lib/admin/password-policy";
+
 
 /** `redirect` + `intent` let a signed-out action resume after sign-in. */
 const authSearchSchema = z.object({
@@ -60,6 +67,15 @@ function AuthPage() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    const formErrors = validateSignInForm(email, password);
+    if (mode === "signup") {
+      const policy = validatePlatformPassword(password, { email });
+      if (!policy.ok) formErrors.push(...policy.errors);
+    }
+    if (formErrors.length > 0) {
+      setError(formErrors.join(" "));
+      return;
+    }
     setLoading(true);
     try {
       if (mode === "signin") {
@@ -74,11 +90,12 @@ function AuthPage() {
         if (error) throw error;
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Authentication failed");
+      setError(describeSignInError(err));
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <SiteShell>
@@ -103,8 +120,13 @@ function AuthPage() {
             <input
               type="password"
               required
-              minLength={8}
-              placeholder="Password (8+ characters)"
+              minLength={mode === "signup" ? PLATFORM_PASSWORD_MIN_LENGTH : 8}
+              placeholder={
+                mode === "signup"
+                  ? `Password (${PLATFORM_PASSWORD_MIN_LENGTH}+ chars, mixed case, digit, symbol)`
+                  : "Password"
+              }
+
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm focus:border-primary focus:outline-none"
