@@ -60,6 +60,15 @@ function AuthPage() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    const formErrors = validateSignInForm(email, password);
+    if (mode === "signup") {
+      const policy = validatePlatformPassword(password, { email });
+      if (!policy.ok) formErrors.push(...policy.errors);
+    }
+    if (formErrors.length > 0) {
+      setError(formErrors.join(" "));
+      return;
+    }
     setLoading(true);
     try {
       if (mode === "signin") {
@@ -74,11 +83,12 @@ function AuthPage() {
         if (error) throw error;
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Authentication failed");
+      setError(describeSignInError(err));
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <SiteShell>
