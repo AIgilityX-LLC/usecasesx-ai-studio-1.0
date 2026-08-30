@@ -1,9 +1,18 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { privateHead } from "@/lib/seo";
+import { useRoles } from "@/lib/usecasex.roles";
+import { PLATFORM_ADMIN_ROLES } from "@/lib/admin/platform-admin";
+import {
+  PLATFORM_PASSWORD_MAX_AGE_DAYS,
+  PLATFORM_PASSWORD_MIN_LENGTH,
+  describeSignInError,
+  passwordRotationState,
+  validatePlatformPassword,
+} from "@/lib/admin/password-policy";
 
 export const Route = createFileRoute("/_app/account/security")({
   head: () => privateHead("Account security"),
@@ -16,8 +25,10 @@ const inputCls =
 function SecurityPage() {
   const navigate = useNavigate();
   const session = useSupabaseSession();
+  const { hasAny } = useRoles();
   const [user, setUser] = useState<User | null>(null);
 
+  const [currentPwd, setCurrentPwd] = useState("");
   const [pwd, setPwd] = useState("");
   const [pwd2, setPwd2] = useState("");
   const [pwdSaving, setPwdSaving] = useState(false);
@@ -25,6 +36,9 @@ function SecurityPage() {
   const [pwdInfo, setPwdInfo] = useState<string | null>(null);
 
   const [verifyInfo, setVerifyInfo] = useState<string | null>(null);
+
+  /** Platform roles carry the strict complexity bar and the rotation window. */
+  const isPlatformAccount = hasAny(PLATFORM_ADMIN_ROLES);
 
   useEffect(() => {
     if (session === undefined) return;
@@ -35,31 +49,62 @@ function SecurityPage() {
     setUser(session.user);
   }, [session, navigate]);
 
+  const policy = useMemo(
+    () => validatePlatformPassword(pwd, { email: user?.email ?? undefined, confirm: pwd2 }),
+    [pwd, pwd2, user?.email],
+  );
+
+  const rotation = useMemo(() => {
+    const meta = (user?.user_metadata ?? {}) as Record<string, unknown>;
+    const rotatedAt =
+      typeof meta["password_rotated_at"] === "string"
+        ? (meta["password_rotated_at"] as string)
+        : null;
+    return passwordRotationState(rotatedAt);
+  }, [user?.user_metadata]);
+
   const changePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setPwdErr(null);
     setPwdInfo(null);
-    if (pwd.length < 8) {
-      setPwdErr("Password must be at least 8 characters.");
-      return;
-    }
-    if (pwd !== pwd2) {
-      setPwdErr("Passwords do not match.");
-      return;
+    if (isPlatformAccount) {
+      if (!policy.ok) {
+        setPwdErr(policy.errors.join(" "));
+        return;
+      }
+      if (!currentPwd) {
+        setPwdErr("Enter your current password to confirm this change.");
+        return;
+      }
+    } else {
+      if (pwd.length < 8) {
+        setPwdErr("Password must be at least 8 characters.");
+        return;
+      }
+      if (pwd !== pwd2) {
+        setPwdErr("Passwords do not match.");
+        return;
+      }
     }
     setPwdSaving(true);
     try {
-      const { error } = await supabase.auth.updateUser({ password: pwd });
+      const { error } = await supabase.auth.updateUser({
+        password: pwd,
+        ...(currentPwd ? ({ current_password: currentPwd } as Record<string, string>) : {}),
+        data: { password_rotated_at: new Date().toISOString() },
+      });
       if (error) throw error;
+      setCurrentPwd("");
       setPwd("");
       setPwd2("");
-      setPwdInfo("Password changed successfully.");
+      setPwdInfo("Password changed successfully. Rotation clock reset.");
     } catch (e) {
-      setPwdErr(e instanceof Error ? e.message : "Could not change password");
+      setPwdErr(describeSignInError(e));
     } finally {
       setPwdSaving(false);
     }
   };
+
 
   const resendVerification = async () => {
     setVerifyInfo(null);
