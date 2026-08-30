@@ -120,8 +120,13 @@ function AuthPage() {
             <input
               type="password"
               required
-              minLength={8}
-              placeholder="Password (8+ characters)"
+              minLength={mode === "signup" ? PLATFORM_PASSWORD_MIN_LENGTH : 8}
+              placeholder={
+                mode === "signup"
+                  ? `Password (${PLATFORM_PASSWORD_MIN_LENGTH}+ chars, mixed case, digit, symbol)`
+                  : "Password"
+              }
+
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm focus:border-primary focus:outline-none"
