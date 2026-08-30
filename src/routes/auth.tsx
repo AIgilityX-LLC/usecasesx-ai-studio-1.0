@@ -5,6 +5,13 @@ import { fallback, zodValidator } from "@tanstack/zod-adapter";
 
 import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/SiteShell";
+import {
+  PLATFORM_PASSWORD_MIN_LENGTH,
+  describeSignInError,
+  validatePlatformPassword,
+  validateSignInForm,
+} from "@/lib/admin/password-policy";
+
 
 /** `redirect` + `intent` let a signed-out action resume after sign-in. */
 const authSearchSchema = z.object({
