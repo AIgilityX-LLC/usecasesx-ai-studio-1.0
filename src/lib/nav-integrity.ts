@@ -46,6 +46,7 @@ export const SIDEBAR_NAV_TARGETS = [
   "/administration/email-delivery",
   "/administration/pilot",
   "/administration/launch-readiness",
+  "/administration/platform-admins",
   "/administration/launch-checks",
   "/administration/release-candidate",
   "/administration/production-readiness",

@@ -130,6 +130,12 @@ const ADMIN: Item[] = [
     icon: Lock,
     admin: true,
   },
+  {
+    to: "/administration/platform-admins",
+    label: "Platform Admins",
+    icon: ShieldCheck,
+    admin: true,
+  },
   { to: "/admin-submissions", label: "Submission Review", icon: Inbox, admin: true },
   {
     to: "/administration/production-readiness",
