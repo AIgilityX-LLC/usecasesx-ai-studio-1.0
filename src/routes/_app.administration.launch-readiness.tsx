@@ -29,6 +29,7 @@ import {
   buildReadinessGates,
   readinessVerdict,
   type GateStatus,
+  type ReadinessGate,
 } from "@/lib/release/readiness";
 import {
   buildLaunchChecklist,
@@ -37,6 +38,10 @@ import {
   type ChecklistItem,
 } from "@/lib/release/checklist";
 import { RELEASE_TARGET_DATE, RELEASE_VERSION } from "@/lib/release";
+import {
+  READINESS_TARGET_PERCENT,
+  buildImprovementPlan,
+} from "@/lib/release/improvement-plan";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -216,12 +221,81 @@ function LaunchReadinessChecklistPage() {
         </CardContent>
       </Card>
 
+      <ImprovementPlanCard gates={gates} />
+
       <div className="space-y-3">
         {items.map((item, index) => (
           <ChecklistRow key={item.id} item={item} rank={index + 1} />
         ))}
       </div>
+
     </div>
+  );
+}
+
+/**
+ * How to get to the target weighted readiness. Each step is a simulation of
+ * the gate passing, so the projected numbers are arithmetic, not optimism.
+ */
+function ImprovementPlanCard({ gates }: { gates: ReadinessGate[] }) {
+  const plan = buildImprovementPlan(gates, READINESS_TARGET_PERCENT);
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">
+          Getting to {plan.target}% weighted readiness — now at {plan.currentPercent}%
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Progress value={plan.currentPercent} aria-label="Weighted readiness" />
+        <p className="text-sm text-muted-foreground">
+          {plan.gapPercent === 0
+            ? `Target met: weighted readiness is ${plan.currentPercent}%.`
+            : plan.targetReachable
+              ? `${plan.gapPercent} points to close. Clearing the ${plan.steps.length} item(s) below projects ${plan.projectedPercent}%.`
+              : `Clearing every open gate projects ${plan.projectedPercent}% — ${plan.target}% needs the measurements themselves recorded, not just re-run.`}
+        </p>
+        {plan.steps.length > 0 ? (
+          <ol className="space-y-3">
+            {plan.steps.map((step, index) => (
+              <li key={step.gateId} className="rounded-md border border-border p-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="font-medium">
+                    {index + 1}. {step.label}
+                  </p>
+                  <Badge variant={step.reachesTarget ? "default" : "secondary"}>
+                    {step.fromPercent}% → {step.toPercent}% (+{step.gainPercent})
+                  </Badge>
+                </div>
+                <p className="mt-1 text-sm text-muted-foreground">{step.requirement}</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {step.actions.map((action) => (
+                    <Button
+                      key={action.to + action.label}
+                      asChild
+                      size="sm"
+                      variant={action.primary ? "default" : "outline"}
+                    >
+                      <Link to={action.to}>{action.label}</Link>
+                    </Button>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ol>
+        ) : null}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {plan.projectedByAudience.map((audience) => (
+            <div key={audience.audience} className="rounded-md border border-border p-3">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                {audience.label} (projected)
+              </p>
+              <p className="text-2xl font-semibold">{audience.percent}%</p>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
