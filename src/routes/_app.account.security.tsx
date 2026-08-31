@@ -172,14 +172,42 @@ function SecurityPage() {
           className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]"
         >
           <h2 className="text-lg font-bold text-foreground">Change password</h2>
+          {isPlatformAccount ? (
+            <div className="rounded-lg border border-border bg-background/60 p-3 text-xs">
+              <p className="font-semibold text-foreground">
+                Platform administrator credential policy
+              </p>
+              <p className="mt-1 text-muted-foreground">
+                Rotation required every {PLATFORM_PASSWORD_MAX_AGE_DAYS} days · {rotation.label}
+              </p>
+            </div>
+          ) : null}
+          {isPlatformAccount ? (
+            <label className="block">
+              <span className="mb-1 block text-xs font-semibold text-foreground">
+                Current password
+              </span>
+              <input
+                type="password"
+                autoComplete="current-password"
+                value={currentPwd}
+                onChange={(e) => setCurrentPwd(e.target.value)}
+                placeholder="Confirm it is you"
+                className={inputCls}
+              />
+            </label>
+          ) : null}
           <label className="block">
             <span className="mb-1 block text-xs font-semibold text-foreground">New password</span>
             <input
               type="password"
-              minLength={8}
+              autoComplete="new-password"
+              minLength={isPlatformAccount ? PLATFORM_PASSWORD_MIN_LENGTH : 8}
               value={pwd}
               onChange={(e) => setPwd(e.target.value)}
-              placeholder="8+ characters"
+              placeholder={
+                isPlatformAccount ? `${PLATFORM_PASSWORD_MIN_LENGTH}+ characters` : "8+ characters"
+              }
               className={inputCls}
             />
           </label>
@@ -189,15 +217,29 @@ function SecurityPage() {
             </span>
             <input
               type="password"
-              minLength={8}
+              autoComplete="new-password"
+              minLength={isPlatformAccount ? PLATFORM_PASSWORD_MIN_LENGTH : 8}
               value={pwd2}
               onChange={(e) => setPwd2(e.target.value)}
               placeholder="Repeat password"
               className={inputCls}
             />
           </label>
+          {isPlatformAccount && pwd.length > 0 ? (
+            <ul className="space-y-1 text-xs">
+              {policy.checks.map((check) => (
+                <li
+                  key={check.id}
+                  className={check.ok ? "text-primary" : "text-muted-foreground"}
+                >
+                  {check.ok ? "✓" : "•"} {check.label}
+                </li>
+              ))}
+            </ul>
+          ) : null}
           {pwdErr ? <p className="text-sm text-destructive">{pwdErr}</p> : null}
           {pwdInfo ? <p className="text-sm text-primary">{pwdInfo}</p> : null}
+
           <button
             type="submit"
             disabled={pwdSaving}
