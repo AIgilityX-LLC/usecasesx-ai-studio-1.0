@@ -216,11 +216,14 @@ function LaunchReadinessChecklistPage() {
         </CardContent>
       </Card>
 
+      <ImprovementPlanCard gates={gates} />
+
       <div className="space-y-3">
         {items.map((item, index) => (
           <ChecklistRow key={item.id} item={item} rank={index + 1} />
         ))}
       </div>
+
     </div>
   );
 }
