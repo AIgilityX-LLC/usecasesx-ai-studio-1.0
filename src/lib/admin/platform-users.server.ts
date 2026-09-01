@@ -165,14 +165,14 @@ async function recordEvent(
   actorId: string,
   eventType: string,
   targetUserId: string,
-  newValue: Record<string, unknown>,
+  newValue: Record<string, string | number | boolean | null | string[]>,
 ) {
   await supabaseAdmin.from("audit_events").insert({
     actor_id: actorId,
     entity_type: "platform_admin",
     entity_id: targetUserId,
     event_type: eventType,
-    new_value: newValue,
+    new_value: newValue as never,
     severity: "warning",
     source: "administration.platform-admins",
   });
@@ -242,13 +242,19 @@ export async function createPlatformAdmin(actorId: string, input: CreatePlatform
 
   await setRoles(userId, input.roles);
 
-  const profilePatch: Record<string, unknown> = {
+  const profilePatch: {
+    full_name: string;
+    plan_type: string;
+    entitlement_tier: string;
+    profile_completed: boolean;
+    organization_id?: string;
+  } = {
     full_name: input.fullName,
     plan_type: "enterprise",
     entitlement_tier: "enterprise",
     profile_completed: true,
   };
-  if (input.organizationId) profilePatch["organization_id"] = input.organizationId;
+  if (input.organizationId) profilePatch.organization_id = input.organizationId;
   const { error: profileError } = await supabaseAdmin
     .from("profiles")
     .update(profilePatch)
