@@ -165,14 +165,14 @@ async function recordEvent(
   actorId: string,
   eventType: string,
   targetUserId: string,
-  newValue: Record<string, unknown>,
+  newValue: Record<string, string | number | boolean | null | string[]>,
 ) {
   await supabaseAdmin.from("audit_events").insert({
     actor_id: actorId,
     entity_type: "platform_admin",
     entity_id: targetUserId,
     event_type: eventType,
-    new_value: newValue,
+    new_value: newValue as never,
     severity: "warning",
     source: "administration.platform-admins",
   });
@@ -242,35 +242,42 @@ export async function createPlatformAdmin(actorId: string, input: CreatePlatform
 
   await setRoles(userId, input.roles);
 
-  const profilePatch: Record<string, unknown> = {
+  const profilePatch: {
+    full_name: string;
+    plan_type: string;
+    entitlement_tier: string;
+    profile_completed: boolean;
+    organization_id?: string;
+  } = {
     full_name: input.fullName,
     plan_type: "enterprise",
     entitlement_tier: "enterprise",
     profile_completed: true,
   };
-  if (input.organizationId) profilePatch["organization_id"] = input.organizationId;
+  if (input.organizationId) profilePatch.organization_id = input.organizationId;
   const { error: profileError } = await supabaseAdmin
     .from("profiles")
     .update(profilePatch)
     .eq("user_id", userId);
   if (profileError) throw new Error(`Could not update the profile: ${profileError.message}`);
 
-  await recordEvent(actorId, created ? "platform_admin.created" : "platform_admin.reprovisioned", userId, {
-    email,
-    roles: input.roles,
-    organization_id: input.organizationId ?? null,
-    password_rotated_at: rotatedAt,
-  });
+  await recordEvent(
+    actorId,
+    created ? "platform_admin.created" : "platform_admin.reprovisioned",
+    userId,
+    {
+      email,
+      roles: input.roles,
+      organization_id: input.organizationId ?? null,
+      password_rotated_at: rotatedAt,
+    },
+  );
 
   return { userId, created, rotatedAt };
 }
 
 /** Disables or re-enables an account without destroying its audit history. */
-export async function setPlatformAdminDisabled(
-  actorId: string,
-  userId: string,
-  disabled: boolean,
-) {
+export async function setPlatformAdminDisabled(actorId: string, userId: string, disabled: boolean) {
   if (actorId === userId && disabled) {
     throw new Error("You cannot disable the account you are signed in with.");
   }
@@ -278,9 +285,14 @@ export async function setPlatformAdminDisabled(
     ban_duration: disabled ? DISABLE_DURATION : ENABLE_DURATION,
   });
   if (error) throw new Error(`Could not change the account state: ${error.message}`);
-  await recordEvent(actorId, disabled ? "platform_admin.disabled" : "platform_admin.enabled", userId, {
-    disabled,
-  });
+  await recordEvent(
+    actorId,
+    disabled ? "platform_admin.disabled" : "platform_admin.enabled",
+    userId,
+    {
+      disabled,
+    },
+  );
   return { userId, disabled };
 }
 

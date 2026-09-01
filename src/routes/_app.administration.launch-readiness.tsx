@@ -38,10 +38,7 @@ import {
   type ChecklistItem,
 } from "@/lib/release/checklist";
 import { RELEASE_TARGET_DATE, RELEASE_VERSION } from "@/lib/release";
-import {
-  READINESS_TARGET_PERCENT,
-  buildImprovementPlan,
-} from "@/lib/release/improvement-plan";
+import { READINESS_TARGET_PERCENT, buildImprovementPlan } from "@/lib/release/improvement-plan";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -228,7 +225,6 @@ function LaunchReadinessChecklistPage() {
           <ChecklistRow key={item.id} item={item} rank={index + 1} />
         ))}
       </div>
-
     </div>
   );
 }

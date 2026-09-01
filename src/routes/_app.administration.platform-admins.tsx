@@ -81,10 +81,7 @@ function PlatformAdminsPage() {
   const [resetFor, setResetFor] = useState<string | null>(null);
   const [resetValue, setResetValue] = useState("");
 
-  const policy = useMemo(
-    () => validatePlatformPassword(password, { email }),
-    [password, email],
-  );
+  const policy = useMemo(() => validatePlatformPassword(password, { email }), [password, email]);
   const resetPolicy = useMemo(() => validatePlatformPassword(resetValue), [resetValue]);
 
   const create = useMutation({
@@ -328,7 +325,9 @@ function PlatformAdminsPage() {
           </div>
 
           <Button
-            disabled={!policy.ok || !nameValid || !emailValid || roles.length === 0 || create.isPending}
+            disabled={
+              !policy.ok || !nameValid || !emailValid || roles.length === 0 || create.isPending
+            }
             onClick={() => create.mutate()}
           >
             {create.isPending ? "Saving…" : "Save administrator"}

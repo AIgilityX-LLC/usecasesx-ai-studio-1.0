@@ -44,8 +44,7 @@ describe("platform password policy", () => {
 
   it("moves through current, due-soon and overdue as a credential ages", () => {
     const now = new Date("2026-08-14T00:00:00.000Z");
-    const daysAgo = (days: number) =>
-      new Date(now.getTime() - days * 86_400_000).toISOString();
+    const daysAgo = (days: number) => new Date(now.getTime() - days * 86_400_000).toISOString();
     expect(passwordRotationState(daysAgo(1), now).status).toBe("current");
     expect(passwordRotationState(daysAgo(PLATFORM_PASSWORD_MAX_AGE_DAYS - 5), now).status).toBe(
       "due-soon",

@@ -123,7 +123,10 @@ export function validatePlatformPassword(
     Math.min(
       100,
       Math.round(
-        Math.min(value.length, 24) * 2.5 + classes * 7 + Math.min(unique, 20) * 1.5 - (value ? 0 : 0),
+        Math.min(value.length, 24) * 2.5 +
+          classes * 7 +
+          Math.min(unique, 20) * 1.5 -
+          (value ? 0 : 0),
       ),
     ),
   );
@@ -139,12 +142,7 @@ export function validatePlatformPassword(
 
 /** Cryptographically random password that satisfies the policy. */
 export function generatePlatformPassword(length = 18): string {
-  const sets = [
-    "ABCDEFGHJKLMNPQRSTUVWXYZ",
-    "abcdefghijkmnopqrstuvwxyz",
-    "23456789",
-    "!?#%_-+=@",
-  ];
+  const sets = ["ABCDEFGHJKLMNPQRSTUVWXYZ", "abcdefghijkmnopqrstuvwxyz", "23456789", "!?#%_-+=@"];
   const alphabet = sets.join("");
   const size = Math.max(PLATFORM_PASSWORD_MIN_LENGTH, length);
   const bytes = new Uint32Array(size * 2);

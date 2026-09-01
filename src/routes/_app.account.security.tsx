@@ -105,7 +105,6 @@ function SecurityPage() {
     }
   };
 
-
   const resendVerification = async () => {
     setVerifyInfo(null);
     if (!user?.email) return;
@@ -228,10 +227,7 @@ function SecurityPage() {
           {isPlatformAccount && pwd.length > 0 ? (
             <ul className="space-y-1 text-xs">
               {policy.checks.map((check) => (
-                <li
-                  key={check.id}
-                  className={check.ok ? "text-primary" : "text-muted-foreground"}
-                >
+                <li key={check.id} className={check.ok ? "text-primary" : "text-muted-foreground"}>
                   {check.ok ? "✓" : "•"} {check.label}
                 </li>
               ))}
