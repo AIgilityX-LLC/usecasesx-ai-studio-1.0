@@ -55,10 +55,11 @@ export async function runLaunchChecks(
     [
       "profile.exists",
       async () => {
+        // `profiles.user_id` is the auth link; `profiles.id` is the row's own key.
         const { data, error } = await supabase
           .from("profiles")
           .select("id")
-          .eq("id", context.userId);
+          .eq("user_id", context.userId);
         if (error) return { status: "error", observed: error.message };
         const count = (data ?? []).length;
         return count === 1
@@ -85,6 +86,17 @@ export async function runLaunchChecks(
         if (error) return { status: "error", observed: error.message };
         const rows = (data ?? []) as { user_id: string }[];
         const foreign = rows.filter((row) => row.user_id !== context.userId).length;
+        // Platform admins are granted cohort-wide role visibility by policy, so
+        // foreign rows are the expected outcome for them, not a leak.
+        if (context.isAdmin) {
+          const own = rows.length - foreign;
+          return own > 0
+            ? {
+                status: "pass",
+                observed: `Platform admin reads ${rows.length} role row(s), including ${own} of their own.`,
+              }
+            : { status: "fail", observed: "Platform admin cannot read their own role rows." };
+        }
         return foreign === 0
           ? { status: "pass", observed: `${rows.length} own role row(s), no foreign rows.` }
           : { status: "fail", observed: `${foreign} role row(s) belong to other users.` };
@@ -129,17 +141,17 @@ export async function runLaunchChecks(
       async () => {
         const { data, error } = await supabase
           .from("use_case_submissions")
-          .select("id, submitted_by")
+          .select("id, user_id")
           .limit(50);
         if (error) return { status: "error", observed: error.message };
-        const rows = (data ?? []) as { submitted_by: string | null }[];
+        const rows = (data ?? []) as { user_id: string | null }[];
         if (context.isAdmin) {
           return {
             status: "skipped",
             observed: `Platform admin reads the review queue (${rows.length} row(s)).`,
           };
         }
-        const foreign = rows.filter((row) => row.submitted_by !== context.userId).length;
+        const foreign = rows.filter((row) => row.user_id !== context.userId).length;
         return foreign === 0
           ? { status: "pass", observed: `${rows.length} own submission(s), no foreign rows.` }
           : { status: "fail", observed: `${foreign} submission(s) belong to other users.` };
