@@ -141,17 +141,17 @@ export async function runLaunchChecks(
       async () => {
         const { data, error } = await supabase
           .from("use_case_submissions")
-          .select("id, submitted_by")
+          .select("id, user_id")
           .limit(50);
         if (error) return { status: "error", observed: error.message };
-        const rows = (data ?? []) as { submitted_by: string | null }[];
+        const rows = (data ?? []) as { user_id: string | null }[];
         if (context.isAdmin) {
           return {
             status: "skipped",
             observed: `Platform admin reads the review queue (${rows.length} row(s)).`,
           };
         }
-        const foreign = rows.filter((row) => row.submitted_by !== context.userId).length;
+        const foreign = rows.filter((row) => row.user_id !== context.userId).length;
         return foreign === 0
           ? { status: "pass", observed: `${rows.length} own submission(s), no foreign rows.` }
           : { status: "fail", observed: `${foreign} submission(s) belong to other users.` };
