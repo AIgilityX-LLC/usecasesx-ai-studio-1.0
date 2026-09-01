@@ -86,6 +86,17 @@ export async function runLaunchChecks(
         if (error) return { status: "error", observed: error.message };
         const rows = (data ?? []) as { user_id: string }[];
         const foreign = rows.filter((row) => row.user_id !== context.userId).length;
+        // Platform admins are granted cohort-wide role visibility by policy, so
+        // foreign rows are the expected outcome for them, not a leak.
+        if (context.isAdmin) {
+          const own = rows.length - foreign;
+          return own > 0
+            ? {
+                status: "pass",
+                observed: `Platform admin reads ${rows.length} role row(s), including ${own} of their own.`,
+              }
+            : { status: "fail", observed: "Platform admin cannot read their own role rows." };
+        }
         return foreign === 0
           ? { status: "pass", observed: `${rows.length} own role row(s), no foreign rows.` }
           : { status: "fail", observed: `${foreign} role row(s) belong to other users.` };
