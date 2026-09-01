@@ -55,10 +55,11 @@ export async function runLaunchChecks(
     [
       "profile.exists",
       async () => {
+        // `profiles.user_id` is the auth link; `profiles.id` is the row's own key.
         const { data, error } = await supabase
           .from("profiles")
           .select("id")
-          .eq("id", context.userId);
+          .eq("user_id", context.userId);
         if (error) return { status: "error", observed: error.message };
         const count = (data ?? []).length;
         return count === 1
