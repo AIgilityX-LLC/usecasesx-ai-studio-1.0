@@ -45,11 +45,9 @@ export type ImprovementPlan = {
 };
 
 const REQUIREMENTS: Record<string, string> = {
-  "checks.p0":
-    "Record a launch-check run with zero P0 failures from an authenticated session.",
+  "checks.p0": "Record a launch-check run with zero P0 failures from an authenticated session.",
   "checks.p1": "Clear the remaining P1 assertions, or waive each one with a written reason.",
-  "pilot.seats":
-    "Enrol 15–25 participants (CSV upload is fastest) and send their invitations.",
+  "pilot.seats": "Enrol 15–25 participants (CSV upload is fastest) and send their invitations.",
   "pilot.evidence":
     "Get participants through onboarding and at least one checkpoint each so evidence lands automatically.",
   "pipeline.verification":

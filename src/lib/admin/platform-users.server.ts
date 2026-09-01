@@ -255,22 +255,23 @@ export async function createPlatformAdmin(actorId: string, input: CreatePlatform
     .eq("user_id", userId);
   if (profileError) throw new Error(`Could not update the profile: ${profileError.message}`);
 
-  await recordEvent(actorId, created ? "platform_admin.created" : "platform_admin.reprovisioned", userId, {
-    email,
-    roles: input.roles,
-    organization_id: input.organizationId ?? null,
-    password_rotated_at: rotatedAt,
-  });
+  await recordEvent(
+    actorId,
+    created ? "platform_admin.created" : "platform_admin.reprovisioned",
+    userId,
+    {
+      email,
+      roles: input.roles,
+      organization_id: input.organizationId ?? null,
+      password_rotated_at: rotatedAt,
+    },
+  );
 
   return { userId, created, rotatedAt };
 }
 
 /** Disables or re-enables an account without destroying its audit history. */
-export async function setPlatformAdminDisabled(
-  actorId: string,
-  userId: string,
-  disabled: boolean,
-) {
+export async function setPlatformAdminDisabled(actorId: string, userId: string, disabled: boolean) {
   if (actorId === userId && disabled) {
     throw new Error("You cannot disable the account you are signed in with.");
   }
@@ -278,9 +279,14 @@ export async function setPlatformAdminDisabled(
     ban_duration: disabled ? DISABLE_DURATION : ENABLE_DURATION,
   });
   if (error) throw new Error(`Could not change the account state: ${error.message}`);
-  await recordEvent(actorId, disabled ? "platform_admin.disabled" : "platform_admin.enabled", userId, {
-    disabled,
-  });
+  await recordEvent(
+    actorId,
+    disabled ? "platform_admin.disabled" : "platform_admin.enabled",
+    userId,
+    {
+      disabled,
+    },
+  );
   return { userId, disabled };
 }
 

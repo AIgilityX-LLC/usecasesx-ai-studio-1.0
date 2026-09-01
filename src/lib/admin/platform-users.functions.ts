@@ -40,9 +40,8 @@ export const listPlatformAdminsFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertSuperAdmin(context);
-    const { listPlatformAdmins, listOrganizationOptions } = await import(
-      "@/lib/admin/platform-users.server"
-    );
+    const { listPlatformAdmins, listOrganizationOptions } =
+      await import("@/lib/admin/platform-users.server");
     const [accounts, organizations] = await Promise.all([
       listPlatformAdmins(),
       listOrganizationOptions(),
@@ -105,8 +104,6 @@ export const assignPlatformAdminOrganizationFn = createServerFn({ method: "POST"
   )
   .handler(async ({ data, context }) => {
     await assertSuperAdmin(context);
-    const { assignPlatformAdminOrganization } = await import(
-      "@/lib/admin/platform-users.server"
-    );
+    const { assignPlatformAdminOrganization } = await import("@/lib/admin/platform-users.server");
     return assignPlatformAdminOrganization(context.userId, data.userId, data.organizationId);
   });
