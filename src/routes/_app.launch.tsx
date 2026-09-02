@@ -1,37 +1,37 @@
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { breadcrumbJsonLd, publicHead } from "@/lib/seo";
-import {
-  PageHero,
-  Section,
-  TrackedCta,
-} from "@/components/marketing/MarketingPrimitives";
+import { breadcrumbJsonLd, publicHead, SITE_URL } from "@/lib/seo";
+import { PageHero, Section, TrackedCta } from "@/components/marketing/MarketingPrimitives";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FOUNDING_ACCESS_END, LAUNCH_DATE } from "@/lib/founding-access";
+import { getCatalogStats } from "@/lib/public-catalog.functions";
 
-const HIGHLIGHTS = [
-  {
-    title: "A repository you can act on",
-    body: "180 published AI use cases across 18 industries, each with value, complexity and risk signals — browsable without an account.",
-    edition: "Lite",
-  },
-  {
-    title: "From opportunity to portfolio",
-    body: "Capture an opportunity, design it in the AI Use Case Studio™, score feasibility and value, then prioritise it into a portfolio and roadmap.",
-    edition: "Pro Founding Access",
-  },
-  {
-    title: "Evidence you can hand over",
-    body: "Export scored portfolios, roadmaps and deliverables so an investment or governance conversation starts from a document, not a slide.",
-    edition: "Pro Founding Access",
-  },
-  {
-    title: "Built tenant-aware from day one",
-    body: "Workspace ownership, role-based access and audit trails are in the data model now, so an Enterprise Design Partner engagement extends the same platform.",
-    edition: "Enterprise",
-  },
-];
+function highlights(stats: { useCases: number; industries: number }) {
+  return [
+    {
+      title: "A repository you can act on",
+      body: `${stats.useCases} published AI use cases across ${stats.industries} industries, each with value, complexity and risk signals — browsable without an account.`,
+      edition: "Lite",
+    },
+    {
+      title: "From opportunity to portfolio",
+      body: "Capture an opportunity, design it in the AI Use Case Studio™, score feasibility and value, then prioritise it into a portfolio and roadmap.",
+      edition: "Pro Founding Access",
+    },
+    {
+      title: "Evidence you can hand over",
+      body: "Export scored portfolios, roadmaps and deliverables so an investment or governance conversation starts from a document, not a slide.",
+      edition: "Pro Founding Access",
+    },
+    {
+      title: "Built tenant-aware from day one",
+      body: "Workspace ownership, role-based access and audit trails are in the data model now, so an Enterprise Design Partner engagement extends the same platform.",
+      edition: "Enterprise",
+    },
+  ];
+}
 
 const JOURNEY = [
   "Discover",
@@ -68,16 +68,36 @@ export const Route = createFileRoute("/_app/launch")({
         },
       ],
     }),
+  loader: async () => ({ stats: await getCatalogStats() }),
   component: LaunchAnnouncementPage,
 });
 
+/** True only once the page is served from the canonical published host. */
+function useIsLiveHost() {
+  const [live, setLive] = useState(false);
+  useEffect(() => {
+    try {
+      setLive(window.location.host === new URL(SITE_URL).host);
+    } catch {
+      setLive(false);
+    }
+  }, []);
+  return live;
+}
+
 function LaunchAnnouncementPage() {
+  const { stats } = Route.useLoaderData();
+  const live = useIsLiveHost();
   return (
     <>
       <PageHero
-        eyebrow={`Announcement · ${LAUNCH_DATE}`}
-        title="UseCasesX™ is here — Lite and Pro Founding Access"
-        intro={`AIgilityX™ is opening UseCasesX™: a Global AI Use Case Repository, an AI Opportunity Map and the AI Use Case Studio™ in one platform. Lite is free and needs no account. Pro Founding Access is complimentary through ${FOUNDING_ACCESS_END}, subject to fair-use limits.`}
+        eyebrow={live ? `Announcement · ${LAUNCH_DATE}` : "Release candidate · not yet announced"}
+        title={
+          live
+            ? "UseCasesX™ is here — Lite and Pro Founding Access"
+            : "UseCasesX™ release candidate — Lite and Pro Founding Access"
+        }
+        intro={`AIgilityX™ is ${live ? "opening" : "preparing to open"} UseCasesX™: a Global AI Use Case Repository, an AI Opportunity Map and the AI Use Case Studio™ in one platform. Lite is free and needs no account. Pro Founding Access is complimentary through ${FOUNDING_ACCESS_END}, subject to fair-use limits.${live ? "" : " This preview build is not the announced release; figures and availability are subject to change."}`}
       >
         <TrackedCta to="/repository" label="Explore the repository" location="launch-hero-lite" />
         <TrackedCta
@@ -89,11 +109,11 @@ function LaunchAnnouncementPage() {
       </PageHero>
 
       <Section
-        title="What is live today"
+        title={live ? "What is live today" : "What the candidate build includes"}
         lead="Everything listed here works in the product now. Capabilities that are designed but not yet available are called out on the editions page rather than implied here."
       >
         <div className="grid gap-4 md:grid-cols-2">
-          {HIGHLIGHTS.map((item) => (
+          {highlights(stats).map((item) => (
             <Card key={item.title}>
               <CardHeader className="space-y-2">
                 <Badge variant="secondary" className="w-fit">
@@ -128,10 +148,7 @@ function LaunchAnnouncementPage() {
         </ol>
       </Section>
 
-      <Section
-        title="Who it is for"
-        lead="Same codebase, different depth of use."
-      >
+      <Section title="Who it is for" lead="Same codebase, different depth of use.">
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader>

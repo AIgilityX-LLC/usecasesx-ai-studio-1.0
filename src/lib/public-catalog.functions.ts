@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import {
+  readCatalogStats,
   readCategories,
   readCategoryPage,
   readPublicCollection,
@@ -31,3 +32,7 @@ export const listPublicCollectionPages = createServerFn({ method: "GET" }).handl
 export const getPublicCollectionPage = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ slug: z.string().min(1).max(200) }).parse(d))
   .handler(async ({ data }) => readPublicCollection(data.slug));
+
+export const getCatalogStats = createServerFn({ method: "GET" }).handler(async () =>
+  readCatalogStats(),
+);

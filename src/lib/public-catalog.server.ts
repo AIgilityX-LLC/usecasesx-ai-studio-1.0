@@ -171,3 +171,23 @@ export async function readPublicCollection(slug: string): Promise<PublicCollecti
     items: mapped,
   };
 }
+
+export interface CatalogStats {
+  useCases: number;
+  industries: number;
+}
+
+/** Live counts of the public corpus, used instead of hardcoded marketing figures. */
+export async function readCatalogStats(): Promise<CatalogStats> {
+  const sb = anonClient();
+  const [{ count, error }, industries] = await Promise.all([
+    sb
+      .from("use_cases")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "published")
+      .in("visibility", ["free_lite", "both"]),
+    readCategories("industry"),
+  ]);
+  if (error) throw new Error(error.message);
+  return { useCases: count ?? 0, industries: industries.length };
+}
