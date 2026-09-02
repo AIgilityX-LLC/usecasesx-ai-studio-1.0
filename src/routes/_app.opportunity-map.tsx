@@ -237,6 +237,15 @@ function OpportunityMapPage() {
         }
       />
 
+      {session === undefined && <LoadingSkeleton />}
+
+      {session === null && (
+        <EmptyState
+          title="Sign in to view the Opportunity Map"
+          description="The map reads opportunities from your workspace, so it needs an active session."
+        />
+      )}
+
       {query.isLoading && <LoadingSkeleton />}
 
       {query.isError && (
