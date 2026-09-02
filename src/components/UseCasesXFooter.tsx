@@ -54,6 +54,7 @@ export function UseCasesXFooter() {
         <FooterCol
           title="Company"
           items={[
+            { l: "Launch announcement", to: "/launch" },
             { l: "How it works", to: "/how-it-works" },
             { l: "Editions & pricing", to: "/editions" },
             { l: "Workshops & advisory", to: "/advisory" },

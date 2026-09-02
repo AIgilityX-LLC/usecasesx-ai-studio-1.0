@@ -17,6 +17,7 @@ export const SITE_NAME = "UseCasesX™ by AIgilityX™";
 /** Public, indexable marketing and repository paths. */
 export const PUBLIC_INDEXABLE_PATHS = [
   "/",
+  "/launch",
   "/how-it-works",
   "/editions",
   "/advisory",
