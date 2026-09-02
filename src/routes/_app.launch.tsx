@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { breadcrumbJsonLd, publicHead } from "@/lib/seo";
@@ -5,29 +6,33 @@ import { PageHero, Section, TrackedCta } from "@/components/marketing/MarketingP
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FOUNDING_ACCESS_END, LAUNCH_DATE } from "@/lib/founding-access";
+import { SITE_URL } from "@/lib/seo";
+import { getCatalogStats } from "@/lib/public-catalog.functions";
 
-const HIGHLIGHTS = [
-  {
-    title: "A repository you can act on",
-    body: "180 published AI use cases across 18 industries, each with value, complexity and risk signals — browsable without an account.",
-    edition: "Lite",
-  },
-  {
-    title: "From opportunity to portfolio",
-    body: "Capture an opportunity, design it in the AI Use Case Studio™, score feasibility and value, then prioritise it into a portfolio and roadmap.",
+function highlights(stats: { useCases: number; industries: number }) {
+  return [
+    {
+      title: "A repository you can act on",
+      body: `${stats.useCases} published AI use cases across ${stats.industries} industries, each with value, complexity and risk signals — browsable without an account.`,
+      edition: "Lite",
+    },
+    {
+      title: "From opportunity to portfolio",
+      body: "Capture an opportunity, design it in the AI Use Case Studio™, score feasibility and value, then prioritise it into a portfolio and roadmap.",
     edition: "Pro Founding Access",
   },
-  {
-    title: "Evidence you can hand over",
-    body: "Export scored portfolios, roadmaps and deliverables so an investment or governance conversation starts from a document, not a slide.",
+    {
+      title: "Evidence you can hand over",
+      body: "Export scored portfolios, roadmaps and deliverables so an investment or governance conversation starts from a document, not a slide.",
     edition: "Pro Founding Access",
   },
-  {
-    title: "Built tenant-aware from day one",
-    body: "Workspace ownership, role-based access and audit trails are in the data model now, so an Enterprise Design Partner engagement extends the same platform.",
-    edition: "Enterprise",
-  },
-];
+    {
+      title: "Built tenant-aware from day one",
+      body: "Workspace ownership, role-based access and audit trails are in the data model now, so an Enterprise Design Partner engagement extends the same platform.",
+      edition: "Enterprise",
+    },
+  ];
+}
 
 const JOURNEY = [
   "Discover",
