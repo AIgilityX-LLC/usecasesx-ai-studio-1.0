@@ -1,1 +1,0 @@
-ALTER VIEW public.v_feedback_queue SET (security_invoker = on);
