@@ -431,3 +431,24 @@ export function buildRosterIssueReportCsv(
     .map((row) => row.map(templateCell).join(","))
     .join("\r\n");
 }
+
+/**
+ * Labelled rehearsal seats for dry-running the enrolment flow end to end.
+ * The addresses use the reserved `.invalid` TLD and the seats are recorded
+ * with source "seed", so they can never be mistaken for — or counted as —
+ * evidence from a real participant.
+ */
+export function buildSeedRoster(
+  count: number,
+): { email: string; fullName: string; organization: string; notes: string }[] {
+  const size = Math.max(1, Math.min(25, Math.floor(count)));
+  return Array.from({ length: size }, (_, index) => {
+    const n = String(index + 1).padStart(2, "0");
+    return {
+      email: `seed.participant.${n}@pilot.invalid`,
+      fullName: `Seed Participant ${n}`,
+      organization: "Seeded rehearsal organisation",
+      notes: "Seeded rehearsal seat — excluded from pilot evidence.",
+    };
+  });
+}

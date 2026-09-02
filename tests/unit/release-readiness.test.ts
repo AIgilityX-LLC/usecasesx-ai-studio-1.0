@@ -81,7 +81,7 @@ describe("launch readiness", () => {
 
   it("never claims a pass without a measurement", () => {
     const gates = buildReadinessGates(input({ run: null, cohort: null }));
-    expect(gates.filter((g) => g.status === "unknown")).toHaveLength(4);
+    expect(gates.filter((g) => g.status === "unknown")).toHaveLength(5);
     expect(failingAssertions(null)).toEqual([]);
   });
 

@@ -61,6 +61,8 @@ const BulkInviteInput = z
       .max(25)
       .default([]),
     organization: z.string().trim().max(160).nullable().optional(),
+    /** Seeded seats are labelled so they can be excluded from evidence. */
+    source: z.enum(["manual", "import", "seed"]).default("manual"),
   })
   .refine((value) => value.emails.length + value.participants.length > 0, {
     message: "Provide at least one email address.",
@@ -370,6 +372,7 @@ export const invitePilotCohortFn = createServerFn({ method: "POST" })
           fullName: entry.fullName,
           organization: entry.organization,
           notes: entry.notes,
+          source: data.source,
           actorId: context.userId,
         });
         taken.add(email);

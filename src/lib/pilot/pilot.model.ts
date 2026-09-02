@@ -40,6 +40,20 @@ export function pilotStatusLabel(status: string): string {
   }
 }
 
+export const PILOT_SOURCES = ["manual", "import", "seed"] as const;
+export type PilotSource = (typeof PILOT_SOURCES)[number];
+
+/** Seeded seats rehearse the flow; only real seats can carry evidence. */
+export function isRealSeat(invitation: { source: PilotSource }): boolean {
+  return invitation.source !== "seed";
+}
+
+export const PILOT_SOURCE_LABEL: Record<PilotSource, string> = {
+  manual: "Invited manually",
+  import: "Imported from list",
+  seed: "Seeded rehearsal seat",
+};
+
 export type PilotInvitation = {
   id: string;
   cohort: string;
@@ -49,6 +63,12 @@ export type PilotInvitation = {
   status: PilotStatus;
   userId: string | null;
   notes: string | null;
+  /**
+   * Where the seat came from: "manual" (invited one by one), "import" (real
+   * participants loaded from a list) or "seed" (a labelled rehearsal seat that
+   * must never be counted as pilot evidence).
+   */
+  source: PilotSource;
   /** Secret claim token. Only ever exposed to a platform admin or the holder. */
   inviteToken: string | null;
   invitedAt: string;
@@ -425,6 +445,8 @@ export type PilotCohortSummary = {
   activated: number;
   completed: number;
   revoked: number;
+  /** Labelled rehearsal seats, excluded from every other count. */
+  seeded?: number;
   seatTarget: number;
   blockersReported: number;
   advisoryInterest: number;
@@ -441,22 +463,29 @@ export type PilotEvidenceSignals = {
   latestEvidenceAt: string | null;
 };
 
+/**
+ * Rolls the cohort up for the readiness gates. Seeded rehearsal seats are
+ * excluded from every count: they exist to exercise the flow, and counting
+ * them would report readiness the pilot has not actually earned.
+ */
 export function summarizeCohort(
   rows: PilotCohortRow[],
   seatTarget: number,
   evidence?: PilotEvidenceSignals,
 ): PilotCohortSummary {
-  const active = rows.filter((r) => r.status !== "revoked");
+  const real = rows.filter(isRealSeat);
+  const active = real.filter((r) => r.status !== "revoked");
   return {
     invited: active.length,
     registered: active.filter((r) => r.userId != null).length,
     activated: active.filter((r) => r.progress.activated).length,
     completed: active.filter((r) => r.progress.complete).length,
-    revoked: rows.filter((r) => r.status === "revoked").length,
+    revoked: real.filter((r) => r.status === "revoked").length,
+    seeded: rows.length - real.length,
     seatTarget,
-    blockersReported: rows.reduce((sum, r) => sum + r.blockersReported, 0),
-    advisoryInterest: rows.filter((r) => r.advisoryInterest).length,
-    checkpointResponses: rows.reduce((sum, r) => sum + r.checkpointCount, 0),
+    blockersReported: real.reduce((sum, r) => sum + r.blockersReported, 0),
+    advisoryInterest: real.filter((r) => r.advisoryInterest).length,
+    checkpointResponses: real.reduce((sum, r) => sum + r.checkpointCount, 0),
     onboardingProfiles: evidence?.onboardingProfiles ?? 0,
     latestEvidenceAt: evidence?.latestEvidenceAt ?? null,
   };

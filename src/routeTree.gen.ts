@@ -111,6 +111,7 @@ import { Route as AppWorkshopsIndexRouteImport } from './routes/_app.workshops.i
 import { Route as AppWorkshopsIdRouteImport } from './routes/_app.workshops.$id'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as OgUseCaseSlugRouteImport } from './routes/og.use-case.$slug'
+import { Route as AppAdministrationReadinessIndexRouteImport } from './routes/_app.administration.readiness.index'
 import { Route as AppAdministrationReadinessAudienceRouteImport } from './routes/_app.administration.readiness.$audience'
 import { Route as AppCategoriesTypeSlugRouteImport } from './routes/_app.categories.$type.$slug'
 import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
@@ -118,6 +119,7 @@ import { Route as AppWorkshopsJoinTokenRouteImport } from './routes/_app.worksho
 import { Route as ApiPublicHooksEmailDeliveryAlertsRouteImport } from './routes/api/public/hooks/email-delivery-alerts'
 import { Route as ApiPublicHooksErpReconciliationRouteImport } from './routes/api/public/hooks/erp-reconciliation'
 import { Route as ApiPublicHooksEvidenceCleanupRouteImport } from './routes/api/public/hooks/evidence-cleanup'
+import { Route as ApiPublicHooksLaunchChecksRouteImport } from './routes/api/public/hooks/launch-checks'
 import { Route as ApiPublicHooksPilotEvidenceRemindersRouteImport } from './routes/api/public/hooks/pilot-evidence-reminders'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
@@ -659,6 +661,12 @@ const OgUseCaseSlugRoute = OgUseCaseSlugRouteImport.update({
   path: '/og/use-case/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppAdministrationReadinessIndexRoute =
+  AppAdministrationReadinessIndexRouteImport.update({
+    id: '/readiness/',
+    path: '/readiness/',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
 const AppAdministrationReadinessAudienceRoute =
   AppAdministrationReadinessAudienceRouteImport.update({
     id: '/readiness/$audience',
@@ -696,6 +704,12 @@ const ApiPublicHooksEvidenceCleanupRoute =
   ApiPublicHooksEvidenceCleanupRouteImport.update({
     id: '/api/public/hooks/evidence-cleanup',
     path: '/api/public/hooks/evidence-cleanup',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksLaunchChecksRoute =
+  ApiPublicHooksLaunchChecksRouteImport.update({
+    id: '/api/public/hooks/launch-checks',
+    path: '/api/public/hooks/launch-checks',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicHooksPilotEvidenceRemindersRoute =
@@ -923,12 +937,14 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/email-delivery-alerts': typeof ApiPublicHooksEmailDeliveryAlertsRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
+  '/api/public/hooks/launch-checks': typeof ApiPublicHooksLaunchChecksRoute
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/administration/readiness/': typeof AppAdministrationReadinessIndexRoute
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/studio/use-case/$id/c3g-governance': typeof AppStudioUseCaseIdC3gGovernanceRoute
@@ -1051,12 +1067,14 @@ export interface FileRoutesByTo {
   '/api/public/hooks/email-delivery-alerts': typeof ApiPublicHooksEmailDeliveryAlertsRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
+  '/api/public/hooks/launch-checks': typeof ApiPublicHooksLaunchChecksRoute
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/administration/readiness': typeof AppAdministrationReadinessIndexRoute
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/studio/use-case/$id/c3g-governance': typeof AppStudioUseCaseIdC3gGovernanceRoute
@@ -1183,12 +1201,14 @@ export interface FileRoutesById {
   '/api/public/hooks/email-delivery-alerts': typeof ApiPublicHooksEmailDeliveryAlertsRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
+  '/api/public/hooks/launch-checks': typeof ApiPublicHooksLaunchChecksRoute
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/_app/administration/readiness/': typeof AppAdministrationReadinessIndexRoute
   '/_app/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/_app/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/_app/studio/use-case/$id/c3g-governance': typeof AppStudioUseCaseIdC3gGovernanceRoute
@@ -1315,12 +1335,14 @@ export interface FileRouteTypes {
     | '/api/public/hooks/email-delivery-alerts'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
+    | '/api/public/hooks/launch-checks'
     | '/api/public/hooks/pilot-evidence-reminders'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
+    | '/administration/readiness/'
     | '/studio/use-case/$id/advisorx'
     | '/studio/use-case/$id/blueprint'
     | '/studio/use-case/$id/c3g-governance'
@@ -1443,12 +1465,14 @@ export interface FileRouteTypes {
     | '/api/public/hooks/email-delivery-alerts'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
+    | '/api/public/hooks/launch-checks'
     | '/api/public/hooks/pilot-evidence-reminders'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
+    | '/administration/readiness'
     | '/studio/use-case/$id/advisorx'
     | '/studio/use-case/$id/blueprint'
     | '/studio/use-case/$id/c3g-governance'
@@ -1574,12 +1598,14 @@ export interface FileRouteTypes {
     | '/api/public/hooks/email-delivery-alerts'
     | '/api/public/hooks/erp-reconciliation'
     | '/api/public/hooks/evidence-cleanup'
+    | '/api/public/hooks/launch-checks'
     | '/api/public/hooks/pilot-evidence-reminders'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
+    | '/_app/administration/readiness/'
     | '/_app/studio/use-case/$id/advisorx'
     | '/_app/studio/use-case/$id/blueprint'
     | '/_app/studio/use-case/$id/c3g-governance'
@@ -1611,6 +1637,7 @@ export interface RootRouteChildren {
   ApiPublicHooksEmailDeliveryAlertsRoute: typeof ApiPublicHooksEmailDeliveryAlertsRoute
   ApiPublicHooksErpReconciliationRoute: typeof ApiPublicHooksErpReconciliationRoute
   ApiPublicHooksEvidenceCleanupRoute: typeof ApiPublicHooksEvidenceCleanupRoute
+  ApiPublicHooksLaunchChecksRoute: typeof ApiPublicHooksLaunchChecksRoute
   ApiPublicHooksPilotEvidenceRemindersRoute: typeof ApiPublicHooksPilotEvidenceRemindersRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
@@ -2336,6 +2363,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OgUseCaseSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/administration/readiness/': {
+      id: '/_app/administration/readiness/'
+      path: '/readiness'
+      fullPath: '/administration/readiness/'
+      preLoaderRoute: typeof AppAdministrationReadinessIndexRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/administration/readiness/$audience': {
       id: '/_app/administration/readiness/$audience'
       path: '/readiness/$audience'
@@ -2383,6 +2417,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/hooks/evidence-cleanup'
       fullPath: '/api/public/hooks/evidence-cleanup'
       preLoaderRoute: typeof ApiPublicHooksEvidenceCleanupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/launch-checks': {
+      id: '/api/public/hooks/launch-checks'
+      path: '/api/public/hooks/launch-checks'
+      fullPath: '/api/public/hooks/launch-checks'
+      preLoaderRoute: typeof ApiPublicHooksLaunchChecksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/pilot-evidence-reminders': {
@@ -2563,6 +2604,7 @@ interface AppAdministrationRouteChildren {
   AppAdministrationReleaseCandidateRoute: typeof AppAdministrationReleaseCandidateRoute
   AppAdministrationRequestsRoute: typeof AppAdministrationRequestsRoute
   AppAdministrationReadinessAudienceRoute: typeof AppAdministrationReadinessAudienceRoute
+  AppAdministrationReadinessIndexRoute: typeof AppAdministrationReadinessIndexRoute
 }
 
 const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
@@ -2583,6 +2625,7 @@ const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationRequestsRoute: AppAdministrationRequestsRoute,
   AppAdministrationReadinessAudienceRoute:
     AppAdministrationReadinessAudienceRoute,
+  AppAdministrationReadinessIndexRoute: AppAdministrationReadinessIndexRoute,
 }
 
 const AppAdministrationRouteWithChildren =
@@ -2823,6 +2866,7 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicHooksEmailDeliveryAlertsRoute,
   ApiPublicHooksErpReconciliationRoute: ApiPublicHooksErpReconciliationRoute,
   ApiPublicHooksEvidenceCleanupRoute: ApiPublicHooksEvidenceCleanupRoute,
+  ApiPublicHooksLaunchChecksRoute: ApiPublicHooksLaunchChecksRoute,
   ApiPublicHooksPilotEvidenceRemindersRoute:
     ApiPublicHooksPilotEvidenceRemindersRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,

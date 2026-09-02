@@ -14,6 +14,7 @@ export const RUN_TRIGGERS = [
   "waiver_revoked",
   "pilot_status_changed",
   "verdict_recorded",
+  "scheduled",
 ] as const;
 export type RunTrigger = (typeof RUN_TRIGGERS)[number];
 
@@ -23,6 +24,7 @@ export const RUN_TRIGGER_LABEL: Record<string, string> = {
   waiver_revoked: "Waiver revoked",
   pilot_status_changed: "Pilot status changed",
   verdict_recorded: "Verdict recorded",
+  scheduled: "Scheduled run",
 };
 
 export type LaunchCheckRun = {
