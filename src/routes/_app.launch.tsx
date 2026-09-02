@@ -96,7 +96,6 @@ const JOIN_STEPS = [
   },
 ];
 
-
 export const Route = createFileRoute("/_app/launch")({
   loader: async () => getLaunchPageContext(),
   head: ({ loaderData }) => {
@@ -264,8 +263,6 @@ function LaunchAnnouncementPage() {
           ))}
         </ol>
       </Section>
-
-
 
       <Section title="Who it is for" lead="Same codebase, different depth of use.">
         <div className="grid gap-4 md:grid-cols-3">
