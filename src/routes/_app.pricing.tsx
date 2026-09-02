@@ -311,9 +311,32 @@ function PricingPage() {
                   )}
                   <div className="mt-auto pt-4">
                     {p.key === "pro" ? (
-                      <Button className="w-full" onClick={() => setWaitlistOpen(true)}>
-                        <Sparkles className="mr-2 h-4 w-4" /> {p.cta}
-                      </Button>
+                      <div className="space-y-2">
+                        {myPlan === "pro" || myPlan === "enterprise" ? (
+                          <Button className="w-full" asChild>
+                            <Link to="/pro">Open your Pro workspace</Link>
+                          </Button>
+                        ) : ent.isAuthed ? (
+                          <Button className="w-full" asChild>
+                            <Link to="/onboarding">
+                              <Sparkles className="mr-2 h-4 w-4" /> Activate Founding Access
+                            </Link>
+                          </Button>
+                        ) : (
+                          <Button className="w-full" asChild>
+                            <Link to="/auth">
+                              <Sparkles className="mr-2 h-4 w-4" /> Sign up for Pro Founding Access
+                            </Link>
+                          </Button>
+                        )}
+                        <Button
+                          className="w-full"
+                          variant="outline"
+                          onClick={() => setWaitlistOpen(true)}
+                        >
+                          {p.cta}
+                        </Button>
+                      </div>
                     ) : (
                       <Button
                         className="w-full"
