@@ -36,10 +36,10 @@ const check = (id: string): HarnessCheck => {
 
 const RANDOM_UUID = "00000000-0000-4000-8000-000000000000";
 
-export async function runLaunchChecks(
-  supabase: Client,
-  context: { userId: string; email: string | null; isAdmin: boolean },
-): Promise<HarnessRun> {
+export type ProbeContext = { userId: string; email: string | null; isAdmin: boolean };
+
+/** Every probe, in execution order, bound to one caller's client. */
+function buildProbes(supabase: Client, context: ProbeContext): [string, Probe][] {
   const probes: [string, Probe][] = [
     [
       "session.identity",
@@ -277,22 +277,44 @@ export async function runLaunchChecks(
       },
     ],
   ];
+  return probes;
+}
 
+/** Runs one probe and times it. Never throws: a throw becomes an errored result. */
+async function execute(id: string, probe: Probe): Promise<CheckResult> {
+  const spec = check(id);
+  const started = Date.now();
+  try {
+    const outcome = await probe();
+    return { ...spec, ...outcome, durationMs: Date.now() - started };
+  } catch (error) {
+    return {
+      ...spec,
+      status: "error",
+      observed: error instanceof Error ? error.message : "Probe threw an unknown error.",
+      durationMs: Date.now() - started,
+    };
+  }
+}
+
+/** Runs a single check by id — the step-by-step harness entry point. */
+export async function runSingleLaunchCheck(
+  supabase: Client,
+  context: ProbeContext,
+  id: string,
+): Promise<CheckResult> {
+  const entry = buildProbes(supabase, context).find(([probeId]) => probeId === id);
+  if (!entry) throw new Error(`Unknown launch check: ${id}`);
+  return execute(entry[0], entry[1]);
+}
+
+export async function runLaunchChecks(
+  supabase: Client,
+  context: ProbeContext,
+): Promise<HarnessRun> {
   const results: CheckResult[] = [];
-  for (const [id, probe] of probes) {
-    const spec = check(id);
-    const started = Date.now();
-    try {
-      const outcome = await probe();
-      results.push({ ...spec, ...outcome, durationMs: Date.now() - started });
-    } catch (error) {
-      results.push({
-        ...spec,
-        status: "error",
-        observed: error instanceof Error ? error.message : "Probe threw an unknown error.",
-        durationMs: Date.now() - started,
-      });
-    }
+  for (const [id, probe] of buildProbes(supabase, context)) {
+    results.push(await execute(id, probe));
   }
 
   return {
@@ -303,3 +325,4 @@ export async function runLaunchChecks(
     summary: summarizeResults(results),
   };
 }
+
