@@ -201,8 +201,14 @@ function PricingPage() {
         description="Start free with the Lite plan. Unlock the full discovery, scoring, blueprint, and governance workflow with Pro. Run sovereign, regulator-grade deployments with Enterprise."
         actions={
           <>
-            <Button size="lg" onClick={() => setWaitlistOpen(true)}>
-              <Crown className="mr-2 h-4 w-4" /> Join the Waitlist — Early Gratis Access
+            <Button size="lg" asChild>
+              <Link to={ent.isAuthed ? "/onboarding" : "/auth"}>
+                <Crown className="mr-2 h-4 w-4" />
+                {ent.isAuthed ? "Activate Founding Access" : "Sign up — Pro Founding Access"}
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" onClick={() => setWaitlistOpen(true)}>
+              Join the waitlist
             </Button>
             <Button asChild size="lg" variant="outline">
               <Link to="/repository">Start Free Tools</Link>
@@ -311,9 +317,32 @@ function PricingPage() {
                   )}
                   <div className="mt-auto pt-4">
                     {p.key === "pro" ? (
-                      <Button className="w-full" onClick={() => setWaitlistOpen(true)}>
-                        <Sparkles className="mr-2 h-4 w-4" /> {p.cta}
-                      </Button>
+                      <div className="space-y-2">
+                        {myPlan === "pro" || myPlan === "enterprise" ? (
+                          <Button className="w-full" asChild>
+                            <Link to="/pro">Open your Pro workspace</Link>
+                          </Button>
+                        ) : ent.isAuthed ? (
+                          <Button className="w-full" asChild>
+                            <Link to="/onboarding">
+                              <Sparkles className="mr-2 h-4 w-4" /> Activate Founding Access
+                            </Link>
+                          </Button>
+                        ) : (
+                          <Button className="w-full" asChild>
+                            <Link to="/auth">
+                              <Sparkles className="mr-2 h-4 w-4" /> Sign up for Pro Founding Access
+                            </Link>
+                          </Button>
+                        )}
+                        <Button
+                          className="w-full"
+                          variant="outline"
+                          onClick={() => setWaitlistOpen(true)}
+                        >
+                          {p.cta}
+                        </Button>
+                      </div>
                     ) : (
                       <Button
                         className="w-full"
