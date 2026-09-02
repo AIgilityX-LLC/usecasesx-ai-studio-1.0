@@ -103,7 +103,7 @@ import { Route as AppInviteTokenRouteImport } from './routes/_app.invite.$token'
 import { Route as AppOpportunitiesIndexRouteImport } from './routes/_app.opportunities.index'
 import { Route as AppOpportunitiesIdRouteImport } from './routes/_app.opportunities.$id'
 import { Route as AppOpportunitiesNewRouteImport } from './routes/_app.opportunities.new'
-import { Route as AppPilotPortalRouteImport } from './routes/_app.pilot.portal'
+import { Route as AppPilotPortalRouteImport } from './routes/_app.pilot_.portal'
 import { Route as AppSectorsSectorRouteImport } from './routes/_app.sectors.$sector'
 import { Route as AppSegmentsSegmentRouteImport } from './routes/_app.segments.$segment'
 import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
@@ -623,9 +623,9 @@ const AppOpportunitiesNewRoute = AppOpportunitiesNewRouteImport.update({
   getParentRoute: () => AppRoute,
 } as any)
 const AppPilotPortalRoute = AppPilotPortalRouteImport.update({
-  id: '/portal',
-  path: '/portal',
-  getParentRoute: () => AppPilotRoute,
+  id: '/pilot_/portal',
+  path: '/pilot/portal',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppSectorsSectorRoute = AppSectorsSectorRouteImport.update({
   id: '/sectors/$sector',
@@ -881,7 +881,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AppOnboardingRoute
   '/opportunity-map': typeof AppOpportunityMapRoute
   '/patterns': typeof AppPatternsRoute
-  '/pilot': typeof AppPilotRouteWithChildren
+  '/pilot': typeof AppPilotRoute
   '/portfoliox': typeof AppPortfolioxRoute
   '/pricing': typeof AppPricingRoute
   '/privacy': typeof AppPrivacyRoute
@@ -1012,7 +1012,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AppOnboardingRoute
   '/opportunity-map': typeof AppOpportunityMapRoute
   '/patterns': typeof AppPatternsRoute
-  '/pilot': typeof AppPilotRouteWithChildren
+  '/pilot': typeof AppPilotRoute
   '/portfoliox': typeof AppPortfolioxRoute
   '/pricing': typeof AppPricingRoute
   '/privacy': typeof AppPrivacyRoute
@@ -1147,7 +1147,7 @@ export interface FileRoutesById {
   '/_app/onboarding': typeof AppOnboardingRoute
   '/_app/opportunity-map': typeof AppOpportunityMapRoute
   '/_app/patterns': typeof AppPatternsRoute
-  '/_app/pilot': typeof AppPilotRouteWithChildren
+  '/_app/pilot': typeof AppPilotRoute
   '/_app/portfoliox': typeof AppPortfolioxRoute
   '/_app/pricing': typeof AppPricingRoute
   '/_app/privacy': typeof AppPrivacyRoute
@@ -1189,7 +1189,7 @@ export interface FileRoutesById {
   '/_app/invite/$token': typeof AppInviteTokenRoute
   '/_app/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/_app/opportunities/new': typeof AppOpportunitiesNewRoute
-  '/_app/pilot/portal': typeof AppPilotPortalRoute
+  '/_app/pilot_/portal': typeof AppPilotPortalRoute
   '/_app/sectors/$sector': typeof AppSectorsSectorRoute
   '/_app/segments/$segment': typeof AppSegmentsSegmentRoute
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
@@ -1589,7 +1589,7 @@ export interface FileRouteTypes {
     | '/_app/invite/$token'
     | '/_app/opportunities/$id'
     | '/_app/opportunities/new'
-    | '/_app/pilot/portal'
+    | '/_app/pilot_/portal'
     | '/_app/sectors/$sector'
     | '/_app/segments/$segment'
     | '/_app/studio/portfolio'
@@ -2319,12 +2319,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOpportunitiesNewRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/pilot/portal': {
-      id: '/_app/pilot/portal'
-      path: '/portal'
+    '/_app/pilot_/portal': {
+      id: '/_app/pilot_/portal'
+      path: '/pilot/portal'
       fullPath: '/pilot/portal'
       preLoaderRoute: typeof AppPilotPortalRouteImport
-      parentRoute: typeof AppPilotRoute
+      parentRoute: typeof AppRoute
     }
     '/_app/sectors/$sector': {
       id: '/_app/sectors/$sector'
@@ -2666,18 +2666,6 @@ const AppBoardsRouteWithChildren = AppBoardsRoute._addFileChildren(
   AppBoardsRouteChildren,
 )
 
-interface AppPilotRouteChildren {
-  AppPilotPortalRoute: typeof AppPilotPortalRoute
-}
-
-const AppPilotRouteChildren: AppPilotRouteChildren = {
-  AppPilotPortalRoute: AppPilotPortalRoute,
-}
-
-const AppPilotRouteWithChildren = AppPilotRoute._addFileChildren(
-  AppPilotRouteChildren,
-)
-
 interface AppStudioRouteChildren {
   AppStudioPortfolioRoute: typeof AppStudioPortfolioRoute
   AppStudioUseCaseIdAdvisorxRoute: typeof AppStudioUseCaseIdAdvisorxRoute
@@ -2756,7 +2744,7 @@ interface AppRouteChildren {
   AppOnboardingRoute: typeof AppOnboardingRoute
   AppOpportunityMapRoute: typeof AppOpportunityMapRoute
   AppPatternsRoute: typeof AppPatternsRoute
-  AppPilotRoute: typeof AppPilotRouteWithChildren
+  AppPilotRoute: typeof AppPilotRoute
   AppPortfolioxRoute: typeof AppPortfolioxRoute
   AppPricingRoute: typeof AppPricingRoute
   AppPrivacyRoute: typeof AppPrivacyRoute
@@ -2777,6 +2765,7 @@ interface AppRouteChildren {
   AppInviteTokenRoute: typeof AppInviteTokenRoute
   AppOpportunitiesIdRoute: typeof AppOpportunitiesIdRoute
   AppOpportunitiesNewRoute: typeof AppOpportunitiesNewRoute
+  AppPilotPortalRoute: typeof AppPilotPortalRoute
   AppSectorsSectorRoute: typeof AppSectorsSectorRoute
   AppSegmentsSegmentRoute: typeof AppSegmentsSegmentRoute
   AppUseCasesSlugRoute: typeof AppUseCasesSlugRoute
@@ -2831,7 +2820,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppOnboardingRoute: AppOnboardingRoute,
   AppOpportunityMapRoute: AppOpportunityMapRoute,
   AppPatternsRoute: AppPatternsRoute,
-  AppPilotRoute: AppPilotRouteWithChildren,
+  AppPilotRoute: AppPilotRoute,
   AppPortfolioxRoute: AppPortfolioxRoute,
   AppPricingRoute: AppPricingRoute,
   AppPrivacyRoute: AppPrivacyRoute,
@@ -2852,6 +2841,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppInviteTokenRoute: AppInviteTokenRoute,
   AppOpportunitiesIdRoute: AppOpportunitiesIdRoute,
   AppOpportunitiesNewRoute: AppOpportunitiesNewRoute,
+  AppPilotPortalRoute: AppPilotPortalRoute,
   AppSectorsSectorRoute: AppSectorsSectorRoute,
   AppSegmentsSegmentRoute: AppSegmentsSegmentRoute,
   AppUseCasesSlugRoute: AppUseCasesSlugRoute,
