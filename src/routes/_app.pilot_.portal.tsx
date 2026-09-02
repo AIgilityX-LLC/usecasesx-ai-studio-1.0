@@ -1,21 +1,35 @@
 /**
  * Pilot participant portal.
  *
- * A read-only mirror of everything the pilot holds about the signed-in
- * participant: their seat, the onboarding intake they submitted, the use cases
- * they own, and every checkpoint answer they gave. Nothing here is editable —
- * the mission page at /pilot owns the write paths.
+ * Mirrors everything the pilot holds about the signed-in participant — seat,
+ * intake, use cases, checkpoint answers — and lets them actually move: each
+ * mission step carries its own call to action and any checkpoint that is due
+ * can be answered here without leaving the page.
  */
 
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowUpRight, ClipboardList, Compass, MessageSquareQuote } from "lucide-react";
+import {
+  ArrowUpRight,
+  CheckCircle2,
+  Circle,
+  ClipboardList,
+  Compass,
+  MessageSquareQuote,
+  Target,
+} from "lucide-react";
 
 import { privateHead } from "@/lib/seo";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { getMyPilotPortalFn } from "@/lib/pilot/pilot.functions";
-import { pilotStatusLabel, willingnessLabel, PILOT_CHECKPOINTS } from "@/lib/pilot/pilot.model";
+import {
+  availableCheckpoints,
+  pilotStatusLabel,
+  willingnessLabel,
+  PILOT_CHECKPOINTS,
+} from "@/lib/pilot/pilot.model";
+import { PilotCheckpointForm } from "@/components/pilot/PilotCheckpointForm";
 import { aiExperienceLabel, availabilityLabel } from "@/lib/pilot/pilot.onboarding";
 import { INVITE_QUERY_PARAM } from "@/lib/pilot/pilot.invites";
 import { EmptyState } from "@/components/EmptyState";
@@ -24,6 +38,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+
 
 export const Route = createFileRoute("/_app/pilot_/portal")({
   head: () => privateHead("Your pilot portal"),
@@ -99,6 +114,13 @@ function PilotPortalPage() {
   const checkpoints = data?.checkpoints ?? [];
   const useCases = data?.useCases ?? [];
   const progress = data?.progress ?? null;
+  const openCheckpoints = progress
+    ? availableCheckpoints(
+        progress,
+        checkpoints.map((c) => c.checkpoint),
+      )
+    : [];
+
 
   if (!invitation) {
     return (
@@ -162,6 +184,87 @@ function PilotPortalPage() {
           ) : null}
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Target className="h-4 w-4 text-primary" aria-hidden="true" />
+            Your mission steps
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Five steps, each measured from what you actually complete. Pick up wherever you left
+            off.
+          </p>
+        </CardHeader>
+        <CardContent>
+          {progress?.steps?.length ? (
+            <ol className="space-y-3">
+              {progress.steps.map((step) => (
+                <li
+                  key={step.key}
+                  className="flex flex-col gap-3 rounded-lg border border-border p-4 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="flex gap-3">
+                    {step.done ? (
+                      <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
+                    ) : (
+                      <Circle
+                        className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground"
+                        aria-hidden
+                      />
+                    )}
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{step.label}</p>
+                      <p className="text-xs text-muted-foreground">{step.helper}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {Math.min(step.count, step.target)} of {step.target} complete
+                      </p>
+                    </div>
+                  </div>
+                  <Button asChild size="sm" variant={step.done ? "ghost" : "default"}>
+                    <Link to={step.to}>{step.done ? "Review" : step.cta}</Link>
+                  </Button>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <EmptyState
+              title="Your mission has not started yet"
+              description="Complete the intake on the mission page and your five steps will appear here."
+              action={
+                <Button asChild size="sm">
+                  <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>
+                    Open the mission
+                  </Link>
+                </Button>
+              }
+            />
+          )}
+        </CardContent>
+      </Card>
+
+      {openCheckpoints.length > 0 && (
+        <section className="space-y-4" aria-label="Checkpoints due">
+          <div className="space-y-1">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Checkpoints due now
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              These unlocked from the steps you have finished. Your answers are the pilot evidence.
+            </p>
+          </div>
+          {openCheckpoints.map((checkpoint) => (
+            <PilotCheckpointForm
+              key={checkpoint.key}
+              checkpoint={checkpoint}
+              missionStep={progress?.nextStep?.key ?? null}
+              references={{ useCaseIds: useCases.map((uc) => uc.id).slice(0, 10), portfolioId: null }}
+            />
+          ))}
+        </section>
+      )}
+
+
 
       <Card>
         <CardHeader>
