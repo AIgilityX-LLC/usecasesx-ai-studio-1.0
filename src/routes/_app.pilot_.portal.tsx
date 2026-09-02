@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const Route = createFileRoute("/_app/pilot/portal")({
+export const Route = createFileRoute("/_app/pilot_/portal")({
   head: () => privateHead("Your pilot portal"),
   component: PilotPortalPage,
 });
