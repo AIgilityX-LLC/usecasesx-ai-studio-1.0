@@ -146,6 +146,7 @@ function PilotPage() {
             </span>
             <Link
               to="/pilot/portal"
+              search={{ [INVITE_QUERY_PARAM]: undefined }}
               className="text-xs font-medium text-primary underline underline-offset-4"
             >
               View your pilot portal
