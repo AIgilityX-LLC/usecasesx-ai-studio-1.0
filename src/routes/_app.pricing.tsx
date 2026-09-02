@@ -201,8 +201,14 @@ function PricingPage() {
         description="Start free with the Lite plan. Unlock the full discovery, scoring, blueprint, and governance workflow with Pro. Run sovereign, regulator-grade deployments with Enterprise."
         actions={
           <>
-            <Button size="lg" onClick={() => setWaitlistOpen(true)}>
-              <Crown className="mr-2 h-4 w-4" /> Join the Waitlist — Early Gratis Access
+            <Button size="lg" asChild>
+              <Link to={ent.isAuthed ? "/onboarding" : "/auth"}>
+                <Crown className="mr-2 h-4 w-4" />
+                {ent.isAuthed ? "Activate Founding Access" : "Sign up — Pro Founding Access"}
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" onClick={() => setWaitlistOpen(true)}>
+              Join the waitlist
             </Button>
             <Button asChild size="lg" variant="outline">
               <Link to="/repository">Start Free Tools</Link>
