@@ -14,6 +14,16 @@ export const SITE_URL =
   import.meta.env.VITE_SITE_URL?.replace(/\/$/, "") ?? "https://ai-venture-atlas.lovable.app";
 export const SITE_NAME = "UseCasesX™ by AIgilityX™";
 
+/** True when a request host matches the canonical published origin. */
+export function isCanonicalHost(host: string | null | undefined): boolean {
+  if (!host) return false;
+  try {
+    return host.toLowerCase() === new URL(SITE_URL).host.toLowerCase();
+  } catch {
+    return false;
+  }
+}
+
 /** Public, indexable marketing and repository paths. */
 export const PUBLIC_INDEXABLE_PATHS = [
   "/",
