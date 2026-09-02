@@ -48,6 +48,55 @@ const JOURNEY = [
   "Advisory",
 ];
 
+const FEATURES = [
+  {
+    name: "Global AI Use Case Repository",
+    body: "Search and filter published use cases by industry, business function, AI capability, value theme, complexity and risk. No account needed.",
+  },
+  {
+    name: "AI Opportunity Map",
+    body: "Place candidate opportunities against value and feasibility so the sequencing argument is visible rather than asserted.",
+  },
+  {
+    name: "AI Use Case Studio™",
+    body: "Turn an opportunity into a designed use case: problem, data readiness, capability fit, benefits, metrics and deliverables.",
+  },
+  {
+    name: "Scoring and portfolios",
+    body: "Score feasibility and value with a consistent scorecard, then group scored use cases into portfolios and a sequenced roadmap.",
+  },
+  {
+    name: "Exports and reporting",
+    body: "Export scored portfolios, roadmaps and deliverables as documents you can take into an investment or governance review.",
+  },
+  {
+    name: "Workspaces, roles and audit",
+    body: "Workspace ownership, role-based access and append-only audit events on governance-relevant actions from day one.",
+  },
+];
+
+const JOIN_STEPS = [
+  {
+    step: "1",
+    title: "Browse Lite — no account",
+    body: "Open the repository and confirm the depth of the corpus for your sector before you commit anything.",
+    cta: { to: "/repository", label: "Open the repository", location: "launch-join-1" },
+  },
+  {
+    step: "2",
+    title: "Create your Pro Founding Access account",
+    body: `Sign up with a work email. Founding Access is complimentary through ${FOUNDING_ACCESS_END}, subject to published fair-use limits.`,
+    cta: { to: "/auth", label: "Create an account", location: "launch-join-2" },
+  },
+  {
+    step: "3",
+    title: "Run your first use case end to end",
+    body: "Capture an opportunity, design it in the Studio, score it and export the portfolio view — the full journey in one sitting.",
+    cta: { to: "/how-it-works", label: "See how it works", location: "launch-join-3" },
+  },
+];
+
+
 export const Route = createFileRoute("/_app/launch")({
   loader: async () => getLaunchPageContext(),
   head: ({ loaderData }) => {
