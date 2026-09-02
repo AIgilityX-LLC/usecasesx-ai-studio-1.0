@@ -1,18 +1,21 @@
-import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { breadcrumbJsonLd, publicHead, SITE_URL } from "@/lib/seo";
+import { breadcrumbJsonLd, publicHead } from "@/lib/seo";
 import { PageHero, Section, TrackedCta } from "@/components/marketing/MarketingPrimitives";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FOUNDING_ACCESS_END, LAUNCH_DATE } from "@/lib/founding-access";
-import { getCatalogStats } from "@/lib/public-catalog.functions";
+import { getLaunchPageContext } from "@/lib/launch.functions";
 
-function highlights(stats: { useCases: number; industries: number }) {
+function highlights(stats: { useCases: number; industries: number }, statsAvailable: boolean) {
+  const corpus =
+    statsAvailable && stats.useCases > 0
+      ? `${stats.useCases} published AI use cases across ${stats.industries} industries`
+      : "A curated library of published AI use cases across many industries";
   return [
     {
       title: "A repository you can act on",
-      body: `${stats.useCases} published AI use cases across ${stats.industries} industries, each with value, complexity and risk signals — browsable without an account.`,
+      body: `${corpus}, each with value, complexity and risk signals — browsable without an account.`,
       edition: "Lite",
     },
     {
@@ -46,48 +49,63 @@ const JOURNEY = [
 ];
 
 export const Route = createFileRoute("/_app/launch")({
-  head: () =>
-    publicHead({
+  loader: async () => getLaunchPageContext(),
+  head: ({ loaderData }) => {
+    const live = loaderData?.live ?? false;
+    return publicHead({
       path: "/launch",
-      title: "UseCasesX™ launch — Lite and Pro Founding Access",
-      description:
-        "The UseCasesX™ launch announcement: free Lite discovery, complimentary Pro Founding Access through 31 December 2026, and how to get started today.",
+      title: live
+        ? "UseCasesX™ launch — Lite and Pro Founding Access"
+        : "UseCasesX™ release candidate — editions preview",
+      description: live
+        ? "The UseCasesX™ launch announcement: free Lite discovery, complimentary Pro Founding Access through 31 December 2026, and how to get started today."
+        : "Preview of the UseCasesX™ release candidate: Lite discovery and Pro Founding Access. Not the announced release; availability is subject to change.",
       ogType: "article",
+      noindex: !live,
       jsonLd: [
         breadcrumbJsonLd([
           { name: "Home", path: "/" },
           { name: "Launch", path: "/launch" },
         ]),
-        {
-          "@context": "https://schema.org",
-          "@type": "NewsArticle",
-          headline: "UseCasesX™ launches Lite and Pro Founding Access",
-          description:
-            "AIgilityX announces the launch of UseCasesX™ — the Global AI Use Case Repository, AI Opportunity Map and AI Use Case Studio™.",
-          publisher: { "@type": "Organization", name: "AIgilityX™" },
-        },
+        ...(live
+          ? [
+              {
+                "@context": "https://schema.org",
+                "@type": "NewsArticle",
+                headline: "UseCasesX™ launches Lite and Pro Founding Access",
+                description:
+                  "AIgilityX announces the launch of UseCasesX™ — the Global AI Use Case Repository, AI Opportunity Map and AI Use Case Studio™.",
+                publisher: { "@type": "Organization", name: "AIgilityX™" },
+              },
+            ]
+          : []),
       ],
-    }),
-  loader: async () => ({ stats: await getCatalogStats() }),
+    });
+  },
+  errorComponent: LaunchUnavailable,
   component: LaunchAnnouncementPage,
 });
 
-/** True only once the page is served from the canonical published host. */
-function useIsLiveHost() {
-  const [live, setLive] = useState(false);
-  useEffect(() => {
-    try {
-      setLive(window.location.host === new URL(SITE_URL).host);
-    } catch {
-      setLive(false);
-    }
-  }, []);
-  return live;
+function LaunchUnavailable() {
+  return (
+    <PageHero
+      eyebrow="Release candidate"
+      title="UseCasesX™ — Lite and Pro Founding Access"
+      intro="We could not load the live catalogue figures just now. The repository itself is unaffected — open it directly below."
+    >
+      <TrackedCta to="/repository" label="Open the repository" location="launch-error-repository" />
+      <TrackedCta
+        to="/editions"
+        label="Compare editions"
+        location="launch-error-editions"
+        variant="secondary"
+      />
+    </PageHero>
+  );
 }
 
 function LaunchAnnouncementPage() {
-  const { stats } = Route.useLoaderData();
-  const live = useIsLiveHost();
+  const { stats, statsAvailable, live } = Route.useLoaderData();
   return (
     <>
       <PageHero
@@ -113,7 +131,7 @@ function LaunchAnnouncementPage() {
         lead="Everything listed here works in the product now. Capabilities that are designed but not yet available are called out on the editions page rather than implied here."
       >
         <div className="grid gap-4 md:grid-cols-2">
-          {highlights(stats).map((item) => (
+          {highlights(stats, statsAvailable).map((item) => (
             <Card key={item.title}>
               <CardHeader className="space-y-2">
                 <Badge variant="secondary" className="w-fit">

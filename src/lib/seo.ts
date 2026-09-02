@@ -14,6 +14,16 @@ export const SITE_URL =
   import.meta.env.VITE_SITE_URL?.replace(/\/$/, "") ?? "https://ai-venture-atlas.lovable.app";
 export const SITE_NAME = "UseCasesX™ by AIgilityX™";
 
+/** True when a request host matches the canonical published origin. */
+export function isCanonicalHost(host: string | null | undefined): boolean {
+  if (!host) return false;
+  try {
+    return host.toLowerCase() === new URL(SITE_URL).host.toLowerCase();
+  } catch {
+    return false;
+  }
+}
+
 /** Public, indexable marketing and repository paths. */
 export const PUBLIC_INDEXABLE_PATHS = [
   "/",
@@ -97,6 +107,8 @@ export interface PublicHeadInput {
   ogType?: "website" | "article";
   /** JSON-LD objects rendered into <head>. */
   jsonLd?: Record<string, unknown>[];
+  /** Keep the page out of search indexes (pre-announcement builds). */
+  noindex?: boolean;
 }
 
 /** Complete, self-referencing metadata for a public page. */
@@ -107,12 +119,13 @@ export function publicHead({
   image,
   ogType = "website",
   jsonLd = [],
+  noindex = false,
 }: PublicHeadInput) {
   const url = `${SITE_URL}${path}`;
   const meta = [
     { title },
     { name: "description", content: description },
-    { name: "robots", content: "index, follow" },
+    { name: "robots", content: noindex ? "noindex, nofollow" : "index, follow" },
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:url", content: url },
