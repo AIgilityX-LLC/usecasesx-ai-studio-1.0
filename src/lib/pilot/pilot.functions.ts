@@ -623,3 +623,34 @@ export const savePilotOnboardingFn = createServerFn({ method: "POST" })
       values: data,
     });
   });
+
+/* --------------------------------------------------------- participant portal */
+
+/**
+ * Everything a participant's own portal needs in one round trip: their seat,
+ * their intake, the use cases they own and every checkpoint answer they gave.
+ */
+export const getMyPilotPortalFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { getPilotSettings, resolvePilotForUser, listMyCheckpoints } = await import(
+      "@/lib/pilot/pilot.server"
+    );
+    const { getMyOnboarding } = await import("@/lib/pilot/pilot.onboarding.server");
+    const { listMyPilotUseCases } = await import("@/lib/pilot/pilot.portal.server");
+
+    const email =
+      (context.claims as { email?: string } | undefined)?.email ??
+      (await context.supabase.auth.getUser()).data?.user?.email ??
+      null;
+
+    const settings = await getPilotSettings(context.supabase);
+    const [{ invitation, progress }, profile, checkpoints, useCases] = await Promise.all([
+      resolvePilotForUser(context.supabase, context.userId, email),
+      getMyOnboarding(context.supabase, context.userId, settings.cohort),
+      listMyCheckpoints(context.supabase, context.userId),
+      listMyPilotUseCases(context.supabase, context.userId),
+    ]);
+
+    return { cohort: settings.cohort, email, invitation, progress, profile, checkpoints, useCases };
+  });
