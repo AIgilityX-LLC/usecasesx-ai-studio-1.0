@@ -144,6 +144,12 @@ function PilotPage() {
               Cohort {invitation.cohort} · invited{" "}
               {new Date(invitation.invitedAt).toLocaleDateString()}
             </span>
+            <Link
+              to="/pilot/portal"
+              className="text-xs font-medium text-primary underline underline-offset-4"
+            >
+              View your pilot portal
+            </Link>
           </div>
         ) : null}
       </header>
