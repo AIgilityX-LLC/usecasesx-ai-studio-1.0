@@ -20,3 +20,4 @@
 - [x] P0 launch-check run recorded (verdict pass, 10/13, 0 failures) with the real 180-use-case corpus loaded
 - [x] Pilot portal made actionable: mission steps with per-step CTAs + inline checkpoint forms
 - [ ] Still blocked: real pilot roster rows (Name, Email, Organization, Sector, Country) were not supplied — cannot invite real participants or clear the signed-in browser gate without them
+- [x] Production smoke run + announcement decision recorded in docs/release/production-smoke-2026-09-02.md (verdict: STOP — candidate is not published)
