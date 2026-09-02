@@ -14,17 +14,45 @@ export function unauthorized() {
   });
 }
 
-export function isAuthorizedCron(request: Request): boolean {
-  const expected = process.env["CRON_HOOK_SECRET"] ?? "";
-  if (!expected) return false;
-
+function presented(request: Request): string {
   const header = request.headers.get("authorization") ?? "";
-  const provided = header.toLowerCase().startsWith("bearer ")
+  return header.toLowerCase().startsWith("bearer ")
     ? header.slice(7).trim()
     : (request.headers.get("x-cron-secret") ?? "").trim();
-  if (!provided) return false;
+}
 
+function sameSecret(provided: string, expected: string): boolean {
+  if (!provided || !expected) return false;
   const a = Buffer.from(provided);
   const b = Buffer.from(expected);
   return a.length === b.length && timingSafeEqual(a, b);
 }
+
+export function isAuthorizedCron(request: Request): boolean {
+  return sameSecret(presented(request), process.env["CRON_HOOK_SECRET"] ?? "");
+}
+
+/**
+ * Scheduler-friendly variant.
+ *
+ * The database scheduler cannot read platform secrets, so each scheduled hook
+ * also has a token row in `public.cron_hook_tokens` that only the service role
+ * can read. Either the platform secret or that token authorises the call.
+ */
+export async function isAuthorizedCronHook(request: Request, hook: string): Promise<boolean> {
+  if (isAuthorizedCron(request)) return true;
+  const provided = presented(request);
+  if (!provided) return false;
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("cron_hook_tokens")
+      .select("token")
+      .eq("name", hook)
+      .maybeSingle();
+    return sameSecret(provided, (data as { token?: string } | null)?.token ?? "");
+  } catch {
+    return false;
+  }
+}
+

@@ -14,13 +14,13 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
-import { isAuthorizedCron, unauthorized } from "@/lib/cron-auth.server";
+import { isAuthorizedCronHook, unauthorized } from "@/lib/cron-auth.server";
 
 export const Route = createFileRoute("/api/public/hooks/launch-checks")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        if (!isAuthorizedCron(request)) return unauthorized();
+        if (!(await isAuthorizedCronHook(request, "launch-checks"))) return unauthorized();
 
         const url = process.env["SUPABASE_URL"];
         const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
