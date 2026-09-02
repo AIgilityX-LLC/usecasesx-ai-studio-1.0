@@ -114,6 +114,13 @@ function PilotPortalPage() {
   const checkpoints = data?.checkpoints ?? [];
   const useCases = data?.useCases ?? [];
   const progress = data?.progress ?? null;
+  const openCheckpoints = progress
+    ? availableCheckpoints(
+        progress,
+        checkpoints.map((c) => c.checkpoint),
+      )
+    : [];
+
 
   if (!invitation) {
     return (
