@@ -47,7 +47,7 @@ function Field({ label, value }: { label: string; value: string | null | undefin
 }
 
 function PilotPortalPage() {
-  const { session, loading: sessionLoading } = useSupabaseSession();
+  const session = useSupabaseSession();
   const fetchPortal = useServerFn(getMyPilotPortalFn);
 
   const { data, isLoading, isError, error } = useQuery({
@@ -56,7 +56,7 @@ function PilotPortalPage() {
     enabled: Boolean(session),
   });
 
-  if (sessionLoading || (session && isLoading)) {
+  if (session && isLoading) {
     return (
       <div className="mx-auto w-full max-w-5xl space-y-6 px-4 py-10">
         <Skeleton className="h-10 w-72" />
@@ -107,7 +107,7 @@ function PilotPortalPage() {
           description="This portal opens once you claim a pilot invitation. If you were invited, open the link in your invitation email while signed in with that address."
           action={
             <Button asChild variant="outline">
-              <Link to="/pilot">Go to the pilot mission</Link>
+              <Link to="/pilot" search={{}}>Go to the pilot mission</Link>
             </Button>
           }
         />
@@ -155,7 +155,7 @@ function PilotPortalPage() {
               </div>
               <Progress value={progress.percent} aria-label="Mission progress" />
               <Button asChild size="sm" variant="outline">
-                <Link to="/pilot">Continue the mission</Link>
+                <Link to="/pilot" search={{}}>Continue the mission</Link>
               </Button>
             </div>
           ) : null}
@@ -194,7 +194,7 @@ function PilotPortalPage() {
               description="The short intake tells us your role, sector and what you want out of the pilot. It takes about two minutes."
               action={
                 <Button asChild size="sm">
-                  <Link to="/pilot">Complete the intake</Link>
+                  <Link to="/pilot" search={{}}>Complete the intake</Link>
                 </Button>
               }
             />
@@ -298,7 +298,7 @@ function PilotPortalPage() {
               description="Checkpoints unlock as you move through the mission. Your answers are what turn the pilot into evidence."
               action={
                 <Button asChild size="sm">
-                  <Link to="/pilot">Open the mission</Link>
+                  <Link to="/pilot" search={{}}>Open the mission</Link>
                 </Button>
               }
             />

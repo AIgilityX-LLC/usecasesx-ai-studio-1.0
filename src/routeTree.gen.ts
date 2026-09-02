@@ -103,6 +103,7 @@ import { Route as AppInviteTokenRouteImport } from './routes/_app.invite.$token'
 import { Route as AppOpportunitiesIndexRouteImport } from './routes/_app.opportunities.index'
 import { Route as AppOpportunitiesIdRouteImport } from './routes/_app.opportunities.$id'
 import { Route as AppOpportunitiesNewRouteImport } from './routes/_app.opportunities.new'
+import { Route as AppPilotPortalRouteImport } from './routes/_app.pilot.portal'
 import { Route as AppSectorsSectorRouteImport } from './routes/_app.sectors.$sector'
 import { Route as AppSegmentsSegmentRouteImport } from './routes/_app.segments.$segment'
 import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
@@ -621,6 +622,11 @@ const AppOpportunitiesNewRoute = AppOpportunitiesNewRouteImport.update({
   path: '/opportunities/new',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPilotPortalRoute = AppPilotPortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
+  getParentRoute: () => AppPilotRoute,
+} as any)
 const AppSectorsSectorRoute = AppSectorsSectorRouteImport.update({
   id: '/sectors/$sector',
   path: '/sectors/$sector',
@@ -875,7 +881,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AppOnboardingRoute
   '/opportunity-map': typeof AppOpportunityMapRoute
   '/patterns': typeof AppPatternsRoute
-  '/pilot': typeof AppPilotRoute
+  '/pilot': typeof AppPilotRouteWithChildren
   '/portfoliox': typeof AppPortfolioxRoute
   '/pricing': typeof AppPricingRoute
   '/privacy': typeof AppPrivacyRoute
@@ -917,6 +923,7 @@ export interface FileRoutesByFullPath {
   '/invite/$token': typeof AppInviteTokenRoute
   '/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/opportunities/new': typeof AppOpportunitiesNewRoute
+  '/pilot/portal': typeof AppPilotPortalRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
   '/segments/$segment': typeof AppSegmentsSegmentRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
@@ -1005,7 +1012,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AppOnboardingRoute
   '/opportunity-map': typeof AppOpportunityMapRoute
   '/patterns': typeof AppPatternsRoute
-  '/pilot': typeof AppPilotRoute
+  '/pilot': typeof AppPilotRouteWithChildren
   '/portfoliox': typeof AppPortfolioxRoute
   '/pricing': typeof AppPricingRoute
   '/privacy': typeof AppPrivacyRoute
@@ -1047,6 +1054,7 @@ export interface FileRoutesByTo {
   '/invite/$token': typeof AppInviteTokenRoute
   '/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/opportunities/new': typeof AppOpportunitiesNewRoute
+  '/pilot/portal': typeof AppPilotPortalRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
   '/segments/$segment': typeof AppSegmentsSegmentRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
@@ -1139,7 +1147,7 @@ export interface FileRoutesById {
   '/_app/onboarding': typeof AppOnboardingRoute
   '/_app/opportunity-map': typeof AppOpportunityMapRoute
   '/_app/patterns': typeof AppPatternsRoute
-  '/_app/pilot': typeof AppPilotRoute
+  '/_app/pilot': typeof AppPilotRouteWithChildren
   '/_app/portfoliox': typeof AppPortfolioxRoute
   '/_app/pricing': typeof AppPricingRoute
   '/_app/privacy': typeof AppPrivacyRoute
@@ -1181,6 +1189,7 @@ export interface FileRoutesById {
   '/_app/invite/$token': typeof AppInviteTokenRoute
   '/_app/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/_app/opportunities/new': typeof AppOpportunitiesNewRoute
+  '/_app/pilot/portal': typeof AppPilotPortalRoute
   '/_app/sectors/$sector': typeof AppSectorsSectorRoute
   '/_app/segments/$segment': typeof AppSegmentsSegmentRoute
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
@@ -1315,6 +1324,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/opportunities/$id'
     | '/opportunities/new'
+    | '/pilot/portal'
     | '/sectors/$sector'
     | '/segments/$segment'
     | '/studio/portfolio'
@@ -1445,6 +1455,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/opportunities/$id'
     | '/opportunities/new'
+    | '/pilot/portal'
     | '/sectors/$sector'
     | '/segments/$segment'
     | '/studio/portfolio'
@@ -1578,6 +1589,7 @@ export interface FileRouteTypes {
     | '/_app/invite/$token'
     | '/_app/opportunities/$id'
     | '/_app/opportunities/new'
+    | '/_app/pilot/portal'
     | '/_app/sectors/$sector'
     | '/_app/segments/$segment'
     | '/_app/studio/portfolio'
@@ -2307,6 +2319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOpportunitiesNewRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/pilot/portal': {
+      id: '/_app/pilot/portal'
+      path: '/portal'
+      fullPath: '/pilot/portal'
+      preLoaderRoute: typeof AppPilotPortalRouteImport
+      parentRoute: typeof AppPilotRoute
+    }
     '/_app/sectors/$sector': {
       id: '/_app/sectors/$sector'
       path: '/sectors/$sector'
@@ -2647,6 +2666,18 @@ const AppBoardsRouteWithChildren = AppBoardsRoute._addFileChildren(
   AppBoardsRouteChildren,
 )
 
+interface AppPilotRouteChildren {
+  AppPilotPortalRoute: typeof AppPilotPortalRoute
+}
+
+const AppPilotRouteChildren: AppPilotRouteChildren = {
+  AppPilotPortalRoute: AppPilotPortalRoute,
+}
+
+const AppPilotRouteWithChildren = AppPilotRoute._addFileChildren(
+  AppPilotRouteChildren,
+)
+
 interface AppStudioRouteChildren {
   AppStudioPortfolioRoute: typeof AppStudioPortfolioRoute
   AppStudioUseCaseIdAdvisorxRoute: typeof AppStudioUseCaseIdAdvisorxRoute
@@ -2725,7 +2756,7 @@ interface AppRouteChildren {
   AppOnboardingRoute: typeof AppOnboardingRoute
   AppOpportunityMapRoute: typeof AppOpportunityMapRoute
   AppPatternsRoute: typeof AppPatternsRoute
-  AppPilotRoute: typeof AppPilotRoute
+  AppPilotRoute: typeof AppPilotRouteWithChildren
   AppPortfolioxRoute: typeof AppPortfolioxRoute
   AppPricingRoute: typeof AppPricingRoute
   AppPrivacyRoute: typeof AppPrivacyRoute
@@ -2800,7 +2831,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppOnboardingRoute: AppOnboardingRoute,
   AppOpportunityMapRoute: AppOpportunityMapRoute,
   AppPatternsRoute: AppPatternsRoute,
-  AppPilotRoute: AppPilotRoute,
+  AppPilotRoute: AppPilotRouteWithChildren,
   AppPortfolioxRoute: AppPortfolioxRoute,
   AppPricingRoute: AppPricingRoute,
   AppPrivacyRoute: AppPrivacyRoute,
