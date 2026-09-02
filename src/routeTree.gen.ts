@@ -51,6 +51,7 @@ import { Route as AppHandoffsRouteImport } from './routes/_app.handoffs'
 import { Route as AppHowItWorksRouteImport } from './routes/_app.how-it-works'
 import { Route as AppImpactAssessmentRouteImport } from './routes/_app.impact-assessment'
 import { Route as AppInsightsRouteImport } from './routes/_app.insights'
+import { Route as AppLaunchRouteImport } from './routes/_app.launch'
 import { Route as AppModuleAnalyticsRouteImport } from './routes/_app.module-analytics'
 import { Route as AppMyUseCasesRouteImport } from './routes/_app.my-use-cases'
 import { Route as AppOnboardingRouteImport } from './routes/_app.onboarding'
@@ -349,6 +350,11 @@ const AppImpactAssessmentRoute = AppImpactAssessmentRouteImport.update({
 const AppInsightsRoute = AppInsightsRouteImport.update({
   id: '/insights',
   path: '/insights',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLaunchRoute = AppLaunchRouteImport.update({
+  id: '/launch',
+  path: '/launch',
   getParentRoute: () => AppRoute,
 } as any)
 const AppModuleAnalyticsRoute = AppModuleAnalyticsRouteImport.update({
@@ -876,6 +882,7 @@ export interface FileRoutesByFullPath {
   '/how-it-works': typeof AppHowItWorksRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
   '/insights': typeof AppInsightsRoute
+  '/launch': typeof AppLaunchRoute
   '/module-analytics': typeof AppModuleAnalyticsRoute
   '/my-use-cases': typeof AppMyUseCasesRoute
   '/onboarding': typeof AppOnboardingRoute
@@ -1007,6 +1014,7 @@ export interface FileRoutesByTo {
   '/how-it-works': typeof AppHowItWorksRoute
   '/impact-assessment': typeof AppImpactAssessmentRoute
   '/insights': typeof AppInsightsRoute
+  '/launch': typeof AppLaunchRoute
   '/module-analytics': typeof AppModuleAnalyticsRoute
   '/my-use-cases': typeof AppMyUseCasesRoute
   '/onboarding': typeof AppOnboardingRoute
@@ -1142,6 +1150,7 @@ export interface FileRoutesById {
   '/_app/how-it-works': typeof AppHowItWorksRoute
   '/_app/impact-assessment': typeof AppImpactAssessmentRoute
   '/_app/insights': typeof AppInsightsRoute
+  '/_app/launch': typeof AppLaunchRoute
   '/_app/module-analytics': typeof AppModuleAnalyticsRoute
   '/_app/my-use-cases': typeof AppMyUseCasesRoute
   '/_app/onboarding': typeof AppOnboardingRoute
@@ -1277,6 +1286,7 @@ export interface FileRouteTypes {
     | '/how-it-works'
     | '/impact-assessment'
     | '/insights'
+    | '/launch'
     | '/module-analytics'
     | '/my-use-cases'
     | '/onboarding'
@@ -1408,6 +1418,7 @@ export interface FileRouteTypes {
     | '/how-it-works'
     | '/impact-assessment'
     | '/insights'
+    | '/launch'
     | '/module-analytics'
     | '/my-use-cases'
     | '/onboarding'
@@ -1542,6 +1553,7 @@ export interface FileRouteTypes {
     | '/_app/how-it-works'
     | '/_app/impact-assessment'
     | '/_app/insights'
+    | '/_app/launch'
     | '/_app/module-analytics'
     | '/_app/my-use-cases'
     | '/_app/onboarding'
@@ -1953,6 +1965,13 @@ declare module '@tanstack/react-router' {
       path: '/insights'
       fullPath: '/insights'
       preLoaderRoute: typeof AppInsightsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/launch': {
+      id: '/_app/launch'
+      path: '/launch'
+      fullPath: '/launch'
+      preLoaderRoute: typeof AppLaunchRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/module-analytics': {
@@ -2739,6 +2758,7 @@ interface AppRouteChildren {
   AppHowItWorksRoute: typeof AppHowItWorksRoute
   AppImpactAssessmentRoute: typeof AppImpactAssessmentRoute
   AppInsightsRoute: typeof AppInsightsRoute
+  AppLaunchRoute: typeof AppLaunchRoute
   AppModuleAnalyticsRoute: typeof AppModuleAnalyticsRoute
   AppMyUseCasesRoute: typeof AppMyUseCasesRoute
   AppOnboardingRoute: typeof AppOnboardingRoute
@@ -2815,6 +2835,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppHowItWorksRoute: AppHowItWorksRoute,
   AppImpactAssessmentRoute: AppImpactAssessmentRoute,
   AppInsightsRoute: AppInsightsRoute,
+  AppLaunchRoute: AppLaunchRoute,
   AppModuleAnalyticsRoute: AppModuleAnalyticsRoute,
   AppMyUseCasesRoute: AppMyUseCasesRoute,
   AppOnboardingRoute: AppOnboardingRoute,
