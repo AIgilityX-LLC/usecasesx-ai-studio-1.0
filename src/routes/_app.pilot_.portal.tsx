@@ -181,6 +181,87 @@ function PilotPortalPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
+            <Target className="h-4 w-4 text-primary" aria-hidden="true" />
+            Your mission steps
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Five steps, each measured from what you actually complete. Pick up wherever you left
+            off.
+          </p>
+        </CardHeader>
+        <CardContent>
+          {progress?.steps?.length ? (
+            <ol className="space-y-3">
+              {progress.steps.map((step) => (
+                <li
+                  key={step.key}
+                  className="flex flex-col gap-3 rounded-lg border border-border p-4 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="flex gap-3">
+                    {step.done ? (
+                      <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
+                    ) : (
+                      <Circle
+                        className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground"
+                        aria-hidden
+                      />
+                    )}
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{step.label}</p>
+                      <p className="text-xs text-muted-foreground">{step.helper}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {Math.min(step.count, step.target)} of {step.target} complete
+                      </p>
+                    </div>
+                  </div>
+                  <Button asChild size="sm" variant={step.done ? "ghost" : "default"}>
+                    <Link to={step.to}>{step.done ? "Review" : step.cta}</Link>
+                  </Button>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <EmptyState
+              title="Your mission has not started yet"
+              description="Complete the intake on the mission page and your five steps will appear here."
+              action={
+                <Button asChild size="sm">
+                  <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>
+                    Open the mission
+                  </Link>
+                </Button>
+              }
+            />
+          )}
+        </CardContent>
+      </Card>
+
+      {openCheckpoints.length > 0 && (
+        <section className="space-y-4" aria-label="Checkpoints due">
+          <div className="space-y-1">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Checkpoints due now
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              These unlocked from the steps you have finished. Your answers are the pilot evidence.
+            </p>
+          </div>
+          {openCheckpoints.map((checkpoint) => (
+            <PilotCheckpointForm
+              key={checkpoint.key}
+              checkpoint={checkpoint}
+              missionStep={progress?.nextStep?.key ?? null}
+              references={{ useCaseIds: useCases.map((uc) => uc.id).slice(0, 10), portfolioId: null }}
+            />
+          ))}
+        </section>
+      )}
+
+
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
             <ClipboardList className="h-4 w-4 text-primary" aria-hidden="true" />
             Your onboarding intake
           </CardTitle>
