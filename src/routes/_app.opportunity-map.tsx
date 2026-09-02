@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Map as MapIcon, Table2, Info, Download } from "lucide-react";
 import { toast } from "sonner";
 import { getOpportunityMapFn } from "@/lib/opportunity-map.functions";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import {
   activeFilterCount,
   applyMapFilters,
@@ -122,9 +123,13 @@ function FilterGroup({
 
 function OpportunityMapPage() {
   const fetchMap = useServerFn(getOpportunityMapFn);
+  // The map is an authenticated read: without a resolved session the bearer
+  // attacher has no token and the server fn rejects with 401.
+  const session = useSupabaseSession();
   const query = useQuery({
     queryKey: ["opportunity-map"],
     queryFn: () => fetchMap(),
+    enabled: Boolean(session),
     staleTime: 60_000,
   });
 
@@ -231,6 +236,15 @@ function OpportunityMapPage() {
           </div>
         }
       />
+
+      {session === undefined && <LoadingSkeleton />}
+
+      {session === null && (
+        <EmptyState
+          title="Sign in to view the Opportunity Map"
+          description="The map reads opportunities from your workspace, so it needs an active session."
+        />
+      )}
 
       {query.isLoading && <LoadingSkeleton />}
 

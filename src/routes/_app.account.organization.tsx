@@ -24,6 +24,7 @@ import {
   deletePrivateTaxonomyEntryFn,
 } from "@/lib/organization.functions";
 import { getOpportunityMapFn } from "@/lib/opportunity-map.functions";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { TaxonomySetupChecklist } from "@/components/opportunities/TaxonomySetupChecklist";
 import type { MapRecord } from "@/lib/opportunity-map";
 
@@ -80,16 +81,21 @@ function OrganizationSetupPage() {
   const addEntry = useServerFn(createPrivateTaxonomyEntryFn);
   const removeEntry = useServerFn(deletePrivateTaxonomyEntryFn);
   const qc = useQueryClient();
+  // Both reads are authenticated server fns: wait for the session so the
+  // bearer attacher can send a token instead of 401-ing.
+  const session = useSupabaseSession();
 
   const query = useQuery({
     queryKey: ["organization-setup"],
     queryFn: () => fetchSetup(),
+    enabled: Boolean(session),
   });
 
   const fetchMap = useServerFn(getOpportunityMapFn);
   const mapQuery = useQuery({
     queryKey: ["opportunity-map"],
     queryFn: () => fetchMap(),
+    enabled: Boolean(session),
     staleTime: 60_000,
   });
 
