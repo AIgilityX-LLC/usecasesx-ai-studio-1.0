@@ -122,9 +122,13 @@ function FilterGroup({
 
 function OpportunityMapPage() {
   const fetchMap = useServerFn(getOpportunityMapFn);
+  // The map is an authenticated read: without a resolved session the bearer
+  // attacher has no token and the server fn rejects with 401.
+  const session = useSupabaseSession();
   const query = useQuery({
     queryKey: ["opportunity-map"],
     queryFn: () => fetchMap(),
+    enabled: Boolean(session),
     staleTime: 60_000,
   });
 
