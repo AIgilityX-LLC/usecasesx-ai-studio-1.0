@@ -1,21 +1,35 @@
 /**
  * Pilot participant portal.
  *
- * A read-only mirror of everything the pilot holds about the signed-in
- * participant: their seat, the onboarding intake they submitted, the use cases
- * they own, and every checkpoint answer they gave. Nothing here is editable —
- * the mission page at /pilot owns the write paths.
+ * Mirrors everything the pilot holds about the signed-in participant — seat,
+ * intake, use cases, checkpoint answers — and lets them actually move: each
+ * mission step carries its own call to action and any checkpoint that is due
+ * can be answered here without leaving the page.
  */
 
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowUpRight, ClipboardList, Compass, MessageSquareQuote } from "lucide-react";
+import {
+  ArrowUpRight,
+  CheckCircle2,
+  Circle,
+  ClipboardList,
+  Compass,
+  MessageSquareQuote,
+  Target,
+} from "lucide-react";
 
 import { privateHead } from "@/lib/seo";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { getMyPilotPortalFn } from "@/lib/pilot/pilot.functions";
-import { pilotStatusLabel, willingnessLabel, PILOT_CHECKPOINTS } from "@/lib/pilot/pilot.model";
+import {
+  availableCheckpoints,
+  pilotStatusLabel,
+  willingnessLabel,
+  PILOT_CHECKPOINTS,
+} from "@/lib/pilot/pilot.model";
+import { PilotCheckpointForm } from "@/components/pilot/PilotCheckpointForm";
 import { aiExperienceLabel, availabilityLabel } from "@/lib/pilot/pilot.onboarding";
 import { INVITE_QUERY_PARAM } from "@/lib/pilot/pilot.invites";
 import { EmptyState } from "@/components/EmptyState";
@@ -24,6 +38,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+
 
 export const Route = createFileRoute("/_app/pilot_/portal")({
   head: () => privateHead("Your pilot portal"),
