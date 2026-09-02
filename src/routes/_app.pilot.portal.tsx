@@ -107,7 +107,7 @@ function PilotPortalPage() {
           description="This portal opens once you claim a pilot invitation. If you were invited, open the link in your invitation email while signed in with that address."
           action={
             <Button asChild variant="outline">
-              <Link to="/pilot" search={{}}>Go to the pilot mission</Link>
+              <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>Go to the pilot mission</Link>
             </Button>
           }
         />
@@ -155,7 +155,7 @@ function PilotPortalPage() {
               </div>
               <Progress value={progress.percent} aria-label="Mission progress" />
               <Button asChild size="sm" variant="outline">
-                <Link to="/pilot" search={{}}>Continue the mission</Link>
+                <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>Continue the mission</Link>
               </Button>
             </div>
           ) : null}
@@ -194,7 +194,7 @@ function PilotPortalPage() {
               description="The short intake tells us your role, sector and what you want out of the pilot. It takes about two minutes."
               action={
                 <Button asChild size="sm">
-                  <Link to="/pilot" search={{}}>Complete the intake</Link>
+                  <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>Complete the intake</Link>
                 </Button>
               }
             />
@@ -298,7 +298,7 @@ function PilotPortalPage() {
               description="Checkpoints unlock as you move through the mission. Your answers are what turn the pilot into evidence."
               action={
                 <Button asChild size="sm">
-                  <Link to="/pilot" search={{}}>Open the mission</Link>
+                  <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>Open the mission</Link>
                 </Button>
               }
             />
