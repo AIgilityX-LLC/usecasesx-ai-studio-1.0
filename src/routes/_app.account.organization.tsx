@@ -81,16 +81,21 @@ function OrganizationSetupPage() {
   const addEntry = useServerFn(createPrivateTaxonomyEntryFn);
   const removeEntry = useServerFn(deletePrivateTaxonomyEntryFn);
   const qc = useQueryClient();
+  // Both reads are authenticated server fns: wait for the session so the
+  // bearer attacher can send a token instead of 401-ing.
+  const session = useSupabaseSession();
 
   const query = useQuery({
     queryKey: ["organization-setup"],
     queryFn: () => fetchSetup(),
+    enabled: Boolean(session),
   });
 
   const fetchMap = useServerFn(getOpportunityMapFn);
   const mapQuery = useQuery({
     queryKey: ["opportunity-map"],
     queryFn: () => fetchMap(),
+    enabled: Boolean(session),
     staleTime: 60_000,
   });
 
