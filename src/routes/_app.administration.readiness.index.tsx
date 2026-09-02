@@ -10,7 +10,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { AlertCircle, ArrowRight, CheckCircle2, HelpCircle, RefreshCw, XCircle } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowRight,
+  CheckCircle2,
+  HelpCircle,
+  RefreshCw,
+  XCircle,
+} from "lucide-react";
 
 import { privateHead } from "@/lib/seo";
 import { RequireRoles } from "@/components/RequireRoles";
@@ -178,9 +185,7 @@ function ReadinessOverviewPage() {
           <AlertTitle>
             {blocking.length} gate{blocking.length === 1 ? "" : "s"} block a public launch
           </AlertTitle>
-          <AlertDescription>
-            {blocking.map((item) => item.label).join(" · ")}
-          </AlertDescription>
+          <AlertDescription>{blocking.map((item) => item.label).join(" · ")}</AlertDescription>
         </Alert>
       )}
 
