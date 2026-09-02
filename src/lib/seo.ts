@@ -28,6 +28,7 @@ export function isCanonicalHost(host: string | null | undefined): boolean {
 export const PUBLIC_INDEXABLE_PATHS = [
   "/",
   "/launch",
+  "/launch-calendar",
   "/how-it-works",
   "/editions",
   "/advisory",

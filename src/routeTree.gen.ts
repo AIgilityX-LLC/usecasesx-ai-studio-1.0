@@ -52,6 +52,7 @@ import { Route as AppHowItWorksRouteImport } from './routes/_app.how-it-works'
 import { Route as AppImpactAssessmentRouteImport } from './routes/_app.impact-assessment'
 import { Route as AppInsightsRouteImport } from './routes/_app.insights'
 import { Route as AppLaunchRouteImport } from './routes/_app.launch'
+import { Route as AppLaunchCalendarRouteImport } from './routes/_app.launch-calendar'
 import { Route as AppModuleAnalyticsRouteImport } from './routes/_app.module-analytics'
 import { Route as AppMyUseCasesRouteImport } from './routes/_app.my-use-cases'
 import { Route as AppOnboardingRouteImport } from './routes/_app.onboarding'
@@ -355,6 +356,11 @@ const AppInsightsRoute = AppInsightsRouteImport.update({
 const AppLaunchRoute = AppLaunchRouteImport.update({
   id: '/launch',
   path: '/launch',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLaunchCalendarRoute = AppLaunchCalendarRouteImport.update({
+  id: '/launch-calendar',
+  path: '/launch-calendar',
   getParentRoute: () => AppRoute,
 } as any)
 const AppModuleAnalyticsRoute = AppModuleAnalyticsRouteImport.update({
@@ -883,6 +889,7 @@ export interface FileRoutesByFullPath {
   '/impact-assessment': typeof AppImpactAssessmentRoute
   '/insights': typeof AppInsightsRoute
   '/launch': typeof AppLaunchRoute
+  '/launch-calendar': typeof AppLaunchCalendarRoute
   '/module-analytics': typeof AppModuleAnalyticsRoute
   '/my-use-cases': typeof AppMyUseCasesRoute
   '/onboarding': typeof AppOnboardingRoute
@@ -1015,6 +1022,7 @@ export interface FileRoutesByTo {
   '/impact-assessment': typeof AppImpactAssessmentRoute
   '/insights': typeof AppInsightsRoute
   '/launch': typeof AppLaunchRoute
+  '/launch-calendar': typeof AppLaunchCalendarRoute
   '/module-analytics': typeof AppModuleAnalyticsRoute
   '/my-use-cases': typeof AppMyUseCasesRoute
   '/onboarding': typeof AppOnboardingRoute
@@ -1151,6 +1159,7 @@ export interface FileRoutesById {
   '/_app/impact-assessment': typeof AppImpactAssessmentRoute
   '/_app/insights': typeof AppInsightsRoute
   '/_app/launch': typeof AppLaunchRoute
+  '/_app/launch-calendar': typeof AppLaunchCalendarRoute
   '/_app/module-analytics': typeof AppModuleAnalyticsRoute
   '/_app/my-use-cases': typeof AppMyUseCasesRoute
   '/_app/onboarding': typeof AppOnboardingRoute
@@ -1287,6 +1296,7 @@ export interface FileRouteTypes {
     | '/impact-assessment'
     | '/insights'
     | '/launch'
+    | '/launch-calendar'
     | '/module-analytics'
     | '/my-use-cases'
     | '/onboarding'
@@ -1419,6 +1429,7 @@ export interface FileRouteTypes {
     | '/impact-assessment'
     | '/insights'
     | '/launch'
+    | '/launch-calendar'
     | '/module-analytics'
     | '/my-use-cases'
     | '/onboarding'
@@ -1554,6 +1565,7 @@ export interface FileRouteTypes {
     | '/_app/impact-assessment'
     | '/_app/insights'
     | '/_app/launch'
+    | '/_app/launch-calendar'
     | '/_app/module-analytics'
     | '/_app/my-use-cases'
     | '/_app/onboarding'
@@ -1972,6 +1984,13 @@ declare module '@tanstack/react-router' {
       path: '/launch'
       fullPath: '/launch'
       preLoaderRoute: typeof AppLaunchRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/launch-calendar': {
+      id: '/_app/launch-calendar'
+      path: '/launch-calendar'
+      fullPath: '/launch-calendar'
+      preLoaderRoute: typeof AppLaunchCalendarRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/module-analytics': {
@@ -2759,6 +2778,7 @@ interface AppRouteChildren {
   AppImpactAssessmentRoute: typeof AppImpactAssessmentRoute
   AppInsightsRoute: typeof AppInsightsRoute
   AppLaunchRoute: typeof AppLaunchRoute
+  AppLaunchCalendarRoute: typeof AppLaunchCalendarRoute
   AppModuleAnalyticsRoute: typeof AppModuleAnalyticsRoute
   AppMyUseCasesRoute: typeof AppMyUseCasesRoute
   AppOnboardingRoute: typeof AppOnboardingRoute
@@ -2836,6 +2856,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppImpactAssessmentRoute: AppImpactAssessmentRoute,
   AppInsightsRoute: AppInsightsRoute,
   AppLaunchRoute: AppLaunchRoute,
+  AppLaunchCalendarRoute: AppLaunchCalendarRoute,
   AppModuleAnalyticsRoute: AppModuleAnalyticsRoute,
   AppMyUseCasesRoute: AppMyUseCasesRoute,
   AppOnboardingRoute: AppOnboardingRoute,

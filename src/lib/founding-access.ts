@@ -9,7 +9,9 @@
 import { limitsForEdition } from "@/lib/ai/fair-use";
 
 export const FOUNDING_ACCESS_END = "31 December 2026";
-export const LAUNCH_DATE = "14 August 2026";
+export const LAUNCH_DATE = "2 October 2026";
+/** Machine-readable launch moment (09:00 UTC on the launch date). */
+export const LAUNCH_TIMESTAMP_UTC = "2026-10-02T09:00:00Z";
 
 export type EditionKey = "lite" | "pro" | "enterprise";
 
