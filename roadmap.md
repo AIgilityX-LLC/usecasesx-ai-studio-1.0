@@ -14,3 +14,9 @@
 - [~] Browser suite: public P0/P1 chromium run done (39 passed / 1 failed — "Market Segment" facet button); report at /mnt/documents/browser-suite-report.json, import it on Launch checks. Signed-in persona run still blocked: demo personas are not seeded in this environment.
 - [ ] Verify `notify.aigilityx.com` DNS so confirmation and auth emails dispatch
 - [ ] Set a strong 64-char `CRON_HOOK_SECRET` so scheduled checks can trigger
+
+## 2026-09-02
+
+- [x] P0 launch-check run recorded (verdict pass, 10/13, 0 failures) with the real 180-use-case corpus loaded
+- [x] Pilot portal made actionable: mission steps with per-step CTAs + inline checkpoint forms
+- [ ] Still blocked: real pilot roster rows (Name, Email, Organization, Sector, Country) were not supplied — cannot invite real participants or clear the signed-in browser gate without them
