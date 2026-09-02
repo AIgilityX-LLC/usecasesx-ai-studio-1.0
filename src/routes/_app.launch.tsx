@@ -48,6 +48,54 @@ const JOURNEY = [
   "Advisory",
 ];
 
+const FEATURES = [
+  {
+    name: "Global AI Use Case Repository",
+    body: "Search and filter published use cases by industry, business function, AI capability, value theme, complexity and risk. No account needed.",
+  },
+  {
+    name: "AI Opportunity Map",
+    body: "Place candidate opportunities against value and feasibility so the sequencing argument is visible rather than asserted.",
+  },
+  {
+    name: "AI Use Case Studio™",
+    body: "Turn an opportunity into a designed use case: problem, data readiness, capability fit, benefits, metrics and deliverables.",
+  },
+  {
+    name: "Scoring and portfolios",
+    body: "Score feasibility and value with a consistent scorecard, then group scored use cases into portfolios and a sequenced roadmap.",
+  },
+  {
+    name: "Exports and reporting",
+    body: "Export scored portfolios, roadmaps and deliverables as documents you can take into an investment or governance review.",
+  },
+  {
+    name: "Workspaces, roles and audit",
+    body: "Workspace ownership, role-based access and append-only audit events on governance-relevant actions from day one.",
+  },
+];
+
+const JOIN_STEPS = [
+  {
+    step: "1",
+    title: "Browse Lite — no account",
+    body: "Open the repository and confirm the depth of the corpus for your sector before you commit anything.",
+    cta: { to: "/repository", label: "Open the repository", location: "launch-join-1" },
+  },
+  {
+    step: "2",
+    title: "Create your Pro Founding Access account",
+    body: `Sign up with a work email. Founding Access is complimentary through ${FOUNDING_ACCESS_END}, subject to published fair-use limits.`,
+    cta: { to: "/auth", label: "Create an account", location: "launch-join-2" },
+  },
+  {
+    step: "3",
+    title: "Run your first use case end to end",
+    body: "Capture an opportunity, design it in the Studio, score it and export the portfolio view — the full journey in one sitting.",
+    cta: { to: "/how-it-works", label: "See how it works", location: "launch-join-3" },
+  },
+];
+
 export const Route = createFileRoute("/_app/launch")({
   loader: async () => getLaunchPageContext(),
   head: ({ loaderData }) => {
@@ -166,6 +214,56 @@ function LaunchAnnouncementPage() {
         </ol>
       </Section>
 
+      <Section
+        title="What ships in this release"
+        lead={`Six capability areas make up the ${LAUNCH_DATE} release of Lite and Pro Founding Access.`}
+      >
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map((feature) => (
+            <Card key={feature.name}>
+              <CardHeader>
+                <CardTitle className="text-lg">{feature.name}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground">{feature.body}</CardContent>
+            </Card>
+          ))}
+        </div>
+      </Section>
+
+      <Section
+        title="How to join"
+        lead={
+          live
+            ? `Available now. Pro Founding Access stays complimentary through ${FOUNDING_ACCESS_END}.`
+            : `Launch date: ${LAUNCH_DATE}. These are the steps you will follow once the release is announced.`
+        }
+        tone="muted"
+      >
+        <ol className="grid gap-4 md:grid-cols-3">
+          {JOIN_STEPS.map((item) => (
+            <li key={item.step}>
+              <Card className="h-full">
+                <CardHeader className="space-y-2">
+                  <Badge variant="secondary" className="w-fit">
+                    Step {item.step}
+                  </Badge>
+                  <CardTitle className="text-lg">{item.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 text-sm text-muted-foreground">
+                  <p>{item.body}</p>
+                  <TrackedCta
+                    to={item.cta.to}
+                    label={item.cta.label}
+                    location={item.cta.location}
+                    variant="secondary"
+                  />
+                </CardContent>
+              </Card>
+            </li>
+          ))}
+        </ol>
+      </Section>
+
       <Section title="Who it is for" lead="Same codebase, different depth of use.">
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
@@ -214,9 +312,11 @@ function LaunchAnnouncementPage() {
 
       <Section title="Get started" tone="muted">
         <p className="max-w-3xl text-muted-foreground">
-          Lite is open now. Pro Founding Access is complimentary through {FOUNDING_ACCESS_END} and
-          subject to fair-use limits published on the editions page.
+          Launch date: {LAUNCH_DATE}. Lite is free to browse with no account. Pro Founding Access is
+          complimentary through {FOUNDING_ACCESS_END} and subject to fair-use limits published on
+          the editions page.
         </p>
+
         <div className="mt-6 flex flex-wrap gap-3">
           <TrackedCta to="/repository" label="Open the repository" location="launch-footer-lite" />
           <TrackedCta
