@@ -27,6 +27,11 @@ export default defineConfig({
   outputDir: "test-results",
   use: {
     baseURL,
+    // Sandboxes and CI images sometimes only ship one usable Chromium build.
+    // E2E_CHROMIUM_PATH lets the runner point at it instead of failing to launch.
+    ...(process.env.E2E_CHROMIUM_PATH
+      ? { launchOptions: { executablePath: process.env.E2E_CHROMIUM_PATH } }
+      : {}),
     // CI diagnostics: keep traces, screenshots and videos for anything that fails.
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
