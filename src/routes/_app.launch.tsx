@@ -315,9 +315,11 @@ function LaunchAnnouncementPage() {
 
       <Section title="Get started" tone="muted">
         <p className="max-w-3xl text-muted-foreground">
-          Lite is open now. Pro Founding Access is complimentary through {FOUNDING_ACCESS_END} and
-          subject to fair-use limits published on the editions page.
+          Launch date: {LAUNCH_DATE}. Lite is free to browse with no account. Pro Founding Access is
+          complimentary through {FOUNDING_ACCESS_END} and subject to fair-use limits published on
+          the editions page.
         </p>
+
         <div className="mt-6 flex flex-wrap gap-3">
           <TrackedCta to="/repository" label="Open the repository" location="launch-footer-lite" />
           <TrackedCta
