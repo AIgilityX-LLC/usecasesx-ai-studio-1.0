@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Map as MapIcon, Table2, Info, Download } from "lucide-react";
 import { toast } from "sonner";
 import { getOpportunityMapFn } from "@/lib/opportunity-map.functions";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import {
   activeFilterCount,
   applyMapFilters,

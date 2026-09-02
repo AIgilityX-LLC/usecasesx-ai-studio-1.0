@@ -24,6 +24,7 @@ import {
   deletePrivateTaxonomyEntryFn,
 } from "@/lib/organization.functions";
 import { getOpportunityMapFn } from "@/lib/opportunity-map.functions";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { TaxonomySetupChecklist } from "@/components/opportunities/TaxonomySetupChecklist";
 import type { MapRecord } from "@/lib/opportunity-map";
 
