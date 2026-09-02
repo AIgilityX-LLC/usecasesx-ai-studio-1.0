@@ -107,6 +107,8 @@ export interface PublicHeadInput {
   ogType?: "website" | "article";
   /** JSON-LD objects rendered into <head>. */
   jsonLd?: Record<string, unknown>[];
+  /** Keep the page out of search indexes (pre-announcement builds). */
+  noindex?: boolean;
 }
 
 /** Complete, self-referencing metadata for a public page. */
@@ -117,12 +119,13 @@ export function publicHead({
   image,
   ogType = "website",
   jsonLd = [],
+  noindex = false,
 }: PublicHeadInput) {
   const url = `${SITE_URL}${path}`;
   const meta = [
     { title },
     { name: "description", content: description },
-    { name: "robots", content: "index, follow" },
+    { name: "robots", content: noindex ? "noindex, nofollow" : "index, follow" },
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:url", content: url },
