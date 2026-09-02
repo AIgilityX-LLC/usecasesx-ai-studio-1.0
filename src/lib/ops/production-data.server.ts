@@ -204,9 +204,12 @@ export async function collectProductionData(input: {
   const liteLimits = limitsForEdition("lite", process.env);
   const supportOk = /@(usecasesx|aigilityx)\./i.test(EDITION_CONTRACT.supportEmail);
   const canonicalOk = EDITION_CONTRACT.canonicalOrigin.startsWith("https://");
+  // Dates are owned by src/lib/founding-access.ts; validate shape, not a literal,
+  // so re-scheduling the launch does not break the readiness check.
+  const publishedDate = /^\d{1,2} [A-Z][a-z]+ \d{4}$/;
   const datesOk =
-    EDITION_CONTRACT.launchDate === "14 August 2026" &&
-    EDITION_CONTRACT.foundingAccessEnd === "31 December 2026";
+    publishedDate.test(EDITION_CONTRACT.launchDate) &&
+    publishedDate.test(EDITION_CONTRACT.foundingAccessEnd);
 
   const checks: DataCheck[] = [
     {

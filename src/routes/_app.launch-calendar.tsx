@@ -36,7 +36,8 @@ const MILESTONES = [
 
 /** Minimal RFC 5545 calendar invite for the launch moment. */
 function icsHref(): string {
-  const stamp = (ms: number) => new Date(ms).toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+  const stamp = (ms: number) =>
+    new Date(ms).toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
   const body = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -152,11 +153,7 @@ function LaunchCalendarPage() {
     <main>
       <PageHero
         eyebrow={announced ? "Now live" : `Scheduled · ${LAUNCH_DATE}`}
-        title={
-          announced
-            ? "UseCasesX™ is live"
-            : `UseCasesX™ launches on ${LAUNCH_DATE}`
-        }
+        title={announced ? "UseCasesX™ is live" : `UseCasesX™ launches on ${LAUNCH_DATE}`}
         intro={
           announced
             ? `Lite discovery is open with no account, and Pro Founding Access is complimentary through ${FOUNDING_ACCESS_END}.`
@@ -228,7 +225,11 @@ function LaunchCalendarPage() {
 
       <Section title="Be ready on day one">
         <div className="flex flex-wrap gap-3">
-          <TrackedCta to="/launch" label="Read the release detail" location="launch-calendar-foot" />
+          <TrackedCta
+            to="/launch"
+            label="Read the release detail"
+            location="launch-calendar-foot"
+          />
           <TrackedCta
             to="/editions"
             label="Compare editions"
