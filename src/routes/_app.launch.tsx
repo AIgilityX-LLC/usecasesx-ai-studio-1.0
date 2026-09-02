@@ -215,6 +215,58 @@ function LaunchAnnouncementPage() {
         </ol>
       </Section>
 
+      <Section
+        title="What ships in this release"
+        lead={`Six capability areas make up the ${LAUNCH_DATE} release of Lite and Pro Founding Access.`}
+      >
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map((feature) => (
+            <Card key={feature.name}>
+              <CardHeader>
+                <CardTitle className="text-lg">{feature.name}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground">{feature.body}</CardContent>
+            </Card>
+          ))}
+        </div>
+      </Section>
+
+      <Section
+        title="How to join"
+        lead={
+          live
+            ? `Available now. Pro Founding Access stays complimentary through ${FOUNDING_ACCESS_END}.`
+            : `Launch date: ${LAUNCH_DATE}. These are the steps you will follow once the release is announced.`
+        }
+        tone="muted"
+      >
+        <ol className="grid gap-4 md:grid-cols-3">
+          {JOIN_STEPS.map((item) => (
+            <li key={item.step}>
+              <Card className="h-full">
+                <CardHeader className="space-y-2">
+                  <Badge variant="secondary" className="w-fit">
+                    Step {item.step}
+                  </Badge>
+                  <CardTitle className="text-lg">{item.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 text-sm text-muted-foreground">
+                  <p>{item.body}</p>
+                  <TrackedCta
+                    to={item.cta.to}
+                    label={item.cta.label}
+                    location={item.cta.location}
+                    variant="secondary"
+                  />
+                </CardContent>
+              </Card>
+            </li>
+          ))}
+        </ol>
+      </Section>
+
+
+
       <Section title="Who it is for" lead="Same codebase, different depth of use.">
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
