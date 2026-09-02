@@ -56,7 +56,7 @@ function PilotPortalPage() {
     enabled: Boolean(session),
   });
 
-  if (session && isLoading) {
+  if (session === undefined || (session && isLoading)) {
     return (
       <div className="mx-auto w-full max-w-5xl space-y-6 px-4 py-10">
         <Skeleton className="h-10 w-72" />
