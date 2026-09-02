@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-09-02T21:20:42.563Z",
+  "baseUrl": "http://localhost:8080",
+  "samples": [
+    {
+      "route": "/",
+      "status": 200,
+      "latencyMs": 252,
+      "error": null,
+      "slow": false
+    },
+    {
+      "route": "/repository",
+      "status": 200,
+      "latencyMs": 1438,
+      "error": null,
+      "slow": false
+    },
+    {
+      "route": "/discover",
+      "status": 200,
+      "latencyMs": 128,
+      "error": null,
+      "slow": false
+    },
+    {
+      "route": "/auth",
+      "status": 200,
+      "latencyMs": 142,
+      "error": null,
+      "slow": false
+    },
+    {
+      "route": "/robots.txt",
+      "status": 200,
+      "latencyMs": 3,
+      "error": null,
+      "slow": false
+    }
+  ],
+  "errorRate": 0,
+  "p95LatencyMs": 1438,
+  "failing": [],
+  "slow": []
+}
