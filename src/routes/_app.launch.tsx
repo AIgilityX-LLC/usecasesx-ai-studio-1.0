@@ -1,11 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { breadcrumbJsonLd, publicHead } from "@/lib/seo";
-import {
-  PageHero,
-  Section,
-  TrackedCta,
-} from "@/components/marketing/MarketingPrimitives";
+import { PageHero, Section, TrackedCta } from "@/components/marketing/MarketingPrimitives";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FOUNDING_ACCESS_END, LAUNCH_DATE } from "@/lib/founding-access";
@@ -128,10 +124,7 @@ function LaunchAnnouncementPage() {
         </ol>
       </Section>
 
-      <Section
-        title="Who it is for"
-        lead="Same codebase, different depth of use."
-      >
+      <Section title="Who it is for" lead="Same codebase, different depth of use.">
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader>
