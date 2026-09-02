@@ -17,6 +17,7 @@ import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { getMyPilotPortalFn } from "@/lib/pilot/pilot.functions";
 import { pilotStatusLabel, willingnessLabel, PILOT_CHECKPOINTS } from "@/lib/pilot/pilot.model";
 import { aiExperienceLabel, availabilityLabel } from "@/lib/pilot/pilot.onboarding";
+import { INVITE_QUERY_PARAM } from "@/lib/pilot/pilot.invites";
 import { EmptyState } from "@/components/EmptyState";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
