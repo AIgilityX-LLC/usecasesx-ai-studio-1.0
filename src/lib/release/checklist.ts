@@ -47,6 +47,12 @@ const GATE_GUIDE: Record<string, { why: string; actions: ChecklistAction[] }> = 
     why: "P1 failures do not block launch but each one becomes a day-one support case.",
     actions: [{ label: "Run launch checks", to: "/administration/launch-checks", primary: true }],
   },
+  "checks.browser": {
+    why: "The browser suite is the only gate that proves a real participant can complete the journey in a real browser.",
+    actions: [
+      { label: "Browser suite evidence", to: "/administration/launch-checks", primary: true },
+    ],
+  },
   "pilot.evidence": {
     why: "Evidence from real participants is what makes the go decision defensible.",
     actions: [

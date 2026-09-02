@@ -29,7 +29,8 @@ describe("launch checklist", () => {
   it("gives every item a fix action and a leverage figure", () => {
     for (const item of buildLaunchChecklist(gates())) {
       expect(item.actions.length).toBeGreaterThan(0);
-      expect(item.leverage).toBeGreaterThan(0);
+      // A cleared gate legitimately has nothing left to win, so leverage is 0.
+      if (item.status !== "pass") expect(item.leverage).toBeGreaterThan(0);
     }
   });
 
@@ -42,7 +43,7 @@ describe("launch checklist", () => {
 
   it("reports progress without inventing cleared gates", () => {
     const progress = checklistProgress(buildLaunchChecklist(gates()));
-    expect(progress.total).toBe(5);
+    expect(progress.total).toBe(6);
     expect(progress.cleared + progress.open).toBe(progress.total);
   });
 

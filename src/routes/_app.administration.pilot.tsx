@@ -32,6 +32,7 @@ import {
   buildRosterIssueReportCsv,
   buildRosterTemplateCsv,
   parseParticipantRoster,
+  buildSeedRoster,
   rosterErrors,
   rosterWarnings,
   summarizeRosterParse,
@@ -240,6 +241,28 @@ function PilotAdmin() {
       }),
   });
 
+  /** Labelled rehearsal seats — never counted as evidence. */
+  const seedMutation = useMutation({
+    mutationFn: () =>
+      inviteCohort({
+        data: {
+          participants: buildSeedRoster(10),
+          organization: "Seeded rehearsal organisation",
+          source: "seed" as const,
+        },
+      }),
+    onSuccess: (result) => {
+      toast.success(`${result.created.length} rehearsal seat(s) created`, {
+        description: `Labelled as seeded — excluded from pilot evidence. ${result.seatsUsed}/${result.seatTarget} seats used.`,
+      });
+      void refresh();
+    },
+    onError: (error: unknown) =>
+      toast.error("Rehearsal seats not created", {
+        description: error instanceof Error ? error.message : "Please try again.",
+      }),
+  });
+
   /** CSV/TSV roster upload: parsed in the browser, enrolled in one action. */
   const rosterMutation = useMutation({
     mutationFn: () =>
@@ -247,6 +270,7 @@ function PilotAdmin() {
         data: {
           participants: roster?.participants ?? [],
           organization: bulkOrganization.trim() || null,
+          source: "import" as const,
         },
       }),
     onSuccess: (result) => {
@@ -764,6 +788,23 @@ function PilotAdmin() {
                     </div>
                   </div>
                 )}
+              </div>
+
+              <div className="space-y-2 rounded-lg border border-dashed p-3">
+                <p className="text-sm font-medium">Rehearse the flow without real people</p>
+                <p className="text-xs text-muted-foreground">
+                  Creates 10 clearly labelled seats on <code>@pilot.invalid</code> so invite, claim
+                  and status changes can be exercised end to end. Seeded seats are recorded with
+                  source “seed” and are never counted as pilot evidence.
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={seedMutation.isPending || Boolean(settings?.invitationsPaused)}
+                  onClick={() => seedMutation.mutate()}
+                >
+                  {seedMutation.isPending ? "Creating…" : "Create 10 rehearsal seats"}
+                </Button>
               </div>
             </div>
           </CardContent>

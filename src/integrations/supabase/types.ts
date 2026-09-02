@@ -1921,6 +1921,63 @@ export type Database = {
           },
         ]
       }
+      pilot_browser_suite_runs: {
+        Row: {
+          actor_email: string | null
+          actor_id: string | null
+          cohort: string
+          created_at: string
+          duration_ms: number
+          failed: number
+          failing_specs: Json
+          id: string
+          notes: string | null
+          participant_email: string | null
+          passed: number
+          skipped: number
+          spec_results: Json
+          suite: string
+          total: number
+          verdict: string
+        }
+        Insert: {
+          actor_email?: string | null
+          actor_id?: string | null
+          cohort?: string
+          created_at?: string
+          duration_ms?: number
+          failed?: number
+          failing_specs?: Json
+          id?: string
+          notes?: string | null
+          participant_email?: string | null
+          passed?: number
+          skipped?: number
+          spec_results?: Json
+          suite?: string
+          total?: number
+          verdict?: string
+        }
+        Update: {
+          actor_email?: string | null
+          actor_id?: string | null
+          cohort?: string
+          created_at?: string
+          duration_ms?: number
+          failed?: number
+          failing_specs?: Json
+          id?: string
+          notes?: string | null
+          participant_email?: string | null
+          passed?: number
+          skipped?: number
+          spec_results?: Json
+          suite?: string
+          total?: number
+          verdict?: string
+        }
+        Relationships: []
+      }
       pilot_checkpoint_responses: {
         Row: {
           advisory_interest: boolean
@@ -2010,6 +2067,7 @@ export type Database = {
           notes: string | null
           organization: string | null
           registered_at: string | null
+          source: string
           status: string
           updated_at: string
           user_id: string | null
@@ -2028,6 +2086,7 @@ export type Database = {
           notes?: string | null
           organization?: string | null
           registered_at?: string | null
+          source?: string
           status?: string
           updated_at?: string
           user_id?: string | null
@@ -2046,6 +2105,7 @@ export type Database = {
           notes?: string | null
           organization?: string | null
           registered_at?: string | null
+          source?: string
           status?: string
           updated_at?: string
           user_id?: string | null

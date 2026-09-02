@@ -9,6 +9,8 @@
 
 import type { CheckResult } from "@/lib/qa/harness";
 import type { LaunchCheckRun } from "@/lib/qa/launch-runs";
+import type { BrowserSuiteRun } from "@/lib/qa/browser-suite";
+import { describeBrowserRun } from "@/lib/qa/browser-suite";
 import { runVerdict, RUN_TRIGGER_LABEL } from "@/lib/qa/launch-runs";
 import { PILOT_SEAT_TARGET_MIN, PILOT_SEAT_TARGET_MAX } from "@/lib/pilot/pilot.model";
 import type { PilotCohortSummary } from "@/lib/pilot/pilot.model";
@@ -36,6 +38,8 @@ export type ReadinessVerdict = "ready" | "conditional" | "blocked";
 export type ReadinessInput = {
   /** Most recent recorded launch-check run, if any. */
   run: LaunchCheckRun | null;
+  /** Most recent recorded browser P0/P1 suite run, if any. */
+  browserRun?: BrowserSuiteRun | null;
   /** Cohort roll-up from the pilot programme, if readable. */
   cohort: PilotCohortSummary | null;
   /** True when an evidence waiver is in force. */
@@ -157,21 +161,46 @@ export function buildReadinessGates(input: ReadinessInput): ReadinessGate[] {
         verifiedAt: null,
       };
 
-  const browser = VERIFICATION_STEPS.find((step) => step.id === "browser");
+  const browserRun = input.browserRun ?? null;
+  const browserGate: ReadinessGate = browserRun
+    ? {
+        id: "checks.browser",
+        label: "Browser P0/P1 suite",
+        status:
+          browserRun.verdict === "pass"
+            ? "pass"
+            : browserRun.verdict === "fail"
+              ? "fail"
+              : browserRun.verdict === "attention"
+                ? "attention"
+                : "unknown",
+        detail: describeBrowserRun(browserRun),
+        verifiedAt: browserRun.createdAt,
+      }
+    : {
+        id: "checks.browser",
+        label: "Browser P0/P1 suite",
+        status: "unknown",
+        detail: describeBrowserRun(null),
+        verifiedAt: null,
+      };
+
+  // Static/unit/build steps only — the browser suite has its own measured gate.
+  const pipelineSteps = VERIFICATION_STEPS.filter((step) => step.id !== "browser");
   const pipeline: ReadinessGate = {
     id: "pipeline.verification",
     label: "Pipeline verification",
-    status: VERIFICATION_STEPS.every((step) => step.result === "pass") ? "pass" : "attention",
-    detail:
-      browser && browser.result !== "pass"
-        ? "Static, unit and build gates passed; the browser P0 suite runs in CI."
-        : "All recorded verification steps passed.",
+    status: pipelineSteps.every((step) => step.result === "pass") ? "pass" : "attention",
+    detail: pipelineSteps.every((step) => step.result === "pass")
+      ? "Static, unit and build verification steps passed."
+      : "One or more static, unit or build verification steps did not pass.",
     verifiedAt: RELEASE_FREEZE_DATE,
   };
 
   return [
     p0,
     p1,
+    browserGate,
     seatGate(input.cohort, input.waiverActive),
     evidenceGate(input.cohort, input.waiverActive),
     pipeline,
@@ -288,13 +317,20 @@ export function buildReadinessMarkdown(input: ReadinessInput): string {
 
 /* ------------------------------------------------- audience readiness (%) */
 
-export const READINESS_AUDIENCES = ["investor", "demo", "client", "production"] as const;
+export const READINESS_AUDIENCES = [
+  "investor",
+  "demo",
+  "client",
+  "deployment",
+  "production",
+] as const;
 export type ReadinessAudience = (typeof READINESS_AUDIENCES)[number];
 
 export const READINESS_AUDIENCE_LABEL: Record<ReadinessAudience, string> = {
   investor: "Investor ready",
   demo: "Demo ready",
   client: "Client ready",
+  deployment: "Deployment ready",
   production: "Production ready",
 };
 
@@ -312,6 +348,7 @@ const AUDIENCE_WEIGHTS: Record<ReadinessAudience, Record<string, number>> = {
   investor: {
     "checks.p0": 3,
     "checks.p1": 1,
+    "checks.browser": 2,
     "pipeline.verification": 3,
     "pilot.seats": 1,
     "pilot.evidence": 2,
@@ -319,6 +356,7 @@ const AUDIENCE_WEIGHTS: Record<ReadinessAudience, Record<string, number>> = {
   demo: {
     "checks.p0": 3,
     "checks.p1": 1,
+    "checks.browser": 3,
     "pipeline.verification": 3,
     "pilot.seats": 0,
     "pilot.evidence": 0,
@@ -326,13 +364,26 @@ const AUDIENCE_WEIGHTS: Record<ReadinessAudience, Record<string, number>> = {
   client: {
     "checks.p0": 3,
     "checks.p1": 2,
+    "checks.browser": 3,
     "pipeline.verification": 2,
     "pilot.seats": 2,
     "pilot.evidence": 3,
   },
+  // Deployment readiness asks a narrower question than production: can the
+  // build ship safely? It leans on the pipeline and the browser evidence and
+  // does not depend on how much pilot evidence has been gathered.
+  deployment: {
+    "checks.p0": 4,
+    "checks.p1": 2,
+    "checks.browser": 3,
+    "pipeline.verification": 4,
+    "pilot.seats": 0,
+    "pilot.evidence": 1,
+  },
   production: {
     "checks.p0": 4,
     "checks.p1": 2,
+    "checks.browser": 3,
     "pipeline.verification": 3,
     "pilot.seats": 2,
     "pilot.evidence": 3,

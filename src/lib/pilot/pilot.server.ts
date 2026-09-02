@@ -36,6 +36,7 @@ function mapInvitation(row: any): PilotInvitation {
     status: (row.status ?? "invited") as PilotStatus,
     userId: row.user_id ?? null,
     notes: row.notes ?? null,
+    source: (row.source ?? "manual") as PilotInvitation["source"],
     inviteToken: row.invite_token ?? null,
     invitedAt: String(row.invited_at ?? row.created_at),
     registeredAt: row.registered_at ?? null,
@@ -137,6 +138,8 @@ export async function createInvitation(
     organization: string | null;
     notes: string | null;
     actorId: string;
+    /** Defaults to a manually invited seat. */
+    source?: PilotInvitation["source"];
   },
 ): Promise<PilotInvitation> {
   const { data, error } = await supabase
@@ -147,6 +150,7 @@ export async function createInvitation(
       full_name: input.fullName,
       organization: input.organization,
       notes: input.notes,
+      source: input.source ?? "manual",
       invited_by: input.actorId,
     })
     .select("*")

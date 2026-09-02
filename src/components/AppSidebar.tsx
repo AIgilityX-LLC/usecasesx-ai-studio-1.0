@@ -117,6 +117,7 @@ const ADMIN: Item[] = [
     admin: true,
   },
   { to: "/administration/pilot", label: "Pilot Programme", icon: Rocket, admin: true },
+  { to: "/administration/readiness", label: "Readiness", icon: Gauge, admin: true },
   {
     to: "/administration/launch-readiness",
     label: "Readiness to Launch",

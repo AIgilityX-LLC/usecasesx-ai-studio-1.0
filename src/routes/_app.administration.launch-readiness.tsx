@@ -137,6 +137,7 @@ function LaunchReadinessChecklistPage() {
   const data = readiness.data;
   const gates = buildReadinessGates({
     run: data.runs[0] ?? null,
+    browserRun: data.browserRun ?? null,
     cohort: data.summary,
     waiverActive: data.waiverActive,
     waiverNote: data.waiverNote ?? undefined,

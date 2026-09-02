@@ -125,6 +125,7 @@ function ReleaseCandidatePage() {
   const input: ReadinessInput | null = data
     ? {
         run: latestRun,
+        browserRun: data.browserRun ?? null,
         cohort: data.summary,
         waiverActive: data.waiverActive,
         ...(data.waiverNote ? { waiverNote: data.waiverNote } : {}),
