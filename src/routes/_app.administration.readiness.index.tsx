@@ -189,6 +189,16 @@ function ReadinessOverviewPage() {
         </Alert>
       )}
 
+      <ReadinessWaiverPanel
+        waiver={data.waiver ?? null}
+        evidence={{
+          seats: data.summary.invited,
+          checkpointResponses: data.summary.checkpointResponses,
+          onboardingProfiles: data.evidence.onboardingProfiles,
+        }}
+        onChanged={() => void readiness.refetch()}
+      />
+
       <Card>
         <CardHeader>
           <CardTitle>Gates behind these scores</CardTitle>
