@@ -93,14 +93,29 @@ export async function getMyWorkspaceSnapshot(
 ): Promise<PortalWorkspace> {
   const head = { count: "exact" as const, head: true };
 
-  const { data: membership } = await supabase
-    .from("workspace_members")
-    .select("workspace_id")
-    .eq("user_id", userId)
-    .limit(1)
-    .maybeSingle();
+  async function readMembership() {
+    const { data } = await supabase
+      .from("workspace_members")
+      .select("workspace_id")
+      .eq("user_id", userId)
+      .limit(1)
+      .maybeSingle();
+    return (data as { workspace_id?: string } | null)?.workspace_id ?? null;
+  }
 
-  const workspaceId = (membership as { workspace_id?: string } | null)?.workspace_id ?? null;
+  let workspaceId = await readMembership();
+
+  // An approved seat must land on a working space. When the participant has no
+  // workspace yet (claimed the seat but skipped onboarding), provision the
+  // tenant-owned workspace now rather than showing an empty shell.
+  if (!workspaceId) {
+    const { error } = await supabase.rpc("ensure_user_workspace");
+    if (error) {
+      console.error("[pilot] workspace provisioning failed", error);
+    } else {
+      workspaceId = await readMembership();
+    }
+  }
 
   let name: string | null = null;
   if (workspaceId) {
