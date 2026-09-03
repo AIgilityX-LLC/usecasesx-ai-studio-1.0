@@ -40,7 +40,12 @@ export async function listMyPilotUseCases(
 
   const rows: PortalUseCase[] = [];
   for (const raw of studio.data ?? []) {
-    const row = raw as { id: string; title: string; status: string | null; updated_at: string | null };
+    const row = raw as {
+      id: string;
+      title: string;
+      status: string | null;
+      updated_at: string | null;
+    };
     rows.push({
       id: row.id,
       title: row.title,

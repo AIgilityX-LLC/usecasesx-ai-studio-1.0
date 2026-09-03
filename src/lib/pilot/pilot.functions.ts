@@ -637,9 +637,8 @@ export const getMyPilotPortalFn = createServerFn({ method: "GET" })
     const { getPilotSettings, resolvePilotForUser, listMyCheckpoints } =
       await import("@/lib/pilot/pilot.server");
     const { getMyOnboarding } = await import("@/lib/pilot/pilot.onboarding.server");
-    const { listMyPilotUseCases, getMyWorkspaceSnapshot } = await import(
-      "@/lib/pilot/pilot.portal.server"
-    );
+    const { listMyPilotUseCases, getMyWorkspaceSnapshot } =
+      await import("@/lib/pilot/pilot.portal.server");
 
     const email =
       (context.claims as { email?: string } | undefined)?.email ??
@@ -647,13 +646,15 @@ export const getMyPilotPortalFn = createServerFn({ method: "GET" })
       null;
 
     const settings = await getPilotSettings(context.supabase);
-    const [{ invitation, progress }, profile, checkpoints, useCases, workspace] = await Promise.all([
-      resolvePilotForUser(context.supabase, context.userId, email),
-      getMyOnboarding(context.supabase, context.userId, settings.cohort),
-      listMyCheckpoints(context.supabase, context.userId),
-      listMyPilotUseCases(context.supabase, context.userId),
-      getMyWorkspaceSnapshot(context.supabase, context.userId),
-    ]);
+    const [{ invitation, progress }, profile, checkpoints, useCases, workspace] = await Promise.all(
+      [
+        resolvePilotForUser(context.supabase, context.userId, email),
+        getMyOnboarding(context.supabase, context.userId, settings.cohort),
+        listMyCheckpoints(context.supabase, context.userId),
+        listMyPilotUseCases(context.supabase, context.userId),
+        getMyWorkspaceSnapshot(context.supabase, context.userId),
+      ],
+    );
 
     return {
       cohort: settings.cohort,
@@ -666,7 +667,6 @@ export const getMyPilotPortalFn = createServerFn({ method: "GET" })
       workspace,
     };
   });
-
 
 /* ------------------------------------------------------- self-serve applications */
 

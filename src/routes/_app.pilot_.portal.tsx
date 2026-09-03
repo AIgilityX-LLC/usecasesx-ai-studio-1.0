@@ -40,7 +40,6 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 
-
 export const Route = createFileRoute("/_app/pilot_/portal")({
   head: () => privateHead("Your pilot portal"),
   component: PilotPortalPage,
@@ -123,7 +122,6 @@ function PilotPortalPage() {
       )
     : [];
 
-
   if (!invitation) {
     return (
       <div className="mx-auto w-full max-w-3xl px-4 py-16">
@@ -132,7 +130,9 @@ function PilotPortalPage() {
           description="This portal opens once you claim a pilot invitation. If you were invited, open the link in your invitation email while signed in with that address."
           action={
             <Button asChild variant="outline">
-              <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>Go to the pilot mission</Link>
+              <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>
+                Go to the pilot mission
+              </Link>
             </Button>
           }
         />
@@ -180,7 +180,9 @@ function PilotPortalPage() {
               </div>
               <Progress value={progress.percent} aria-label="Mission progress" />
               <Button asChild size="sm" variant="outline">
-                <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>Continue the mission</Link>
+                <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>
+                  Continue the mission
+                </Link>
               </Button>
             </div>
           ) : null}
@@ -260,7 +262,10 @@ function PilotPortalPage() {
               key={checkpoint.key}
               checkpoint={checkpoint}
               missionStep={progress?.nextStep?.key ?? null}
-              references={{ useCaseIds: useCases.map((uc) => uc.id).slice(0, 10), portfolioId: null }}
+              references={{
+                useCaseIds: useCases.map((uc) => uc.id).slice(0, 10),
+                portfolioId: null,
+              }}
             />
           ))}
         </section>
@@ -321,7 +326,6 @@ function PilotPortalPage() {
         </CardContent>
       </Card>
 
-
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
@@ -354,7 +358,9 @@ function PilotPortalPage() {
               description="The short intake tells us your role, sector and what you want out of the pilot. It takes about two minutes."
               action={
                 <Button asChild size="sm">
-                  <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>Complete the intake</Link>
+                  <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>
+                    Complete the intake
+                  </Link>
                 </Button>
               }
             />
@@ -373,7 +379,10 @@ function PilotPortalPage() {
           {useCases.length ? (
             <ul className="divide-y divide-border rounded-xl border border-border">
               {useCases.map((uc) => (
-                <li key={`${uc.origin}-${uc.id}`} className="flex items-center justify-between gap-4 p-4">
+                <li
+                  key={`${uc.origin}-${uc.id}`}
+                  className="flex items-center justify-between gap-4 p-4"
+                >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-foreground">{uc.title}</p>
                     <p className="text-xs text-muted-foreground">
@@ -458,7 +467,9 @@ function PilotPortalPage() {
               description="Checkpoints unlock as you move through the mission. Your answers are what turn the pilot into evidence."
               action={
                 <Button asChild size="sm">
-                  <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>Open the mission</Link>
+                  <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>
+                    Open the mission
+                  </Link>
                 </Button>
               }
             />
