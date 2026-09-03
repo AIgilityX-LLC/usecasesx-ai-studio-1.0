@@ -39,6 +39,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ReadinessWaiverPanel } from "@/components/release/ReadinessWaiverPanel";
 
 export const Route = createFileRoute("/_app/administration/readiness/")({
   head: () => privateHead("Readiness"),
