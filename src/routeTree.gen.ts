@@ -91,6 +91,7 @@ import { Route as AppAdministrationLaunchLearningRouteImport } from './routes/_a
 import { Route as AppAdministrationLaunchReadinessRouteImport } from './routes/_app.administration.launch-readiness'
 import { Route as AppAdministrationLeadsRouteImport } from './routes/_app.administration.leads'
 import { Route as AppAdministrationPilotRouteImport } from './routes/_app.administration.pilot'
+import { Route as AppAdministrationPilotMilestonesRouteImport } from './routes/_app.administration.pilot-milestones'
 import { Route as AppAdministrationPlatformAdminsRouteImport } from './routes/_app.administration.platform-admins'
 import { Route as AppAdministrationProductionDataRouteImport } from './routes/_app.administration.production-data'
 import { Route as AppAdministrationProductionReadinessRouteImport } from './routes/_app.administration.production-readiness'
@@ -562,6 +563,12 @@ const AppAdministrationPilotRoute = AppAdministrationPilotRouteImport.update({
   path: '/pilot',
   getParentRoute: () => AppAdministrationRoute,
 } as any)
+const AppAdministrationPilotMilestonesRoute =
+  AppAdministrationPilotMilestonesRouteImport.update({
+    id: '/pilot-milestones',
+    path: '/pilot-milestones',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
 const AppAdministrationPlatformAdminsRoute =
   AppAdministrationPlatformAdminsRouteImport.update({
     id: '/platform-admins',
@@ -940,6 +947,7 @@ export interface FileRoutesByFullPath {
   '/administration/launch-readiness': typeof AppAdministrationLaunchReadinessRoute
   '/administration/leads': typeof AppAdministrationLeadsRoute
   '/administration/pilot': typeof AppAdministrationPilotRoute
+  '/administration/pilot-milestones': typeof AppAdministrationPilotMilestonesRoute
   '/administration/platform-admins': typeof AppAdministrationPlatformAdminsRoute
   '/administration/production-data': typeof AppAdministrationProductionDataRoute
   '/administration/production-readiness': typeof AppAdministrationProductionReadinessRoute
@@ -1075,6 +1083,7 @@ export interface FileRoutesByTo {
   '/administration/launch-readiness': typeof AppAdministrationLaunchReadinessRoute
   '/administration/leads': typeof AppAdministrationLeadsRoute
   '/administration/pilot': typeof AppAdministrationPilotRoute
+  '/administration/pilot-milestones': typeof AppAdministrationPilotMilestonesRoute
   '/administration/platform-admins': typeof AppAdministrationPlatformAdminsRoute
   '/administration/production-data': typeof AppAdministrationProductionDataRoute
   '/administration/production-readiness': typeof AppAdministrationProductionReadinessRoute
@@ -1214,6 +1223,7 @@ export interface FileRoutesById {
   '/_app/administration/launch-readiness': typeof AppAdministrationLaunchReadinessRoute
   '/_app/administration/leads': typeof AppAdministrationLeadsRoute
   '/_app/administration/pilot': typeof AppAdministrationPilotRoute
+  '/_app/administration/pilot-milestones': typeof AppAdministrationPilotMilestonesRoute
   '/_app/administration/platform-admins': typeof AppAdministrationPlatformAdminsRoute
   '/_app/administration/production-data': typeof AppAdministrationProductionDataRoute
   '/_app/administration/production-readiness': typeof AppAdministrationProductionReadinessRoute
@@ -1353,6 +1363,7 @@ export interface FileRouteTypes {
     | '/administration/launch-readiness'
     | '/administration/leads'
     | '/administration/pilot'
+    | '/administration/pilot-milestones'
     | '/administration/platform-admins'
     | '/administration/production-data'
     | '/administration/production-readiness'
@@ -1488,6 +1499,7 @@ export interface FileRouteTypes {
     | '/administration/launch-readiness'
     | '/administration/leads'
     | '/administration/pilot'
+    | '/administration/pilot-milestones'
     | '/administration/platform-admins'
     | '/administration/production-data'
     | '/administration/production-readiness'
@@ -1626,6 +1638,7 @@ export interface FileRouteTypes {
     | '/_app/administration/launch-readiness'
     | '/_app/administration/leads'
     | '/_app/administration/pilot'
+    | '/_app/administration/pilot-milestones'
     | '/_app/administration/platform-admins'
     | '/_app/administration/production-data'
     | '/_app/administration/production-readiness'
@@ -2284,6 +2297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdministrationPilotRouteImport
       parentRoute: typeof AppAdministrationRoute
     }
+    '/_app/administration/pilot-milestones': {
+      id: '/_app/administration/pilot-milestones'
+      path: '/pilot-milestones'
+      fullPath: '/administration/pilot-milestones'
+      preLoaderRoute: typeof AppAdministrationPilotMilestonesRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/administration/platform-admins': {
       id: '/_app/administration/platform-admins'
       path: '/platform-admins'
@@ -2695,6 +2715,7 @@ interface AppAdministrationRouteChildren {
   AppAdministrationLaunchReadinessRoute: typeof AppAdministrationLaunchReadinessRoute
   AppAdministrationLeadsRoute: typeof AppAdministrationLeadsRoute
   AppAdministrationPilotRoute: typeof AppAdministrationPilotRoute
+  AppAdministrationPilotMilestonesRoute: typeof AppAdministrationPilotMilestonesRoute
   AppAdministrationPlatformAdminsRoute: typeof AppAdministrationPlatformAdminsRoute
   AppAdministrationProductionDataRoute: typeof AppAdministrationProductionDataRoute
   AppAdministrationProductionReadinessRoute: typeof AppAdministrationProductionReadinessRoute
@@ -2714,6 +2735,7 @@ const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationLaunchReadinessRoute: AppAdministrationLaunchReadinessRoute,
   AppAdministrationLeadsRoute: AppAdministrationLeadsRoute,
   AppAdministrationPilotRoute: AppAdministrationPilotRoute,
+  AppAdministrationPilotMilestonesRoute: AppAdministrationPilotMilestonesRoute,
   AppAdministrationPlatformAdminsRoute: AppAdministrationPlatformAdminsRoute,
   AppAdministrationProductionDataRoute: AppAdministrationProductionDataRoute,
   AppAdministrationProductionReadinessRoute:

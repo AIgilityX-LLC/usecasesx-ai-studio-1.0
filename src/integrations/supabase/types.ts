@@ -2356,6 +2356,57 @@ export type Database = {
         }
         Relationships: []
       }
+      pilot_milestone_approvals: {
+        Row: {
+          cohort: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decided_by_label: string | null
+          decision_note: string | null
+          evidence: Json
+          id: string
+          milestone_key: string
+          participant_note: string | null
+          status: string
+          submitted_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cohort: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decided_by_label?: string | null
+          decision_note?: string | null
+          evidence?: Json
+          id?: string
+          milestone_key: string
+          participant_note?: string | null
+          status?: string
+          submitted_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cohort?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decided_by_label?: string | null
+          decision_note?: string | null
+          evidence?: Json
+          id?: string
+          milestone_key?: string
+          participant_note?: string | null
+          status?: string
+          submitted_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pilot_onboarding_profiles: {
         Row: {
           ai_experience: string

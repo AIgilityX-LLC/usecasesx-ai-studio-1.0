@@ -35,6 +35,7 @@ import { aiExperienceLabel, availabilityLabel } from "@/lib/pilot/pilot.onboardi
 import { INVITE_QUERY_PARAM } from "@/lib/pilot/pilot.invites";
 import { EmptyState } from "@/components/EmptyState";
 import { ProActivationHub } from "@/components/pro/ProActivationHub";
+import { PilotMilestoneBoard } from "@/components/pilot/PilotMilestoneBoard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -326,6 +327,8 @@ function PilotPortalPage() {
           </div>
         </CardContent>
       </Card>
+
+      <PilotMilestoneBoard enabled={Boolean(session)} />
 
       <ProActivationHub />
 
