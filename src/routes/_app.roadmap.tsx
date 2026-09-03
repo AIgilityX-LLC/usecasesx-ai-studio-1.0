@@ -71,6 +71,7 @@ export const Route = createFileRoute("/_app/roadmap")({
   head: () => ({
     meta: [
       { name: "robots", content: "noindex, nofollow" },
+      { name: "googlebot", content: "noindex, nofollow" },
       { title: "RoadmapX™ — Delivery sequence | UseCasesX™" },
       {
         name: "description",
