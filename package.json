@@ -37,7 +37,8 @@
     "test:unit": "bun test tests/unit",
     "test:corpus-qa": "bun run tests/launch-corpus-quality.e2e.ts",
     "test:p0": "playwright test tests/navbar.spec.ts tests/browse-facets.spec.ts tests/seo-metadata.spec.ts tests/mobile-responsive.spec.ts tests/compare-analytics.spec.ts tests/journey-opportunity-to-portfolio.spec.ts tests/journey-private-report-access.spec.ts tests/anonymous-access-sweep.spec.ts",
-    "test:integration": "node scripts/run-e2e.mjs"
+    "test:integration": "node scripts/run-e2e.mjs",
+    "seed:sample-tenants": "bun run scripts/seed/sample-tenants.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

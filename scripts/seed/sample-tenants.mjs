@@ -15,7 +15,8 @@ const url = process.env.SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!url || !serviceKey) throw new Error("Missing SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY");
 
-const PASSWORD = process.env.SAMPLE_TENANT_PASSWORD ?? `Ux-${randomBytes(18).toString("base64url")}`;
+const PASSWORD =
+  process.env.SAMPLE_TENANT_PASSWORD ?? `Ux-${randomBytes(18).toString("base64url")}`;
 const GENERATED = !process.env.SAMPLE_TENANT_PASSWORD;
 
 const DOMAIN = "sample.usecasex.app";
