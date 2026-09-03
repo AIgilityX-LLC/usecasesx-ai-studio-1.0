@@ -12,15 +12,13 @@ const BASE = process.env.E2E_BASE_URL ?? "http://localhost:8080";
 test.describe("repository browse facets", () => {
   test("renders every facet filter", async ({ page }) => {
     await page.goto(`${BASE}/repository`, { waitUntil: "networkidle" });
-    for (const label of [
-      "Market Segment",
-      "Sector",
-      "AI Pattern",
-      "Priority",
-      "ROI Range",
-      "Deployment",
-      "Security",
-    ]) {
+    // Key facets are always visible in the horizontal filter bar.
+    for (const label of ["Industry", "AI Pattern", "Business Function", "Priority", "ROI Range"]) {
+      await expect(page.getByRole("button", { name: label, exact: true })).toBeVisible();
+    }
+    // Remaining facets live behind the "Advanced filters" toggle.
+    await page.getByRole("button", { name: /Advanced filters/i }).click();
+    for (const label of ["Market Segment", "Sector", "Deployment", "Security"]) {
       await expect(page.getByRole("button", { name: label, exact: true })).toBeVisible();
     }
   });
