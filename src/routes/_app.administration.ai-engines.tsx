@@ -22,7 +22,7 @@ export const Route = createFileRoute("/_app/administration/ai-engines")({
 
 function AiEnginesPage() {
   return (
-    <RequireRoles roles={PLATFORM_ADMIN_ROLES}>
+    <RequireRoles anyOf={PLATFORM_ADMIN_ROLES} action="manage AI research engines">
       <div className="mx-auto max-w-5xl space-y-6 px-6 py-10">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
