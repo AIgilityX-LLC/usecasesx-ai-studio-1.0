@@ -265,7 +265,10 @@ export async function resolveEngineForCall(
   edition: string,
 ): Promise<ResolvedEngine | null> {
   const wanted = slug ? await loadEngine(slug) : null;
-  const candidates = [wanted, wanted?.fallback_to_default === false ? null : await loadDefaultEngine()];
+  const candidates = [
+    wanted,
+    wanted?.fallback_to_default === false ? null : await loadDefaultEngine(),
+  ];
 
   for (const row of candidates) {
     if (!row || !row.enabled) continue;
@@ -338,7 +341,8 @@ export async function testEngine(
   }
 
   const credential = await credentialFor(row.slug, workspaceId);
-  if (!credential) return { ok: false, latencyMs: 0, message: "No API key stored for this engine." };
+  if (!credential)
+    return { ok: false, latencyMs: 0, message: "No API key stored for this engine." };
   if (!row.base_url) return { ok: false, latencyMs: 0, message: "No endpoint configured." };
 
   try {

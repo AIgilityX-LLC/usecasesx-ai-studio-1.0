@@ -200,9 +200,7 @@ export function AiEnginePanel() {
                       })
                     }
                   >
-                    {engine.allowWorkspaceKeys
-                      ? "Disallow workspace keys"
-                      : "Allow workspace keys"}
+                    {engine.allowWorkspaceKeys ? "Disallow workspace keys" : "Allow workspace keys"}
                   </Button>
                 </div>
 

@@ -47,9 +47,7 @@ async function once(req: GatewayRequest, apiKey: string): Promise<GatewayRespons
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), req.timeoutMs);
   try {
-    const url = req.endpoint
-      ? `${req.endpoint.replace(/\/$/, "")}/chat/completions`
-      : GATEWAY_URL;
+    const url = req.endpoint ? `${req.endpoint.replace(/\/$/, "")}/chat/completions` : GATEWAY_URL;
     const res = await fetch(url, {
       method: "POST",
       signal: controller.signal,
