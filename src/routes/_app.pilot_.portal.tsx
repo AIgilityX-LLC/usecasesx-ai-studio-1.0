@@ -264,6 +264,60 @@ function PilotPortalPage() {
         </section>
       )}
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <LayoutDashboard className="h-4 w-4 text-primary" aria-hidden="true" />
+            Your Pro workspace
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <p className="text-sm text-muted-foreground">
+            {workspace?.name
+              ? `Your seat is working inside “${workspace.name}”. Everything you create stays in this workspace.`
+              : "Your workspace is created the moment you finish onboarding. Complete the intake to activate it."}
+          </p>
+          <dl className="grid gap-4 sm:grid-cols-3">
+            <div className="rounded-lg border border-border p-4">
+              <dt className="text-xs uppercase tracking-wide text-muted-foreground">Use cases</dt>
+              <dd className="text-2xl font-semibold text-foreground">
+                {workspace?.useCaseCount ?? 0}
+              </dd>
+            </div>
+            <div className="rounded-lg border border-border p-4">
+              <dt className="text-xs uppercase tracking-wide text-muted-foreground">Scores run</dt>
+              <dd className="text-2xl font-semibold text-foreground">
+                {workspace?.scoreCount ?? 0}
+              </dd>
+            </div>
+            <div className="rounded-lg border border-border p-4">
+              <dt className="text-xs uppercase tracking-wide text-muted-foreground">Portfolios</dt>
+              <dd className="text-2xl font-semibold text-foreground">
+                {workspace?.portfolioCount ?? 0}
+              </dd>
+            </div>
+          </dl>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild size="sm">
+              <Link to="/dashboard">Open dashboard</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link to="/my-use-cases">Projects</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link to="/feasibility">Scoring</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link to="/portfoliox">Portfolio</Link>
+            </Button>
+            {!workspace?.id && (
+              <Button asChild size="sm" variant="ghost">
+                <Link to="/onboarding">Finish onboarding</Link>
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
 
       <Card>
