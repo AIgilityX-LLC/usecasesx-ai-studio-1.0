@@ -34,6 +34,7 @@ import { PilotCheckpointForm } from "@/components/pilot/PilotCheckpointForm";
 import { aiExperienceLabel, availabilityLabel } from "@/lib/pilot/pilot.onboarding";
 import { INVITE_QUERY_PARAM } from "@/lib/pilot/pilot.invites";
 import { EmptyState } from "@/components/EmptyState";
+import { ProActivationHub } from "@/components/pro/ProActivationHub";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -325,6 +326,10 @@ function PilotPortalPage() {
           </div>
         </CardContent>
       </Card>
+
+      <ProActivationHub />
+
+
 
       <Card>
         <CardHeader>
