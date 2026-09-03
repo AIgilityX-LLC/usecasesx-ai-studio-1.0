@@ -167,11 +167,18 @@ function LaunchAnnouncementPage() {
       >
         <TrackedCta to="/repository" label="Explore the repository" location="launch-hero-lite" />
         <TrackedCta
+          to="/pilot/apply"
+          label="Apply for the pilot"
+          location="launch-hero-pilot"
+          variant="secondary"
+        />
+        <TrackedCta
           to="/pricing"
           label="Join Pro Founding Access"
           location="launch-hero-pro"
           variant="secondary"
         />
+
       </PageHero>
 
       <Section
