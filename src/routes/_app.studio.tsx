@@ -27,6 +27,20 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Loader2, Sparkles, Save, Trash2, Wand2, Lightbulb } from "lucide-react";
 import { BlankDraftButton } from "@/components/studio/BlankDraftButton";
+import { listStudioEnginesFn } from "@/lib/ai/engines.functions";
+import {
+  AUDIENCES,
+  BUDGET_BANDS,
+  DATA_SENSITIVITIES,
+  DEFAULT_BRIEF,
+  DEPLOYMENT_MODELS,
+  HORIZONS,
+  OUTPUT_DETAILS,
+  RESEARCH_DEPTHS,
+  briefChips,
+  type EngineSummary,
+  type StudioBrief,
+} from "@/lib/ai/engines";
 
 export const Route = createFileRoute("/_app/studio")({
   head: () => ({
@@ -67,6 +81,11 @@ function StudioPage() {
   }, [navigate, session]);
 
   const draftFn = useServerFn(draftUseCase);
+  const enginesFn = useServerFn(listStudioEnginesFn);
+  const [engines, setEngines] = useState<EngineSummary[]>([]);
+  const [engineSlug, setEngineSlug] = useState<string | null>(null);
+  const [brief, setBrief] = useState<StudioBrief>(DEFAULT_BRIEF);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [provider, setProvider] = useState<StudioProvider>("gemini");
   const [organization, setOrganization] = useState("");
   const [industry, setIndustry] = useState("");
@@ -80,6 +99,38 @@ function StudioPage() {
     provenance?: import("@/lib/ai/types").AiProvenance | null;
   } | null>(null);
 
+  // Engines are configured by platform admins; the legacy provider cards stay
+  // as a fallback when no catalog rows are usable for this workspace.
+  useEffect(() => {
+    let cancelled = false;
+    if (!session) return;
+    void (async () => {
+      try {
+        const res = await enginesFn({ data: {} as never });
+        if (cancelled) return;
+        setEngines(res.engines);
+        const preferred = res.engines.find((e) => e.isDefault) ?? res.engines[0];
+        setEngineSlug(preferred ? preferred.slug : null);
+      } catch (error) {
+        console.error("[studio] engine list failed", error);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [enginesFn, session]);
+
+  const activeEngine = useMemo(
+    () => engines.find((e) => e.slug === engineSlug) ?? null,
+    [engines, engineSlug],
+  );
+  const engineLabel = activeEngine?.label ?? PROVIDER_META[provider].label;
+  const chips = useMemo(() => briefChips(brief), [brief]);
+
+  function updateBrief<K extends keyof StudioBrief>(key: K, value: StudioBrief[K]) {
+    setBrief((prev) => ({ ...prev, [key]: value }));
+  }
+
   const canSubmit = organization.trim().length > 0 && objective.trim().length > 0 && !loading;
 
   async function handleGenerate() {
@@ -87,10 +138,10 @@ function StudioPage() {
     setLoading(true);
     setError(null);
     setCurrent(null);
-    trackCTAEvent("studio_generate_requested", { provider });
+    trackCTAEvent("studio_generate_requested", { provider, engine: engineSlug ?? "legacy" });
     try {
       const res = await draftFn({
-        data: { provider, organization, industry, objective, context },
+        data: { provider, organization, industry, objective, context, engineSlug, brief },
       });
       if (!res.ok || !res.draft) {
         setError(res.error ?? "Failed to draft use case.");
@@ -175,6 +226,36 @@ function StudioPage() {
           <CardContent className="space-y-5">
             <div>
               <Label className="mb-2 block">Research engine</Label>
+              {engines.length > 0 ? (
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  {engines.map((engine) => {
+                    const active = engine.slug === engineSlug;
+                    return (
+                      <button
+                        key={engine.slug}
+                        type="button"
+                        onClick={() => setEngineSlug(engine.slug)}
+                        aria-pressed={active}
+                        className={`rounded-lg border px-3 py-2 text-left transition ${
+                          active
+                            ? "border-primary bg-primary/10"
+                            : "border-border hover:border-primary/40"
+                        }`}
+                      >
+                        <div className="text-sm font-semibold">{engine.label}</div>
+                        <div className="text-[11px] text-muted-foreground">
+                          {engine.tagline ?? engine.provider}
+                        </div>
+                        {engine.isDefault ? (
+                          <div className="mt-1 text-[10px] uppercase tracking-wide text-primary">
+                            Default
+                          </div>
+                        ) : null}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 {STUDIO_PROVIDERS.map((p) => {
                   const meta = PROVIDER_META[p];
@@ -196,6 +277,7 @@ function StudioPage() {
                   );
                 })}
               </div>
+              )}
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -241,6 +323,216 @@ function StudioPage() {
               />
             </div>
 
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <Label htmlFor="depth">Research depth</Label>
+                <Select
+                  value={brief.depth}
+                  onValueChange={(v) => updateBrief("depth", v as StudioBrief["depth"])}
+                >
+                  <SelectTrigger id="depth">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {RESEARCH_DEPTHS.map((o) => (
+                      <SelectItem key={o.value} value={o.value}>
+                        {o.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="detail">Output detail</Label>
+                <Select
+                  value={brief.detail}
+                  onValueChange={(v) => updateBrief("detail", v as StudioBrief["detail"])}
+                >
+                  <SelectTrigger id="detail">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {OUTPUT_DETAILS.map((o) => (
+                      <SelectItem key={o.value} value={o.value}>
+                        {o.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="audience">Primary audience</Label>
+                <Select
+                  value={brief.audience}
+                  onValueChange={(v) => updateBrief("audience", v as StudioBrief["audience"])}
+                >
+                  <SelectTrigger id="audience">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {AUDIENCES.map((o) => (
+                      <SelectItem key={o.value} value={o.value}>
+                        {o.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAdvanced((v) => !v)}
+              >
+                {showAdvanced ? "Hide enterprise parameters" : "Add enterprise parameters"}
+              </Button>
+            </div>
+
+            {showAdvanced && (
+              <div className="space-y-4 rounded-lg border border-border p-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor="fn">Business function</Label>
+                    <Input
+                      id="fn"
+                      value={brief.businessFunction ?? ""}
+                      onChange={(e) => updateBrief("businessFunction", e.target.value)}
+                      placeholder="Customer service, Finance, Supply chain…"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="horizon">Delivery horizon</Label>
+                    <Select
+                      value={brief.horizon ?? ""}
+                      onValueChange={(v) => updateBrief("horizon", v as StudioBrief["horizon"])}
+                    >
+                      <SelectTrigger id="horizon">
+                        <SelectValue placeholder="Select a horizon" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {HORIZONS.map((o) => (
+                          <SelectItem key={o.value} value={o.value}>
+                            {o.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="sensitivity">Data sensitivity</Label>
+                    <Select
+                      value={brief.dataSensitivity ?? ""}
+                      onValueChange={(v) =>
+                        updateBrief("dataSensitivity", v as StudioBrief["dataSensitivity"])
+                      }
+                    >
+                      <SelectTrigger id="sensitivity">
+                        <SelectValue placeholder="Select sensitivity" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DATA_SENSITIVITIES.map((o) => (
+                          <SelectItem key={o.value} value={o.value}>
+                            {o.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="deployment">Deployment model</Label>
+                    <Select
+                      value={brief.deploymentModel ?? ""}
+                      onValueChange={(v) =>
+                        updateBrief("deploymentModel", v as StudioBrief["deploymentModel"])
+                      }
+                    >
+                      <SelectTrigger id="deployment">
+                        <SelectValue placeholder="Select deployment" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DEPLOYMENT_MODELS.map((o) => (
+                          <SelectItem key={o.value} value={o.value}>
+                            {o.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="budget">Budget band</Label>
+                    <Select
+                      value={brief.budgetBand ?? ""}
+                      onValueChange={(v) =>
+                        updateBrief("budgetBand", v as StudioBrief["budgetBand"])
+                      }
+                    >
+                      <SelectTrigger id="budget">
+                        <SelectValue placeholder="Select a band" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BUDGET_BANDS.map((o) => (
+                          <SelectItem key={o.value} value={o.value}>
+                            {o.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="residency">Data residency</Label>
+                    <Input
+                      id="residency"
+                      value={brief.dataResidency ?? ""}
+                      onChange={(e) => updateBrief("dataResidency", e.target.value)}
+                      placeholder="EU, UAE, UK-only…"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="kpis">Target KPIs</Label>
+                  <Textarea
+                    id="kpis"
+                    rows={2}
+                    value={brief.targetKpis ?? ""}
+                    onChange={(e) => updateBrief("targetKpis", e.target.value)}
+                    placeholder="First-contact resolution, cost per ticket, cycle time…"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="systems">Existing systems</Label>
+                  <Textarea
+                    id="systems"
+                    rows={2}
+                    value={brief.existingSystems ?? ""}
+                    onChange={(e) => updateBrief("existingSystems", e.target.value)}
+                    placeholder="ServiceNow, SAP, Salesforce, in-house data lake…"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="reg">Regulatory regime</Label>
+                  <Input
+                    id="reg"
+                    value={brief.regulatoryRegime ?? ""}
+                    onChange={(e) => updateBrief("regulatoryRegime", e.target.value)}
+                    placeholder="EU AI Act, GDPR, HIPAA, DORA…"
+                  />
+                </div>
+              </div>
+            )}
+
+            {chips.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {chips.map((chip) => (
+                  <Badge key={chip} variant="secondary" className="font-normal">
+                    {chip}
+                  </Badge>
+                ))}
+              </div>
+            )}
+
             {error && (
               <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
                 {error}
@@ -277,8 +569,8 @@ function StudioPage() {
             )}
             {loading && (
               <div className="flex items-center text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" /> {PROVIDER_META[provider].label} is
-                drafting your use case…
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" /> {engineLabel} is drafting your
+                use case…
               </div>
             )}
             {current && (
