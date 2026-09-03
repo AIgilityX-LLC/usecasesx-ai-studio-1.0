@@ -16,6 +16,10 @@ export type GatewayRequest = {
   toolName: string;
   timeoutMs: number;
   retries: number;
+  /** OpenAI-compatible endpoint base URL for a bring-your-own-key engine. */
+  endpoint?: string | null;
+  /** Provider key for that engine. Omitted for built-in gateway calls. */
+  apiKey?: string | null;
 };
 
 export type GatewayResponse =
@@ -43,7 +47,10 @@ async function once(req: GatewayRequest, apiKey: string): Promise<GatewayRespons
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), req.timeoutMs);
   try {
-    const res = await fetch(GATEWAY_URL, {
+    const url = req.endpoint
+      ? `${req.endpoint.replace(/\/$/, "")}/chat/completions`
+      : GATEWAY_URL;
+    const res = await fetch(url, {
       method: "POST",
       signal: controller.signal,
       headers: {
@@ -104,7 +111,7 @@ async function once(req: GatewayRequest, apiKey: string): Promise<GatewayRespons
 
 /** Execute a gateway call with bounded retry on transient failures only. */
 export async function callGateway(req: GatewayRequest): Promise<GatewayResponse> {
-  const apiKey = process.env.LOVABLE_API_KEY;
+  const apiKey = req.apiKey || process.env.LOVABLE_API_KEY;
   if (!apiKey) return { ok: false, kind: "not_configured" };
 
   let last: GatewayResponse = { ok: false, kind: "upstream" };
