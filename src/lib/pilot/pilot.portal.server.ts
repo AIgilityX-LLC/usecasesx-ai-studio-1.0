@@ -69,3 +69,55 @@ export async function listMyPilotUseCases(
   }
   return rows.sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""));
 }
+
+export type PortalWorkspace = {
+  id: string | null;
+  name: string | null;
+  useCaseCount: number;
+  scoreCount: number;
+  portfolioCount: number;
+};
+
+/**
+ * Snapshot of the participant's own Pro workspace: enough to show the seat is
+ * live and to send them straight to the surface they still need to use.
+ */
+export async function getMyWorkspaceSnapshot(
+  supabase: Client,
+  userId: string,
+): Promise<PortalWorkspace> {
+  const head = { count: "exact" as const, head: true };
+
+  const { data: membership } = await supabase
+    .from("workspace_members")
+    .select("workspace_id")
+    .eq("user_id", userId)
+    .limit(1)
+    .maybeSingle();
+
+  const workspaceId = (membership as { workspace_id?: string } | null)?.workspace_id ?? null;
+
+  let name: string | null = null;
+  if (workspaceId) {
+    const { data: workspace } = await supabase
+      .from("workspaces")
+      .select("name")
+      .eq("id", workspaceId)
+      .maybeSingle();
+    name = (workspace as { name?: string } | null)?.name ?? null;
+  }
+
+  const [useCases, scores, portfolios] = await Promise.all([
+    supabase.from("ai_use_cases").select("id", head).eq("created_by", userId),
+    supabase.from("scorecard_results").select("id", head).eq("created_by", userId),
+    supabase.from("portfolios").select("id", head).eq("user_id", userId),
+  ]);
+
+  return {
+    id: workspaceId,
+    name,
+    useCaseCount: useCases.count ?? 0,
+    scoreCount: scores.count ?? 0,
+    portfolioCount: portfolios.count ?? 0,
+  };
+}
