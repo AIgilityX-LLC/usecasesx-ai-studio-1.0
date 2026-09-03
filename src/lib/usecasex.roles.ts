@@ -78,11 +78,29 @@ export function useRoles(): RoleState {
       // the auth client's internal lock. Defer to a macrotask instead.
       setTimeout(() => void load(uid), 0);
     });
+
+    // Fallback: some environments (preview iframe, restored tabs) can delay or
+    // miss INITIAL_SESSION, which used to leave the gate on "Verifying access…"
+    // forever. Resolve the session directly as well.
+    void supabase.auth
+      .getSession()
+      .then(({ data: s }) => load(s.session?.user?.id ?? null))
+      .catch(() => {
+        if (active) setLoading(false);
+      });
+
+    // Hard safety valve so the UI never hangs indefinitely.
+    const timer = setTimeout(() => {
+      if (active) setLoading(false);
+    }, 6000);
+
     return () => {
       active = false;
+      clearTimeout(timer);
       data.subscription.unsubscribe();
     };
   }, []);
+
 
   const has = (role: AppRole) => roles.includes(role);
   const hasAny = (rs: AppRole[]) => rs.some((r) => roles.includes(r));
