@@ -55,6 +55,7 @@ import {
   enrollmentFunnel,
 } from "@/lib/pilot/pilot.onboarding";
 import { PilotInvitationDispatchCard } from "@/components/pilot/PilotInvitationDispatchCard";
+import { PilotApplicationsQueue } from "@/components/pilot/PilotApplicationsQueue";
 import { PilotFunnelAnalytics } from "@/components/pilot/PilotFunnelAnalytics";
 import { PilotParticipantTimeline } from "@/components/pilot/PilotParticipantTimeline";
 import { PilotCohortFilters } from "@/components/pilot/PilotCohortFilters";
