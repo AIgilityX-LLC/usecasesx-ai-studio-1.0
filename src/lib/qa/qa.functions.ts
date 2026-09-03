@@ -145,8 +145,6 @@ export const recordLaunchCheckResultsFn = createServerFn({ method: "POST" })
     });
   });
 
-
-
 /**
  * Runs the signed-in P0/P1 launch checks as the calling user. There is no
  * elevation: the probes see exactly what this session is allowed to see, which
@@ -276,6 +274,18 @@ export const getLaunchReadinessFn = createServerFn({ method: "GET" })
       waiverActive: Boolean(waiver),
       waiverNote: waiver
         ? `${waiver.reason} (approved by ${waiver.approverName}, ${waiver.approverRole})`
+        : null,
+      // Surfaced so the readiness page can show and retire the waiver in place.
+      waiver: waiver
+        ? {
+            id: waiver.id,
+            scope: waiver.scope,
+            reason: waiver.reason,
+            approverName: waiver.approverName,
+            approverRole: waiver.approverRole,
+            expiresAt: waiver.expiresAt,
+            createdAt: waiver.createdAt,
+          }
         : null,
     };
   });

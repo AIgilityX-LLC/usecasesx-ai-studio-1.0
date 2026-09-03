@@ -39,6 +39,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ReadinessWaiverPanel } from "@/components/release/ReadinessWaiverPanel";
 
 export const Route = createFileRoute("/_app/administration/readiness/")({
   head: () => privateHead("Readiness"),
@@ -188,6 +189,16 @@ function ReadinessOverviewPage() {
           <AlertDescription>{blocking.map((item) => item.label).join(" · ")}</AlertDescription>
         </Alert>
       )}
+
+      <ReadinessWaiverPanel
+        waiver={data.waiver ?? null}
+        evidence={{
+          seats: data.summary.invited,
+          checkpointResponses: data.summary.checkpointResponses,
+          onboardingProfiles: data.evidence.onboardingProfiles,
+        }}
+        onChanged={() => void readiness.refetch()}
+      />
 
       <Card>
         <CardHeader>

@@ -10,6 +10,8 @@
 
 ## Open
 
+- [x] Readiness page: named, expiring pilot-evidence waiver panel (grant / retire, audit-logged) so the launch decision can read "conditional go" without faking evidence
+
 - [ ] Enrol 15-25 real pilot participants (invite → onboarding intake → ≥1 checkpoint) so the pilot evidence gate scores — needs the real roster from the user
 - [~] Browser suite: public P0/P1 chromium run done (39 passed / 1 failed — "Market Segment" facet button); report at /mnt/documents/browser-suite-report.json, import it on Launch checks. Signed-in persona run still blocked: demo personas are not seeded in this environment.
 - [ ] Verify `notify.aigilityx.com` DNS so confirmation and auth emails dispatch
