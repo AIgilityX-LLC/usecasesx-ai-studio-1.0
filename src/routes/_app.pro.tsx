@@ -70,6 +70,12 @@ async function routeAfterAuth(navigate: ReturnType<typeof useNavigate>) {
 }
 
 function ProPage() {
+  const session = useSupabaseSession();
+  if (session) return <ProActivationHub />;
+  return <ProSignupPage />;
+}
+
+function ProSignupPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<"signin" | "signup" | "magic">("signup");
   const [email, setEmail] = useState("");
