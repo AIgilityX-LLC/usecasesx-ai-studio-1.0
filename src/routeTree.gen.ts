@@ -82,6 +82,7 @@ import { Route as AppAccountDataRouteImport } from './routes/_app.account.data'
 import { Route as AppAccountOrganizationRouteImport } from './routes/_app.account.organization'
 import { Route as AppAccountSecurityRouteImport } from './routes/_app.account.security'
 import { Route as AppAccountTeamRouteImport } from './routes/_app.account.team'
+import { Route as AppAdministrationAiEnginesRouteImport } from './routes/_app.administration.ai-engines'
 import { Route as AppAdministrationAnalyticsRouteImport } from './routes/_app.administration.analytics'
 import { Route as AppAdministrationEmailDeliveryRouteImport } from './routes/_app.administration.email-delivery'
 import { Route as AppAdministrationFeedbackRouteImport } from './routes/_app.administration.feedback'
@@ -509,6 +510,12 @@ const AppAccountTeamRoute = AppAccountTeamRouteImport.update({
   path: '/team',
   getParentRoute: () => AppAccountRoute,
 } as any)
+const AppAdministrationAiEnginesRoute =
+  AppAdministrationAiEnginesRouteImport.update({
+    id: '/ai-engines',
+    path: '/ai-engines',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
 const AppAdministrationAnalyticsRoute =
   AppAdministrationAnalyticsRouteImport.update({
     id: '/analytics',
@@ -924,6 +931,7 @@ export interface FileRoutesByFullPath {
   '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
   '/account/team': typeof AppAccountTeamRoute
+  '/administration/ai-engines': typeof AppAdministrationAiEnginesRoute
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/administration/email-delivery': typeof AppAdministrationEmailDeliveryRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
@@ -1058,6 +1066,7 @@ export interface FileRoutesByTo {
   '/account/organization': typeof AppAccountOrganizationRoute
   '/account/security': typeof AppAccountSecurityRoute
   '/account/team': typeof AppAccountTeamRoute
+  '/administration/ai-engines': typeof AppAdministrationAiEnginesRoute
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/administration/email-delivery': typeof AppAdministrationEmailDeliveryRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
@@ -1196,6 +1205,7 @@ export interface FileRoutesById {
   '/_app/account/organization': typeof AppAccountOrganizationRoute
   '/_app/account/security': typeof AppAccountSecurityRoute
   '/_app/account/team': typeof AppAccountTeamRoute
+  '/_app/administration/ai-engines': typeof AppAdministrationAiEnginesRoute
   '/_app/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/_app/administration/email-delivery': typeof AppAdministrationEmailDeliveryRoute
   '/_app/administration/feedback': typeof AppAdministrationFeedbackRoute
@@ -1334,6 +1344,7 @@ export interface FileRouteTypes {
     | '/account/organization'
     | '/account/security'
     | '/account/team'
+    | '/administration/ai-engines'
     | '/administration/analytics'
     | '/administration/email-delivery'
     | '/administration/feedback'
@@ -1468,6 +1479,7 @@ export interface FileRouteTypes {
     | '/account/organization'
     | '/account/security'
     | '/account/team'
+    | '/administration/ai-engines'
     | '/administration/analytics'
     | '/administration/email-delivery'
     | '/administration/feedback'
@@ -1605,6 +1617,7 @@ export interface FileRouteTypes {
     | '/_app/account/organization'
     | '/_app/account/security'
     | '/_app/account/team'
+    | '/_app/administration/ai-engines'
     | '/_app/administration/analytics'
     | '/_app/administration/email-delivery'
     | '/_app/administration/feedback'
@@ -2208,6 +2221,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAccountTeamRouteImport
       parentRoute: typeof AppAccountRoute
     }
+    '/_app/administration/ai-engines': {
+      id: '/_app/administration/ai-engines'
+      path: '/ai-engines'
+      fullPath: '/administration/ai-engines'
+      preLoaderRoute: typeof AppAdministrationAiEnginesRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/administration/analytics': {
       id: '/_app/administration/analytics'
       path: '/analytics'
@@ -2666,6 +2686,7 @@ const AppAccountRouteWithChildren = AppAccountRoute._addFileChildren(
 )
 
 interface AppAdministrationRouteChildren {
+  AppAdministrationAiEnginesRoute: typeof AppAdministrationAiEnginesRoute
   AppAdministrationAnalyticsRoute: typeof AppAdministrationAnalyticsRoute
   AppAdministrationEmailDeliveryRoute: typeof AppAdministrationEmailDeliveryRoute
   AppAdministrationFeedbackRoute: typeof AppAdministrationFeedbackRoute
@@ -2684,6 +2705,7 @@ interface AppAdministrationRouteChildren {
 }
 
 const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
+  AppAdministrationAiEnginesRoute: AppAdministrationAiEnginesRoute,
   AppAdministrationAnalyticsRoute: AppAdministrationAnalyticsRoute,
   AppAdministrationEmailDeliveryRoute: AppAdministrationEmailDeliveryRoute,
   AppAdministrationFeedbackRoute: AppAdministrationFeedbackRoute,
