@@ -83,6 +83,7 @@ export const Route = createFileRoute("/_app/portfoliox")({
   head: () => ({
     meta: [
       { name: "robots", content: "noindex, nofollow" },
+      { name: "googlebot", content: "noindex, nofollow" },
       { title: "AI Opportunity Portfolios | UseCasesX" },
       {
         name: "description",

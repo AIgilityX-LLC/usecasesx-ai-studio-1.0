@@ -54,6 +54,7 @@ export const Route = createFileRoute("/_app/my-use-cases")({
   head: () => ({
     meta: [
       { name: "robots", content: "noindex, nofollow" },
+      { name: "googlebot", content: "noindex, nofollow" },
       { title: "Saved Use Cases — UseCasesX™ Pro" },
       {
         name: "description",
