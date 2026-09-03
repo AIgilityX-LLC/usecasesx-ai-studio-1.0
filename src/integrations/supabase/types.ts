@@ -32,6 +32,104 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_engine_credentials: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          engine_slug: string
+          id: string
+          key_ciphertext: string
+          key_hint: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          engine_slug: string
+          id?: string
+          key_ciphertext: string
+          key_hint?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          engine_slug?: string
+          id?: string
+          key_ciphertext?: string
+          key_hint?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_engine_credentials_engine_slug_fkey"
+            columns: ["engine_slug"]
+            isOneToOne: true
+            referencedRelation: "ai_engines"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      ai_engines: {
+        Row: {
+          allow_workspace_keys: boolean
+          base_url: string | null
+          created_at: string
+          editions: string[]
+          enabled: boolean
+          fallback_to_default: boolean
+          id: string
+          is_default: boolean
+          label: string
+          model_id: string
+          provider: string
+          route: string
+          slug: string
+          sort_order: number
+          tagline: string | null
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          allow_workspace_keys?: boolean
+          base_url?: string | null
+          created_at?: string
+          editions?: string[]
+          enabled?: boolean
+          fallback_to_default?: boolean
+          id?: string
+          is_default?: boolean
+          label: string
+          model_id: string
+          provider: string
+          route?: string
+          slug: string
+          sort_order?: number
+          tagline?: string | null
+          tier?: string
+          updated_at?: string
+        }
+        Update: {
+          allow_workspace_keys?: boolean
+          base_url?: string | null
+          created_at?: string
+          editions?: string[]
+          enabled?: boolean
+          fallback_to_default?: boolean
+          id?: string
+          is_default?: boolean
+          label?: string
+          model_id?: string
+          provider?: string
+          route?: string
+          slug?: string
+          sort_order?: number
+          tagline?: string | null
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_usage_events: {
         Row: {
           completion_tokens: number | null
@@ -5390,6 +5488,57 @@ export type Database = {
           },
           {
             foreignKeyName: "workshops_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_ai_engines: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          enabled: boolean
+          engine_slug: string
+          id: string
+          key_ciphertext: string
+          key_hint: string | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          enabled?: boolean
+          engine_slug: string
+          id?: string
+          key_ciphertext: string
+          key_hint?: string | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          enabled?: boolean
+          engine_slug?: string
+          id?: string
+          key_ciphertext?: string
+          key_hint?: string | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_ai_engines_engine_slug_fkey"
+            columns: ["engine_slug"]
+            isOneToOne: false
+            referencedRelation: "ai_engines"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "workspace_ai_engines_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
