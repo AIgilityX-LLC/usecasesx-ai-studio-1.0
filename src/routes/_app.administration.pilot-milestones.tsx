@@ -14,7 +14,7 @@ import { toast } from "sonner";
 
 import { privateHead } from "@/lib/seo";
 import { RequireRoles } from "@/components/RequireRoles";
-import { PLATFORM_ADMIN_ROLES } from "@/lib/ops/roles";
+import { PLATFORM_ADMIN_ROLES } from "@/lib/admin/platform-admin";
 import {
   decidePilotMilestoneFn,
   listPilotMilestoneApprovalsFn,
@@ -37,7 +37,7 @@ export const Route = createFileRoute("/_app/administration/pilot-milestones")({
   ),
 });
 
-const MILESTONE_LABEL = new Map(PILOT_MILESTONES.map((m) => [m.key, m.label]));
+const MILESTONE_LABEL = new Map<string, string>(PILOT_MILESTONES.map((m) => [m.key, m.label]));
 
 function PilotMilestoneApprovals() {
   const list = useServerFn(listPilotMilestoneApprovalsFn);
