@@ -154,4 +154,3 @@ export const completeOnboardingFn = createServerFn({ method: "POST" })
       welcomeEmail,
     };
   });
-
