@@ -60,6 +60,12 @@ export function PilotMilestoneBoard({ enabled = true }: { enabled?: boolean }) {
     queryKey: ["pilot", "milestones"],
     queryFn: () => load({ data: {} as never }),
     enabled,
+    // Progress is derived from live workspace rows (use cases, scores,
+    // portfolio and roadmap items), so re-measure whenever the participant
+    // comes back to the portal or leaves it open while working.
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchInterval: 60_000,
   });
 
   const mutation = useMutation({
@@ -99,7 +105,17 @@ export function PilotMilestoneBoard({ enabled = true }: { enabled?: boolean }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Milestone approvals</CardTitle>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <CardTitle className="text-base">Milestone approvals</CardTitle>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => void query.refetch()}
+            disabled={query.isFetching}
+          >
+            {query.isFetching ? "Refreshing…" : "Refresh progress"}
+          </Button>
+        </div>
         <CardDescription>
           Your programme progress is measured from your own workspace. Submit a milestone once the
           work exists and a programme admin confirms it.
