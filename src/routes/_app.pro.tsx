@@ -3,6 +3,8 @@ import { RequirePlan } from "@/components/RequirePlan";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
+import { useSupabaseSession } from "@/hooks/useSupabaseSession";
+import { ProActivationHub } from "@/components/pro/ProActivationHub";
 
 export const Route = createFileRoute("/_app/pro")({
   head: () => ({
