@@ -5,7 +5,11 @@
  */
 import { test, expect, devices } from "@playwright/test";
 
-test.use({ ...devices["iPhone 12"] });
+// iPhone 12 viewport/touch emulation on Chromium. The device descriptor
+// defaults to WebKit, which is unavailable in some sandbox/CI images; the
+// viewport smoke assertions here are engine-independent.
+const { defaultBrowserType: _ignored, ...iphone12 } = devices["iPhone 12"];
+test.use({ ...iphone12, defaultBrowserType: "chromium" });
 
 const SURFACES = [
   { path: "/", label: "Landing" },
