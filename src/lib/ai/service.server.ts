@@ -29,6 +29,7 @@ import {
 } from "./fair-use";
 import { FENCE_NOTICE, fenceUntrusted } from "./sanitize";
 import { resolveModel, type ProviderAlias } from "./models";
+import { briefToLines, type StudioBrief } from "./engines";
 import { promptFor, type AiTask } from "./prompts";
 import { OUTPUT_SCHEMAS, TOOL_SCHEMAS } from "./schemas";
 import type {
@@ -50,6 +51,8 @@ export type AiCallContext = {
   /** Optional entity the output relates to, recorded for attribution. */
   entity?: { type: string; id: string } | null;
   providerAlias?: ProviderAlias | null;
+  /** Configured research engine slug. Overrides the alias when resolvable. */
+  engineSlug?: string | null;
 };
 
 const WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -116,7 +119,10 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
   const prompt = promptFor(task);
   const schema = OUTPUT_SCHEMAS[task] as unknown as z.ZodType<T>;
   const alias = ctx.providerAlias ?? null;
-  const model = resolveModel(prompt.tier, alias);
+  let model = resolveModel(prompt.tier, alias);
+  let endpoint: string | null = null;
+  let engineKey: string | null = null;
+  let engineSlug: string | null = null;
 
   let subject: Awaited<ReturnType<typeof resolveSubject>>;
   try {
@@ -139,6 +145,27 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
       },
     );
     return aiFailure("forbidden");
+  }
+
+  // 1b. Research engine — admin-configured catalog wins over the alias.
+  if (ctx.engineSlug) {
+    try {
+      const { resolveEngineForCall } = await import("./engines.server");
+      const engine = await resolveEngineForCall(
+        ctx.engineSlug,
+        subject.workspaceId ?? null,
+        subject.edition,
+      );
+      if (engine) {
+        model = engine.model;
+        endpoint = engine.endpoint;
+        engineKey = engine.apiKey;
+        engineSlug = engine.slug;
+      }
+    } catch (error) {
+      // A misconfigured engine must never break the journey — fall back.
+      console.error("[ai] engine resolution failed", { slug: ctx.engineSlug, error });
+    }
   }
 
   // 2. Fair use.
@@ -209,6 +236,8 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
     toolName: (TOOL_SCHEMAS[task] as any).function.name,
     timeoutMs: prompt.timeoutMs,
     retries: prompt.retries,
+    endpoint,
+    apiKey: engineKey,
   });
   const durationMs = Date.now() - startedAt;
 
@@ -216,7 +245,7 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
     await recordUsage(ctx, subject, {
       task,
       model,
-      providerAlias: alias ?? prompt.tier,
+      providerAlias: engineSlug ?? alias ?? prompt.tier,
       status: "error",
       errorKind: response.kind,
       durationMs,
@@ -232,7 +261,7 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
     await recordUsage(ctx, subject, {
       task,
       model,
-      providerAlias: alias ?? prompt.tier,
+      providerAlias: engineSlug ?? alias ?? prompt.tier,
       status: "error",
       errorKind: "invalid_output",
       durationMs,
@@ -245,7 +274,7 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
   await recordUsage(ctx, subject, {
     task,
     model,
-    providerAlias: alias ?? prompt.tier,
+    providerAlias: engineSlug ?? alias ?? prompt.tier,
     status: "ok",
     durationMs,
     usage: response.usage,
@@ -304,8 +333,15 @@ export const AIService = {
 
   draftUseCase(
     ctx: AiCallContext,
-    input: { organization: string; industry?: string; objective: string; context?: string },
+    input: {
+      organization: string;
+      industry?: string;
+      objective: string;
+      context?: string;
+      brief?: StudioBrief | null;
+    },
   ): Promise<AiResult<DraftUseCaseOutput>> {
+    const brief = input.brief ? briefToLines(input.brief).join("\n") : "";
     return run(
       "draftUseCase",
       ctx,
@@ -314,6 +350,7 @@ export const AIService = {
         input.industry && `Industry: ${input.industry}`,
         `Objective / question: ${input.objective}`,
         input.context && `Additional context:\n${input.context}`,
+        brief && `Brief parameters set by the author:\n${brief}`,
       ]),
     );
   },

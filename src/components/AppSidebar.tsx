@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import brandMark from "@/assets/usecasesx-logo.png";
 import {
+  Cpu,
   LayoutDashboard,
   Library,
   Sparkles,
@@ -116,6 +117,7 @@ const ADMIN: Item[] = [
     icon: MailCheck,
     admin: true,
   },
+  { to: "/administration/ai-engines", label: "AI Engines", icon: Cpu, admin: true },
   { to: "/administration/pilot", label: "Pilot Programme", icon: Rocket, admin: true },
   { to: "/administration/readiness", label: "Readiness", icon: Gauge, admin: true },
   {
