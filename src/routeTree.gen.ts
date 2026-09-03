@@ -105,6 +105,7 @@ import { Route as AppInviteTokenRouteImport } from './routes/_app.invite.$token'
 import { Route as AppOpportunitiesIndexRouteImport } from './routes/_app.opportunities.index'
 import { Route as AppOpportunitiesIdRouteImport } from './routes/_app.opportunities.$id'
 import { Route as AppOpportunitiesNewRouteImport } from './routes/_app.opportunities.new'
+import { Route as AppPilotApplyRouteImport } from './routes/_app.pilot_.apply'
 import { Route as AppPilotPortalRouteImport } from './routes/_app.pilot_.portal'
 import { Route as AppSectorsSectorRouteImport } from './routes/_app.sectors.$sector'
 import { Route as AppSegmentsSegmentRouteImport } from './routes/_app.segments.$segment'
@@ -634,6 +635,11 @@ const AppOpportunitiesNewRoute = AppOpportunitiesNewRouteImport.update({
   path: '/opportunities/new',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPilotApplyRoute = AppPilotApplyRouteImport.update({
+  id: '/pilot_/apply',
+  path: '/pilot/apply',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPilotPortalRoute = AppPilotPortalRouteImport.update({
   id: '/pilot_/portal',
   path: '/pilot/portal',
@@ -937,6 +943,7 @@ export interface FileRoutesByFullPath {
   '/invite/$token': typeof AppInviteTokenRoute
   '/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/opportunities/new': typeof AppOpportunitiesNewRoute
+  '/pilot/apply': typeof AppPilotApplyRoute
   '/pilot/portal': typeof AppPilotPortalRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
   '/segments/$segment': typeof AppSegmentsSegmentRoute
@@ -1070,6 +1077,7 @@ export interface FileRoutesByTo {
   '/invite/$token': typeof AppInviteTokenRoute
   '/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/opportunities/new': typeof AppOpportunitiesNewRoute
+  '/pilot/apply': typeof AppPilotApplyRoute
   '/pilot/portal': typeof AppPilotPortalRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
   '/segments/$segment': typeof AppSegmentsSegmentRoute
@@ -1207,6 +1215,7 @@ export interface FileRoutesById {
   '/_app/invite/$token': typeof AppInviteTokenRoute
   '/_app/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/_app/opportunities/new': typeof AppOpportunitiesNewRoute
+  '/_app/pilot_/apply': typeof AppPilotApplyRoute
   '/_app/pilot_/portal': typeof AppPilotPortalRoute
   '/_app/sectors/$sector': typeof AppSectorsSectorRoute
   '/_app/segments/$segment': typeof AppSegmentsSegmentRoute
@@ -1344,6 +1353,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/opportunities/$id'
     | '/opportunities/new'
+    | '/pilot/apply'
     | '/pilot/portal'
     | '/sectors/$sector'
     | '/segments/$segment'
@@ -1477,6 +1487,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/opportunities/$id'
     | '/opportunities/new'
+    | '/pilot/apply'
     | '/pilot/portal'
     | '/sectors/$sector'
     | '/segments/$segment'
@@ -1613,6 +1624,7 @@ export interface FileRouteTypes {
     | '/_app/invite/$token'
     | '/_app/opportunities/$id'
     | '/_app/opportunities/new'
+    | '/_app/pilot_/apply'
     | '/_app/pilot_/portal'
     | '/_app/sectors/$sector'
     | '/_app/segments/$segment'
@@ -2357,6 +2369,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOpportunitiesNewRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/pilot_/apply': {
+      id: '/_app/pilot_/apply'
+      path: '/pilot/apply'
+      fullPath: '/pilot/apply'
+      preLoaderRoute: typeof AppPilotApplyRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/pilot_/portal': {
       id: '/_app/pilot_/portal'
       path: '/pilot/portal'
@@ -2805,6 +2824,7 @@ interface AppRouteChildren {
   AppInviteTokenRoute: typeof AppInviteTokenRoute
   AppOpportunitiesIdRoute: typeof AppOpportunitiesIdRoute
   AppOpportunitiesNewRoute: typeof AppOpportunitiesNewRoute
+  AppPilotApplyRoute: typeof AppPilotApplyRoute
   AppPilotPortalRoute: typeof AppPilotPortalRoute
   AppSectorsSectorRoute: typeof AppSectorsSectorRoute
   AppSegmentsSegmentRoute: typeof AppSegmentsSegmentRoute
@@ -2883,6 +2903,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppInviteTokenRoute: AppInviteTokenRoute,
   AppOpportunitiesIdRoute: AppOpportunitiesIdRoute,
   AppOpportunitiesNewRoute: AppOpportunitiesNewRoute,
+  AppPilotApplyRoute: AppPilotApplyRoute,
   AppPilotPortalRoute: AppPilotPortalRoute,
   AppSectorsSectorRoute: AppSectorsSectorRoute,
   AppSegmentsSegmentRoute: AppSegmentsSegmentRoute,

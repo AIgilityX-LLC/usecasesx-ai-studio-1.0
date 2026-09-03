@@ -5,6 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PILOT_STATUSES } from "@/lib/pilot/pilot.model";
 import { CANONICAL_ORIGIN } from "@/lib/ops/production-config";
 import { PilotOnboardingSchema } from "@/lib/pilot/pilot.onboarding";
+import { PilotApplicationSchema } from "@/lib/pilot/pilot.applications";
 
 const CheckpointInput = z.object({
   checkpoint: z.enum(["welcome", "scoring", "final"]),
@@ -633,9 +634,8 @@ export const savePilotOnboardingFn = createServerFn({ method: "POST" })
 export const getMyPilotPortalFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { getPilotSettings, resolvePilotForUser, listMyCheckpoints } = await import(
-      "@/lib/pilot/pilot.server"
-    );
+    const { getPilotSettings, resolvePilotForUser, listMyCheckpoints } =
+      await import("@/lib/pilot/pilot.server");
     const { getMyOnboarding } = await import("@/lib/pilot/pilot.onboarding.server");
     const { listMyPilotUseCases } = await import("@/lib/pilot/pilot.portal.server");
 
@@ -653,4 +653,79 @@ export const getMyPilotPortalFn = createServerFn({ method: "GET" })
     ]);
 
     return { cohort: settings.cohort, email, invitation, progress, profile, checkpoints, useCases };
+  });
+
+/* ------------------------------------------------------- self-serve applications */
+
+const ApplicationDecisionInput = z.object({
+  id: z.string().uuid(),
+  decision: z.enum(["approved", "declined", "merged"]),
+  reason: z.string().trim().max(500).nullable().optional(),
+});
+
+/**
+ * Public endpoint: anyone can apply for a Founding Access seat. It creates a
+ * request only — a seat exists once an admin approves it.
+ */
+export const submitPilotApplicationFn = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => PilotApplicationSchema.parse(d))
+  .handler(async ({ data }) => {
+    const { getPilotSettings } = await import("@/lib/pilot/pilot.server");
+    const { submitPilotApplication } = await import("@/lib/pilot/pilot.applications.server");
+
+    let userAgent: string | null = null;
+    let referrer: string | null = null;
+    try {
+      const request = getRequest();
+      userAgent = request.headers.get("user-agent");
+      referrer = request.headers.get("referer");
+    } catch {
+      /* no request context (prerender) */
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const settings = await getPilotSettings(supabaseAdmin);
+    return submitPilotApplication(supabaseAdmin, {
+      ...data,
+      cohort: settings.cohort,
+      userAgent,
+      referrer,
+    });
+  });
+
+/** Admin review queue for self-serve applications. */
+export const listPilotApplicationsFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { getPilotSettings } = await import("@/lib/pilot/pilot.server");
+    const { listPilotApplications } = await import("@/lib/pilot/pilot.applications.server");
+    const settings = await getPilotSettings(context.supabase);
+    return listPilotApplications(context.supabase, settings.cohort);
+  });
+
+/** Approve (creating a real seat), decline or merge an application. */
+export const decidePilotApplicationFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => ApplicationDecisionInput.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { decidePilotApplication } = await import("@/lib/pilot/pilot.applications.server");
+    const result = await decidePilotApplication(context.supabase, {
+      id: data.id,
+      decision: data.decision,
+      reason: data.reason ?? null,
+      actorId: context.userId,
+    });
+    const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
+    await writeAuditEvent(
+      { supabase: context.supabase, userId: context.userId },
+      {
+        event: "admin.action",
+        entity: { type: "pilot_applications", id: result.application.id },
+        next: { status: result.application.status, invitationId: result.invitationId },
+        severity: "notice",
+      },
+    );
+    return result;
   });

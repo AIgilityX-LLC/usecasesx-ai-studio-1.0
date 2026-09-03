@@ -36,6 +36,8 @@ export const PUBLIC_INDEXABLE_PATHS = [
   "/about",
   "/contact",
   "/pricing",
+  "/pilot/apply",
+
   "/repository",
   "/categories",
   "/collections",

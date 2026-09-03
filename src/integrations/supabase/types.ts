@@ -1883,6 +1883,80 @@ export type Database = {
         }
         Relationships: []
       }
+      pilot_applications: {
+        Row: {
+          cohort: string
+          country: string | null
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision_reason: string | null
+          email: string
+          full_name: string
+          goals: string | null
+          id: string
+          invitation_id: string | null
+          organization: string
+          referrer: string | null
+          role_title: string | null
+          sector: string | null
+          source: string
+          status: string
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          cohort?: string
+          country?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_reason?: string | null
+          email: string
+          full_name: string
+          goals?: string | null
+          id?: string
+          invitation_id?: string | null
+          organization: string
+          referrer?: string | null
+          role_title?: string | null
+          sector?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          cohort?: string
+          country?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision_reason?: string | null
+          email?: string
+          full_name?: string
+          goals?: string | null
+          id?: string
+          invitation_id?: string | null
+          organization?: string
+          referrer?: string | null
+          role_title?: string | null
+          sector?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pilot_applications_invitation_id_fkey"
+            columns: ["invitation_id"]
+            isOneToOne: false
+            referencedRelation: "pilot_invitations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pilot_audit_events: {
         Row: {
           action: string
