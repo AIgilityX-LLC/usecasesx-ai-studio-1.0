@@ -445,7 +445,10 @@ function PilotAdmin() {
         <Stat label="Advisory interest" value={String(summary.advisoryInterest)} />
       </section>
 
+      <PilotApplicationsQueue />
+
       <PilotTriagePanel />
+
 
       <PilotLaunchGovernanceCard
         cohort={settings?.cohort ?? "pilot"}
