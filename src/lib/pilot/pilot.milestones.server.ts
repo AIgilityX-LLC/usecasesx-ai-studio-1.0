@@ -170,7 +170,7 @@ export type PendingMilestoneApproval = {
   status: string;
   participantNote: string | null;
   submittedAt: string | null;
-  evidence: Record<string, unknown>;
+  evidence: Record<string, string | number | boolean | null>;
   participantName: string | null;
   participantEmail: string | null;
   organization: string | null;
@@ -201,7 +201,7 @@ export async function listMilestoneApprovals(
     status: string;
     participant_note: string | null;
     submitted_at: string | null;
-    evidence: Record<string, unknown> | null;
+    evidence: Record<string, string | number | boolean | null> | null;
   }[];
   if (rows.length === 0) return [];
 
