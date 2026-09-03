@@ -120,10 +120,37 @@ export const completeOnboardingFn = createServerFn({ method: "POST" })
       }
     }
 
+    const workspaceName = (data.workspaceName || workspace.name) as string;
+
+    // 4. Welcome email — best effort. Delivery problems (unverified sender
+    // domain, suppression, rate limits) must never fail activation.
+    let welcomeEmail: "sent" | "skipped" | "failed" = "skipped";
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const recipient = userData?.user?.email ?? null;
+      if (recipient) {
+        const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+        const result = await sendTemplateEmail("founding-access-welcome", recipient, {
+          idempotencyKey: `founding-access-welcome-${userId}`,
+          templateData: {
+            name: data.fullName,
+            organization: data.organizationName,
+            role: data.role ?? null,
+            sector: data.industry ?? null,
+            workspaceName,
+          },
+        });
+        welcomeEmail = result.sent ? "sent" : "skipped";
+      }
+    } catch {
+      welcomeEmail = "failed";
+    }
+
     return {
       organizationId,
       workspaceId: workspace.id as string,
-      workspaceName: (data.workspaceName || workspace.name) as string,
+      workspaceName,
       renamed: canRename,
+      welcomeEmail,
     };
   });
