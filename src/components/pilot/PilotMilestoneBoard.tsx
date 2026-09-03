@@ -29,7 +29,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
-const STATUS_VARIANT: Record<PilotMilestoneStatus, "default" | "secondary" | "outline" | "destructive"> = {
+const STATUS_VARIANT: Record<
+  PilotMilestoneStatus,
+  "default" | "secondary" | "outline" | "destructive"
+> = {
   locked: "outline",
   ready: "secondary",
   submitted: "secondary",
@@ -39,7 +42,8 @@ const STATUS_VARIANT: Record<PilotMilestoneStatus, "default" | "secondary" | "ou
 
 function StatusIcon({ status }: { status: PilotMilestoneStatus }) {
   if (status === "approved") return <BadgeCheck className="h-4 w-4 text-primary" aria-hidden />;
-  if (status === "submitted") return <Clock className="h-4 w-4 text-muted-foreground" aria-hidden />;
+  if (status === "submitted")
+    return <Clock className="h-4 w-4 text-muted-foreground" aria-hidden />;
   if (status === "changes_requested")
     return <RotateCcw className="h-4 w-4 text-destructive" aria-hidden />;
   return <CircleDashed className="h-4 w-4 text-muted-foreground" aria-hidden />;
@@ -59,8 +63,7 @@ export function PilotMilestoneBoard({ enabled = true }: { enabled?: boolean }) {
   });
 
   const mutation = useMutation({
-    mutationFn: (input: { key: string; note: string | null }) =>
-      submit({ data: input as never }),
+    mutationFn: (input: { key: string; note: string | null }) => submit({ data: input as never }),
     onSuccess: (result) => {
       if (result && "ok" in result && result.ok === false) {
         toast.error(result.error);
