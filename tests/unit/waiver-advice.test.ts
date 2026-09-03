@@ -3,10 +3,7 @@ import { waiverAdvice } from "@/lib/release/waiver-advice";
 
 describe("waiver advice", () => {
   it("recommends granting a waiver when evidence is short and none is in force", () => {
-    const advice = waiverAdvice(
-      { seats: 1, checkpointResponses: 0, onboardingProfiles: 0 },
-      false,
-    );
+    const advice = waiverAdvice({ seats: 1, checkpointResponses: 0, onboardingProfiles: 0 }, false);
     expect(advice.shouldGrant).toBe(true);
     expect(advice.shouldRetire).toBe(false);
     expect(advice.evidenceComplete).toBe(false);
@@ -14,10 +11,7 @@ describe("waiver advice", () => {
   });
 
   it("does not recommend a second waiver while one is already in force", () => {
-    const advice = waiverAdvice(
-      { seats: 3, checkpointResponses: 0, onboardingProfiles: 2 },
-      true,
-    );
+    const advice = waiverAdvice({ seats: 3, checkpointResponses: 0, onboardingProfiles: 2 }, true);
     expect(advice.shouldGrant).toBe(false);
     expect(advice.headline).toContain("Waiver in force");
     expect(advice.headline).toContain("no checkpoint responses");

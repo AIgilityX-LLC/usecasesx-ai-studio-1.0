@@ -144,8 +144,8 @@ export function ReadinessWaiverPanel({
             <AlertCircle className="h-4 w-4" aria-hidden />
             <AlertTitle>Retire this waiver</AlertTitle>
             <AlertDescription>
-              {evidence.seats} seat(s) and {evidence.checkpointResponses} checkpoint response(s)
-              are now recorded. The board should stand on that evidence, not the override.
+              {evidence.seats} seat(s) and {evidence.checkpointResponses} checkpoint response(s) are
+              now recorded. The board should stand on that evidence, not the override.
             </AlertDescription>
           </Alert>
         )}

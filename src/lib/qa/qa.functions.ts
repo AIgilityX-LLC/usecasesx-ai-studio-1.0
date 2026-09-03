@@ -145,8 +145,6 @@ export const recordLaunchCheckResultsFn = createServerFn({ method: "POST" })
     });
   });
 
-
-
 /**
  * Runs the signed-in P0/P1 launch checks as the calling user. There is no
  * elevation: the probes see exactly what this session is allowed to see, which
