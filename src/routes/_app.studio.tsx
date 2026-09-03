@@ -256,27 +256,27 @@ function StudioPage() {
                   })}
                 </div>
               ) : (
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                {STUDIO_PROVIDERS.map((p) => {
-                  const meta = PROVIDER_META[p];
-                  const active = provider === p;
-                  return (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => setProvider(p)}
-                      className={`rounded-lg border px-3 py-2 text-left transition ${
-                        active
-                          ? "border-primary bg-primary/10"
-                          : "border-border hover:border-primary/40"
-                      }`}
-                    >
-                      <div className="text-sm font-semibold">{meta.label}</div>
-                      <div className="text-[11px] text-muted-foreground">{meta.tagline}</div>
-                    </button>
-                  );
-                })}
-              </div>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  {STUDIO_PROVIDERS.map((p) => {
+                    const meta = PROVIDER_META[p];
+                    const active = provider === p;
+                    return (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => setProvider(p)}
+                        className={`rounded-lg border px-3 py-2 text-left transition ${
+                          active
+                            ? "border-primary bg-primary/10"
+                            : "border-border hover:border-primary/40"
+                        }`}
+                      >
+                        <div className="text-sm font-semibold">{meta.label}</div>
+                        <div className="text-[11px] text-muted-foreground">{meta.tagline}</div>
+                      </button>
+                    );
+                  })}
+                </div>
               )}
             </div>
 
@@ -569,8 +569,8 @@ function StudioPage() {
             )}
             {loading && (
               <div className="flex items-center text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" /> {engineLabel} is drafting your
-                use case…
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" /> {engineLabel} is drafting your use
+                case…
               </div>
             )}
             {current && (

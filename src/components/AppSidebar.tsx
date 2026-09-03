@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import brandMark from "@/assets/usecasesx-logo.png";
 import {
+  Cpu,
   LayoutDashboard,
   Library,
   Sparkles,
