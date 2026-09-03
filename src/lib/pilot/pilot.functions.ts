@@ -742,3 +742,114 @@ export const decidePilotApplicationFn = createServerFn({ method: "POST" })
     );
     return result;
   });
+
+/* ------------------------------------------------------- milestone approvals */
+
+const MilestoneKeyEnum = z.enum([
+  "onboarding",
+  "first_use_case",
+  "scored",
+  "portfolio",
+  "roadmap",
+  "checkpoint",
+]);
+
+/** The participant's own milestone board: measured progress + approval state. */
+export const getMyPilotMilestonesFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { getPilotSettings } = await import("@/lib/pilot/pilot.server");
+    const { getMyMilestones } = await import("@/lib/pilot/pilot.milestones.server");
+    const settings = await getPilotSettings(context.supabase);
+    return {
+      cohort: settings.cohort,
+      ...(await getMyMilestones(context.supabase, context.userId, settings.cohort)),
+    };
+  });
+
+/** Participant submits (or re-submits) one milestone for admin approval. */
+export const submitPilotMilestoneFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        key: MilestoneKeyEnum,
+        note: z.string().trim().max(1000).nullable().optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { getPilotSettings } = await import("@/lib/pilot/pilot.server");
+    const { submitMilestone } = await import("@/lib/pilot/pilot.milestones.server");
+    const settings = await getPilotSettings(context.supabase);
+    return submitMilestone(context.supabase, {
+      userId: context.userId,
+      cohort: settings.cohort,
+      key: data.key,
+      note: data.note ?? null,
+    });
+  });
+
+/** Admin queue of milestones awaiting a decision. */
+export const listPilotMilestoneApprovalsFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ status: z.enum(["submitted", "all"]).default("submitted") }).parse(d ?? {}),
+  )
+  .handler(async ({ data, context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { getPilotSettings } = await import("@/lib/pilot/pilot.server");
+    const { listMilestoneApprovals } = await import("@/lib/pilot/pilot.milestones.server");
+    const settings = await getPilotSettings(context.supabase);
+    return {
+      cohort: settings.cohort,
+      approvals: await listMilestoneApprovals(context.supabase, settings.cohort, data.status),
+    };
+  });
+
+/** Admin approves a milestone or sends it back for changes. */
+export const decidePilotMilestoneFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        userId: z.string().uuid(),
+        key: MilestoneKeyEnum,
+        decision: z.enum(["approved", "changes_requested"]),
+        note: z.string().trim().max(1000).nullable().optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { getPilotSettings } = await import("@/lib/pilot/pilot.server");
+    const { decideMilestone } = await import("@/lib/pilot/pilot.milestones.server");
+    const settings = await getPilotSettings(context.supabase);
+
+    const reviewerLabel =
+      (context.claims as { email?: string } | undefined)?.email ?? context.userId;
+
+    const result = await decideMilestone(context.supabase, {
+      userId: data.userId,
+      cohort: settings.cohort,
+      key: data.key,
+      decision: data.decision,
+      note: data.note ?? null,
+      reviewerId: context.userId,
+      reviewerLabel,
+    });
+
+    if (result.ok) {
+      const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
+      await writeAuditEvent(
+        { supabase: context.supabase, userId: context.userId },
+        {
+          event: "admin.action",
+          entity: { type: "pilot_milestone_approvals", id: `${data.userId}:${data.key}` },
+          next: { decision: data.decision, cohort: settings.cohort },
+          severity: "notice",
+        },
+      );
+    }
+    return result;
+  });
