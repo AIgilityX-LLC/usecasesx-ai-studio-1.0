@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Circle,
   ClipboardList,
+  LayoutDashboard,
   Compass,
   MessageSquareQuote,
   Target,
@@ -113,6 +114,7 @@ function PilotPortalPage() {
   const profile = data?.profile ?? null;
   const checkpoints = data?.checkpoints ?? [];
   const useCases = data?.useCases ?? [];
+  const workspace = data?.workspace ?? null;
   const progress = data?.progress ?? null;
   const openCheckpoints = progress
     ? availableCheckpoints(
