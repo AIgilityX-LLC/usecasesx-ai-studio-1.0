@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Circle,
   ClipboardList,
+  LayoutDashboard,
   Compass,
   MessageSquareQuote,
   Target,
@@ -38,7 +39,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-
 
 export const Route = createFileRoute("/_app/pilot_/portal")({
   head: () => privateHead("Your pilot portal"),
@@ -113,6 +113,7 @@ function PilotPortalPage() {
   const profile = data?.profile ?? null;
   const checkpoints = data?.checkpoints ?? [];
   const useCases = data?.useCases ?? [];
+  const workspace = data?.workspace ?? null;
   const progress = data?.progress ?? null;
   const openCheckpoints = progress
     ? availableCheckpoints(
@@ -120,7 +121,6 @@ function PilotPortalPage() {
         checkpoints.map((c) => c.checkpoint),
       )
     : [];
-
 
   if (!invitation) {
     return (
@@ -130,7 +130,9 @@ function PilotPortalPage() {
           description="This portal opens once you claim a pilot invitation. If you were invited, open the link in your invitation email while signed in with that address."
           action={
             <Button asChild variant="outline">
-              <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>Go to the pilot mission</Link>
+              <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>
+                Go to the pilot mission
+              </Link>
             </Button>
           }
         />
@@ -178,7 +180,9 @@ function PilotPortalPage() {
               </div>
               <Progress value={progress.percent} aria-label="Mission progress" />
               <Button asChild size="sm" variant="outline">
-                <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>Continue the mission</Link>
+                <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>
+                  Continue the mission
+                </Link>
               </Button>
             </div>
           ) : null}
@@ -258,13 +262,69 @@ function PilotPortalPage() {
               key={checkpoint.key}
               checkpoint={checkpoint}
               missionStep={progress?.nextStep?.key ?? null}
-              references={{ useCaseIds: useCases.map((uc) => uc.id).slice(0, 10), portfolioId: null }}
+              references={{
+                useCaseIds: useCases.map((uc) => uc.id).slice(0, 10),
+                portfolioId: null,
+              }}
             />
           ))}
         </section>
       )}
 
-
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <LayoutDashboard className="h-4 w-4 text-primary" aria-hidden="true" />
+            Your Pro workspace
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <p className="text-sm text-muted-foreground">
+            {workspace?.name
+              ? `Your seat is working inside “${workspace.name}”. Everything you create stays in this workspace.`
+              : "Your workspace is created the moment you finish onboarding. Complete the intake to activate it."}
+          </p>
+          <dl className="grid gap-4 sm:grid-cols-3">
+            <div className="rounded-lg border border-border p-4">
+              <dt className="text-xs uppercase tracking-wide text-muted-foreground">Use cases</dt>
+              <dd className="text-2xl font-semibold text-foreground">
+                {workspace?.useCaseCount ?? 0}
+              </dd>
+            </div>
+            <div className="rounded-lg border border-border p-4">
+              <dt className="text-xs uppercase tracking-wide text-muted-foreground">Scores run</dt>
+              <dd className="text-2xl font-semibold text-foreground">
+                {workspace?.scoreCount ?? 0}
+              </dd>
+            </div>
+            <div className="rounded-lg border border-border p-4">
+              <dt className="text-xs uppercase tracking-wide text-muted-foreground">Portfolios</dt>
+              <dd className="text-2xl font-semibold text-foreground">
+                {workspace?.portfolioCount ?? 0}
+              </dd>
+            </div>
+          </dl>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild size="sm">
+              <Link to="/dashboard">Open dashboard</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link to="/my-use-cases">Projects</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link to="/feasibility">Scoring</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link to="/portfoliox">Portfolio</Link>
+            </Button>
+            {!workspace?.id && (
+              <Button asChild size="sm" variant="ghost">
+                <Link to="/onboarding">Finish onboarding</Link>
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -298,7 +358,9 @@ function PilotPortalPage() {
               description="The short intake tells us your role, sector and what you want out of the pilot. It takes about two minutes."
               action={
                 <Button asChild size="sm">
-                  <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>Complete the intake</Link>
+                  <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>
+                    Complete the intake
+                  </Link>
                 </Button>
               }
             />
@@ -317,7 +379,10 @@ function PilotPortalPage() {
           {useCases.length ? (
             <ul className="divide-y divide-border rounded-xl border border-border">
               {useCases.map((uc) => (
-                <li key={`${uc.origin}-${uc.id}`} className="flex items-center justify-between gap-4 p-4">
+                <li
+                  key={`${uc.origin}-${uc.id}`}
+                  className="flex items-center justify-between gap-4 p-4"
+                >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-foreground">{uc.title}</p>
                     <p className="text-xs text-muted-foreground">
@@ -402,7 +467,9 @@ function PilotPortalPage() {
               description="Checkpoints unlock as you move through the mission. Your answers are what turn the pilot into evidence."
               action={
                 <Button asChild size="sm">
-                  <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>Open the mission</Link>
+                  <Link to="/pilot" search={{ [INVITE_QUERY_PARAM]: undefined }}>
+                    Open the mission
+                  </Link>
                 </Button>
               }
             />
