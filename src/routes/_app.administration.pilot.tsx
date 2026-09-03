@@ -450,7 +450,6 @@ function PilotAdmin() {
 
       <PilotTriagePanel />
 
-
       <PilotLaunchGovernanceCard
         cohort={settings?.cohort ?? "pilot"}
         rows={rows}

@@ -7,12 +7,7 @@
 
 import { z } from "zod";
 
-export const PILOT_APPLICATION_STATUSES = [
-  "requested",
-  "approved",
-  "declined",
-  "merged",
-] as const;
+export const PILOT_APPLICATION_STATUSES = ["requested", "approved", "declined", "merged"] as const;
 export type PilotApplicationStatus = (typeof PILOT_APPLICATION_STATUSES)[number];
 
 export function applicationStatusLabel(status: string): string {

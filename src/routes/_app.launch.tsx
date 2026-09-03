@@ -178,7 +178,6 @@ function LaunchAnnouncementPage() {
           location="launch-hero-pro"
           variant="secondary"
         />
-
       </PageHero>
 
       <Section

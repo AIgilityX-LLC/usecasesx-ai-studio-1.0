@@ -106,17 +106,13 @@ export function PilotApplicationsQueue() {
                   </div>
                   <span className="text-xs text-muted-foreground">{formatDate(row.createdAt)}</span>
                 </div>
-                {row.goals ? (
-                  <p className="mt-3 text-sm text-foreground/90">{row.goals}</p>
-                ) : null}
+                {row.goals ? <p className="mt-3 text-sm text-foreground/90">{row.goals}</p> : null}
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   <Input
                     className="max-w-xs"
                     placeholder="Decision note (optional)"
                     value={reasons[row.id] ?? ""}
-                    onChange={(e) =>
-                      setReasons((prev) => ({ ...prev, [row.id]: e.target.value }))
-                    }
+                    onChange={(e) => setReasons((prev) => ({ ...prev, [row.id]: e.target.value }))}
                     aria-label={`Decision note for ${row.email}`}
                   />
                   <Button

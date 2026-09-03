@@ -634,9 +634,8 @@ export const savePilotOnboardingFn = createServerFn({ method: "POST" })
 export const getMyPilotPortalFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { getPilotSettings, resolvePilotForUser, listMyCheckpoints } = await import(
-      "@/lib/pilot/pilot.server"
-    );
+    const { getPilotSettings, resolvePilotForUser, listMyCheckpoints } =
+      await import("@/lib/pilot/pilot.server");
     const { getMyOnboarding } = await import("@/lib/pilot/pilot.onboarding.server");
     const { listMyPilotUseCases } = await import("@/lib/pilot/pilot.portal.server");
 
