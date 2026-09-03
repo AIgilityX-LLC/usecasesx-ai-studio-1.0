@@ -13,6 +13,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PROVIDER_ALIASES, resolveModel } from "@/lib/ai/models";
 import type { DraftUseCaseOutput } from "@/lib/ai/schemas";
 import type { AiProvenance } from "@/lib/ai/types";
+import { studioBriefSchema } from "@/lib/ai/engines";
 
 export const STUDIO_PROVIDERS = PROVIDER_ALIASES;
 export type StudioProvider = (typeof STUDIO_PROVIDERS)[number];
@@ -26,6 +27,9 @@ const Input = z.object({
   industry: z.string().trim().max(120).optional().default(""),
   objective: z.string().trim().min(1).max(2000),
   context: z.string().trim().max(4000).optional().default(""),
+  /** Admin-configured research engine. Falls back to the alias when absent. */
+  engineSlug: z.string().trim().min(2).max(48).optional().nullable(),
+  brief: studioBriefSchema.optional().nullable(),
 });
 
 export const draftUseCase = createServerFn({ method: "POST" })
@@ -38,12 +42,14 @@ export const draftUseCase = createServerFn({ method: "POST" })
         supabase: context.supabase,
         userId: context.userId,
         providerAlias: data.provider,
+        engineSlug: data.engineSlug ?? null,
       },
       {
         organization: data.organization,
         industry: data.industry || undefined,
         objective: data.objective,
         context: data.context || undefined,
+        brief: data.brief ?? null,
       },
     );
 
@@ -65,7 +71,11 @@ export const draftUseCase = createServerFn({ method: "POST" })
       draft: result.data,
       fairUse: result.fairUse,
       provenance: result.provenance,
-      meta: { provider: data.provider, model: result.provenance.model },
+      meta: {
+        provider: data.provider,
+        engineSlug: data.engineSlug ?? null,
+        model: result.provenance.model,
+      },
     };
   });
 

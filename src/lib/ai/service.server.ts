@@ -29,6 +29,7 @@ import {
 } from "./fair-use";
 import { FENCE_NOTICE, fenceUntrusted } from "./sanitize";
 import { resolveModel, type ProviderAlias } from "./models";
+import { briefToLines, type StudioBrief } from "./engines";
 import { promptFor, type AiTask } from "./prompts";
 import { OUTPUT_SCHEMAS, TOOL_SCHEMAS } from "./schemas";
 import type {
@@ -332,8 +333,15 @@ export const AIService = {
 
   draftUseCase(
     ctx: AiCallContext,
-    input: { organization: string; industry?: string; objective: string; context?: string },
+    input: {
+      organization: string;
+      industry?: string;
+      objective: string;
+      context?: string;
+      brief?: StudioBrief | null;
+    },
   ): Promise<AiResult<DraftUseCaseOutput>> {
+    const brief = input.brief ? briefToLines(input.brief).join("\n") : "";
     return run(
       "draftUseCase",
       ctx,
@@ -342,6 +350,7 @@ export const AIService = {
         input.industry && `Industry: ${input.industry}`,
         `Objective / question: ${input.objective}`,
         input.context && `Additional context:\n${input.context}`,
+        brief && `Brief parameters set by the author:\n${brief}`,
       ]),
     );
   },
