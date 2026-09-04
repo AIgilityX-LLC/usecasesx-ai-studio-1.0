@@ -216,14 +216,16 @@ export const KNOWN_ISSUE_SCOPE: readonly KnownIssueScope[] = [
     issue: "Repository breadth is the seeded reference set, so niche queries can return nothing.",
     impact: "Low",
     classification: "Content",
-    mitigation: "Zero-result queries are surfaced in triage and answered with content.",
+    mitigation:
+      "Synonym expansion widens the keyword filter, and remaining zero-result queries are surfaced in triage and answered with content.",
   },
   {
     id: 5,
-    issue: "Search relevance is lexical, not semantic; synonyms may rank lower than expected.",
+    issue: "Search relevance is lexical with domain synonym expansion, not embedding-based.",
     impact: "Low",
     classification: "P2",
-    mitigation: "Facets carry the discovery load; semantic ranking is post-launch work.",
+    mitigation:
+      "Synonym groups cover the common vocabulary shifts and score below literal matches; embedding ranking is post-launch work.",
   },
 ];
 

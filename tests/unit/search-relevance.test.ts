@@ -7,7 +7,7 @@
  * ties resolve deterministically, and keyword stuffing cannot buy the top slot.
  */
 import { describe, expect, it } from "bun:test";
-import { rankByRelevance, relevanceScore, searchTerms } from "@/lib/use-cases.search";
+import { expandTerm, rankByRelevance, relevanceScore, searchTerms } from "@/lib/use-cases.search";
 import { searchCorpus, repositoryRow } from "../fixtures/deterministic";
 
 describe("searchTerms", () => {
@@ -114,5 +114,32 @@ describe("rankByRelevance", () => {
     const a = rankByRelevance(searchCorpus(), "invoice", searchTerms("invoice")).map((r) => r.slug);
     const b = rankByRelevance(searchCorpus(), "invoice", searchTerms("invoice")).map((r) => r.slug);
     expect(a).toEqual(b);
+  });
+});
+
+describe("synonym expansion", () => {
+  it("expands a term to its domain synonyms, term first", () => {
+    const expanded = expandTerm("chatbot");
+    expect(expanded[0]).toBe("chatbot");
+    expect(expanded).toContain("conversational");
+  });
+
+  it("leaves unknown terms untouched", () => {
+    expect(expandTerm("widget")).toEqual(["widget"]);
+  });
+
+  it("scores a synonym-only row above zero so niche queries return results", () => {
+    const row = repositoryRow({
+      title: "Conversational assistant for claims",
+      summary: "Handles routine enquiries",
+    });
+    expect(relevanceScore(row, ["chatbot"], "chatbot")).toBeGreaterThan(0);
+  });
+
+  it("ranks a literal match above a synonym match", () => {
+    const literal = repositoryRow({ id: "literal", title: "Chatbot for claims" });
+    const synonym = repositoryRow({ id: "synonym", title: "Conversational assistant for claims" });
+    const ranked = rankByRelevance([synonym, literal], "chatbot", ["chatbot"]);
+    expect(ranked[0]?.["id"]).toBe("literal");
   });
 });

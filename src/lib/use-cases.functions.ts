@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
-import { RANK_POOL_SIZE, rankByRelevance, searchTerms } from "@/lib/use-cases.search";
+import { RANK_POOL_SIZE, expandTerm, rankByRelevance, searchTerms } from "@/lib/use-cases.search";
 
 function publicClient() {
   return createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
@@ -134,15 +134,27 @@ export const listUseCases = createServerFn({ method: "GET" })
     if (data.featuredOnly) query = query.eq("is_featured", true);
     if (data.landingOnly) query = query.eq("show_on_landing", true);
     // Keyword search: every term must appear somewhere (chained `or()` calls are
-    // ANDed by PostgREST), each term may appear in any searchable column.
+    // ANDed by PostgREST), each term may appear in any searchable column. A term
+    // is satisfied by the word itself or any of its domain synonyms, so niche
+    // vocabulary no longer returns nothing.
     const terms = searchTerms(data.q);
+    const COLUMNS = [
+      "title",
+      "summary",
+      "organization",
+      "business_problem",
+      "ai_solution_concept",
+      "deployment_model",
+      "security_classification",
+    ];
     for (const term of terms) {
       // Escape PostgREST `or()` delimiters so a stray comma or parenthesis in a
       // user query cannot alter the filter expression.
-      const like = `%${term.replace(/[(),*]/g, " ")}%`;
-      query = query.or(
-        `title.ilike.${like},summary.ilike.${like},organization.ilike.${like},business_problem.ilike.${like},ai_solution_concept.ilike.${like},deployment_model.ilike.${like},security_classification.ilike.${like}`,
-      );
+      const clauses = expandTerm(term).flatMap((variant) => {
+        const like = `%${variant.replace(/[(),*]/g, " ")}%`;
+        return COLUMNS.map((column) => `${column}.ilike.${like}`);
+      });
+      query = query.or(clauses.join(","));
     }
     const rankByKeyword = terms.length > 0 && (data.sort === "relevance" || data.q.trim() !== "");
     if (data.maturity.length)
