@@ -116,7 +116,9 @@ export function relevanceScore(row: Record<string, unknown>, terms: string[], ra
         if (hits === 0) continue;
         // Diminishing returns on repeats so keyword stuffing cannot dominate.
         termScore += factor * weight * (1 + Math.min(hits - 1, 3) * 0.25);
-        if (new RegExp(`\\b${variant.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "u").test(value)) {
+        if (
+          new RegExp(`\\b${variant.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "u").test(value)
+        ) {
           termScore += factor * weight * 0.5;
         }
       }

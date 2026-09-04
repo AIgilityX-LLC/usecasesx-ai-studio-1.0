@@ -7,12 +7,7 @@
  * ties resolve deterministically, and keyword stuffing cannot buy the top slot.
  */
 import { describe, expect, it } from "bun:test";
-import {
-  expandTerm,
-  rankByRelevance,
-  relevanceScore,
-  searchTerms,
-} from "@/lib/use-cases.search";
+import { expandTerm, rankByRelevance, relevanceScore, searchTerms } from "@/lib/use-cases.search";
 import { searchCorpus, repositoryRow } from "../fixtures/deterministic";
 
 describe("searchTerms", () => {
