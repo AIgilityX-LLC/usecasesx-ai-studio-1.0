@@ -20,6 +20,56 @@ export function searchTerms(raw: string): string[] {
   return Array.from(new Set(terms)).slice(0, 8);
 }
 
+/**
+ * Domain synonym groups. Lexical matching alone misses the vocabulary shift
+ * between how a practitioner searches ("chatbot") and how the corpus is
+ * written ("conversational assistant"), which is what made niche queries
+ * return nothing. Every member of a group expands to the whole group.
+ */
+const SYNONYM_GROUPS: readonly string[][] = [
+  ["chatbot", "chatbots", "conversational", "assistant", "copilot", "virtual agent"],
+  ["fraud", "aml", "anti-money", "financial crime", "suspicious"],
+  ["forecast", "forecasting", "prediction", "predictive", "demand planning"],
+  ["classification", "categorisation", "categorization", "triage", "routing"],
+  ["summarisation", "summarization", "summary", "abstractive", "briefing"],
+  ["ocr", "document extraction", "idp", "document processing", "scanning"],
+  ["maintenance", "predictive maintenance", "asset health", "downtime"],
+  ["churn", "retention", "attrition", "loyalty"],
+  ["procurement", "sourcing", "supplier", "vendor"],
+  ["citizen", "public sector", "government", "constituent"],
+  ["clinical", "patient", "healthcare", "care pathway"],
+  ["genai", "generative", "llm", "large language model", "foundation model"],
+  ["automation", "rpa", "straight-through", "workflow automation"],
+  ["risk", "compliance", "regulatory", "governance"],
+  ["knowledge", "search", "retrieval", "rag", "semantic search"],
+  ["onboarding", "kyc", "identity verification", "due diligence"],
+];
+
+const SYNONYM_INDEX: Map<string, string[]> = (() => {
+  const index = new Map<string, string[]>();
+  for (const group of SYNONYM_GROUPS) {
+    for (const member of group) {
+      const others = group.filter((other) => other !== member);
+      index.set(member, [...(index.get(member) ?? []), ...others]);
+    }
+  }
+  return index;
+})();
+
+/** Synonyms for one term (never includes the term itself). */
+export function synonymsFor(term: string): string[] {
+  return SYNONYM_INDEX.get(term.toLowerCase()) ?? [];
+}
+
+/**
+ * Every string that should satisfy a term in the database filter: the term
+ * itself first, then its synonyms. Used to widen the ILIKE filter so a
+ * synonym-only match is still returned rather than silently dropped.
+ */
+export function expandTerm(term: string): string[] {
+  return [term, ...synonymsFor(term)];
+}
+
 /** Field weights — title first, then summary, then long-form body copy. */
 const FIELD_WEIGHTS: Array<[string, number]> = [
   ["title", 12],
