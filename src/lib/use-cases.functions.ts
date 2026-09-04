@@ -2,7 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
-import { RANK_POOL_SIZE, rankByRelevance, searchTerms } from "@/lib/use-cases.search";
+import {
+  RANK_POOL_SIZE,
+  expandTerm,
+  rankByRelevance,
+  searchTerms,
+} from "@/lib/use-cases.search";
 
 function publicClient() {
   return createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
