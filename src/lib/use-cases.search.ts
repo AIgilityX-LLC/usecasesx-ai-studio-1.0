@@ -102,15 +102,23 @@ export function relevanceScore(row: Record<string, unknown>, terms: string[], ra
 
   for (const term of terms) {
     let termScore = 0;
-    for (const [field, weight] of FIELD_WEIGHTS) {
-      const value = String(row[field] ?? "").toLowerCase();
-      if (!value) continue;
-      const hits = occurrences(value, term);
-      if (hits === 0) continue;
-      // Diminishing returns on repeats so keyword stuffing cannot dominate.
-      termScore += weight * (1 + Math.min(hits - 1, 3) * 0.25);
-      if (new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "u").test(value)) {
-        termScore += weight * 0.5;
+    // The term itself scores at full weight; a synonym scores at a fraction so
+    // a literal match always outranks a vocabulary match.
+    const variants: Array<[string, number]> = [
+      [term, 1],
+      ...synonymsFor(term).map((s) => [s, 0.35] as [string, number]),
+    ];
+    for (const [variant, factor] of variants) {
+      for (const [field, weight] of FIELD_WEIGHTS) {
+        const value = String(row[field] ?? "").toLowerCase();
+        if (!value) continue;
+        const hits = occurrences(value, variant);
+        if (hits === 0) continue;
+        // Diminishing returns on repeats so keyword stuffing cannot dominate.
+        termScore += factor * weight * (1 + Math.min(hits - 1, 3) * 0.25);
+        if (new RegExp(`\\b${variant.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "u").test(value)) {
+          termScore += factor * weight * 0.5;
+        }
       }
     }
     if (termScore > 0) matchedTerms += 1;
