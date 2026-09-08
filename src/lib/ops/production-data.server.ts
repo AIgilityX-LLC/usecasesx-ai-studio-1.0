@@ -131,6 +131,8 @@ export async function collectProductionData(input: {
   const admin = supabaseAdmin as AdminClient;
   const head = { count: "exact" as const, head: true };
 
+  const anon = publicDataClient();
+
   const [
     admins,
     probes,
@@ -154,7 +156,7 @@ export async function collectProductionData(input: {
     adminRoster(admin),
     anonymousProbes(),
     counted(
-      admin
+      anon
         .from("use_cases")
         .select("*", head)
         .eq("status", "published")

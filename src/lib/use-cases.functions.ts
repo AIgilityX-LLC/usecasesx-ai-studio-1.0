@@ -43,13 +43,16 @@ const ListInput = z.object({
   page: z.number().int().min(1).max(500).optional().default(1),
 });
 
-const SELECT = `id, slug, title, summary, organization, organization_type, region,
-  business_problem, ai_solution_concept,
-  maturity, maturity_level, maturity_score, impact_score,
-  value_potential, complexity, risk_level, time_to_value, visibility,
-  deployment_model, security_classification, cost_range,
-  is_featured, show_on_landing, display_order, published_at,
-  provenance, provenance_note, quality_status, quality_checked_at,
+const SELECT_SCALARS = `id, slug, title, summary, organization, organization_type, region,
+  business_problem, ai_solution_concept, solution, problem, outcomes,
+  maturity, maturity_level, maturity_score, impact_score, value_potential, 
+  complexity, risk_level, time_to_value, deployment_model, security_classification, 
+  visibility, is_featured, show_on_landing, display_order, 
+  published_at, created_at, updated_at,
+  provenance, provenance_note, roi_areas, kpis, recommended_platforms, 
+  evidence_urls, hero_image_url, status`;
+
+const SELECT = `${SELECT_SCALARS},
   use_case_industries ( industries ( slug, name ) ),
   use_case_capabilities ( ai_capabilities ( slug, name ) ),
   use_case_business_functions ( business_functions ( slug, name ) ),
@@ -286,7 +289,7 @@ export const getUseCase = createServerFn({ method: "GET" })
     const { data: row, error } = await sb
       .from("use_cases")
       .select(
-        `*,
+        `${SELECT_SCALARS},
          use_case_industries ( industries ( slug, name ) ),
          use_case_capabilities ( ai_capabilities ( slug, name ) ),
          use_case_business_functions ( business_functions ( slug, name ) ),
