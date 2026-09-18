@@ -18,12 +18,12 @@ export const Route = createFileRoute("/_app/getting-started")({
       jsonLd: [
         breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Getting started", path: "/getting-started" },
+          { name: "Getting Started", path: "/getting-started" },
         ]),
         {
           "@context": "https://schema.org",
           "@type": "HowTo",
-          name: "Getting started with UseCasesX",
+          name: "Getting Started With UseCasesX™",
           step: GETTING_STARTED_STEPS.map((step) => ({
             "@type": "HowToStep",
             position: step.step,
@@ -40,11 +40,11 @@ function GettingStartedPage() {
   return (
     <>
       <PageHero
-        eyebrow="Getting started"
+        eyebrow="Getting Started"
         title="From a browse to a defensible AI portfolio in eight steps."
         intro="Steps 1 and 8 are open to anyone. The rest need a Pro Founding Access workspace, which is complimentary through 31 December 2026 subject to published fair-use limits."
       >
-        <TrackedCta to="/repository" label="Start with step 1" location="getting-started-hero" />
+        <TrackedCta to="/repository" label="Start With Step 1" location="getting-started-hero" />
         <TrackedCta
           to="/faq"
           label="Read the FAQs"
@@ -54,7 +54,7 @@ function GettingStartedPage() {
       </PageHero>
 
       <Section
-        title="The journey"
+        title="The Journey"
         lead="Each step happens on a real surface in the product. Nothing here is a mock-up."
       >
         <ol className="space-y-4">
@@ -90,7 +90,7 @@ function GettingStartedPage() {
       </Section>
 
       <Section
-        title="Before you invite your team"
+        title="Before You Invite Your Team"
         lead="Three things worth knowing early, so nobody is surprised later."
         tone="muted"
       >
@@ -133,7 +133,7 @@ function GettingStartedPage() {
         </ul>
       </Section>
 
-      <Section title="Related pages">
+      <Section title="Related Pages">
         <TransparencyLinks currentPath="/getting-started" />
       </Section>
     </>

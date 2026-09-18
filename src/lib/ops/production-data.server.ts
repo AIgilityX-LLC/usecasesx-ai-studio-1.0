@@ -45,20 +45,31 @@ const PRIVATE_TABLES = [
 
 type AdminClient = (typeof import("@/integrations/supabase/client.server"))["supabaseAdmin"];
 
-/** Resolve a head+count query to a plain number. */
-async function counted(query: PromiseLike<{ count: number | null }>): Promise<number> {
-  return (await query).count ?? 0;
+/** Resolve a count=exact query to a plain number. */
+async function counted(
+  query: PromiseLike<{ count: number | null; error?: import("@supabase/supabase-js").PostgrestError | null }>,
+): Promise<number> {
+  const res = await query;
+  if (res.error) {
+    const detail = res.error.message || res.error.code || "unknown";
+    throw new Error(`Count query failed: ${detail}`);
+  }
+  return res.count ?? 0;
 }
 
 async function adminRoster(admin: AdminClient): Promise<AdminGrantRow[]> {
-  const { data: grants } = await admin
+  const { data: grants, error: grantsError } = await admin
     .from("user_roles")
     .select("user_id, role, created_at")
     .order("role");
+  if (grantsError) throw new Error(`Failed to fetch user roles: ${grantsError.message}`);
+
   const ids = [...new Set((grants ?? []).map((grant) => grant.user_id))];
-  const people = ids.length
-    ? (await admin.from("profiles").select("user_id, full_name, email").in("user_id", ids)).data
-    : [];
+  const { data: people, error: peopleError } = ids.length
+    ? await admin.from("profiles").select("user_id, full_name, email").in("user_id", ids)
+    : { data: [] as any[], error: null };
+  if (peopleError) throw new Error(`Failed to fetch profiles: ${peopleError.message}`);
+
   const byId = new Map((people ?? []).map((person) => [person.user_id, person]));
 
   return (grants ?? []).map((grant) => {
@@ -129,7 +140,8 @@ export async function collectProductionData(input: {
 }): Promise<ProductionDataReport> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const admin = supabaseAdmin as AdminClient;
-  const head = { count: "exact" as const, head: true };
+  // GET + count=exact (not HEAD): sb_publishable_* keys reject HEAD count probes.
+  const countOpts = { count: "exact" as const };
 
   const anon = publicDataClient();
 
@@ -158,23 +170,28 @@ export async function collectProductionData(input: {
     counted(
       anon
         .from("use_cases")
-        .select("*", head)
+        .select("id", countOpts)
         .eq("status", "published")
-        .in("visibility", ["free_lite", "both"]),
+        .in("visibility", ["free_lite", "both"])
+        .limit(0),
     ),
-    counted(admin.from("use_cases").select("*", head).eq("status", "published")),
-    counted(admin.from("use_cases").select("*", head).neq("status", "published")),
-    counted(admin.from("use_cases").select("*", head).eq("is_featured", true)),
-    counted(admin.from("collections").select("*", head).eq("is_public", true)),
-    counted(admin.from("collections").select("*", head).eq("is_public", false)),
-    counted(admin.from("use_case_patterns").select("*", head).eq("status", "published")),
-    counted(admin.from("taxonomy_sectors").select("*", head).eq("is_published", true)),
-    counted(admin.from("taxonomy_tags").select("*", head).eq("is_published", true)),
-    counted(admin.from("use_case_submissions").select("*", head)),
-    counted(admin.from("pilot_invitations").select("*", head)),
-    counted(admin.from("profiles").select("*", head)),
-    counted(admin.from("workspaces").select("*", head).eq("is_demo", true)),
-    counted(admin.from("workspaces").select("*", head)),
+    counted(admin.from("use_cases").select("id", countOpts).eq("status", "published").limit(0)),
+    counted(admin.from("use_cases").select("id", countOpts).neq("status", "published").limit(0)),
+    counted(admin.from("use_cases").select("id", countOpts).eq("is_featured", true).limit(0)),
+    counted(admin.from("collections").select("id", countOpts).eq("is_public", true).limit(0)),
+    counted(admin.from("collections").select("id", countOpts).eq("is_public", false).limit(0)),
+    counted(
+      admin.from("use_case_patterns").select("id", countOpts).eq("status", "published").limit(0),
+    ),
+    counted(
+      admin.from("taxonomy_sectors").select("id", countOpts).eq("is_published", true).limit(0),
+    ),
+    counted(admin.from("taxonomy_tags").select("id", countOpts).eq("is_published", true).limit(0)),
+    counted(admin.from("use_case_submissions").select("id", countOpts).limit(0)),
+    counted(admin.from("pilot_invitations").select("id", countOpts).limit(0)),
+    counted(admin.from("profiles").select("user_id", countOpts).limit(0)),
+    counted(admin.from("workspaces").select("id", countOpts).eq("is_demo", true).limit(0)),
+    counted(admin.from("workspaces").select("id", countOpts).limit(0)),
     admin
       .from("audit_events")
       .select("created_at, new_value")
@@ -183,6 +200,9 @@ export async function collectProductionData(input: {
       .limit(10),
     admin.from("profiles").select("user_id, full_name, email").limit(1000),
   ]);
+
+  if (signOffRows.error) throw new Error(`Failed to fetch sign-offs: ${signOffRows.error.message}`);
+  if (demoAccounts.error) throw new Error(`Failed to fetch demo accounts: ${demoAccounts.error.message}`);
 
   const signOffs: SignOffRecord[] = (signOffRows.data ?? []).map((row) => {
     const payload = (row.new_value ?? {}) as { by?: string; verdict?: string; note?: string };
@@ -501,12 +521,14 @@ export async function revokeGrant(input: {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const admin = supabaseAdmin as AdminClient;
 
-  const { data: existing } = await admin
+  const { data: existing, error: existingError } = await admin
     .from("user_roles")
     .select("id, role")
     .eq("user_id", input.userId)
     .eq("role", input.role as never)
+    .limit(1)
     .maybeSingle();
+  if (existingError) throw new Error(`Could not verify the role: ${existingError.message}`);
   if (!existing) return { revoked: false };
 
   const { error } = await admin.from("user_roles").delete().eq("id", existing.id);
@@ -540,10 +562,12 @@ export async function flagDemoTenants(input: {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const admin = supabaseAdmin as AdminClient;
 
-  const { data: profiles } = await admin
+  const { data: profiles, error: profilesError } = await admin
     .from("profiles")
     .select("user_id, full_name, email, organization_id")
     .limit(1000);
+  if (profilesError) throw new Error(`Could not fetch profiles: ${profilesError.message}`);
+
   const demo = (profiles ?? []).filter(
     (person) => classifyPrincipal(person.full_name, person.email) === "demo",
   );

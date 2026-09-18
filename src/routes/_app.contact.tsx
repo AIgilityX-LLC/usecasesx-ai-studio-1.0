@@ -91,13 +91,13 @@ function ContactPage() {
       >
         <TrackedCta
           to="/repository"
-          label="Or just browse the repository"
+          label="Or Just Browse The Repository"
           location="contact-hero-repository"
           variant="secondary"
         />
       </PageHero>
 
-      <Section title="Send an enquiry">
+      <Section title="Send An Enquiry">
         {submitted ? (
           <div className="max-w-2xl rounded-2xl border border-primary/30 bg-primary/5 p-6">
             <h3 className="text-base font-bold text-foreground">Enquiry received</h3>
@@ -108,12 +108,12 @@ function ContactPage() {
             <div className="mt-5 flex flex-wrap gap-3">
               <TrackedCta
                 to="/repository"
-                label="Browse use cases"
+                label="Browse Use Cases"
                 location="contact-success-repository"
               />
               <TrackedCta
                 to="/how-it-works"
-                label="See how it works"
+                label="See How It Works"
                 location="contact-success-how"
                 variant="secondary"
               />
