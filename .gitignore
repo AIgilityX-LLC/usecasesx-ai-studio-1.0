@@ -31,8 +31,9 @@ dist-ssr
 *.sln
 *.sw?
 
-# Local secrets (never commit)
-.env
+# Browser-side Supabase values live in committed .env (Lovable build needs VITE_*).
+# Never commit service-role or other privileged secrets — use Lovable Cloud Secrets
+# or an untracked local override (e.g. .env.local).
 .env.*
 !.env.example
 
