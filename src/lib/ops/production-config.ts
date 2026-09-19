@@ -84,7 +84,7 @@ export const CANONICAL_HOST = CANONICAL_ORIGIN.replace(/^https?:\/\//, "");
 export const REQUIRED_SERVER_ENV: readonly string[] = [
   "SUPABASE_URL",
   "SUPABASE_PUBLISHABLE_KEY",
-  "SUPABASE_SERVICE_ROLE_KEY",
+  "SUPABASE_SERVICE_ROLE_KEY", // or DB_SERVICE_ROLE_KEY on Lovable (SUPABASE_ prefix is reserved)
   "LOVABLE_API_KEY",
   "CRON_HOOK_SECRET",
 ];

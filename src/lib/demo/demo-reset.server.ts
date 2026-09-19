@@ -105,6 +105,7 @@ async function seed(tenant: Tenant, spec: DemoContentSpec) {
       title: spec.board,
       description: "Demonstration board — fictional content.",
       board_type: "demo",
+      status: "active",
       created_by: userId,
     })
     .select("id")

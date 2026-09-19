@@ -56,6 +56,7 @@ export const customizeUseCase = createServerFn({ method: "POST" })
           title: BOARD_TITLE,
           description: "Private drafts started from curated global repository entries.",
           board_type: "customization",
+          status: "active",
           created_by: userId,
         })
         .select("id")

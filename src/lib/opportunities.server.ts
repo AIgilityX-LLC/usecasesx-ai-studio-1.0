@@ -190,6 +190,7 @@ export async function ensureCaptureBoard(
       title: TITLE,
       description: "Use cases designed from captured business problems.",
       board_type: "capture",
+      status: "active",
       created_by: userId,
     })
     .select("id")

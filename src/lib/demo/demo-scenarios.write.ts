@@ -43,6 +43,7 @@ export async function writeScenario(
       title: name(scenario.board),
       description: DEMO_DISCLAIMER,
       board_type: asSample ? "sample" : "demo_template",
+      status: "active",
       created_by: userId,
     })
     .select("id")

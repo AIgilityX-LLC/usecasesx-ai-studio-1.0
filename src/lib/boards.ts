@@ -238,6 +238,7 @@ export async function createBoard(input: {
       title: input.title.trim() || "Untitled Board",
       description: input.description?.trim() || null,
       board_type: input.boardType ?? "studio",
+      status: "active",
       created_by: input.userId,
     })
     .select("id, title, description, board_type, status, workspace_id, created_at, updated_at")

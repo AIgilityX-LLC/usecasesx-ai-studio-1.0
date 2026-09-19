@@ -138,6 +138,7 @@ export function AddToStudioBoardDialog({
             workspace_id: workspaceId,
             title: newTitle.trim() || "New Board",
             board_type: "studio",
+            status: "active",
             created_by: userId,
           })
           .select("id")

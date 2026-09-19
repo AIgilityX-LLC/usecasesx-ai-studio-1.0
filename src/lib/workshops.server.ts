@@ -253,6 +253,7 @@ export async function ensureWorkshopBoard(
       title,
       description: `Use cases generated in the ${workshop.title} discovery workshop.`,
       board_type: "workshop",
+      status: "active",
       created_by: userId,
     })
     .select("id")
