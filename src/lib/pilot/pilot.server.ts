@@ -152,6 +152,10 @@ export async function createInvitation(
       notes: input.notes,
       source: input.source ?? "manual",
       invited_by: input.actorId,
+      // Set explicitly so inserts never depend on column defaults being present.
+      status: "invited",
+      invite_token: crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, ""),
+      invited_at: new Date().toISOString(),
     })
     .select("*")
     .single();
