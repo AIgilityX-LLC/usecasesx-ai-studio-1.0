@@ -69,7 +69,7 @@ export const Route = createFileRoute("/_app/opportunity-map")({
   component: OpportunityMapPage,
   errorComponent: ({ error }) => (
     <div className="p-6">
-      <ErrorState title="Opportunity Map unavailable" description={error.message} />
+      <ErrorState title="Opportunity Map unavailable" description={(error as Error).message} />
     </div>
   ),
 });

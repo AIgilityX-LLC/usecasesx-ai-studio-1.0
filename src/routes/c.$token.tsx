@@ -32,7 +32,7 @@ export const Route = createFileRoute("/c/$token")({
         className="mx-auto max-w-2xl px-6 py-20 text-center text-sm text-muted-foreground"
         role="alert"
       >
-        {error.message}
+        {(error as Error).message}
       </div>
     </SiteShell>
   ),

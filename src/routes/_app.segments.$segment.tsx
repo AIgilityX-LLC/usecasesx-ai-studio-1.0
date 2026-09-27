@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_app/segments/$segment")({
   },
   component: SegmentPage,
   errorComponent: ({ error }) => (
-    <MissingDataFallback title="Segment failed to load" reason={error.message} />
+    <MissingDataFallback title="Segment failed to load" reason={(error as Error).message} />
   ),
   notFoundComponent: () => <MissingDataFallback title="Segment not found" />,
 });
