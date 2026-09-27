@@ -127,6 +127,7 @@ import { Route as ApiPublicHooksErpReconciliationRouteImport } from './routes/ap
 import { Route as ApiPublicHooksEvidenceCleanupRouteImport } from './routes/api/public/hooks/evidence-cleanup'
 import { Route as ApiPublicHooksLaunchChecksRouteImport } from './routes/api/public/hooks/launch-checks'
 import { Route as ApiPublicHooksPilotEvidenceRemindersRouteImport } from './routes/api/public/hooks/pilot-evidence-reminders'
+import { Route as ApiPublicHooksTmpSeedRouteImport } from './routes/api/public/hooks/tmp-seed'
 import { Route as ApiPublicUsecasexTaxonomyRouteImport } from './routes/api/public/usecasex/taxonomy'
 import { Route as ApiPublicUsecasexUseCasesRouteImport } from './routes/api/public/usecasex/use-cases'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -756,6 +757,11 @@ const ApiPublicHooksPilotEvidenceRemindersRoute =
     path: '/api/public/hooks/pilot-evidence-reminders',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksTmpSeedRoute = ApiPublicHooksTmpSeedRouteImport.update({
+  id: '/api/public/hooks/tmp-seed',
+  path: '/api/public/hooks/tmp-seed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicUsecasexTaxonomyRoute =
   ApiPublicUsecasexTaxonomyRouteImport.update({
     id: '/api/public/usecasex/taxonomy',
@@ -983,6 +989,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
   '/api/public/hooks/launch-checks': typeof ApiPublicHooksLaunchChecksRoute
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
+  '/api/public/hooks/tmp-seed': typeof ApiPublicHooksTmpSeedRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -1119,6 +1126,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
   '/api/public/hooks/launch-checks': typeof ApiPublicHooksLaunchChecksRoute
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
+  '/api/public/hooks/tmp-seed': typeof ApiPublicHooksTmpSeedRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -1259,6 +1267,7 @@ export interface FileRoutesById {
   '/api/public/hooks/evidence-cleanup': typeof ApiPublicHooksEvidenceCleanupRoute
   '/api/public/hooks/launch-checks': typeof ApiPublicHooksLaunchChecksRoute
   '/api/public/hooks/pilot-evidence-reminders': typeof ApiPublicHooksPilotEvidenceRemindersRoute
+  '/api/public/hooks/tmp-seed': typeof ApiPublicHooksTmpSeedRoute
   '/api/public/usecasex/taxonomy': typeof ApiPublicUsecasexTaxonomyRoute
   '/api/public/usecasex/use-cases': typeof ApiPublicUsecasexUseCasesRouteWithChildren
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -1399,6 +1408,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/evidence-cleanup'
     | '/api/public/hooks/launch-checks'
     | '/api/public/hooks/pilot-evidence-reminders'
+    | '/api/public/hooks/tmp-seed'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/lovable/email/auth/preview'
@@ -1535,6 +1545,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/evidence-cleanup'
     | '/api/public/hooks/launch-checks'
     | '/api/public/hooks/pilot-evidence-reminders'
+    | '/api/public/hooks/tmp-seed'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/lovable/email/auth/preview'
@@ -1674,6 +1685,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/evidence-cleanup'
     | '/api/public/hooks/launch-checks'
     | '/api/public/hooks/pilot-evidence-reminders'
+    | '/api/public/hooks/tmp-seed'
     | '/api/public/usecasex/taxonomy'
     | '/api/public/usecasex/use-cases'
     | '/lovable/email/auth/preview'
@@ -1713,6 +1725,7 @@ export interface RootRouteChildren {
   ApiPublicHooksEvidenceCleanupRoute: typeof ApiPublicHooksEvidenceCleanupRoute
   ApiPublicHooksLaunchChecksRoute: typeof ApiPublicHooksLaunchChecksRoute
   ApiPublicHooksPilotEvidenceRemindersRoute: typeof ApiPublicHooksPilotEvidenceRemindersRoute
+  ApiPublicHooksTmpSeedRoute: typeof ApiPublicHooksTmpSeedRoute
   ApiPublicUsecasexTaxonomyRoute: typeof ApiPublicUsecasexTaxonomyRoute
   ApiPublicUsecasexUseCasesRoute: typeof ApiPublicUsecasexUseCasesRouteWithChildren
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -2549,6 +2562,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksPilotEvidenceRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/tmp-seed': {
+      id: '/api/public/hooks/tmp-seed'
+      path: '/api/public/hooks/tmp-seed'
+      fullPath: '/api/public/hooks/tmp-seed'
+      preLoaderRoute: typeof ApiPublicHooksTmpSeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/usecasex/taxonomy': {
       id: '/api/public/usecasex/taxonomy'
       path: '/api/public/usecasex/taxonomy'
@@ -2997,6 +3017,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksLaunchChecksRoute: ApiPublicHooksLaunchChecksRoute,
   ApiPublicHooksPilotEvidenceRemindersRoute:
     ApiPublicHooksPilotEvidenceRemindersRoute,
+  ApiPublicHooksTmpSeedRoute: ApiPublicHooksTmpSeedRoute,
   ApiPublicUsecasexTaxonomyRoute: ApiPublicUsecasexTaxonomyRoute,
   ApiPublicUsecasexUseCasesRoute: ApiPublicUsecasexUseCasesRouteWithChildren,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
