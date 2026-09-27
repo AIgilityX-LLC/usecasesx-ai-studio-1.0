@@ -34,8 +34,11 @@ export const sendLeadConfirmation = createServerFn({ method: "POST" })
         .from("lead_captures")
         .select("id, confirmation_attempts")
         .eq("reference_id", data.referenceId)
+        .ilike("email", data.email)
         .maybeSingle();
-      if (lead) {
+      // Only the first attempt for a freshly captured lead is recorded here;
+      // retries and status changes belong to the authenticated admin paths.
+      if (lead && (lead.confirmation_attempts ?? 0) === 0) {
         const { recordDeliveryOutcome } = await import("@/lib/leads/lead-confirmation.server");
         await recordDeliveryOutcome(supabaseAdmin, {
           leadId: lead.id,

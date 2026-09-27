@@ -90,7 +90,16 @@ export async function resetSeededPersonaPasswords(): Promise<PersonaResetResult>
   const users = await loadDemoUsers();
   const failures: { email: string; message: string }[] = [];
 
+  // Privileged accounts never receive the shared demonstration password.
+  const { data: privileged } = await supabaseAdmin
+    .from("user_roles")
+    .select("user_id")
+    .in("user_id", users.length ? users.map((u) => u.id) : ["00000000-0000-0000-0000-000000000000"])
+    .in("role", ["admin", "super_admin"]);
+  const privilegedIds = new Set((privileged ?? []).map((r) => r.user_id));
+
   for (const user of users) {
+    if (privilegedIds.has(user.id)) continue;
     const { error } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
       password,
       email_confirm: true,
