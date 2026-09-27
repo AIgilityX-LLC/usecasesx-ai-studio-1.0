@@ -128,7 +128,7 @@ export const Route = createFileRoute("/_app/studio/use-case/$id/feasibility")({
   }),
   component: FeasibilityPage,
   errorComponent: ({ error }) => (
-    <div className="p-12 text-center text-destructive">{error.message}</div>
+    <div className="p-12 text-center text-destructive">{(error as Error).message}</div>
   ),
   notFoundComponent: () => <div className="p-12 text-center">Use case not found.</div>,
 });

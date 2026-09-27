@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_app/sectors/$sector")({
   },
   component: SectorPage,
   errorComponent: ({ error }) => (
-    <MissingDataFallback title="Sector failed to load" reason={error.message} />
+    <MissingDataFallback title="Sector failed to load" reason={(error as Error).message} />
   ),
   notFoundComponent: () => <MissingDataFallback title="Sector not found" />,
 });

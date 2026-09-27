@@ -35,7 +35,7 @@ export const Route = createFileRoute("/_app/compare")({
   validateSearch: searchSchema,
   component: ComparePage,
   errorComponent: ({ error }) => (
-    <MissingDataFallback title="Compare view failed to load" reason={error.message} />
+    <MissingDataFallback title="Compare view failed to load" reason={(error as Error).message} />
   ),
   notFoundComponent: () => <MissingDataFallback title="Nothing to compare" />,
 });
