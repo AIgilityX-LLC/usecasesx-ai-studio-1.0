@@ -50,7 +50,7 @@ function artifactCsv(artifact: DemoArtifact) {
  * only so a client walkthrough can switch roles quickly. The shared password is
  * a demonstration credential, not a secret — real accounts never use it.
  */
-const DEMO_PASSWORD = import.meta.env.VITE_DEMO_PASSWORD ?? "Demo@123-UCX";
+const DEMO_PASSWORD = (import.meta.env.VITE_DEMO_PASSWORD as string | undefined) ?? "";
 
 const PERSONAS = [
   {

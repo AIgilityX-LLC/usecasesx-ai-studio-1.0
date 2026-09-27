@@ -8,7 +8,9 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 export const DEMO_EMAIL_SUFFIX = "@demo.usecasex.app";
 
 export function demoPersonaPassword() {
-  return process.env["DEMO_PERSONA_PASSWORD"] ?? "Demo@123-UCX";
+  const value = process.env["DEMO_PERSONA_PASSWORD"];
+  if (!value) throw new Error("Demonstration password is not configured.");
+  return value;
 }
 
 export interface SeededPersona {
