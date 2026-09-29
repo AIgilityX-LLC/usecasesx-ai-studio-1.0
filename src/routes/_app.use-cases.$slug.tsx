@@ -186,7 +186,7 @@ export const Route = createFileRoute("/_app/use-cases/$slug")({
   },
   component: UseCaseDetailPage,
   errorComponent: ({ error }) => (
-    <MissingDataFallback title="Use case failed to load" reason={error.message} />
+    <MissingDataFallback title="Use case failed to load" reason={(error as Error).message} />
   ),
   notFoundComponent: () => (
     <MissingDataFallback

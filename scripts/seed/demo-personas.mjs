@@ -17,8 +17,16 @@ const url = process.env.SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!url || !serviceKey) throw new Error("Missing SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY");
 
-/** Shared demonstration password. Override with DEMO_PERSONA_PASSWORD. */
-const PASSWORD = process.env.DEMO_PERSONA_PASSWORD ?? "Demo@123-UCX";
+/** Shared demonstration password. Required; never hardcoded. */
+const PASSWORD = process.env.DEMO_PERSONA_PASSWORD;
+if (!PASSWORD || PASSWORD.length < 14)
+  throw new Error("Set DEMO_PERSONA_PASSWORD (min 14 chars) before seeding demo personas.");
+/** Privileged personas (admin/super_admin) never share the demo password. */
+const ADMIN_PASSWORD = process.env.DEMO_ADMIN_PASSWORD;
+if (!ADMIN_PASSWORD || ADMIN_PASSWORD.length < 14 || ADMIN_PASSWORD === PASSWORD)
+  throw new Error("Set DEMO_ADMIN_PASSWORD (min 14 chars, distinct from DEMO_PERSONA_PASSWORD).");
+const passwordFor = (persona) =>
+  persona.role === "super_admin" || persona.role === "admin" ? ADMIN_PASSWORD : PASSWORD;
 
 const PERSONAS = [
   {
@@ -185,14 +193,14 @@ for (const persona of PERSONAS) {
   if (!userId) {
     const { data, error } = await admin.auth.admin.createUser({
       email: persona.email,
-      password: PASSWORD,
+      password: passwordFor(persona),
       email_confirm: true,
       user_metadata: { full_name: persona.label },
     });
     if (error) throw error;
     userId = data.user.id;
   } else {
-    const { error } = await admin.auth.admin.updateUserById(userId, { password: PASSWORD });
+    const { error } = await admin.auth.admin.updateUserById(userId, { password: passwordFor(persona) });
     if (error) throw error;
   }
   idByEmail.set(persona.email, userId);

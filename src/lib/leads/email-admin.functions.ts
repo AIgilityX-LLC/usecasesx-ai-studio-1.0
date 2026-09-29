@@ -97,6 +97,17 @@ export const sendBrandedAuthTestEmail = createServerFn({ method: "POST" })
     await assertAnalyticsReader(context.supabase, context.userId);
     const { sendAuthTestEmail, readAuthEmailLogs } =
       await import("@/lib/leads/auth-email-test.server");
+    // Test emails may only go to the caller's own address, and only redirect
+    // back to this app's origin, so the action cannot mail arbitrary people.
+    const callerEmail = ((context.claims as { email?: string } | null)?.email ?? "").toLowerCase();
+    if (!callerEmail || data.recipient.toLowerCase() !== callerEmail) {
+      throw new Error("Test emails can only be sent to your own address.");
+    }
+    const { getRequestUrl } = await import("@tanstack/react-start/server");
+    const appOrigin = new URL(getRequestUrl()).origin;
+    if (new URL(data.redirectTo).origin !== appOrigin) {
+      throw new Error("Redirect must point to this application.");
+    }
     const send = await sendAuthTestEmail(data.type, data.recipient, data.redirectTo);
     const logs = await readAuthEmailLogs(data.recipient);
     return { send, logs };

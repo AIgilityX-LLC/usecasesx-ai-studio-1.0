@@ -26,8 +26,8 @@ interface Tenant {
 }
 
 export function demoResetAuthorized(password: string | undefined, callerEmail?: string | null) {
-  const expected = process.env["DEMO_PERSONA_PASSWORD"] ?? "Demo@123-UCX";
-  if (password && password === expected) return true;
+  const expected = process.env["DEMO_PERSONA_PASSWORD"];
+  if (expected && password && password === expected) return true;
   return Boolean(callerEmail?.toLowerCase().endsWith("@demo.usecasex.app"));
 }
 

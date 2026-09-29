@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_app/quick-wins")({
   }),
   component: QuickWinsPage,
   errorComponent: ({ error }) => (
-    <MissingDataFallback title="Matrix failed to load" reason={error.message} />
+    <MissingDataFallback title="Matrix failed to load" reason={(error as Error).message} />
   ),
 });
 
