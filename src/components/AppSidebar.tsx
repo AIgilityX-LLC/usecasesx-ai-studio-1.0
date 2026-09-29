@@ -145,6 +145,7 @@ const ADMIN: Item[] = [
     icon: ShieldCheck,
     admin: true,
   },
+  { to: "/reviews", label: "Review Inbox", icon: Inbox, pro: true },
   { to: "/admin-submissions", label: "Submission Review", icon: Inbox, admin: true },
   {
     to: "/administration/production-readiness",

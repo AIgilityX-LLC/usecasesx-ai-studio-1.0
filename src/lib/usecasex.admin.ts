@@ -13,6 +13,7 @@ export type Status =
   | "Approved"
   | "Published"
   | "Unpublished"
+  | "Deprecated"
   | "Archived";
 
 export const VISIBILITIES: Visibility[] = ["Free/Lite", "Pro", "Both", "Hidden"];
@@ -22,6 +23,7 @@ export const STATUSES: Status[] = [
   "Approved",
   "Published",
   "Unpublished",
+  "Deprecated",
   "Archived",
 ];
 
@@ -119,6 +121,7 @@ const STATUS_TO_DB: Record<Status, string> = {
   Approved: "approved",
   Published: "published",
   Unpublished: "unpublished",
+  Deprecated: "deprecated",
   Archived: "archived",
 };
 const STATUS_FROM_DB: Record<string, Status> = {
@@ -128,6 +131,7 @@ const STATUS_FROM_DB: Record<string, Status> = {
   approved: "Approved",
   published: "Published",
   unpublished: "Unpublished",
+  deprecated: "Deprecated",
   archived: "Archived",
 };
 
@@ -272,7 +276,9 @@ function toDbPatch(uc: AdminUseCase) {
   let lifecycle: string = "draft";
   if (contentStatus === "published") lifecycle = "published";
   else if (contentStatus === "archived") lifecycle = "archived";
+  else if (contentStatus === "deprecated") lifecycle = "deprecated";
   else if (contentStatus === "submitted_for_review") lifecycle = "review";
+  else if (contentStatus === "approved") lifecycle = "approved";
   else lifecycle = "draft";
 
   return {

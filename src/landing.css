@@ -176,11 +176,11 @@
   top: 0;
   z-index: 30;
   height: 64px;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 0 max(28px, calc((100% - 1280px) / 2));
+  column-gap: 20px;
+  padding: 0 max(20px, calc((100% - 1280px) / 2));
   background: #f3f4f6;
   border-bottom: 0;
   isolation: isolate;
@@ -189,26 +189,28 @@
   position: relative;
   z-index: 2;
   color: #1a1a1a;
-  background: #f3f4f6;
-  padding-right: 12px;
+  background: transparent;
+  padding-right: 0;
   flex-shrink: 0;
+  min-width: 0;
 }
 .ux-landing .ux-site-nav .ux-nav-brand b {
   color: #555555;
   opacity: 1;
 }
 .ux-landing .ux-desktop-nav {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  position: static;
+  left: auto;
+  transform: none;
   z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: nowrap;
-  gap: 26px;
+  gap: clamp(12px, 1.6vw, 22px);
   margin: 0;
-  pointer-events: none;
+  min-width: 0;
+  pointer-events: auto;
 }
 .ux-landing .ux-desktop-nav a {
   pointer-events: auto;
@@ -216,7 +218,7 @@
   align-items: center;
   color: #555555;
   font-family: var(--ux-font-body);
-  font-size: 14px;
+  font-size: clamp(12px, 1.05vw, 14px);
   font-weight: 400;
   letter-spacing: 0;
   text-decoration: none;
@@ -232,10 +234,11 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 8px;
   flex-shrink: 0;
-  background: #f3f4f6;
-  padding-left: 16px;
+  background: transparent;
+  padding-left: 0;
+  min-width: 0;
 }
 .ux-landing .ux-nav-login {
   display: inline-flex;
@@ -259,6 +262,31 @@
   background: #eceff3;
   border-color: rgba(7, 16, 31, 0.28);
   color: #000;
+}
+.ux-landing .ux-nav-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(7, 16, 31, 0.18);
+  background: #07101f;
+  color: #f5d76e;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition:
+    filter 0.15s ease,
+    border-color 0.15s ease;
+}
+.ux-landing .ux-nav-avatar:hover,
+.ux-landing .ux-nav-avatar:focus-visible {
+  filter: brightness(1.15);
+  border-color: rgba(7, 16, 31, 0.4);
+  outline: none;
 }
 .ux-landing .ux-gratis-bar {
   display: inline-flex;
@@ -1823,6 +1851,19 @@
   }
 }
 
+/* Compact waitlist label before the bar gets too wide */
+@media (max-width: 1280px) {
+  .ux-landing .ux-gratis-full {
+    display: none;
+  }
+  .ux-landing .ux-gratis-short {
+    display: inline;
+  }
+  .ux-landing .ux-gratis-bar {
+    padding: 0 12px;
+  }
+}
+
 /* Responsive */
 @media (max-width: 1100px) {
   .ux-landing .ux-org-grid {
@@ -1850,21 +1891,7 @@
   .ux-landing .ux-roadmap-arrow {
     display: none;
   }
-  .ux-landing .ux-gratis-full {
-    display: none;
-  }
-  .ux-landing .ux-gratis-short {
-    display: inline;
-  }
-  .ux-landing .ux-desktop-nav {
-    gap: 18px;
-  }
-  .ux-landing .ux-desktop-nav a {
-    font-size: 13px;
-  }
-}
-
-@media (max-width: 900px) {
+  /* Prefer hamburger once the row is too tight for all titles + PA + waitlist */
   .ux-landing .ux-desktop-nav,
   .ux-landing .ux-nav-actions {
     display: none;
@@ -1875,6 +1902,7 @@
   }
   .ux-landing .ux-site-nav {
     display: flex;
+    justify-content: space-between;
     padding: 0 22px;
     background: #f3f4f6;
   }
@@ -1889,13 +1917,22 @@
     padding: 12px 22px 22px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   }
-  .ux-landing .ux-mobile-menu a {
+  .ux-landing .ux-mobile-menu a,
+  .ux-landing .ux-mobile-menu button {
     color: #555555;
     padding: 14px 0;
     min-height: 44px;
+    border: 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    background: transparent;
+    font: inherit;
     font-size: 15px;
+    text-align: left;
+    cursor: pointer;
   }
+}
+
+@media (max-width: 900px) {
   .ux-landing .ux-container {
     width: min(100% - 44px, 680px);
   }

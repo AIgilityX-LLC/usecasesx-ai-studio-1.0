@@ -1,9 +1,8 @@
 /**
- * Score explanation panel.
+ * Score explanation panel (V2-09).
  *
- * Shows every step of the calculation: dimension scores, weights, per-criterion
- * contributions, completeness and how the recommendation band was reached.
- * Nothing here computes anything — it renders the engine's output verbatim.
+ * Shows weighted result, uncertainty band and evidence completeness separately.
+ * Prioritisation bands are never presented as compliance, safety or approval.
  */
 
 import { Fragment } from "react";
@@ -12,7 +11,7 @@ import { AlertTriangle, Info } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { StatusChip, type StatusTone } from "@/components/ui-kit";
-import type { ScoreResult } from "@/lib/scoring/model";
+import type { ScoreResult, SensitivityScenario } from "@/lib/scoring/model";
 
 const BAND_TONE: Record<string, StatusTone> = {
   positive: "success",
@@ -50,34 +49,80 @@ function Metric({
   );
 }
 
-export function ScoreExplanation({ result }: { result: ScoreResult }) {
+export function ScoreExplanation({
+  result,
+  sensitivity,
+}: {
+  result: ScoreResult;
+  sensitivity?: SensitivityScenario[];
+}) {
   const band = result.recommendation;
+  const evidenceCompleteness = result.evidenceCompleteness ?? 0;
+  const disclaimer =
+    result.scoreDisclaimer ??
+    "Scores are prioritisation decision support only. A number is never a compliance, safety or approval determination.";
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-3 sm:grid-cols-3">
-        <Metric label="Composite priority" value={result.composite} />
+      <div
+        role="note"
+        className="rounded-lg border border-border bg-muted/40 p-3 text-xs text-muted-foreground"
+      >
+        {disclaimer}
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Metric label="Weighted composite" value={result.composite} />
         <Metric
           label="Risk-adjusted"
           value={result.riskAdjusted}
-          hint="Composite after the residual-risk adjustment."
+          hint="Point estimate after residual-risk adjustment."
         />
         <Metric
-          label="Completeness"
+          label="Uncertainty band"
+          value={result.uncertainty ? result.uncertainty.low : null}
+          suffix={
+            result.uncertainty ? `–${result.uncertainty.high}` : "/100"
+          }
+          hint={
+            result.uncertainty
+              ? `Method: ${result.uncertainty.method.replace(/_/g, " ")}`
+              : "Pending reconciliation for legacy results"
+          }
+        />
+        <Metric
+          label="Evidence completeness"
+          value={Math.round(evidenceCompleteness * 100)}
+          suffix="%"
+          hint="Separate from answer completeness"
+        />
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Metric
+          label="Answer completeness"
           value={Math.round(result.completeness * 100)}
           suffix="%"
           hint={`${result.confidence} confidence`}
         />
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2">
-        {band && <StatusChip tone={BAND_TONE[band.tone] ?? "neutral"}>{band.label}</StatusChip>}
-        <StatusChip tone={CONFIDENCE_TONE[result.confidence] ?? "neutral"}>
-          {result.confidence} confidence
-        </StatusChip>
-        <span className="text-sm text-muted-foreground">
-          {result.scorecardSlug} · v{result.scorecardVersion}
-        </span>
+        <div className="rounded-lg border border-border bg-card p-4">
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Prioritisation band
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {band ? (
+              <StatusChip tone={BAND_TONE[band.tone] ?? "neutral"}>{band.label}</StatusChip>
+            ) : (
+              <span className="text-sm text-muted-foreground">—</span>
+            )}
+            <StatusChip tone={CONFIDENCE_TONE[result.confidence] ?? "neutral"}>
+              {result.confidence} confidence
+            </StatusChip>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            {result.scorecardSlug} · v{result.scorecardVersion}
+          </p>
+        </div>
       </div>
 
       {band && <p className="text-sm text-muted-foreground">{band.guidance}</p>}
@@ -100,6 +145,42 @@ export function ScoreExplanation({ result }: { result: ScoreResult }) {
             </p>
           </div>
         </div>
+      )}
+
+      {sensitivity && sensitivity.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Sensitivity (±20% dimension weight)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-3 text-xs text-muted-foreground">
+              Shows how ranking could change if pillar weights shift. Exploratory only — does not
+              change the recorded score.
+            </p>
+            <ul className="space-y-2 text-sm">
+              {sensitivity.map((s) => (
+                <li
+                  key={`${s.dimensionId}-${s.weightMultiplier}`}
+                  className="flex flex-wrap items-baseline justify-between gap-2 rounded-md border border-border px-3 py-2"
+                >
+                  <span>
+                    {s.dimensionLabel}{" "}
+                    <span className="text-muted-foreground">
+                      ×{s.weightMultiplier}
+                    </span>
+                  </span>
+                  <span className="tabular-nums text-muted-foreground">
+                    {s.riskAdjusted === null ? "—" : `${s.riskAdjusted}/100`}
+                    {s.deltaFromBase !== null
+                      ? ` (${s.deltaFromBase >= 0 ? "+" : ""}${s.deltaFromBase})`
+                      : ""}
+                    {s.recommendationLabel ? ` · ${s.recommendationLabel}` : ""}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
       )}
 
       <Card>

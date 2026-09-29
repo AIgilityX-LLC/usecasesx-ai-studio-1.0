@@ -103,11 +103,17 @@ export type StoredResult = {
   responses: Record<string, number>;
   /** Human-authored justification per criterion, captured with the answers. */
   evidence: Record<string, string>;
+  /** V2-09 per-criterion rationale / confidence / assessor metadata. */
+  assessments: import("@/lib/scoring/model").CriterionAssessments;
   composite: number | null;
   riskAdjusted: number | null;
+  uncertaintyLow: number | null;
+  uncertaintyHigh: number | null;
   completeness: number;
+  evidenceCompleteness: number | null;
   confidence: string | null;
   recommendation: string | null;
+  reconciliationStatus: string;
   note: string | null;
   createdAt: string;
   createdBy: string;
@@ -124,11 +130,25 @@ function toStored(row: any): StoredResult {
     scorecardVersion: row.scorecard_version,
     responses: (row.responses ?? {}) as Record<string, number>,
     evidence: (explanation.evidence ?? {}) as Record<string, string>,
+    assessments: (row.criterion_assessments ??
+      explanation.assessments ??
+      {}) as import("@/lib/scoring/model").CriterionAssessments,
     composite: row.composite_score === null ? null : Number(row.composite_score),
     riskAdjusted: row.risk_adjusted_score === null ? null : Number(row.risk_adjusted_score),
+    uncertaintyLow: row.uncertainty_low === null || row.uncertainty_low === undefined
+      ? null
+      : Number(row.uncertainty_low),
+    uncertaintyHigh: row.uncertainty_high === null || row.uncertainty_high === undefined
+      ? null
+      : Number(row.uncertainty_high),
     completeness: row.completeness === null ? 0 : Number(row.completeness),
+    evidenceCompleteness:
+      row.evidence_completeness === null || row.evidence_completeness === undefined
+        ? null
+        : Number(row.evidence_completeness),
     confidence: row.confidence ?? null,
     recommendation: row.recommendation ?? null,
+    reconciliationStatus: row.reconciliation_status ?? "current",
     note: row.note ?? null,
     createdAt: row.created_at,
     createdBy: row.created_by,
@@ -138,7 +158,8 @@ function toStored(row: any): StoredResult {
 
 const RESULT_SELECT = `id, use_case_id, scorecard_id, scorecard_slug, scorecard_version,
   responses, composite_score, risk_adjusted_score, completeness, confidence, recommendation,
-  explanation, note, created_at, created_by`;
+  explanation, note, created_at, created_by, criterion_assessments, uncertainty_low,
+  uncertainty_high, evidence_completeness, reconciliation_status`;
 
 export async function listResults(supabase: Db, useCaseId: string): Promise<StoredResult[]> {
   const { data, error } = await supabase
@@ -158,12 +179,14 @@ export async function insertResult(
     scorecardId: string;
     responses: Record<string, number>;
     evidence: Record<string, string>;
+    assessments?: import("@/lib/scoring/model").CriterionAssessments;
     result: ScoreResult;
     note: string | null;
     createdBy: string;
   },
 ): Promise<StoredResult> {
   const { result } = input;
+  const assessments = input.assessments ?? {};
   const { data, error } = await supabase
     .from("scorecard_results")
     .insert({
@@ -178,9 +201,14 @@ export async function insertResult(
       completeness: result.completeness,
       confidence: result.confidence,
       recommendation: result.recommendation?.id ?? null,
-      explanation: { result, evidence: input.evidence },
+      explanation: { result, evidence: input.evidence, assessments },
       note: input.note,
       created_by: input.createdBy,
+      criterion_assessments: assessments,
+      uncertainty_low: result.uncertainty?.low ?? null,
+      uncertainty_high: result.uncertainty?.high ?? null,
+      evidence_completeness: result.evidenceCompleteness,
+      reconciliation_status: "current",
     })
     .select(RESULT_SELECT)
     .single();
@@ -269,4 +297,113 @@ export function useCaseNarrative(useCase: any): string | undefined {
     useCase?.mvp_scope && `MVP scope: ${useCase.mvp_scope}`,
   ].filter((p): p is string => typeof p === "string" && p.trim().length > 0);
   return parts.length > 0 ? parts.join("\n").slice(0, 4000) : undefined;
+}
+
+/**
+ * Clone a published (or built-in-backed) scorecard into a workspace draft.
+ * Admins edit the draft; publishing creates an immutable version.
+ */
+export async function cloneScorecardToWorkspace(
+  supabase: Db,
+  input: {
+    sourceScorecardId: string;
+    workspaceId: string;
+    organizationId: string | null;
+    userId: string;
+    name?: string;
+  },
+): Promise<{ id: string; slug: string; version: number; status: string }> {
+  const { data: source, error } = await supabase
+    .from("scorecards")
+    .select("id, slug, name, description, version, definition, status")
+    .eq("id", input.sourceScorecardId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!source) throw new Error("Source scorecard not found.");
+
+  const definition = definitionFromRow(source);
+  const baseSlug = `${definition.slug}-ws`;
+
+  const { data: latest } = await supabase
+    .from("scorecards")
+    .select("version")
+    .eq("workspace_id", input.workspaceId)
+    .eq("slug", baseSlug)
+    .order("version", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const nextVersion = ((latest?.version as number | undefined) ?? 0) + 1;
+  const draftDefinition = { ...definition, slug: baseSlug, version: nextVersion };
+
+  const { data: created, error: createErr } = await supabase
+    .from("scorecards")
+    .insert({
+      slug: baseSlug,
+      name: input.name?.trim() || `${definition.name} (workspace draft)`,
+      description: definition.description,
+      version: nextVersion,
+      status: "draft",
+      is_default: false,
+      definition: draftDefinition,
+      workspace_id: input.workspaceId,
+      organization_id: input.organizationId,
+      created_by: input.userId,
+    })
+    .select("id, slug, version, status")
+    .single();
+  if (createErr || !created) throw new Error(createErr?.message ?? "Could not clone scorecard.");
+  return {
+    id: created.id as string,
+    slug: created.slug as string,
+    version: created.version as number,
+    status: created.status as string,
+  };
+}
+
+/** Publish a draft scorecard. Definition becomes immutable thereafter. */
+export async function publishScorecard(
+  supabase: Db,
+  input: { scorecardId: string; makeDefault?: boolean; workspaceId: string },
+): Promise<{ id: string; status: string; version: number }> {
+  const { data: row, error } = await supabase
+    .from("scorecards")
+    .select("id, status, version, workspace_id, definition")
+    .eq("id", input.scorecardId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!row) throw new Error("Scorecard not found.");
+  if (row.workspace_id !== input.workspaceId) {
+    throw new Error("Scorecard does not belong to this workspace.");
+  }
+  if (row.status === "published") {
+    return { id: row.id as string, status: "published", version: row.version as number };
+  }
+  if (row.status !== "draft") {
+    throw new Error("Only draft scorecards can be published.");
+  }
+
+  if (input.makeDefault) {
+    await supabase
+      .from("scorecards")
+      .update({ is_default: false })
+      .eq("workspace_id", input.workspaceId)
+      .eq("is_default", true);
+  }
+
+  const { data: published, error: pubErr } = await supabase
+    .from("scorecards")
+    .update({
+      status: "published",
+      is_default: Boolean(input.makeDefault),
+    })
+    .eq("id", input.scorecardId)
+    .select("id, status, version")
+    .single();
+  if (pubErr || !published) throw new Error(pubErr?.message ?? "Could not publish scorecard.");
+  return {
+    id: published.id as string,
+    status: published.status as string,
+    version: published.version as number,
+  };
 }

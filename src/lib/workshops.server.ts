@@ -21,7 +21,7 @@ import {
 type Db = SupabaseClient<any, any, any>;
 
 const WORKSHOP_SELECT =
-  "id, organization_id, workspace_id, created_by, title, client_name, objective, business_functions, starts_on, ends_on, stage, status, created_at, updated_at";
+  "id, organization_id, workspace_id, created_by, title, client_name, objective, business_functions, starts_on, ends_on, stage, status, agenda, teams, challenge_statements, timeboxes, allow_anonymous, voting_mode, created_at, updated_at";
 const ITEM_SELECT =
   "id, workshop_id, kind, title, detail, business_function, submitted_by, submitted_by_name, status, merged_into_id, source_item_id, opportunity_id, use_case_id, converted_at, created_at, updated_at";
 
@@ -40,6 +40,12 @@ export function toWorkshop(row: any): Workshop {
     endsOn: row.ends_on ?? null,
     stage: row.stage,
     status: row.status,
+    agenda: Array.isArray(row.agenda) ? row.agenda : [],
+    teams: Array.isArray(row.teams) ? row.teams : [],
+    challengeStatements: Array.isArray(row.challenge_statements) ? row.challenge_statements : [],
+    timeboxes: Array.isArray(row.timeboxes) ? row.timeboxes : [],
+    allowAnonymous: Boolean(row.allow_anonymous),
+    votingMode: row.voting_mode === "dot" ? "dot" : "score",
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -289,29 +295,54 @@ export async function convertItem(
   }
   if (item.opportunityId || item.useCaseId) return item;
 
+  const sourceReference = `workshop:${workshop.id}:item:${item.id}`;
   const patch: Record<string, unknown> = { converted_at: new Date().toISOString() };
 
   if (item.kind === "opportunity") {
-    const { data, error } = await supabase
+    // Hard idempotency: reuse existing row with the same workshop source_reference.
+    const { data: existing } = await supabase
       .from("opportunities")
-      .insert({
-        workspace_id: workshop.workspaceId,
-        created_by: userId,
-        owner_user_id: userId,
-        title: item.title,
-        pain_point: item.detail || null,
-        business_function: item.businessFunction || null,
-        status: "opportunity",
-        source: "workshop",
-        source_reference: `workshop:${workshop.id}:item:${item.id}`,
-      })
       .select("id")
-      .single();
-    fail(error);
-    patch.opportunity_id = (data as { id: string }).id;
+      .eq("source", "workshop")
+      .eq("source_reference", sourceReference)
+      .maybeSingle();
+    if (existing?.id) {
+      patch.opportunity_id = existing.id as string;
+    } else {
+      const { data, error } = await supabase
+        .from("opportunities")
+        .insert({
+          workspace_id: workshop.workspaceId,
+          created_by: userId,
+          owner_user_id: userId,
+          title: item.title,
+          pain_point: item.detail || null,
+          business_function: item.businessFunction || null,
+          status: "opportunity",
+          source: "workshop",
+          source_reference: sourceReference,
+        })
+        .select("id")
+        .single();
+      if (error) {
+        // Race: unique index hit — re-read.
+        if (error.message.toLowerCase().includes("unique") || error.code === "23505") {
+          const { data: raced } = await supabase
+            .from("opportunities")
+            .select("id")
+            .eq("source_reference", sourceReference)
+            .maybeSingle();
+          if (raced?.id) patch.opportunity_id = raced.id as string;
+          else fail(error);
+        } else {
+          fail(error);
+        }
+      } else {
+        patch.opportunity_id = (data as { id: string }).id;
+      }
+    }
   } else {
     const boardId = await ensureWorkshopBoard(supabase, workshop, userId);
-    // Lineage: a use case generated from a converted opportunity keeps the link.
     let sourceOpportunityId: string | null = null;
     if (item.sourceItemId) {
       const { data: parent } = await supabase

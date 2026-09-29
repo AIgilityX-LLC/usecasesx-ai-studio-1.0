@@ -229,6 +229,44 @@ export const updateWorkshopFn = createServerFn({ method: "POST" })
         setup: workshopSetupSchema.partial().optional(),
         stage: z.enum(WORKSHOP_STAGES).optional(),
         status: z.enum(WORKSHOP_STATUSES).optional(),
+        agenda: z
+          .array(
+            z.object({
+              id: z.string(),
+              title: z.string().trim().min(1).max(200),
+              minutes: z.number().int().min(1).max(480).optional(),
+              notes: z.string().max(1000).optional(),
+            }),
+          )
+          .max(40)
+          .optional(),
+        teams: z
+          .array(
+            z.object({
+              id: z.string(),
+              name: z.string().trim().min(1).max(120),
+              memberNames: z.array(z.string().max(120)).max(40),
+            }),
+          )
+          .max(20)
+          .optional(),
+        challengeStatements: z
+          .array(z.object({ id: z.string(), text: z.string().trim().min(3).max(500) }))
+          .max(20)
+          .optional(),
+        timeboxes: z
+          .array(
+            z.object({
+              id: z.string(),
+              label: z.string().trim().min(1).max(120),
+              minutes: z.number().int().min(1).max(480),
+              stage: z.string().max(40).optional(),
+            }),
+          )
+          .max(40)
+          .optional(),
+        allowAnonymous: z.boolean().optional(),
+        votingMode: z.enum(["score", "dot"]).optional(),
       })
       .parse(d),
   )
@@ -251,6 +289,13 @@ export const updateWorkshopFn = createServerFn({ method: "POST" })
     }
     if (data.stage) patch.stage = data.stage;
     if (data.status) patch.status = data.status;
+    if (data.agenda !== undefined) patch.agenda = data.agenda;
+    if (data.teams !== undefined) patch.teams = data.teams;
+    if (data.challengeStatements !== undefined)
+      patch.challenge_statements = data.challengeStatements;
+    if (data.timeboxes !== undefined) patch.timeboxes = data.timeboxes;
+    if (data.allowAnonymous !== undefined) patch.allow_anonymous = data.allowAnonymous;
+    if (data.votingMode !== undefined) patch.voting_mode = data.votingMode;
 
     const { data: row, error } = await supabase
       .from("workshops")
@@ -439,7 +484,7 @@ export const castWorkshopVoteFn = createServerFn({ method: "POST" })
       .object({
         workshopId: z.string().uuid(),
         itemId: z.string().uuid(),
-        criterion: z.enum(VOTE_CRITERIA),
+        criterion: z.enum([...VOTE_CRITERIA, "dots"] as [string, ...string[]]),
         score: z.number().int().min(VOTE_MIN).max(VOTE_MAX),
       })
       .parse(d),
@@ -454,19 +499,149 @@ export const castWorkshopVoteFn = createServerFn({ method: "POST" })
       .maybeSingle();
     if (me?.role === "observer") throw new Error("Observers cannot vote in this workshop.");
 
+    // Dot mode: one sticky vote per voter/item (score forced to 1).
+    const criterion = data.criterion;
+    const score = criterion === "dots" ? 1 : data.score;
+
     const { error } = await supabase.from("workshop_votes").upsert(
       {
         workshop_id: data.workshopId,
         item_id: data.itemId,
         voter_id: userId,
-        criterion: data.criterion,
-        score: data.score,
+        criterion,
+        score,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "item_id,voter_id,criterion" },
     );
     if (error) throw new Error(error.message);
     return { ok: true };
+  });
+
+export const proposeWorkshopClustersFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ workshopId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { assertFacilitator, getBoard } = await import("@/lib/workshops.server");
+    const { proposeClusters } = await import("@/lib/workshops/workshop-v2");
+    await assertFacilitator(supabase, data.workshopId, userId);
+    const board = await getBoard(supabase, data.workshopId, userId);
+    if (!board) throw new Error("Workshop not found.");
+    const drafts = proposeClusters(board.items);
+    const rows = [];
+    for (const draft of drafts) {
+      const { data: row, error } = await supabase
+        .from("workshop_cluster_proposals")
+        .insert({
+          workshop_id: data.workshopId,
+          workspace_id: board.workshop.workspaceId,
+          proposed_label: draft.proposedLabel,
+          summary: draft.summary,
+          item_ids: draft.itemIds,
+          status: "pending",
+          source: "ai",
+          reason: draft.reason,
+          created_by: userId,
+        })
+        .select("id, proposed_label, summary, item_ids, status, reason, created_at")
+        .single();
+      if (error) throw new Error(error.message);
+      rows.push(row);
+    }
+    return rows;
+  });
+
+export const listWorkshopClusterProposalsFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ workshopId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { data: rows, error } = await context.supabase
+      .from("workshop_cluster_proposals")
+      .select("id, proposed_label, summary, item_ids, status, reason, source, created_at")
+      .eq("workshop_id", data.workshopId)
+      .is("deleted_at", null)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return rows ?? [];
+  });
+
+export const decideWorkshopClusterProposalFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        workshopId: z.string().uuid(),
+        proposalId: z.string().uuid(),
+        decision: z.enum(["accepted", "rejected"]),
+        finalLabel: z.string().trim().min(1).max(200).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { assertFacilitator } = await import("@/lib/workshops.server");
+    await assertFacilitator(supabase, data.workshopId, userId);
+
+    const { data: proposal, error: loadError } = await supabase
+      .from("workshop_cluster_proposals")
+      .select("id, item_ids, proposed_label, status")
+      .eq("id", data.proposalId)
+      .eq("workshop_id", data.workshopId)
+      .maybeSingle();
+    if (loadError) throw new Error(loadError.message);
+    if (!proposal || proposal.status !== "pending") throw new Error("Proposal not pending.");
+
+    if (data.decision === "rejected") {
+      const { error } = await supabase
+        .from("workshop_cluster_proposals")
+        .update({
+          status: "rejected",
+          confirmed_by: userId,
+          confirmed_at: new Date().toISOString(),
+        })
+        .eq("id", data.proposalId);
+      if (error) throw new Error(error.message);
+      return { ok: true, merged: false };
+    }
+
+    const itemIds = (proposal.item_ids as string[]) ?? [];
+    if (itemIds.length < 2) throw new Error("Cluster needs at least two items.");
+    const [targetId, ...sources] = itemIds;
+    const label = data.finalLabel?.trim() || (proposal.proposed_label as string);
+
+    // Facilitator-confirmed merge only — never auto-apply AI labels.
+    await supabase
+      .from("workshop_items")
+      .update({ title: label, updated_at: new Date().toISOString() })
+      .eq("id", targetId)
+      .eq("workshop_id", data.workshopId);
+
+    for (const sourceId of sources) {
+      const { error } = await supabase
+        .from("workshop_items")
+        .update({
+          status: "merged",
+          merged_into_id: targetId,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", sourceId)
+        .eq("workshop_id", data.workshopId);
+      if (error) throw new Error(error.message);
+    }
+
+    const { error: updError } = await supabase
+      .from("workshop_cluster_proposals")
+      .update({
+        status: "accepted",
+        proposed_label: label,
+        confirmed_by: userId,
+        confirmed_at: new Date().toISOString(),
+      })
+      .eq("id", data.proposalId);
+    if (updError) throw new Error(updError.message);
+    return { ok: true, merged: true, targetId, label };
   });
 
 /** Shortlisted item → opportunity record and/or Studio draft, lineage preserved. */

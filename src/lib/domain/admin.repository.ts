@@ -268,7 +268,18 @@ export async function reviewSubmission(input: {
   status: string;
   reviewNotes: string | null;
 }): Promise<void> {
-  const reviewerId = await currentUserId();
+  const reviewerId = await requireCurrentUserId();
+  const { data: submission, error: readErr } = await supabase
+    .from("use_case_submissions")
+    .select("id, user_id, status")
+    .eq("id", input.id)
+    .maybeSingle();
+  if (readErr) throw normalizeError(readErr);
+  if (!submission) throw new DomainError("not_found", "Submission not found.");
+
+  const { assertNotSelfReview } = await import("@/lib/submissions");
+  assertNotSelfReview(submission.user_id, reviewerId);
+
   const { error } = await supabase
     .from("use_case_submissions")
     .update({
@@ -629,6 +640,18 @@ async function writeAuditWithMetadata(
 /** Publishes a global use case and stores a restorable snapshot in the audit trail. */
 export async function publishGlobalUseCase(id: string, note?: string): Promise<void> {
   const row = await getUseCase(id);
+  const { publishBlockingIssues } = await import("@/lib/content-governance/model");
+  const blockers = publishBlockingIssues({
+    evidenceClass: ((row as any).evidence_class ?? "example") as any,
+    provenanceUrl: (row as any).provenance_url ?? null,
+    qualityStatus: (row as any).quality_status ?? null,
+    contentOwnerName: (row as any).content_owner_name ?? null,
+    lastReviewedAt: (row as any).last_reviewed_at ?? null,
+    licenseUsageNote: (row as any).license_usage_note ?? null,
+  });
+  if (blockers.length) {
+    throw new Error(blockers.join(" "));
+  }
   await updateUseCase(id, {
     content_status: "published",
     status: "published",
@@ -636,6 +659,22 @@ export async function publishGlobalUseCase(id: string, note?: string): Promise<v
   });
   await writeAuditWithMetadata(id, "Published", note ?? null, {
     snapshot: pickSnapshot({ ...row, content_status: "published" }),
+  });
+}
+
+export async function deprecateGlobalUseCase(
+  id: string,
+  supersededById: string | null,
+  note?: string,
+): Promise<void> {
+  await updateUseCase(id, {
+    content_status: "deprecated",
+    status: "deprecated",
+    superseded_by_id: supersededById,
+    published_at: null,
+  });
+  await writeAuditWithMetadata(id, "Deprecated", note ?? null, {
+    superseded_by_id: supersededById,
   });
 }
 

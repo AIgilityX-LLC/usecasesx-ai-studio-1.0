@@ -67,6 +67,17 @@ async function main() {
   });
   assert("contributor cannot publish their own submission", selfPublish.error !== null);
 
+  // 3b. Segregation of duties: same user must not review their own submission
+  // (server/admin paths call assertNotSelfReview before any status update).
+  const { assertNotSelfReview, SELF_REVIEW_DENIED } = await import("../src/lib/submissions");
+  let sodDenied = false;
+  try {
+    assertNotSelfReview(contributor.userId, contributor.userId);
+  } catch (e) {
+    sodDenied = e instanceof Error && e.message === SELF_REVIEW_DENIED;
+  }
+  assert("self-approval denied by segregation-of-duties check", sodDenied);
+
   // 4. Reviewer approves
   const { error: approveErr } = await reviewer.client
     .from("use_case_submissions")

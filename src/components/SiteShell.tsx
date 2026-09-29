@@ -6,13 +6,13 @@ import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/s
 import { AppSidebar } from "./AppSidebar";
 import { AppBreadcrumb } from "./AppBreadcrumb";
 import { MobileNav } from "./MobileNav";
+import { UserAccountMenu } from "./AuthNavActions";
 
 import { UseCasesXFooter } from "./UseCasesXFooter";
 import brandMark from "@/assets/usecasesx-logo.png";
 import { EmailVerificationBanner } from "./EmailVerificationBanner";
 import { RequestAlertWatcher } from "./feedback/RequestAlertWatcher";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavLinkIntegrityCheck } from "@/lib/nav-integrity";
 
 const TOP_NAV: { to: string; label: string }[] = [
@@ -95,38 +95,53 @@ export function SiteShell({ children }: { children: ReactNode }) {
       <div className="flex items-center gap-2">
         {isAuthed ? (
           <>
-            <button
-              onClick={() => supabase.auth.signOut()}
-              className="hidden rounded-md border border-border px-3 py-1.5 text-[13px] font-medium hover:bg-secondary sm:inline-flex"
-            >
-              Sign out
-            </button>
+            <UserAccountMenu variant="shell" />
             <Link
               to="/pricing"
-              className="rounded-md bg-primary px-3.5 py-1.5 text-[13px] font-bold text-primary-foreground hover:brightness-110"
+              hash="founding"
+              onClick={() =>
+                void import("@/lib/usecasex.tracking").then(({ trackCTAEvent }) =>
+                  trackCTAEvent("waitlist_join_clicked", {
+                    target_route: "/pricing#founding",
+                    location: "site_nav_signed_in",
+                  }),
+                )
+              }
+              data-analytics-id="waitlist-cta-nav"
+              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3.5 py-1.5 text-[13px] font-bold text-primary-foreground shadow-[var(--shadow-gold)] hover:brightness-110"
             >
-              Plans
+              <Crown className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              <span className="hidden sm:inline">Join the Waitlist — Early Gratis (Free) Access</span>
+              <span className="sm:hidden">Join Waitlist</span>
             </Link>
           </>
         ) : (
-          <Link
-            to="/pricing"
-            hash="founding"
-            onClick={() =>
-              void import("@/lib/usecasex.tracking").then(({ trackCTAEvent }) =>
-                trackCTAEvent("waitlist_join_clicked", {
-                  target_route: "/pricing#founding",
-                  location: "site_nav",
-                }),
-              )
-            }
-            data-analytics-id="waitlist-cta-nav"
-            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3.5 py-1.5 text-[13px] font-bold text-primary-foreground shadow-[var(--shadow-gold)] hover:brightness-110"
-          >
-            <Crown className="h-3.5 w-3.5 shrink-0" aria-hidden />
-            <span className="hidden sm:inline">Join the Waitlist — Early Gratis (Free) Access</span>
-            <span className="sm:hidden">Join Waitlist</span>
-          </Link>
+          <>
+            <Link
+              to="/auth"
+              className="hidden rounded-md border border-border bg-background px-3 py-1.5 text-[13px] font-medium hover:bg-secondary sm:inline-flex"
+            >
+              Sign in
+            </Link>
+            <Link
+              to="/pricing"
+              hash="founding"
+              onClick={() =>
+                void import("@/lib/usecasex.tracking").then(({ trackCTAEvent }) =>
+                  trackCTAEvent("waitlist_join_clicked", {
+                    target_route: "/pricing#founding",
+                    location: "site_nav",
+                  }),
+                )
+              }
+              data-analytics-id="waitlist-cta-nav"
+              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3.5 py-1.5 text-[13px] font-bold text-primary-foreground shadow-[var(--shadow-gold)] hover:brightness-110"
+            >
+              <Crown className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              <span className="hidden sm:inline">Join the Waitlist — Early Gratis (Free) Access</span>
+              <span className="sm:hidden">Join Waitlist</span>
+            </Link>
+          </>
         )}
       </div>
     </header>

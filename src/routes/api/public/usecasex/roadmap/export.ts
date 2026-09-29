@@ -20,6 +20,7 @@ import {
   roadmapExportFileName,
   toCsvCell,
 } from "@/lib/roadmap-export";
+import { publicCorsHeaders } from "@/lib/security/hardening";
 
 const bodySchema = z.object({
   portfolioId: z.string().uuid(),
@@ -27,12 +28,6 @@ const bodySchema = z.object({
   period: z.string().optional(),
   columns: z.array(z.string()).optional(),
 });
-
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
 
 function serverClient(accessToken: string) {
   const url = process.env["SUPABASE_URL"]!;
@@ -53,8 +48,13 @@ function serverClient(accessToken: string) {
 export const Route = createFileRoute("/api/public/usecasex/roadmap/export")({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
+      OPTIONS: async ({ request }) =>
+        new Response(null, {
+          status: 204,
+          headers: publicCorsHeaders(request, "POST, OPTIONS"),
+        }),
       POST: async ({ request }) => {
+        const CORS = publicCorsHeaders(request, "POST, OPTIONS");
         const authHeader = request.headers.get("authorization") ?? "";
         const token = authHeader.toLowerCase().startsWith("bearer ") ? authHeader.slice(7) : "";
         if (!token) return new Response("Unauthorized", { status: 401, headers: CORS });

@@ -103,6 +103,85 @@ export const generateExecutiveSummarySchema = z.object({
 });
 export type GenerateExecutiveSummaryOutput = z.infer<typeof generateExecutiveSummarySchema>;
 
+export const rewriteTextSchema = z.object({
+  rewritten: shortText,
+  changeSummary: shortText,
+  openQuestions: list,
+});
+export type RewriteTextOutput = z.infer<typeof rewriteTextSchema>;
+
+export const classifyContentSchema = z.object({
+  label: shortText,
+  confidence: z.enum(["low", "medium", "high"]),
+  rationale: shortText,
+  alternativeLabels: list,
+});
+export type ClassifyContentOutput = z.infer<typeof classifyContentSchema>;
+
+export const compareOptionsSchema = z.object({
+  comparisons: z.array(
+    z.object({
+      optionId: shortText,
+      strengths: list,
+      weaknesses: list,
+      notes: shortText,
+    }),
+  ),
+  tradeOffs: list,
+  openQuestions: list,
+});
+export type CompareOptionsOutput = z.infer<typeof compareOptionsSchema>;
+
+export const findGapsSchema = z.object({
+  gaps: z.array(
+    z.object({
+      area: shortText,
+      detail: shortText,
+      severity: z.enum(["low", "medium", "high"]),
+    }),
+  ),
+  suggestedNextSteps: list,
+});
+export type FindGapsOutput = z.infer<typeof findGapsSchema>;
+
+export const generateQuestionsSchema = z.object({
+  questions: z.array(
+    z.object({
+      question: shortText,
+      whyItMatters: shortText,
+      audience: shortText,
+    }),
+  ),
+});
+export type GenerateQuestionsOutput = z.infer<typeof generateQuestionsSchema>;
+
+export const summarizeEvidenceSchema = z.object({
+  summary: shortText,
+  claims: z.array(
+    z.object({
+      claim: shortText,
+      sourceIds: list,
+      confidence: z.enum(["low", "medium", "high"]),
+    }),
+  ),
+  conflicts: list,
+});
+export type SummarizeEvidenceOutput = z.infer<typeof summarizeEvidenceSchema>;
+
+export const draftBriefSchema = z.object({
+  title: shortText,
+  outcomes: shortText,
+  scope: shortText,
+  assumptions: shortText,
+  architecture: shortText,
+  dataNeeds: shortText,
+  humanControls: shortText,
+  measures: shortText,
+  acceptanceCriteria: shortText,
+  gaps: list,
+});
+export type DraftBriefOutput = z.infer<typeof draftBriefSchema>;
+
 export const OUTPUT_SCHEMAS = {
   enrichOpportunity: enrichOpportunitySchema,
   draftUseCase: draftUseCaseSchema,
@@ -111,6 +190,13 @@ export const OUTPUT_SCHEMAS = {
   suggestScoreEvidence: suggestScoreEvidenceSchema,
   findSimilarUseCases: findSimilarUseCasesSchema,
   generateExecutiveSummary: generateExecutiveSummarySchema,
+  rewriteText: rewriteTextSchema,
+  classifyContent: classifyContentSchema,
+  compareOptions: compareOptionsSchema,
+  findGaps: findGapsSchema,
+  generateQuestions: generateQuestionsSchema,
+  summarizeEvidence: summarizeEvidenceSchema,
+  draftBrief: draftBriefSchema,
 } satisfies Record<AiTask, z.ZodTypeAny>;
 
 /* ------------------------------------------------------------ tool schemas */
@@ -263,4 +349,93 @@ export const TOOL_SCHEMAS: Record<AiTask, ReturnType<typeof tool>> = {
       recommendedNextSteps: strArray,
     },
   ),
+  rewriteText: tool("rewrite_text", "Rewrite text for clarity without inventing facts.", {
+    rewritten: { type: "string" },
+    changeSummary: { type: "string" },
+    openQuestions: strArray,
+  }),
+  classifyContent: tool("classify_content", "Classify content into allowed labels.", {
+    label: { type: "string" },
+    confidence: { type: "string", enum: ["low", "medium", "high"] },
+    rationale: { type: "string" },
+    alternativeLabels: strArray,
+  }),
+  compareOptions: tool("compare_options", "Compare supplied options on stated criteria.", {
+    comparisons: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          optionId: { type: "string" },
+          strengths: strArray,
+          weaknesses: strArray,
+          notes: { type: "string" },
+        },
+        required: ["optionId", "strengths", "weaknesses", "notes"],
+        additionalProperties: false,
+      },
+    },
+    tradeOffs: strArray,
+    openQuestions: strArray,
+  }),
+  findGaps: tool("find_gaps", "Identify missing information or controls.", {
+    gaps: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          area: { type: "string" },
+          detail: { type: "string" },
+          severity: { type: "string", enum: ["low", "medium", "high"] },
+        },
+        required: ["area", "detail", "severity"],
+        additionalProperties: false,
+      },
+    },
+    suggestedNextSteps: strArray,
+  }),
+  generateQuestions: tool("generate_questions", "Generate clarifying review questions.", {
+    questions: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          question: { type: "string" },
+          whyItMatters: { type: "string" },
+          audience: { type: "string" },
+        },
+        required: ["question", "whyItMatters", "audience"],
+        additionalProperties: false,
+      },
+    },
+  }),
+  summarizeEvidence: tool("summarize_evidence", "Summarise evidence with citations.", {
+    summary: { type: "string" },
+    claims: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          claim: { type: "string" },
+          sourceIds: strArray,
+          confidence: { type: "string", enum: ["low", "medium", "high"] },
+        },
+        required: ["claim", "sourceIds", "confidence"],
+        additionalProperties: false,
+      },
+    },
+    conflicts: strArray,
+  }),
+  draftBrief: tool("draft_brief", "Draft an implementation brief from confirmed fields.", {
+    title: { type: "string" },
+    outcomes: { type: "string" },
+    scope: { type: "string" },
+    assumptions: { type: "string" },
+    architecture: { type: "string" },
+    dataNeeds: { type: "string" },
+    humanControls: { type: "string" },
+    measures: { type: "string" },
+    acceptanceCriteria: { type: "string" },
+    gaps: strArray,
+  }),
 };

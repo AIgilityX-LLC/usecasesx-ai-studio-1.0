@@ -7,6 +7,10 @@
 
 import type { AiTask } from "./prompts";
 import type { ProviderAlias } from "./models";
+import {
+  AI_CONFIDENCE_CAVEAT,
+  TRAINING_POLICY,
+} from "./feedback";
 
 export type AiErrorKind =
   | "not_configured"
@@ -18,7 +22,8 @@ export type AiErrorKind =
   | "timeout"
   | "invalid_output"
   | "upstream"
-  | "network";
+  | "network"
+  | "circuit_open";
 
 /** User-safe copy for every failure mode. Provider text is never surfaced. */
 export const AI_ERROR_MESSAGES: Record<AiErrorKind, string> = {
@@ -33,6 +38,15 @@ export const AI_ERROR_MESSAGES: Record<AiErrorKind, string> = {
   invalid_output: "AI assistance returned an unusable response. Please try again.",
   upstream: "AI assistance is temporarily unavailable. Please try again later.",
   network: "We could not reach AI assistance. Please check your connection and try again.",
+  circuit_open:
+    "AI assistance is temporarily paused after repeated failures. Continue manually — it will recover shortly.",
+};
+
+/** Citation / grounded source stamped on successful responses (FR-14). */
+export type AiCitation = {
+  id: string;
+  kind: string;
+  title: string;
 };
 
 /**
@@ -66,6 +80,10 @@ export type AiSuccess<T> = {
   data: T;
   provenance: AiProvenance;
   fairUse: AiFairUse | null;
+  /** Grounded sources the model was authorized to see (may be empty). */
+  citations: AiCitation[];
+  confidenceCaveat: string;
+  trainingPolicy: string;
   error: null;
 };
 
@@ -74,9 +92,14 @@ export type AiFailure = {
   data: null;
   provenance: null;
   fairUse: AiFairUse | null;
+  citations: [];
+  confidenceCaveat: string;
+  trainingPolicy: string;
   errorKind: AiErrorKind;
   /** User-safe message. Safe to render directly. */
   error: string;
+  /** When true, the UI should keep the manual path fully usable. */
+  manualFallback: true;
 };
 
 export type AiResult<T> = AiSuccess<T> | AiFailure;
@@ -87,7 +110,11 @@ export function aiFailure(kind: AiErrorKind, fairUse: AiFairUse | null = null): 
     data: null,
     provenance: null,
     fairUse,
+    citations: [],
+    confidenceCaveat: AI_CONFIDENCE_CAVEAT,
+    trainingPolicy: TRAINING_POLICY,
     errorKind: kind,
     error: AI_ERROR_MESSAGES[kind],
+    manualFallback: true,
   };
 }

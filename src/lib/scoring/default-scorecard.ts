@@ -8,6 +8,9 @@
  */
 
 import type { Criterion, ScaleOption, ScorecardDefinition } from "./model";
+import { FIVE_PILLAR_SCORECARD } from "./pillars-v2";
+
+export { FIVE_PILLAR_SCORECARD } from "./pillars-v2";
 
 const SCALE_MAX = 4;
 
@@ -294,4 +297,5 @@ export const DEFAULT_SCORECARD: ScorecardDefinition = {
 /** Every definition shipped in code, keyed by slug. */
 export const BUILT_IN_SCORECARDS: Record<string, ScorecardDefinition> = {
   [DEFAULT_SCORECARD.slug]: DEFAULT_SCORECARD,
+  [FIVE_PILLAR_SCORECARD.slug]: FIVE_PILLAR_SCORECARD,
 };

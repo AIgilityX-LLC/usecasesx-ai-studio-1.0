@@ -25,6 +25,7 @@ export function serverCapabilityFlags(): CapabilityFlags {
     opportunityMap: read("CAPABILITY_OPPORTUNITY_MAP"),
     workshopMode: read("CAPABILITY_WORKSHOP_MODE"),
     stageGates: read("CAPABILITY_STAGE_GATES"),
+    permissionBundles: read("CAPABILITY_PERMISSION_BUNDLES"),
     multiEntity: read("CAPABILITY_MULTI_ENTITY"),
     integrations: read("CAPABILITY_INTEGRATIONS"),
     sso: read("CAPABILITY_SSO"),

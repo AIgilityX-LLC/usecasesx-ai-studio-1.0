@@ -37,6 +37,19 @@ export const AUDIT_EVENTS = {
   aiAssistDenied: "ai.assist.denied",
   // admin
   adminAction: "admin.action",
+  // V2 lifecycle + authz (V2-03)
+  lifecycleTransitioned: "lifecycle.transitioned",
+  permissionGranted: "permission.granted",
+  permissionDenied: "permission.denied",
+  // V2 evidence (V2-05)
+  evidenceAttached: "evidence.attached",
+  evidenceUpdated: "evidence.updated",
+  evidenceRevoked: "evidence.revoked",
+  evidenceAccessed: "evidence.accessed",
+  // V2 decision gates (V2-10)
+  gateSubmitted: "gate.submitted",
+  gateDecided: "gate.decided",
+  gateConditionClosed: "gate.condition_closed",
 } as const;
 
 export type AuditEventName = (typeof AUDIT_EVENTS)[keyof typeof AUDIT_EVENTS];

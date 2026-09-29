@@ -26,6 +26,7 @@ import {
 import { getOpportunityMapFn } from "@/lib/opportunity-map.functions";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { TaxonomySetupChecklist } from "@/components/opportunities/TaxonomySetupChecklist";
+import { EnterpriseIdentityPanel } from "@/components/enterprise/EnterpriseIdentityPanel";
 import type { MapRecord } from "@/lib/opportunity-map";
 
 export const Route = createFileRoute("/_app/account/organization")({
@@ -188,6 +189,8 @@ function OrganizationSetupPage() {
           </p>
         )}
       </header>
+
+      {canManage ? <EnterpriseIdentityPanel /> : null}
 
       <TaxonomySetupChecklist
         counts={{

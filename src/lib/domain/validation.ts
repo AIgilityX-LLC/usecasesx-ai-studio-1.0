@@ -94,6 +94,19 @@ export const portfolioEntryPatchSchema = z
     deliveryOwner: z.string().trim().max(160).nullish(),
     dependsOn: z.array(uuidSchema).max(50).optional(),
     blockedReason: z.string().trim().max(500).nullish(),
+    gateKey: z
+      .enum([
+        "intake",
+        "discovery_complete",
+        "investment_review",
+        "pilot_authorization",
+        "scale_authorization",
+        "retirement_review",
+      ])
+      .nullish(),
+    roadmapStatus: z
+      .enum(["planned", "in_progress", "blocked", "at_risk", "complete", "deferred"])
+      .nullish(),
   })
   .refine((v) => Object.values(v).some((x) => x !== undefined), { message: "Nothing to update" });
 

@@ -66,6 +66,23 @@ export const REVIEW_ROLES = [
   "reviewer",
 ] as const satisfies readonly Database["public"]["Enums"]["app_role"][];
 
+/**
+ * Segregation of duties: the authenticated actor must not decide on their own
+ * record (submission, milestone, gate, etc.). Call before any status update.
+ */
+export const SELF_REVIEW_DENIED =
+  "Segregation of duties: you cannot review or decide on your own submission.";
+
+export function assertNotSelfReview(
+  subjectUserId: string | null | undefined,
+  reviewerId: string,
+  message: string = SELF_REVIEW_DENIED,
+): void {
+  if (subjectUserId && subjectUserId === reviewerId) {
+    throw new Error(message);
+  }
+}
+
 /** Validation contract shared by the submit form and the server function. */
 export const SubmissionInput = z.object({
   title: z.string().trim().min(8, "Give the use case a descriptive title.").max(200),

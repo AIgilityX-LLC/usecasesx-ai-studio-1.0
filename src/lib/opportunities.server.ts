@@ -9,11 +9,16 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   emptyDraft,
+  formatSimilarityReason,
   keywordsOf,
+  similarityScore,
   type JsonValue,
   type OpportunityDraft,
   type OpportunityStatus,
+  type SimilarHit,
 } from "@/lib/opportunities";
+
+export type { SimilarHit };
 
 // The middleware-provided client shape used across the server layer.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,9 +40,9 @@ export type OpportunityRow = OpportunityDraft & {
 
 const SELECT = `id, organization_id, workspace_id, created_by, title, pain_point, process,
   process_id, org_unit_id, business_function, strategic_objective, strategic_theme_id,
-  stakeholders, baseline, desired_outcome, urgency, owner_name, evidence, status, source,
-  source_use_case_id, source_reference, ai_assisted, ai_suggestions, converted_use_case_id,
-  converted_at, created_at, updated_at`;
+  stakeholders, affected_users, baseline, desired_outcome, urgency, owner_name, sponsor_name,
+  geography, constraints_text, evidence, status, source, source_use_case_id, source_reference,
+  ai_assisted, ai_suggestions, converted_use_case_id, converted_at, created_at, updated_at`;
 
 const asStringArray = (v: unknown): string[] =>
   Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
@@ -59,10 +64,14 @@ export function toOpportunity(row: any): OpportunityRow {
     strategicObjective: row.strategic_objective ?? "",
     strategicThemeId: row.strategic_theme_id ?? null,
     stakeholders: asStringArray(row.stakeholders),
+    affectedUsers: row.affected_users ?? "",
     baseline: row.baseline ?? "",
     desiredOutcome: row.desired_outcome ?? "",
     urgency: row.urgency ?? "unknown",
     ownerName: row.owner_name ?? "",
+    sponsorName: row.sponsor_name ?? "",
+    geography: row.geography ?? "",
+    constraints: row.constraints_text ?? "",
     evidence: Array.isArray(row.evidence) ? row.evidence : [],
     status: row.status ?? "signal",
     source: row.source ?? "scratch",
@@ -89,10 +98,14 @@ export function toColumns(draft: OpportunityDraft) {
     strategic_objective: draft.strategicObjective?.trim() || null,
     strategic_theme_id: draft.strategicThemeId ?? null,
     stakeholders: draft.stakeholders ?? [],
+    affected_users: draft.affectedUsers?.trim() || null,
     baseline: draft.baseline?.trim() || null,
     desired_outcome: draft.desiredOutcome?.trim() || null,
     urgency: draft.urgency ?? "unknown",
     owner_name: draft.ownerName?.trim() || null,
+    sponsor_name: draft.sponsorName?.trim() || null,
+    geography: draft.geography?.trim() || null,
+    constraints_text: draft.constraints?.trim() || null,
     evidence: draft.evidence ?? [],
     source: draft.source ?? "scratch",
     source_reference: draft.sourceReference?.trim() || null,
@@ -136,35 +149,65 @@ export async function getOpportunity(supabase: Db, id: string): Promise<Opportun
 }
 
 /**
- * Non-blocking duplicate hint: overlapping keywords across the caller's own
- * opportunities plus published repository entries. Never prevents a save.
+ * Non-blocking duplicate / related-pattern hint: overlapping keywords across
+ * the caller's own opportunities plus published repository entries.
+ * Never prevents a save. Scores and reasons are server-computed (FR-02).
  */
 export async function findSimilar(
   supabase: Db,
   title: string,
   excludeId?: string | null,
+  painPoint?: string | null,
 ): Promise<{
-  opportunities: Array<{ id: string; title: string; status: string }>;
-  repository: Array<{ slug: string; title: string }>;
+  opportunities: SimilarHit[];
+  repository: SimilarHit[];
 }> {
-  const words = keywordsOf(title);
+  const queryText = [title, painPoint?.trim() ?? ""].filter(Boolean).join(" ");
+  const words = keywordsOf(queryText);
   if (words.length === 0) return { opportunities: [], repository: [] };
   const filter = words.map((w) => `title.ilike.%${w}%`).join(",");
 
   const [own, repo] = await Promise.all([
-    supabase.from("opportunities").select("id, title, status").or(filter).limit(5),
-    supabase.from("use_cases").select("slug, title").eq("status", "published").or(filter).limit(4),
+    supabase.from("opportunities").select("id, title, status").or(filter).limit(12),
+    supabase.from("use_cases").select("slug, title").eq("status", "published").or(filter).limit(10),
   ]);
 
-  return {
-    opportunities: (own.data ?? [])
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .filter((r: any) => r.id !== excludeId)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .map((r: any) => ({ id: r.id, title: r.title, status: r.status })),
+  const opportunities: SimilarHit[] = (own.data ?? [])
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    repository: (repo.data ?? []).map((r: any) => ({ slug: r.slug, title: r.title })),
-  };
+    .filter((r: any) => r.id !== excludeId)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .map((r: any) => {
+      const { score, matched } = similarityScore(queryText, r.title ?? "");
+      return {
+        id: r.id as string,
+        title: r.title as string,
+        status: r.status as string,
+        score,
+        reason: formatSimilarityReason(matched),
+        source: "workspace" as const,
+      };
+    })
+    .filter((h) => h.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5);
+
+  const repository: SimilarHit[] = (repo.data ?? [])
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .map((r: any) => {
+      const { score, matched } = similarityScore(queryText, r.title ?? "");
+      return {
+        slug: r.slug as string,
+        title: r.title as string,
+        score,
+        reason: formatSimilarityReason(matched),
+        source: "repository" as const,
+      };
+    })
+    .filter((h) => h.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 4);
+
+  return { opportunities, repository };
 }
 
 /** Board that receives use cases converted from captured opportunities. */

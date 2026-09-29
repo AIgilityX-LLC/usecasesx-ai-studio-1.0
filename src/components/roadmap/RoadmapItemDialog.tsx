@@ -29,11 +29,15 @@ import {
 import {
   DELIVERY_STAGES,
   DELIVERY_STAGE_LABELS,
+  ROADMAP_ITEM_STATUSES,
+  ROADMAP_ITEM_STATUS_LABELS,
   type DeliveryStage,
   type PortfolioEntry,
   type PortfolioRoadmapPatch,
+  type RoadmapItemStatus,
 } from "@/lib/portfolio-model";
 import { describeCycle, findDependencyCycle } from "@/lib/roadmap";
+import { GATE_KEYS, DEFAULT_GATES } from "@/lib/gates/model";
 
 export function RoadmapItemDialog({
   open,
@@ -62,6 +66,8 @@ export function RoadmapItemDialog({
   const [nextAction, setNextAction] = useState("");
   const [blocked, setBlocked] = useState("");
   const [deps, setDeps] = useState<string[]>([]);
+  const [gateKey, setGateKey] = useState<string>("");
+  const [roadmapStatus, setRoadmapStatus] = useState<RoadmapItemStatus>("planned");
 
   useEffect(() => {
     if (!entry) return;
@@ -73,6 +79,8 @@ export function RoadmapItemDialog({
     setNextAction(entry.nextAction ?? "");
     setBlocked(entry.blockedReason ?? "");
     setDeps(entry.dependsOn ?? []);
+    setGateKey(entry.gateKey ?? "");
+    setRoadmapStatus(entry.roadmapStatus ?? "planned");
   }, [entry]);
 
   const cycle = useMemo(() => {
@@ -99,6 +107,8 @@ export function RoadmapItemDialog({
         nextAction: nextAction || null,
         blockedReason: blocked || null,
         dependsOn: deps,
+        gateKey: gateKey || null,
+        roadmapStatus,
       });
       toast.success("Roadmap updated");
       onOpenChange(false);
@@ -173,6 +183,46 @@ export function RoadmapItemDialog({
               placeholder="Accountable person or team"
               onChange={(e) => setOwner(e.target.value)}
             />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="roadmap-status">Roadmap status</Label>
+              <Select
+                value={roadmapStatus}
+                onValueChange={(v) => setRoadmapStatus(v as RoadmapItemStatus)}
+              >
+                <SelectTrigger id="roadmap-status">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ROADMAP_ITEM_STATUSES.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {ROADMAP_ITEM_STATUS_LABELS[s]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="roadmap-gate">Decision gate</Label>
+              <Select
+                value={gateKey || "__none__"}
+                onValueChange={(v) => setGateKey(v === "__none__" ? "" : v)}
+              >
+                <SelectTrigger id="roadmap-gate">
+                  <SelectValue placeholder="None" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">None</SelectItem>
+                  {GATE_KEYS.map((key) => (
+                    <SelectItem key={key} value={key}>
+                      {DEFAULT_GATES.find((g) => g.key === key)?.label ?? key}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="space-y-2">

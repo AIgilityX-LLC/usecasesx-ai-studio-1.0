@@ -18,6 +18,9 @@ export const Route = createFileRoute("/api/public/hooks/evidence-cleanup")({
     handlers: {
       POST: async ({ request }) => {
         if (!isAuthorizedCron(request)) return unauthorized();
+        const { assertOptionalWebhookReplay } = await import("@/lib/cron-auth.server");
+        const replay = assertOptionalWebhookReplay(request);
+        if (replay) return replay;
 
         let parsed: { dryRun?: boolean } = {};
         try {

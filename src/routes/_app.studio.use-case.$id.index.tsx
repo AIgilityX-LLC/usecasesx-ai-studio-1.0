@@ -108,6 +108,22 @@ function UseCaseDetailPage() {
               <Link className={linkClass} to="/studio/use-case/$id/value" params={{ id }}>
                 Value
               </Link>
+              <Link className={linkClass} to="/studio/use-case/$id/evidence" params={{ id }}>
+                Evidence
+              </Link>
+              <Link
+                className={linkClass}
+                to="/studio/use-case/$id/solution-design"
+                params={{ id }}
+              >
+                Solution Design
+              </Link>
+              <Link className={linkClass} to="/studio/use-case/$id/gates" params={{ id }}>
+                Decision Gates
+              </Link>
+              <Link className={linkClass} to="/studio/use-case/$id/brief" params={{ id }}>
+                Implementation brief
+              </Link>
               <Link className={linkClass} to="/studio/use-case/$id/deliverables" params={{ id }}>
                 Deliverables
               </Link>
@@ -118,7 +134,7 @@ function UseCaseDetailPage() {
                 AdvisorX
               </Link>
               <Link className={linkClass} to="/studio/use-case/$id/c3g-governance" params={{ id }}>
-                C3G Governance
+                Governance preview
               </Link>
             </div>
 
@@ -131,6 +147,22 @@ function UseCaseDetailPage() {
                   <Field label="Problem statement" value={uc.problem_statement} />
                   <Field label="Current state" value={uc.current_state} />
                   <Field label="Future state" value={uc.future_state} />
+                  <div className="rounded-md border border-border bg-muted/30 p-3">
+                    <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      Governance readiness
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Informational applicability preview (not legal advice). Capture purpose, role,
+                      geography and risk signals, then hand off to CyberX C3G/SARN with consent.
+                    </p>
+                    <Link
+                      className="mt-2 inline-block text-xs font-medium text-primary hover:underline"
+                      to="/studio/use-case/$id/c3g-governance"
+                      params={{ id }}
+                    >
+                      Open governance preview →
+                    </Link>
+                  </div>
                 </CardContent>
               </Card>
 

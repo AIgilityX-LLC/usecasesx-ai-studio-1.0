@@ -1,12 +1,25 @@
-// Pure, framework-free entitlement helpers shared by client + server.
-// No React / Supabase imports here so this file is safe to import inside
-// server-function modules.
+/**
+ * Pure, framework-free entitlement helpers shared by client + server.
+ *
+ * Edition ranking / unlock / founding expiry are owned by `src/lib/authz/editions.ts`
+ * (V2-03 centralization). This module keeps commercial helpers that the authz
+ * package does not own (email eligibility, module catalogue labels) and re-exports
+ * the shared edition primitives so existing `import { … } from "@/lib/entitlements"`
+ * call sites keep working.
+ */
 
-export const FOUNDING_UNTIL_ISO = "2026-12-31T23:59:59.000Z";
-export const FOUNDING_UNTIL_LABEL = "31 Dec 2026";
+import {
+  DEFAULT_FOUNDING_ACCESS,
+  EDITION_RANK,
+  editionUnlocks,
+  type Edition,
+} from "@/lib/authz/editions";
 
-export type EntTier = "lite" | "pro" | "enterprise";
-export const TIER_RANK: Record<EntTier, number> = { lite: 0, pro: 1, enterprise: 2 };
+export type EntTier = Edition;
+export const TIER_RANK: Record<EntTier, number> = EDITION_RANK;
+
+export const FOUNDING_UNTIL_ISO = DEFAULT_FOUNDING_ACCESS.expiresAt;
+export const FOUNDING_UNTIL_LABEL = DEFAULT_FOUNDING_ACCESS.label;
 
 /** Free / consumer email providers are NOT eligible for founding gratis Pro. */
 const FREE_EMAIL_DOMAINS = new Set([
@@ -75,9 +88,9 @@ export function daysUntil(
   return Math.ceil((exp.getTime() - now.getTime()) / 86_400_000);
 }
 
-/** Can `tier` unlock a feature that requires `required`? */
+/** Can `tier` unlock a feature that requires `required`? Delegates to authz. */
 export function tierUnlocks(tier: EntTier, required: EntTier): boolean {
-  return TIER_RANK[tier] >= TIER_RANK[required];
+  return editionUnlocks(tier, required);
 }
 
 /** Canonical UseCasesX module catalogue with the tier required to unlock each. */

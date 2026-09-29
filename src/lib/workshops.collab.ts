@@ -113,6 +113,11 @@ export function buildWorkshopOutcomeDoc(summary: OutcomeSummary): ExportDoc {
       .join(" · "),
     sections: [
       {
+        heading: "Executive summary",
+        kind: "text",
+        body: summary.executiveSummary || summary.objective || "No summary recorded.",
+      },
+      {
         heading: "Objective",
         kind: "text",
         body: summary.objective || "No objective was recorded for this session.",
@@ -129,6 +134,17 @@ export function buildWorkshopOutcomeDoc(summary: OutcomeSummary): ExportDoc {
           ["Shortlisted", String(summary.counts.shortlisted)],
           ["Converted", String(summary.counts.converted)],
         ],
+      },
+      {
+        heading: "Decision log",
+        kind: "table",
+        columns: ["When", "Action", "Actor", "Detail"],
+        rows: (summary.decisionLog ?? []).map((e) => [
+          new Date(e.at).toLocaleString(),
+          e.action,
+          e.actor,
+          e.detail,
+        ]),
       },
       {
         heading: "Opportunity Map — demand by function",
@@ -159,7 +175,7 @@ export function buildWorkshopOutcomeDoc(summary: OutcomeSummary): ExportDoc {
         rows: summary.roadmap.map((h) => [h.horizon, h.items.join("; ") || "—"]),
       },
       {
-        heading: "Next steps",
+        heading: "Next actions",
         kind: "text",
         body: summary.nextSteps.map((s, i) => `${i + 1}. ${s}`).join("\n"),
       },

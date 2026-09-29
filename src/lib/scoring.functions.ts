@@ -17,6 +17,19 @@ const responsesInput = z.record(z.string().min(1), z.number().int().min(0).max(1
 /** Human-authored justification per criterion. Never influences the maths. */
 const evidenceInput = z.record(z.string().min(1), z.string().trim().max(2000));
 
+const assessmentsInput = z
+  .record(
+    z.string().min(1),
+    z.object({
+      rationale: z.string().trim().max(2000).optional(),
+      confidence: z.enum(["high", "medium", "low"]).optional(),
+      evidence: z.string().trim().max(2000).optional(),
+      assessorId: z.string().uuid().nullable().optional(),
+      assessedAt: z.string().nullable().optional(),
+    }),
+  )
+  .optional();
+
 /** Definition + prior results for one use case. */
 export const getScorecardStateFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -49,6 +62,7 @@ export const recordScoreFn = createServerFn({ method: "POST" })
         id: z.string().uuid(),
         responses: responsesInput,
         evidence: evidenceInput.optional(),
+        assessments: assessmentsInput,
         note: z.string().trim().max(500).optional(),
       })
       .parse(d),
@@ -56,7 +70,9 @@ export const recordScoreFn = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { resolveScorecard, insertResult, useCaseTenancy } = await import("@/lib/scoring.server");
-    const { calculateScore, pruneResponses } = await import("@/lib/scoring/model");
+    const { calculateScore, pruneResponses, pruneAssessments } = await import(
+      "@/lib/scoring/model"
+    );
     const { writeAuditEvent, writeProductEvent } = await import("@/lib/telemetry/recorder.server");
     const { AUDIT_EVENTS, PRODUCT_EVENTS } = await import("@/lib/telemetry/events");
 
@@ -68,13 +84,30 @@ export const recordScoreFn = createServerFn({ method: "POST" })
       (useCase.workspace_id as string | null) ?? null,
     );
     const responses = pruneResponses(scorecard.definition, data.responses);
-    const result = calculateScore(scorecard.definition, responses);
+    const evidence = data.evidence ?? {};
+    const now = new Date().toISOString();
+    const assessments = pruneAssessments(scorecard.definition, {
+      ...(data.assessments ?? {}),
+      ...Object.fromEntries(
+        Object.entries(evidence).map(([criterionId, text]) => [
+          criterionId,
+          {
+            ...(data.assessments?.[criterionId] ?? {}),
+            evidence: text,
+            assessorId: data.assessments?.[criterionId]?.assessorId ?? userId,
+            assessedAt: data.assessments?.[criterionId]?.assessedAt ?? now,
+          },
+        ]),
+      ),
+    });
+    const result = calculateScore(scorecard.definition, responses, { assessments });
 
     const stored = await insertResult(supabase, {
       useCaseId: data.id,
       scorecardId: scorecard.id,
       responses,
-      evidence: data.evidence ?? {},
+      evidence,
+      assessments,
       result,
       note: data.note ?? null,
       createdBy: userId,
@@ -97,6 +130,7 @@ export const recordScoreFn = createServerFn({ method: "POST" })
         composite: result.composite,
         riskAdjusted: result.riskAdjusted,
         recommendation: result.recommendation?.id ?? null,
+        evidenceCompleteness: result.evidenceCompleteness,
       },
     });
     await writeProductEvent(ctx, {
@@ -172,4 +206,54 @@ export const suggestScoreEvidenceFn = createServerFn({ method: "POST" })
         criteria,
       },
     );
+  });
+
+/** Clone the active scorecard into a workspace draft (admin). */
+export const cloneScorecardFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        useCaseId: z.string().uuid(),
+        name: z.string().trim().max(200).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { resolveScorecard, useCaseTenancy, cloneScorecardToWorkspace } =
+      await import("@/lib/scoring.server");
+    const useCase = await useCaseTenancy(context.supabase, data.useCaseId);
+    if (!useCase?.workspace_id) throw new Error("Use case workspace is required to clone.");
+    const scorecard = await resolveScorecard(
+      context.supabase,
+      useCase.workspace_id as string,
+    );
+    return cloneScorecardToWorkspace(context.supabase, {
+      sourceScorecardId: scorecard.id,
+      workspaceId: useCase.workspace_id as string,
+      organizationId: (useCase.organization_id as string | null) ?? null,
+      userId: context.userId,
+      name: data.name,
+    });
+  });
+
+/** Publish a workspace draft scorecard (immutable thereafter). */
+export const publishScorecardFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        scorecardId: z.string().uuid(),
+        workspaceId: z.string().uuid(),
+        makeDefault: z.boolean().optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { publishScorecard } = await import("@/lib/scoring.server");
+    return publishScorecard(context.supabase, {
+      scorecardId: data.scorecardId,
+      workspaceId: data.workspaceId,
+      makeDefault: data.makeDefault ?? true,
+    });
   });

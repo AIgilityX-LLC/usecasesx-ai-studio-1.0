@@ -1,31 +1,39 @@
 import { BadgeCheck, Users, Bot, Building2 } from "lucide-react";
+import { EvidenceClassBadge } from "@/components/usecasex/EvidenceClassBadge";
+import {
+  EVIDENCE_CLASS_DISCLAIMER,
+  type EvidenceClass,
+} from "@/lib/content-governance/model";
 
 export type LineageKind = "curated" | "community" | "workspace" | "ai_generated";
 
-/** Quality gate recorded on the global record when it was last reviewed. */
 const QUALITY_LABEL: Record<string, string> = {
   quality_passed: "Quality checked",
+  reviewed: "Reviewed",
+  verified: "Verified",
   needs_review: "Awaiting review",
   unverified: "Not yet quality checked",
   rejected: "Rejected in review",
 };
 
 interface SourceLineageProps {
-  /** `submitted_by` on the global record: null → curated by the AIgilityX team. */
   submittedBy?: string | null;
   organization?: string | null;
   region?: string | null;
   publishedAt?: string | null;
   updatedAt?: string | null;
-  /** Reference links attached to the record. */
   links?: { id?: string; label?: string | null; url: string; kind?: string | null }[];
-  /** Provenance label stored on the record (e.g. `aigilityx_editorial`). */
   provenance?: string | null;
-  /** Plain-language statement of how the entry was produced and what is not claimed. */
   provenanceNote?: string | null;
-  /** Editorial quality gate: `quality_passed`, `needs_review`, `unverified`, `rejected`. */
   qualityStatus?: string | null;
   qualityCheckedAt?: string | null;
+  evidenceClass?: string | null;
+  licenseUsageNote?: string | null;
+  contentOwnerName?: string | null;
+  contentReviewerName?: string | null;
+  lastReviewedAt?: string | null;
+  provenanceUrl?: string | null;
+  supersededBySlug?: string | null;
 }
 
 const LINEAGE: Record<
@@ -67,7 +75,7 @@ function formatDate(value?: string | null) {
 /**
  * Source & provenance panel — makes the origin of every repository entry
  * explicit so readers know what is curated global content versus their own
- * private material.
+ * private material. V2-19 distinguishes examples from verified case studies.
  */
 export function SourceLineage({
   submittedBy,
@@ -80,6 +88,13 @@ export function SourceLineage({
   provenanceNote,
   qualityStatus,
   qualityCheckedAt,
+  evidenceClass,
+  licenseUsageNote,
+  contentOwnerName,
+  contentReviewerName,
+  lastReviewedAt,
+  provenanceUrl,
+  supersededBySlug,
 }: SourceLineageProps) {
   const kind: LineageKind =
     provenance === "workspace_authored"
@@ -93,13 +108,18 @@ export function SourceLineage({
   const Icon = meta.icon;
   const published = formatDate(publishedAt);
   const updated = formatDate(updatedAt);
+  const reviewed = formatDate(lastReviewedAt) ?? formatDate(qualityCheckedAt);
   const externalLinks = links.filter((l) => !!l.url);
+  const evidenceKey = (evidenceClass ?? "example") as EvidenceClass;
 
   const facts: { label: string; value: string }[] = [];
+  if (contentOwnerName) facts.push({ label: "Content owner", value: contentOwnerName });
+  if (contentReviewerName) facts.push({ label: "Reviewer", value: contentReviewerName });
   if (organization) facts.push({ label: "Reference organization", value: organization });
   if (region) facts.push({ label: "Region", value: region });
   if (published) facts.push({ label: "Published", value: published });
-  if (updated) facts.push({ label: "Last reviewed", value: updated });
+  if (reviewed) facts.push({ label: "Last reviewed", value: reviewed });
+  else if (updated) facts.push({ label: "Last updated", value: updated });
   if (qualityStatus)
     facts.push({
       label: "Quality status",
@@ -107,6 +127,8 @@ export function SourceLineage({
         formatDate(qualityCheckedAt) ? ` · ${formatDate(qualityCheckedAt)}` : ""
       }`,
     });
+  if (licenseUsageNote) facts.push({ label: "License / usage", value: licenseUsageNote });
+  if (supersededBySlug) facts.push({ label: "Superseded by", value: supersededBySlug });
 
   return (
     <section aria-labelledby="source-lineage-heading">
@@ -117,6 +139,12 @@ export function SourceLineage({
         Where this entry comes from
       </h2>
       <div className="mt-4 rounded-2xl border border-border bg-card/60 p-5">
+        <div className="mb-3">
+          <EvidenceClassBadge evidenceClass={evidenceClass} />
+          <p className="mt-2 text-sm text-muted-foreground">
+            {EVIDENCE_CLASS_DISCLAIMER[evidenceKey]}
+          </p>
+        </div>
         <div className="flex items-start gap-3">
           <Icon className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
           <div className="min-w-0">
@@ -125,6 +153,18 @@ export function SourceLineage({
             {provenanceNote && (
               <p className="mt-2 text-sm text-muted-foreground">{provenanceNote}</p>
             )}
+            {provenanceUrl ? (
+              <p className="mt-2 text-sm">
+                <a
+                  href={provenanceUrl}
+                  className="text-primary underline underline-offset-4 hover:opacity-80"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Provenance reference
+                </a>
+              </p>
+            ) : null}
           </div>
         </div>
 

@@ -21,6 +21,9 @@ export const Route = createFileRoute("/api/public/hooks/launch-checks")({
     handlers: {
       POST: async ({ request }) => {
         if (!(await isAuthorizedCronHook(request, "launch-checks"))) return unauthorized();
+        const { assertOptionalWebhookReplay } = await import("@/lib/cron-auth.server");
+        const replay = assertOptionalWebhookReplay(request);
+        if (replay) return replay;
 
         const url = process.env["SUPABASE_URL"];
         const key = process.env["SUPABASE_PUBLISHABLE_KEY"];

@@ -14,6 +14,7 @@ export const PRIMARY_NAV_TARGETS = [
   "/resources",
   "/pricing",
   "/auth",
+  "/sso",
 ] as const;
 
 /**
@@ -38,6 +39,7 @@ export const SIDEBAR_NAV_TARGETS = [
   "/advisorx",
   "/cyberx/c3g/intake",
   "/handoffs",
+  "/reviews",
 
   "/reports",
   "/administration",

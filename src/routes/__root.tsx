@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import { Toaster } from "@/components/ui/sonner";
 import { ConsentBanner } from "@/components/legal/ConsentBanner";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { captureAttribution } from "@/lib/analytics/attribution";
 import { ensureAnalyticsSession } from "@/lib/analytics/session";
 import appCss from "../styles.css?url";
@@ -158,10 +159,17 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
-      <ConsentBanner />
-      <Toaster />
+      <LocaleProvider>
+        <a href="#main-content" className="skip-to-content">
+          Skip to content
+        </a>
+        <div id="main-content">
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+        </div>
+        <ConsentBanner />
+        <Toaster />
+      </LocaleProvider>
     </QueryClientProvider>
   );
 }

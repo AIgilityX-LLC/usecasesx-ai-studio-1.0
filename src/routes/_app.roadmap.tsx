@@ -162,16 +162,17 @@ function RoadmapSurface() {
       toast.error("Nothing to export in the current view");
       return;
     }
-    downloadRoadmap(
+    void downloadRoadmap(
       items,
       format,
       {
         portfolioName: active?.name,
+        tenantName: active?.name ? `Portfolio: ${active.name}` : undefined,
         period: period === ALL_PERIODS ? undefined : scopeLabel,
+        confidentiality: "Internal",
       },
       preferences.columns ?? undefined,
-    );
-    toast.success(`Exported ${items.length} roadmap items as ${format.toUpperCase()}`);
+    ).then(() => toast.success(`Exported ${items.length} roadmap items as ${format.toUpperCase()}`));
   };
 
   /** Streamed server-side export — reliable for large filtered sets. */
@@ -308,6 +309,12 @@ function RoadmapSurface() {
                 </DropdownMenuLabel>
                 <DropdownMenuItem onSelect={() => exportRoadmap("csv")}>
                   Download CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => exportRoadmap("xlsx")}>
+                  Download Excel / XLSX
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => exportRoadmap("pdf")}>
+                  Download accessible PDF
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => exportRoadmap("json")}>
                   Download JSON

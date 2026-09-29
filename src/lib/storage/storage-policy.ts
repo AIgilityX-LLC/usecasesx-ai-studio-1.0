@@ -7,7 +7,13 @@
  * issuer (`storage-access.server.ts`) is the enforcement point.
  */
 
-export const STORAGE_BUCKETS = ["benefit-evidence", "avatars", "canvas-documents"] as const;
+export const STORAGE_BUCKETS = [
+  "benefit-evidence",
+  "avatars",
+  "canvas-documents",
+  "evidence-items",
+  "studio-canvas",
+] as const;
 export type StorageBucket = (typeof STORAGE_BUCKETS)[number];
 
 export type BucketPolicy = {
@@ -25,21 +31,36 @@ export type BucketPolicy = {
   signedUrlTtlSeconds: number;
 };
 
+const DOCUMENT_MIMES = [
+  "application/pdf",
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "text/csv",
+  "text/plain",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+] as const;
+
+const DOCUMENT_EXTS = [
+  "pdf",
+  "png",
+  "jpg",
+  "jpeg",
+  "webp",
+  "csv",
+  "txt",
+  "xlsx",
+  "docx",
+  "pptx",
+] as const;
+
 export const BUCKET_POLICIES: Record<StorageBucket, BucketPolicy> = {
   "benefit-evidence": {
     maxBytes: 10 * 1024 * 1024,
-    mimeTypes: [
-      "application/pdf",
-      "image/png",
-      "image/jpeg",
-      "image/webp",
-      "text/csv",
-      "text/plain",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    ],
-    extensions: ["pdf", "png", "jpg", "jpeg", "webp", "csv", "txt", "xlsx", "docx", "pptx"],
+    mimeTypes: DOCUMENT_MIMES,
+    extensions: DOCUMENT_EXTS,
     signedUrlTtlSeconds: 60,
   },
   avatars: {
@@ -63,6 +84,18 @@ export const BUCKET_POLICIES: Record<StorageBucket, BucketPolicy> = {
       "application/vnd.openxmlformats-officedocument.presentationml.presentation",
     ],
     extensions: ["pdf", "png", "jpg", "jpeg", "csv", "txt", "xlsx", "docx", "pptx"],
+    signedUrlTtlSeconds: 90,
+  },
+  "evidence-items": {
+    maxBytes: 15 * 1024 * 1024,
+    mimeTypes: DOCUMENT_MIMES,
+    extensions: DOCUMENT_EXTS,
+    signedUrlTtlSeconds: 60,
+  },
+  "studio-canvas": {
+    maxBytes: 25 * 1024 * 1024,
+    mimeTypes: DOCUMENT_MIMES,
+    extensions: DOCUMENT_EXTS,
     signedUrlTtlSeconds: 90,
   },
 };
@@ -188,4 +221,43 @@ export function parseCanvasDocumentPath(
   const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuid.test(workshopId) || !/^[a-z_]{3,40}$/.test(section) || file.length === 0) return null;
   return { workshopId, section, file };
+}
+
+/**
+ * Evidence-items keys: `{workspaceId}/{subjectType}/{subjectId}/{file}`.
+ */
+export function parseEvidenceItemsPath(path: string): {
+  workspaceId: string;
+  subjectType: string;
+  subjectId: string;
+  file: string;
+} | null {
+  if (path.includes("..") || path.startsWith("/")) return null;
+  const parts = path.split("/");
+  if (parts.length !== 4) return null;
+  const [workspaceId, subjectType, subjectId, file] = parts as [
+    string,
+    string,
+    string,
+    string,
+  ];
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (
+    !uuid.test(workspaceId) ||
+    !/^[a-z_]{3,40}$/.test(subjectType) ||
+    !uuid.test(subjectId) ||
+    file.length === 0
+  ) {
+    return null;
+  }
+  return { workspaceId, subjectType, subjectId, file };
+}
+
+export function evidenceItemsObjectPath(
+  workspaceId: string,
+  subjectType: string,
+  subjectId: string,
+  fileName: string,
+): string {
+  return `${workspaceId}/${subjectType}/${subjectId}/${safeObjectName(fileName)}`;
 }

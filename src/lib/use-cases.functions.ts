@@ -43,6 +43,14 @@ const ListInput = z.object({
   page: z.number().int().min(1).max(500).optional().default(1),
 });
 
+/**
+ * Public (anon) catalogue columns only.
+ * Anon has a *column-level* GRANT on `use_cases` (see
+ * `20260907160000_anon_read_use_cases.sql` +
+ * `20260929120000_v2_19_anon_use_cases_column_grants.sql`). Selecting any
+ * ungranted column returns Postgres 42501 "permission denied for table
+ * use_cases" and breaks `/repository`. Keep this list in sync with that GRANT.
+ */
 const SELECT_SCALARS = `id, slug, title, summary, organization, organization_type, region,
   business_problem, ai_solution_concept, solution, problem, outcomes,
   maturity, maturity_level, maturity_score, impact_score, value_potential, 
@@ -173,7 +181,9 @@ export const listUseCases = createServerFn({ method: "GET" })
     if (data.securityClassification.length)
       query = query.in("security_classification", data.securityClassification);
     if (data.provenance.length) query = query.in("provenance", data.provenance);
-    if (data.qualityStatus.length) query = query.in("quality_status", data.qualityStatus);
+    // quality_status is not on the anon column-level GRANT until
+    // 20260929120000_v2_19_anon_use_cases_column_grants.sql is applied.
+    // Filtering on it would 42501 the whole catalogue query.
     if (data.sort === "impact")
       query = query.order("impact_score", { ascending: false, nullsFirst: false });
     else if (data.sort === "maturity")

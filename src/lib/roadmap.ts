@@ -221,6 +221,8 @@ export function toRoadmapRows(items: RoadmapItem[]) {
     next_action: item.entry.nextAction ?? "",
     decision: item.entry.decision,
     funding_state: item.entry.fundingState,
+    roadmap_status: item.entry.roadmapStatus ?? "planned",
+    gate: item.entry.gateKey ?? "",
     blocked_reason: item.entry.blockedReason ?? "",
     depends_on: item.dependencies.map((d) => d.title).join("; "),
     flags: item.flags.map((f) => ROADMAP_FLAG_LABELS[f]).join("; "),

@@ -39,6 +39,7 @@ export const CLIENT_CAPABILITY_FLAGS: CapabilityFlags = mergeCapabilityFlags({
   opportunityMap: optional(import.meta.env.VITE_CAPABILITY_OPPORTUNITY_MAP),
   workshopMode: optional(import.meta.env.VITE_CAPABILITY_WORKSHOP_MODE),
   stageGates: optional(import.meta.env.VITE_CAPABILITY_STAGE_GATES),
+  permissionBundles: optional(import.meta.env.VITE_CAPABILITY_PERMISSION_BUNDLES),
   multiEntity: optional(import.meta.env.VITE_CAPABILITY_MULTI_ENTITY),
   integrations: optional(import.meta.env.VITE_CAPABILITY_INTEGRATIONS),
   sso: optional(import.meta.env.VITE_CAPABILITY_SSO),

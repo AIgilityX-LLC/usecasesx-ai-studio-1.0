@@ -108,8 +108,9 @@ check(
 
 // ── 4. Feature-flagged Enterprise capabilities are honest ─────────────────
 const flaggedOff: EntitlementKey[] = [
-  "workshop.facilitate",
   "stageGates.manage",
+  "usecase.review",
+  "usecase.decide",
   "multiEntity.manage",
   "integrations.manage",
   "sso.configure",

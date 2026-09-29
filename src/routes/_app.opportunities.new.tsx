@@ -49,7 +49,7 @@ function NewOpportunityPage() {
       <PageHeader
         eyebrow="Capture"
         title="Capture an opportunity"
-        description="Start with the problem. Only a short name is required — everything else can be added as you learn more."
+        description="Start with the problem. Use quick capture for the essentials, or guided intake for workflow, users, sponsor, geography and constraints."
       />
       <OpportunityForm
         initial={initial}

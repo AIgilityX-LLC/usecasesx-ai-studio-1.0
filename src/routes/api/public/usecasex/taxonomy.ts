@@ -1,18 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MOCK_TAX, MOCK_USE_CASES } from "@/lib/usecasex.mock";
 import { publicDataClient } from "@/lib/supabase-public.server";
-
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-};
+import { publicCorsHeaders } from "@/lib/security/hardening";
 
 export const Route = createFileRoute("/api/public/usecasex/taxonomy")({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: CORS }),
-      GET: async () => {
+      OPTIONS: async ({ request }) =>
+        new Response(null, { status: 204, headers: publicCorsHeaders(request, "GET, OPTIONS") }),
+      GET: async ({ request }) => {
+        const CORS = publicCorsHeaders(request, "GET, OPTIONS");
         const counts = {
           total: MOCK_USE_CASES.length,
           bySector: MOCK_USE_CASES.reduce<Record<string, number>>((a, c) => {

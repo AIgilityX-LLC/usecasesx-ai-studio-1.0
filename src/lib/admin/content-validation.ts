@@ -5,7 +5,7 @@
  * enforce exactly the same rules, and both can be unit-tested.
  */
 
-export type LifecycleTarget = "draft" | "review" | "published";
+export type LifecycleTarget = "draft" | "review" | "approved" | "published" | "deprecated";
 
 export interface ValidationIssue {
   field: string;
@@ -28,6 +28,12 @@ export interface UseCaseDraftInput {
   sourceStatus?: string | null;
   qualityStatus?: string | null;
   provenance?: string | null;
+  /** V2-19 */
+  evidenceClass?: string | null;
+  licenseUsageNote?: string | null;
+  contentOwnerName?: string | null;
+  lastReviewedAt?: string | null;
+  provenanceUrl?: string | null;
 }
 
 export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -97,6 +103,25 @@ export function validateUseCaseDraft(
       err("provenance", "Provenance (where this content came from) is required before publishing.");
     if (input.qualityStatus === "unverified")
       err("qualityStatus", "Quality status must be reviewed or verified before publishing.");
+    if (blank(input.licenseUsageNote))
+      err("licenseUsageNote", "License / usage note is required before publishing.");
+    if (blank(input.contentOwnerName))
+      err("contentOwnerName", "Content owner is required before publishing.");
+    if (blank(input.lastReviewedAt))
+      err("lastReviewedAt", "Last-reviewed date is required before publishing.");
+    if (input.evidenceClass === "verified_case_study" && blank(input.provenanceUrl)) {
+      err("provenanceUrl", "Verified case studies require a provenance URL.");
+    }
+  }
+
+  if (
+    input.evidenceClass &&
+    !["example", "verified_case_study", "pattern_template"].includes(input.evidenceClass)
+  ) {
+    err(
+      "evidenceClass",
+      "Evidence class must be example, verified_case_study, or pattern_template.",
+    );
   }
 
   if (input.sourceStatus && !SOURCE_STATUSES.includes(input.sourceStatus as never))

@@ -19,6 +19,7 @@ import type { z } from "zod";
 import { evaluate } from "@/lib/authz/permission-service";
 import { resolveSubject } from "@/lib/authz.server";
 import { callGateway } from "./gateway.server";
+import { sharedGatewayCircuit } from "./circuit-breaker";
 import {
   BURST_WINDOW_MS,
   burstLimitsForEdition,
@@ -40,8 +41,16 @@ import type {
   SuggestScoreEvidenceOutput,
   FindSimilarUseCasesOutput,
   GenerateExecutiveSummaryOutput,
+  RewriteTextOutput,
+  ClassifyContentOutput,
+  CompareOptionsOutput,
+  FindGapsOutput,
+  GenerateQuestionsOutput,
+  SummarizeEvidenceOutput,
+  DraftBriefOutput,
 } from "./schemas";
 import { aiFailure, type AiFairUse, type AiResult } from "./types";
+import { AI_CONFIDENCE_CAVEAT, TRAINING_POLICY } from "./feedback";
 import { writeAuditEvent } from "@/lib/telemetry/recorder.server";
 import { AUDIT_EVENTS } from "@/lib/telemetry/events";
 
@@ -53,6 +62,10 @@ export type AiCallContext = {
   providerAlias?: ProviderAlias | null;
   /** Configured research engine slug. Overrides the alias when resolvable. */
   engineSlug?: string | null;
+  /** Authorized grounded sources (from retrieveAuthorizedContext). */
+  citations?: Array<{ id: string; kind: string; title: string }>;
+  /** Extra prompt block from authorized retrieval — never secrets. */
+  groundedPromptBlock?: string | null;
 };
 
 const WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -147,6 +160,36 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
     return aiFailure("forbidden");
   }
 
+  // 1a. Tenant AI-provider route policy (V2-18 / FR-18).
+  if (subject.organizationId) {
+    try {
+      const { assertAiRouteAllowed } = await import("@/lib/enterprise/tenant-policy");
+      const { data: orgRow } = await ctx.supabase
+        .from("organizations")
+        .select("allowed_ai_provider_routes")
+        .eq("id", subject.organizationId)
+        .maybeSingle();
+      const routes = (orgRow as { allowed_ai_provider_routes?: string[] } | null)
+        ?.allowed_ai_provider_routes;
+      const gate = assertAiRouteAllowed(routes, alias);
+      if (!gate.allowed) {
+        await writeAuditEvent(
+          { supabase: ctx.supabase, userId: ctx.userId, tenant: subject },
+          {
+            event: AUDIT_EVENTS.aiAssistDenied,
+            entity: { type: ctx.entity?.type ?? "ai_task", id: ctx.entity?.id ?? null },
+            next: { task, reason: gate.reason, route: gate.route },
+            severity: "notice",
+            source: "ai",
+          },
+        );
+        return aiFailure("forbidden");
+      }
+    } catch (error) {
+      console.error("[ai] tenant route policy check failed", error);
+    }
+  }
+
   // 1b. Research engine — admin-configured catalog wins over the alias.
   if (ctx.engineSlug) {
     try {
@@ -226,12 +269,21 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
     }
   }
 
+  // 2b. Circuit breaker — pause after repeated upstream failures.
+  const circuit = sharedGatewayCircuit();
+  if (!circuit.allow()) {
+    return aiFailure("circuit_open", fairUse);
+  }
+
   // 3. Provider call.
   const startedAt = Date.now();
+  const grounded = ctx.groundedPromptBlock?.trim()
+    ? `\n\n${ctx.groundedPromptBlock.trim()}`
+    : "";
   const response = await callGateway({
     model,
     system: `${prompt.system}\n\n${FENCE_NOTICE}`,
-    user: fenceUntrusted(userPrompt),
+    user: `${fenceUntrusted(userPrompt)}${grounded}`,
     tool: TOOL_SCHEMAS[task],
     toolName: (TOOL_SCHEMAS[task] as any).function.name,
     timeoutMs: prompt.timeoutMs,
@@ -242,6 +294,14 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
   const durationMs = Date.now() - startedAt;
 
   if (!response.ok) {
+    if (
+      response.kind === "upstream" ||
+      response.kind === "network" ||
+      response.kind === "timeout" ||
+      response.kind === "rate_limited"
+    ) {
+      circuit.recordFailure();
+    }
     await recordUsage(ctx, subject, {
       task,
       model,
@@ -253,6 +313,8 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
     });
     return aiFailure(response.kind, fairUse);
   }
+
+  circuit.recordSuccess();
 
   // 4. Validate before anything is returned or written.
   const parsed = schema.safeParse(response.args);
@@ -286,6 +348,7 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
     {
       event: AUDIT_EVENTS.aiAssistUsed,
       entity: { type: ctx.entity?.type ?? "ai_task", id: ctx.entity?.id ?? null },
+      // Redacted: task/model/version/latency only — never prompt or output bodies.
       next: { task, model, prompt_version: prompt.version, duration_ms: durationMs },
       source: "ai",
     },
@@ -304,6 +367,13 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
       aiGenerated: true,
     },
     fairUse: fairUse ? { ...fairUse, used: fairUse.used + 1 } : null,
+    citations: (ctx.citations ?? []).map((c) => ({
+      id: c.id,
+      kind: c.kind,
+      title: c.title,
+    })),
+    confidenceCaveat: AI_CONFIDENCE_CAVEAT,
+    trainingPolicy: TRAINING_POLICY,
     error: null,
   };
 }
@@ -467,6 +537,96 @@ export const AIService = {
         input.objective && `Stated objective: ${input.objective}`,
         `Use cases in the portfolio (${input.useCases.length} total):\n${items}`,
       ]),
+    );
+  },
+
+  rewriteText(
+    ctx: AiCallContext,
+    input: { text: string; intent?: string },
+  ): Promise<AiResult<RewriteTextOutput>> {
+    return run(
+      "rewriteText",
+      ctx,
+      lines([
+        input.intent && `Rewrite intent: ${input.intent}`,
+        `Text to rewrite:\n${input.text}`,
+      ]),
+    );
+  },
+
+  classifyContent(
+    ctx: AiCallContext,
+    input: { text: string; allowedLabels: string[] },
+  ): Promise<AiResult<ClassifyContentOutput>> {
+    return run(
+      "classifyContent",
+      ctx,
+      lines([
+        `Allowed labels: ${input.allowedLabels.join(" | ")}`,
+        `Content:\n${input.text}`,
+      ]),
+    );
+  },
+
+  compareOptions(
+    ctx: AiCallContext,
+    input: {
+      criteria: string[];
+      options: Array<{ id: string; title: string; facts: string }>;
+    },
+  ): Promise<AiResult<CompareOptionsOutput>> {
+    const opts = input.options
+      .slice(0, 8)
+      .map((o) => `- ${o.id} :: ${o.title}\n  Facts: ${o.facts}`)
+      .join("\n");
+    return run(
+      "compareOptions",
+      ctx,
+      lines([`Criteria: ${input.criteria.join("; ")}`, `Options:\n${opts}`]),
+    );
+  },
+
+  findGaps(
+    ctx: AiCallContext,
+    input: { title: string; record: string },
+  ): Promise<AiResult<FindGapsOutput>> {
+    return run(
+      "findGaps",
+      ctx,
+      lines([`Record title: ${input.title}`, `Record content:\n${input.record}`]),
+    );
+  },
+
+  generateQuestions(
+    ctx: AiCallContext,
+    input: { topic: string; context?: string },
+  ): Promise<AiResult<GenerateQuestionsOutput>> {
+    return run(
+      "generateQuestions",
+      ctx,
+      lines([`Topic: ${input.topic}`, input.context && `Context:\n${input.context}`]),
+    );
+  },
+
+  summarizeEvidence(
+    ctx: AiCallContext,
+    input: { items: Array<{ id: string; title: string; excerpt: string }> },
+  ): Promise<AiResult<SummarizeEvidenceOutput>> {
+    const block = input.items
+      .slice(0, 40)
+      .map((i) => `- [${i.id}] ${i.title}: ${i.excerpt}`)
+      .join("\n");
+    return run("summarizeEvidence", ctx, lines([`Evidence items:\n${block}`]));
+  },
+
+  draftBrief(
+    ctx: AiCallContext,
+    input: { title: string; confirmedFields: string },
+  ): Promise<AiResult<DraftBriefOutput>> {
+    return run(
+      "draftBrief",
+      ctx,
+      lines([`Brief title: ${input.title}`, `Confirmed fields:\n${input.confirmedFields}`]),
     );
   },
 };

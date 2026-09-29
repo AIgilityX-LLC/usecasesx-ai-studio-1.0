@@ -1,7 +1,17 @@
 # AI Use Case Seed Pipeline
 
 Resumable, idempotent seed for the Repository (`use_cases` + taxonomy junctions).
-180 AI-generated sample use cases (10 per industry × 18 industries), published.
+
+## V2-19 honesty rules (mandatory)
+
+1. **Seed only reviewed, attributable patterns** — prefer `evidence_class = pattern_template` or `verified_case_study` with a real `provenance_url`.
+2. **Distinguish examples from verified case studies** — never label illustrative content as verified.
+3. **Never invent outcomes, clients or ROI** — no fabricated percentages, dollar figures, or named customers.
+4. Pattern KPI fields store **metric categories only**, not measured results.
+
+Pattern templates (30 reviewed shapes): see
+`supabase/migrations/20260923360100_v2_19_pattern_template_seed.sql` and
+`src/lib/content-governance/templates.ts`.
 
 ## Files
 
@@ -24,5 +34,6 @@ psql -v ON_ERROR_STOP=1 -f batch_N.sql
 3. **Rating validity** — value/complexity/risk ∈ {Low,Medium,High,Critical}; time_to_value ∈ {Short,Medium,Long}.
 4. **Minimum required fields** — title, summary, problem, solution, business_value, data_required non-empty; ≥2 KPIs.
 5. **Minimum coverage** — ≥10 published use cases per industry.
+6. **V2-19** — published rows must carry owner, last-reviewed date, license note; verified case studies need provenance URL; reject invented ROI/client claims.
 
-Post-insert verification (run against DB): 180 published, 10/industry, zero orphan links.
+Post-insert verification (run against DB): published counts per industry, zero orphan links, pattern_template seed = 30.

@@ -202,6 +202,8 @@ export function mapPortfolioRow(p: any, slugToId?: Record<string, string>): Port
       deliveryOwner: item.delivery_owner ?? undefined,
       dependsOn: (item.depends_on ?? []) as string[],
       blockedReason: item.blocked_reason ?? undefined,
+      gateKey: item.gate_key ?? undefined,
+      roadmapStatus: (item.roadmap_status ?? "planned") as PortfolioEntry["roadmapStatus"],
       notes: item.notes ?? undefined,
       reviewNotes: item.review_notes ?? undefined,
       lastReviewedAt: item.last_reviewed_at ?? undefined,

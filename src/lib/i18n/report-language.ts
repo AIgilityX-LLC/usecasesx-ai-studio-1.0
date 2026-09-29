@@ -11,7 +11,7 @@
 import type { CanvasConfidence, CanvasSection } from "@/lib/workshops.public-value";
 import { CANVAS_SECTIONS } from "@/lib/workshops.public-value";
 
-export const REPORT_LANGUAGES = ["en", "fr", "es", "de"] as const;
+export const REPORT_LANGUAGES = ["en", "fr", "es", "de", "ar"] as const;
 export type ReportLanguage = (typeof REPORT_LANGUAGES)[number];
 
 export const REPORT_LANGUAGE_LABEL: Record<ReportLanguage, string> = {
@@ -19,7 +19,13 @@ export const REPORT_LANGUAGE_LABEL: Record<ReportLanguage, string> = {
   fr: "Français",
   es: "Español",
   de: "Deutsch",
+  ar: "العربية",
 };
+
+/** Document direction for report chrome (Arabic is RTL). */
+export function reportLanguageDirection(language: ReportLanguage): "ltr" | "rtl" {
+  return language === "ar" ? "rtl" : "ltr";
+}
 
 export function isReportLanguage(value: string): value is ReportLanguage {
   return (REPORT_LANGUAGES as readonly string[]).includes(value);
@@ -238,7 +244,53 @@ const DE: ReportStrings = {
   documentColumns: ["Abschnitt", "Datei", "Typ", "Größe", "Angehängt am"],
 };
 
-const STRINGS: Record<ReportLanguage, ReportStrings> = { en: EN, fr: FR, es: ES, de: DE };
+const AR: ReportStrings = {
+  canvasTitle: "لوحة القيمة العامة السيادية",
+  organisation: "المؤسسة",
+  notRecorded: "غير مسجّل",
+  generated: "تم الإنشاء",
+  sectionsAnswered: "أقسام مكتملة",
+  language: "اللغة",
+  freeTextNotice:
+    "تُترجم عناوين التقرير فقط؛ تُعاد الإجابات كما سُجّلت دون ترجمة آلية.",
+  version: "الإصدار",
+  canvasColumns: ["القسم", "الغرض", "الإجابة", "الأدلة"],
+  timelineTitle: "الجدول الزمني لأدلة التجربة",
+  cohort: "المجموعة",
+  eventsRecorded: "أحداث مسجّلة",
+  firstEvent: "أول حدث",
+  latestEvent: "آخر حدث",
+  noneRecorded: "لا شيء مسجّل",
+  trail: "مسار التدقيق",
+  emptyTimeline:
+    "لم تُسجَّل أحداث للتجربة بعد. عند إصدار المقاعد يبدأ المسار بالامتلاء.",
+  timelineColumns: ["الوقت", "الفئة", "الحدث", "المشارك", "التفصيل", "الفاعل"],
+  sections: {
+    mandate: "تفويض الخدمة والغرض العام المشروع",
+    beneficiaries: "المستفيدون والمجموعات المتأثرة واحتياجات الإدماج",
+    baseline: "المشكلة الحالية وخط الأساس ومسار الخدمة الكامل",
+    outcomes: "النتائج المستهدفة ومعايير الخدمة ومؤشرات الأداء",
+    ai_versus_alternatives: "دور الذكاء الاصطناعي مقابل خيارات أبسط للعملية أو السياسة أو التقنية",
+    authority_and_redress: "السلطة البشرية والشفافية والقابلية للطعن والإنصاف",
+    sovereignty: "سيادة البيانات والبنية التحتية والمورّد والاختصاص والقدرات",
+  },
+  confidence: { unknown: "غير معروف بعد", assumed: "افتراض", evidenced: "مدعوم بالأدلة" },
+  categories: {
+    seat: "مقعد",
+    mission: "مهمة",
+    checkpoint: "نقطة تحقق",
+    admin: "إجراء إداري",
+    reminder: "تذكير",
+    verdict: "حكم",
+    waiver: "استثناء",
+    launch_check: "فحص الإطلاق",
+    document: "مستند",
+  },
+  documents: "المستندات الداعمة",
+  documentColumns: ["القسم", "الملف", "النوع", "الحجم", "أُرفق في"],
+};
+
+const STRINGS: Record<ReportLanguage, ReportStrings> = { en: EN, fr: FR, es: ES, de: DE, ar: AR };
 
 export function reportStrings(language: ReportLanguage = "en"): ReportStrings {
   return STRINGS[language] ?? EN;

@@ -35,6 +35,8 @@ type ItemRow = {
   delivery_owner: string | null;
   depends_on: string[] | null;
   blocked_reason: string | null;
+  gate_key: string | null;
+  roadmap_status: string | null;
 };
 
 const optional = (value: string | null | undefined) => value?.trim() || undefined;
@@ -60,7 +62,7 @@ export async function loadRoadmapExportData(
   const itemsResult = await client
     .from("portfolio_items")
     .select(
-      "use_case_id, rank, decision, target_period, funding_state, next_action, notes, added_at, updated_at, delivery_stage, planned_start_date, planned_end_date, milestone, delivery_owner, depends_on, blocked_reason",
+      "use_case_id, rank, decision, target_period, funding_state, next_action, notes, added_at, updated_at, delivery_stage, planned_start_date, planned_end_date, milestone, delivery_owner, depends_on, blocked_reason, gate_key, roadmap_status",
     )
     .eq("portfolio_id", portfolioId);
   if (itemsResult.error) throw new Error(itemsResult.error.message);
@@ -98,6 +100,8 @@ export async function loadRoadmapExportData(
     deliveryOwner: optional(row.delivery_owner),
     dependsOn: row.depends_on ?? [],
     blockedReason: optional(row.blocked_reason),
+    gateKey: optional(row.gate_key),
+    roadmapStatus: (row.roadmap_status ?? "planned") as PortfolioEntry["roadmapStatus"],
   }));
 
   const all = buildRoadmapItems(entries);

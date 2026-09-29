@@ -27,6 +27,7 @@ import {
   KIND_STAGE,
   STAGE_META,
   VOTE_CRITERIA,
+  DOT_VOTE_CRITERION,
   WORKSHOP_STAGES,
   WORKSHOP_STATUS_LABEL,
   classify,
@@ -56,6 +57,7 @@ import { downloadWorkshopOutcomePDF } from "@/lib/workshops.collab";
 import { WorkshopInvitePanel } from "@/components/workshop/WorkshopInvitePanel";
 import { WorkshopAuditTrail } from "@/components/workshop/WorkshopAuditTrail";
 import { SovereignPublicValueCanvas } from "@/components/workshop/SovereignPublicValueCanvas";
+import { WorkshopFacilitatorV2Panel } from "@/components/workshop/WorkshopFacilitatorV2Panel";
 
 const KIND_FOR_STAGE: Partial<Record<WorkshopStage, WorkshopItemKind>> = {
   context: "context",
@@ -113,7 +115,7 @@ export function WorkshopBoardView({ id }: { id: string }) {
     "Merged — the duplicate is kept and linked",
   );
   const vote = mutate(
-    (input: { itemId: string; criterion: (typeof VOTE_CRITERIA)[number]; score: number }) =>
+    (input: { itemId: string; criterion: string; score: number }) =>
       castWorkshopVoteFn({ data: { workshopId: id, ...input } }),
     "Score recorded",
   );
@@ -294,7 +296,9 @@ export function WorkshopBoardView({ id }: { id: string }) {
             <ScoringStage
               items={candidates}
               scores={scores}
+              votes={board.data.votes}
               myVotes={myVotes}
+              votingMode={workshop.votingMode}
               canVote={viewer.canVote && workshop.status !== "closed"}
               onVote={(itemId, criterion, score) => vote.mutate({ itemId, criterion, score })}
             />
@@ -339,6 +343,9 @@ export function WorkshopBoardView({ id }: { id: string }) {
       </Card>
 
       {viewer.isFacilitator && active === "context" && <WorkshopInvitePanel workshopId={id} />}
+      {viewer.isFacilitator && active === "context" && (
+        <WorkshopFacilitatorV2Panel workshop={workshop} onUpdated={refresh} />
+      )}
 
       {active === "context" && (
         <SovereignPublicValueCanvas
@@ -704,15 +711,19 @@ function MergeControl({
 function ScoringStage({
   items,
   scores,
+  votes,
   myVotes,
+  votingMode,
   canVote,
   onVote,
 }: {
   items: WorkshopItem[];
   scores: ReturnType<typeof scoreItems>;
+  votes: Array<{ itemId: string; criterion: string; voterId: string }>;
   myVotes: Map<string, number>;
+  votingMode: "score" | "dot";
   canVote: boolean;
-  onVote: (itemId: string, criterion: (typeof VOTE_CRITERIA)[number], score: number) => void;
+  onVote: (itemId: string, criterion: string, score: number) => void;
 }) {
   if (items.length === 0)
     return (
@@ -721,6 +732,52 @@ function ScoringStage({
         description="Capture opportunities and generate use cases first."
       />
     );
+
+  if (votingMode === "dot") {
+    const dots = new Map<string, number>();
+    for (const v of votes) {
+      if (v.criterion !== DOT_VOTE_CRITERION) continue;
+      dots.set(v.itemId, (dots.get(v.itemId) ?? 0) + 1);
+    }
+    return (
+      <div className="space-y-3">
+        <p className="text-sm text-muted-foreground">
+          Dot voting: place one sticky vote per item. Totals update live for the room.
+        </p>
+        {items.map((item) => {
+          const mine = myVotes.get(`${item.id}:${DOT_VOTE_CRITERION}`);
+          return (
+            <div
+              key={item.id}
+              className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border p-3"
+            >
+              <div>
+                <div className="font-medium">{item.title}</div>
+                <div className="text-xs text-muted-foreground">
+                  {dots.get(item.id) ?? 0} dot{(dots.get(item.id) ?? 0) === 1 ? "" : "s"}
+                </div>
+              </div>
+              <Button
+                size="sm"
+                variant={mine ? "default" : "outline"}
+                disabled={!canVote}
+                aria-pressed={Boolean(mine)}
+                onClick={() => onVote(item.id, DOT_VOTE_CRITERION, 1)}
+              >
+                {mine ? "Dot placed" : "Place dot"}
+              </Button>
+            </div>
+          );
+        })}
+        {!canVote && (
+          <p className="text-xs text-muted-foreground">
+            Voting is closed for you — observers and closed sessions are read-only.
+          </p>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
       {items.map((item) => {

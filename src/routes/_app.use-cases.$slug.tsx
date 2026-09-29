@@ -658,6 +658,12 @@ function UseCaseDetailPage() {
               provenanceNote={c.provenance_note}
               qualityStatus={c.quality_status}
               qualityCheckedAt={c.quality_checked_at}
+              evidenceClass={c.evidence_class}
+              licenseUsageNote={c.license_usage_note}
+              contentOwnerName={c.content_owner_name}
+              contentReviewerName={c.content_reviewer_name}
+              lastReviewedAt={c.last_reviewed_at}
+              provenanceUrl={c.provenance_url}
               links={Array.isArray(c.use_case_links) ? c.use_case_links : []}
             />
 

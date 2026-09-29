@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { SubmissionInput, ReviewInput, SubmissionIdInput, REVIEW_ROLES } from "@/lib/submissions";
+import { SubmissionInput, ReviewInput, SubmissionIdInput, REVIEW_ROLES, assertNotSelfReview } from "@/lib/submissions";
 import { logDbFailure, logStep, newCorrelationId } from "@/lib/submissions.logging";
 import { recordSubmissionAudit } from "@/lib/submissions.audit";
 
@@ -174,6 +174,9 @@ export const reviewSubmission = createServerFn({ method: "POST" })
         reviewer: userId,
       });
     if (!submission) throw new Error("Submission not found");
+
+    // SoD: reviewer must not be the submitter (approve, reject, or in_review).
+    assertNotSelfReview(submission.user_id as string, userId);
 
     const { error } = await supabase
       .from("use_case_submissions")

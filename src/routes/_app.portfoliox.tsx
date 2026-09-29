@@ -69,6 +69,7 @@ import { PortfolioValueSummary } from "@/components/value/PortfolioValueSummary"
 import { PortfolioEntriesTable } from "@/components/portfolios/PortfolioEntriesTable";
 import { PortfolioReviewNotes } from "@/components/portfolios/PortfolioReviewNotes";
 import { PortfolioCharts } from "@/components/portfolios/PortfolioCharts";
+import { PortfolioDependenciesScenariosPanel } from "@/components/portfolios/PortfolioDependenciesScenariosPanel";
 import { PortfolioFilters } from "@/components/portfolios/PortfolioFilters";
 import {
   EMPTY_PORTFOLIO_FILTERS,
@@ -363,6 +364,14 @@ function PortfolioDetail({
             <PortfolioCharts entries={visibleEntries} />
           </CardContent>
         </Card>
+      )}
+
+      {portfolio.entries.length > 0 && (
+        <PortfolioDependenciesScenariosPanel
+          portfolioId={portfolio.id}
+          entries={visibleEntries}
+          canManage={canManage}
+        />
       )}
 
       <Card>

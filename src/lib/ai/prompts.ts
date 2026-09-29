@@ -14,9 +14,29 @@ export const AI_TASKS = [
   "suggestScoreEvidence",
   "findSimilarUseCases",
   "generateExecutiveSummary",
+  // FR-14 purpose ops (V2-17)
+  "rewriteText",
+  "classifyContent",
+  "compareOptions",
+  "findGaps",
+  "generateQuestions",
+  "summarizeEvidence",
+  "draftBrief",
 ] as const;
 
 export type AiTask = (typeof AI_TASKS)[number];
+
+/** Stable FR-14 purpose names → registry tasks (aliases for docs / UI). */
+export const FR14_PURPOSE_OPS = {
+  suggest: "enrichOpportunity",
+  rewrite: "rewriteText",
+  classify: "classifyContent",
+  compare: "compareOptions",
+  find_gaps: "findGaps",
+  generate_questions: "generateQuestions",
+  summarize_evidence: "summarizeEvidence",
+  draft_briefs: "draftBrief",
+} as const;
 
 export type PromptDefinition = {
   task: AiTask;
@@ -121,6 +141,90 @@ export const PROMPT_REGISTRY: Record<AiTask, PromptDefinition> = {
       HOUSE_STYLE,
       "Task: write a board-ready executive summary of an AI portfolio from the supplied figures.",
       "Use only the numbers provided. Be concise, evidence-oriented and free of hype.",
+    ].join(" "),
+  },
+  rewriteText: {
+    task: "rewriteText",
+    version: "2026-09-24.1",
+    tier: "fast",
+    timeoutMs: 30_000,
+    retries: 1,
+    system: [
+      HOUSE_STYLE,
+      "Task: rewrite the supplied text for clarity and executive tone without inventing facts.",
+      "Preserve meaning. Mark any ambiguity in openQuestions rather than guessing.",
+    ].join(" "),
+  },
+  classifyContent: {
+    task: "classifyContent",
+    version: "2026-09-24.1",
+    tier: "fast",
+    timeoutMs: 30_000,
+    retries: 1,
+    system: [
+      HOUSE_STYLE,
+      "Task: classify the supplied content into the allowed labels ONLY.",
+      "If none fit confidently, use Not Determined and explain why.",
+    ].join(" "),
+  },
+  compareOptions: {
+    task: "compareOptions",
+    version: "2026-09-24.1",
+    tier: "balanced",
+    timeoutMs: 45_000,
+    retries: 1,
+    system: [
+      HOUSE_STYLE,
+      "Task: compare the supplied options on stated criteria. Do not invent options or scores.",
+      "Cite only the supplied facts. Prefer structured trade-offs over recommendations.",
+    ].join(" "),
+  },
+  findGaps: {
+    task: "findGaps",
+    version: "2026-09-24.1",
+    tier: "balanced",
+    timeoutMs: 45_000,
+    retries: 1,
+    system: [
+      HOUSE_STYLE,
+      "Task: identify missing information, evidence or controls in the supplied record.",
+      "Never invent gaps that contradict supplied content. Prefer actionable, specific gaps.",
+    ].join(" "),
+  },
+  generateQuestions: {
+    task: "generateQuestions",
+    version: "2026-09-24.1",
+    tier: "fast",
+    timeoutMs: 30_000,
+    retries: 1,
+    system: [
+      HOUSE_STYLE,
+      "Task: generate clarifying questions a reviewer should ask next.",
+      "Questions must be answerable from organisational knowledge — no rhetorical padding.",
+    ].join(" "),
+  },
+  summarizeEvidence: {
+    task: "summarizeEvidence",
+    version: "2026-09-24.1",
+    tier: "balanced",
+    timeoutMs: 45_000,
+    retries: 1,
+    system: [
+      HOUSE_STYLE,
+      "Task: summarise the supplied evidence items. Cite each claim with a source id from the list.",
+      "Never invent evidence. If sources conflict, say so.",
+    ].join(" "),
+  },
+  draftBrief: {
+    task: "draftBrief",
+    version: "2026-09-24.1",
+    tier: "deep",
+    timeoutMs: 60_000,
+    retries: 1,
+    system: [
+      HOUSE_STYLE,
+      "Task: draft an implementation brief from confirmed fields only.",
+      "Leave gaps explicit. Do not invent architecture, data sources or acceptance criteria.",
     ].join(" "),
   },
 };

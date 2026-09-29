@@ -256,6 +256,14 @@ export async function decideMilestone(
     reviewerLabel: string;
   },
 ): Promise<{ ok: true } | { ok: false; error: string }> {
+  // SoD: an admin must not approve/reject their own pilot milestone submission.
+  if (params.userId === params.reviewerId) {
+    return {
+      ok: false,
+      error: "Segregation of duties: you cannot decide on your own pilot milestone.",
+    };
+  }
+
   const { error } = await supabase
     .from("pilot_milestone_approvals")
     .update({

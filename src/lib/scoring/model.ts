@@ -114,6 +114,27 @@ export type DimensionOutcome = {
 
 export type Confidence = "high" | "medium" | "low";
 
+/** Per-criterion assessor metadata — never changes the maths by itself. */
+export type CriterionAssessment = {
+  rationale?: string;
+  confidence?: Confidence;
+  /** Free-text evidence note or evidence_item reference label. */
+  evidence?: string;
+  assessorId?: string | null;
+  assessedAt?: string | null;
+};
+
+export type CriterionAssessments = Record<string, CriterionAssessment>;
+
+export type UncertaintyBand = {
+  /** Inclusive lower bound on the risk-adjusted score (0..100). */
+  low: number;
+  /** Inclusive upper bound on the risk-adjusted score (0..100). */
+  high: number;
+  /** Deterministic method id for accessible explanations. */
+  method: "completeness_spread";
+};
+
 export type ScoreResult = {
   scorecardSlug: string;
   scorecardVersion: number;
@@ -121,16 +142,45 @@ export type ScoreResult = {
   composite: number | null;
   /** Composite after the risk adjustment. */
   riskAdjusted: number | null;
+  /**
+   * Uncertainty band around the risk-adjusted score.
+   * Displayed separately from the point estimate — never a compliance range.
+   */
+  uncertainty: UncertaintyBand | null;
   /** 0..1 share of criterion weight that was answered. */
   completeness: number;
+  /**
+   * 0..1 share of criterion weight that has attached evidence text.
+   * Independent of answer completeness (FR-06).
+   */
+  evidenceCompleteness: number;
   confidence: Confidence;
   /** True when completeness is under the definition's minimum. */
   incomplete: boolean;
   missing: { dimensionId: string; dimensionLabel: string; criterionId: string; label: string }[];
   dimensions: DimensionOutcome[];
+  /**
+   * Prioritisation band only. Never interpret as safe / compliant / approved.
+   */
   recommendation: RecommendationBand | null;
   /** Human-readable maths, one line per step. */
   calculation: string[];
+  /** Fixed disclaimer for accessible UIs. */
+  scoreDisclaimer: string;
+};
+
+export const SCORE_DISCLAIMER =
+  "Scores are prioritisation decision support only. A number is never a compliance, safety or approval determination.";
+
+export type SensitivityScenario = {
+  dimensionId: string;
+  dimensionLabel: string;
+  /** Weight multiplier applied (e.g. 1.2 = +20%). */
+  weightMultiplier: number;
+  riskAdjusted: number | null;
+  recommendationId: string | null;
+  recommendationLabel: string | null;
+  deltaFromBase: number | null;
 };
 
 /* ------------------------------------------------------------------- helpers */
@@ -157,6 +207,47 @@ function confidenceFor(completeness: number): Confidence {
   return "low";
 }
 
+/**
+ * Uncertainty band from unanswered weight + confidence.
+ * Wider when incomplete; collapses to a point estimate when fully answered with high confidence.
+ */
+export function uncertaintyBandFor(
+  riskAdjusted: number | null,
+  completeness: number,
+  confidence: Confidence,
+): UncertaintyBand | null {
+  if (riskAdjusted === null) return null;
+  const incompleteSpread = (1 - Math.min(1, Math.max(0, completeness))) * 15;
+  const confidenceSpread = confidence === "low" ? 5 : confidence === "medium" ? 2 : 0;
+  const half = round1(incompleteSpread + confidenceSpread);
+  return {
+    low: round1(Math.max(0, riskAdjusted - half)),
+    high: round1(Math.min(100, riskAdjusted + half)),
+    method: "completeness_spread",
+  };
+}
+
+/** Share of criterion weight that has non-empty evidence text. */
+export function evidenceCompletenessOf(
+  definition: ScorecardDefinition,
+  assessments: CriterionAssessments | undefined,
+): number {
+  if (!assessments) return 0;
+  const totalDimensionWeight = definition.dimensions.reduce((s, d) => s + d.weight, 0);
+  let withEvidence = 0;
+  let total = 0;
+  for (const dim of definition.dimensions) {
+    const dimShare = share(dim.weight, totalDimensionWeight);
+    const critTotal = dim.criteria.reduce((s, c) => s + c.weight, 0);
+    for (const crit of dim.criteria) {
+      const g = dimShare * share(crit.weight, critTotal);
+      total += g;
+      if (assessments[crit.id]?.evidence?.trim()) withEvidence += g;
+    }
+  }
+  return total > 0 ? round1((withEvidence / total) * 100) / 100 : 0;
+}
+
 export function bandFor(
   definition: ScorecardDefinition,
   value: number | null,
@@ -175,9 +266,14 @@ export function bandFor(
  * zero, so a partially completed scorecard is not silently punished — instead
  * it is flagged through `completeness`, `confidence` and `missing`.
  */
-export function calculateScore(definition: ScorecardDefinition, responses: Responses): ScoreResult {
+export function calculateScore(
+  definition: ScorecardDefinition,
+  responses: Responses,
+  options?: { assessments?: CriterionAssessments },
+): ScoreResult {
   const calculation: string[] = [];
   const missing: ScoreResult["missing"] = [];
+  const assessments = options?.assessments;
 
   const totalDimensionWeight = definition.dimensions.reduce((s, d) => s + d.weight, 0);
 
@@ -280,6 +376,7 @@ export function calculateScore(definition: ScorecardDefinition, responses: Respo
 
   const completeness = totalWeight > 0 ? round1((answeredWeight / totalWeight) * 100) / 100 : 0;
   const confidence = confidenceFor(completeness);
+  const evidenceCompleteness = evidenceCompletenessOf(definition, assessments);
 
   const riskDim = dimensions.find((d) => d.isRiskDimension && d.score !== null);
   const riskAdjusted =
@@ -290,6 +387,7 @@ export function calculateScore(definition: ScorecardDefinition, responses: Respo
         : composite;
 
   const recommendation = bandFor(definition, riskAdjusted);
+  const uncertainty = uncertaintyBandFor(riskAdjusted, completeness, confidence);
 
   calculation.push(
     `Each answer is normalised to 0–100% of the ${definition.scaleMax}-point scale; risk-style criteria are inverted so lower exposure scores higher.`,
@@ -310,11 +408,19 @@ export function calculateScore(definition: ScorecardDefinition, responses: Respo
     );
   }
   calculation.push(
-    `Completeness = ${Math.round(completeness * 100)}% of criterion weight answered → ${confidence} confidence.`,
+    `Answer completeness = ${Math.round(completeness * 100)}% of criterion weight answered → ${confidence} confidence.`,
   );
+  calculation.push(
+    `Evidence completeness = ${Math.round(evidenceCompleteness * 100)}% of criterion weight has attached evidence (reported separately).`,
+  );
+  if (uncertainty) {
+    calculation.push(
+      `Uncertainty band (completeness spread) = ${uncertainty.low}–${uncertainty.high}/100 around the risk-adjusted score.`,
+    );
+  }
   if (recommendation) {
     calculation.push(
-      `Risk-adjusted ${riskAdjusted}/100 falls in the “${recommendation.label}” band (≥ ${recommendation.min}).`,
+      `Risk-adjusted ${riskAdjusted}/100 falls in the “${recommendation.label}” prioritisation band (≥ ${recommendation.min}). ${SCORE_DISCLAIMER}`,
     );
   }
 
@@ -323,14 +429,63 @@ export function calculateScore(definition: ScorecardDefinition, responses: Respo
     scorecardVersion: definition.version,
     composite,
     riskAdjusted,
+    uncertainty,
     completeness,
+    evidenceCompleteness,
     confidence,
     incomplete: completeness < definition.minimumCompleteness,
     missing,
     dimensions,
     recommendation,
     calculation,
+    scoreDisclaimer: SCORE_DISCLAIMER,
   };
+}
+
+/**
+ * Sensitivity analysis: re-weight one dimension at a time (±delta) and show
+ * how the risk-adjusted score and prioritisation band would change.
+ * Does not mutate the baseline definition or stored scores.
+ */
+export function sensitivityAnalysis(
+  definition: ScorecardDefinition,
+  responses: Responses,
+  options?: { weightDeltaPct?: number; assessments?: CriterionAssessments },
+): { base: ScoreResult; scenarios: SensitivityScenario[] } {
+  const delta = options?.weightDeltaPct ?? 0.2;
+  const base = calculateScore(definition, responses, {
+    assessments: options?.assessments,
+  });
+  const scenarios: SensitivityScenario[] = [];
+
+  for (const dim of definition.dimensions) {
+    for (const mult of [1 + delta, 1 - delta]) {
+      if (mult <= 0) continue;
+      const adjusted: ScorecardDefinition = {
+        ...definition,
+        dimensions: definition.dimensions.map((d) =>
+          d.id === dim.id ? { ...d, weight: Math.max(0.01, d.weight * mult) } : d,
+        ),
+      };
+      const alt = calculateScore(adjusted, responses, {
+        assessments: options?.assessments,
+      });
+      scenarios.push({
+        dimensionId: dim.id,
+        dimensionLabel: dim.label,
+        weightMultiplier: round1(mult * 100) / 100,
+        riskAdjusted: alt.riskAdjusted,
+        recommendationId: alt.recommendation?.id ?? null,
+        recommendationLabel: alt.recommendation?.label ?? null,
+        deltaFromBase:
+          base.riskAdjusted !== null && alt.riskAdjusted !== null
+            ? round1(alt.riskAdjusted - base.riskAdjusted)
+            : null,
+      });
+    }
+  }
+
+  return { base, scenarios };
 }
 
 /* ------------------------------------------------------------------ schemas */
@@ -383,8 +538,26 @@ export const scorecardDefinitionSchema = z.object({
 
 export const responsesSchema = z.record(z.string(), z.number().int().min(0).max(10));
 
+export const criterionAssessmentSchema = z.object({
+  rationale: z.string().trim().max(2000).optional(),
+  confidence: z.enum(["high", "medium", "low"]).optional(),
+  evidence: z.string().trim().max(2000).optional(),
+  assessorId: z.string().uuid().nullable().optional(),
+  assessedAt: z.string().nullable().optional(),
+});
+
+export const criterionAssessmentsSchema = z.record(z.string(), criterionAssessmentSchema);
+
 /** Guard against responses that reference criteria the definition does not have. */
 export function pruneResponses(definition: ScorecardDefinition, responses: Responses): Responses {
   const known = new Set(definition.dimensions.flatMap((d) => d.criteria.map((c) => c.id)));
   return Object.fromEntries(Object.entries(responses).filter(([k]) => known.has(k)));
+}
+
+export function pruneAssessments(
+  definition: ScorecardDefinition,
+  assessments: CriterionAssessments,
+): CriterionAssessments {
+  const known = new Set(definition.dimensions.flatMap((d) => d.criteria.map((c) => c.id)));
+  return Object.fromEntries(Object.entries(assessments).filter(([k]) => known.has(k)));
 }

@@ -16,6 +16,7 @@ import { Route as DemoLoginRouteImport } from './routes/demo-login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SsoRouteImport } from './routes/sso'
 import { Route as AppAboutRouteImport } from './routes/_app.about'
 import { Route as AppAcceptableUseRouteImport } from './routes/_app.acceptable-use'
 import { Route as AppAccountRouteImport } from './routes/_app.account'
@@ -68,6 +69,7 @@ import { Route as AppQuickWinsRouteImport } from './routes/_app.quick-wins'
 import { Route as AppReportsRouteImport } from './routes/_app.reports'
 import { Route as AppRepositoryRouteImport } from './routes/_app.repository'
 import { Route as AppResourcesRouteImport } from './routes/_app.resources'
+import { Route as AppReviewsRouteImport } from './routes/_app.reviews'
 import { Route as AppRoadmapRouteImport } from './routes/_app.roadmap'
 import { Route as AppRoiCalculatorRouteImport } from './routes/_app.roi-calculator'
 import { Route as AppSarpiRouteImport } from './routes/_app.sarpi'
@@ -135,12 +137,16 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as AppStudioUseCaseIdIndexRouteImport } from './routes/_app.studio.use-case.$id.index'
 import { Route as AppStudioUseCaseIdAdvisorxRouteImport } from './routes/_app.studio.use-case.$id.advisorx'
 import { Route as AppStudioUseCaseIdBlueprintRouteImport } from './routes/_app.studio.use-case.$id.blueprint'
+import { Route as AppStudioUseCaseIdBriefRouteImport } from './routes/_app.studio.use-case.$id.brief'
 import { Route as AppStudioUseCaseIdC3gGovernanceRouteImport } from './routes/_app.studio.use-case.$id.c3g-governance'
 import { Route as AppStudioUseCaseIdDataReadinessRouteImport } from './routes/_app.studio.use-case.$id.data-readiness'
 import { Route as AppStudioUseCaseIdDeliverablesRouteImport } from './routes/_app.studio.use-case.$id.deliverables'
+import { Route as AppStudioUseCaseIdEvidenceRouteImport } from './routes/_app.studio.use-case.$id.evidence'
 import { Route as AppStudioUseCaseIdFeasibilityRouteImport } from './routes/_app.studio.use-case.$id.feasibility'
+import { Route as AppStudioUseCaseIdGatesRouteImport } from './routes/_app.studio.use-case.$id.gates'
 import { Route as AppStudioUseCaseIdSarpiRouteImport } from './routes/_app.studio.use-case.$id.sarpi'
 import { Route as AppStudioUseCaseIdScorecardRouteImport } from './routes/_app.studio.use-case.$id.scorecard'
+import { Route as AppStudioUseCaseIdSolutionDesignRouteImport } from './routes/_app.studio.use-case.$id.solution-design'
 import { Route as AppStudioUseCaseIdValueRouteImport } from './routes/_app.studio.use-case.$id.value'
 import { Route as AppStudioUseCaseIdWizardRouteImport } from './routes/_app.studio.use-case.$id.wizard'
 import { Route as ApiPublicUsecasexRoadmapExportRouteImport } from './routes/api/public/usecasex/roadmap/export'
@@ -179,6 +185,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SsoRoute = SsoRouteImport.update({
+  id: '/sso',
+  path: '/sso',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppAboutRoute = AppAboutRouteImport.update({
@@ -439,6 +450,11 @@ const AppRepositoryRoute = AppRepositoryRouteImport.update({
 const AppResourcesRoute = AppResourcesRouteImport.update({
   id: '/resources',
   path: '/resources',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReviewsRoute = AppReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
   getParentRoute: () => AppRoute,
 } as any)
 const AppRoadmapRoute = AppRoadmapRouteImport.update({
@@ -801,6 +817,11 @@ const AppStudioUseCaseIdBlueprintRoute =
     path: '/use-case/$id/blueprint',
     getParentRoute: () => AppStudioRoute,
   } as any)
+const AppStudioUseCaseIdBriefRoute = AppStudioUseCaseIdBriefRouteImport.update({
+  id: '/use-case/$id/brief',
+  path: '/use-case/$id/brief',
+  getParentRoute: () => AppStudioRoute,
+} as any)
 const AppStudioUseCaseIdC3gGovernanceRoute =
   AppStudioUseCaseIdC3gGovernanceRouteImport.update({
     id: '/use-case/$id/c3g-governance',
@@ -819,12 +840,23 @@ const AppStudioUseCaseIdDeliverablesRoute =
     path: '/use-case/$id/deliverables',
     getParentRoute: () => AppStudioRoute,
   } as any)
+const AppStudioUseCaseIdEvidenceRoute =
+  AppStudioUseCaseIdEvidenceRouteImport.update({
+    id: '/use-case/$id/evidence',
+    path: '/use-case/$id/evidence',
+    getParentRoute: () => AppStudioRoute,
+  } as any)
 const AppStudioUseCaseIdFeasibilityRoute =
   AppStudioUseCaseIdFeasibilityRouteImport.update({
     id: '/use-case/$id/feasibility',
     path: '/use-case/$id/feasibility',
     getParentRoute: () => AppStudioRoute,
   } as any)
+const AppStudioUseCaseIdGatesRoute = AppStudioUseCaseIdGatesRouteImport.update({
+  id: '/use-case/$id/gates',
+  path: '/use-case/$id/gates',
+  getParentRoute: () => AppStudioRoute,
+} as any)
 const AppStudioUseCaseIdSarpiRoute = AppStudioUseCaseIdSarpiRouteImport.update({
   id: '/use-case/$id/sarpi',
   path: '/use-case/$id/sarpi',
@@ -834,6 +866,12 @@ const AppStudioUseCaseIdScorecardRoute =
   AppStudioUseCaseIdScorecardRouteImport.update({
     id: '/use-case/$id/scorecard',
     path: '/use-case/$id/scorecard',
+    getParentRoute: () => AppStudioRoute,
+  } as any)
+const AppStudioUseCaseIdSolutionDesignRoute =
+  AppStudioUseCaseIdSolutionDesignRouteImport.update({
+    id: '/use-case/$id/solution-design',
+    path: '/use-case/$id/solution-design',
     getParentRoute: () => AppStudioRoute,
   } as any)
 const AppStudioUseCaseIdValueRoute = AppStudioUseCaseIdValueRouteImport.update({
@@ -873,6 +911,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sso': typeof SsoRoute
   '/about': typeof AppAboutRoute
   '/acceptable-use': typeof AppAcceptableUseRoute
   '/account': typeof AppAccountRouteWithChildren
@@ -925,6 +964,7 @@ export interface FileRoutesByFullPath {
   '/reports': typeof AppReportsRoute
   '/repository': typeof AppRepositoryRoute
   '/resources': typeof AppResourcesRoute
+  '/reviews': typeof AppReviewsRoute
   '/roadmap': typeof AppRoadmapRoute
   '/roi-calculator': typeof AppRoiCalculatorRoute
   '/sarpi': typeof AppSarpiRoute
@@ -991,12 +1031,16 @@ export interface FileRoutesByFullPath {
   '/administration/readiness/': typeof AppAdministrationReadinessIndexRoute
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
+  '/studio/use-case/$id/brief': typeof AppStudioUseCaseIdBriefRoute
   '/studio/use-case/$id/c3g-governance': typeof AppStudioUseCaseIdC3gGovernanceRoute
   '/studio/use-case/$id/data-readiness': typeof AppStudioUseCaseIdDataReadinessRoute
   '/studio/use-case/$id/deliverables': typeof AppStudioUseCaseIdDeliverablesRoute
+  '/studio/use-case/$id/evidence': typeof AppStudioUseCaseIdEvidenceRoute
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
+  '/studio/use-case/$id/gates': typeof AppStudioUseCaseIdGatesRoute
   '/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
   '/studio/use-case/$id/scorecard': typeof AppStudioUseCaseIdScorecardRoute
+  '/studio/use-case/$id/solution-design': typeof AppStudioUseCaseIdSolutionDesignRoute
   '/studio/use-case/$id/value': typeof AppStudioUseCaseIdValueRoute
   '/studio/use-case/$id/wizard': typeof AppStudioUseCaseIdWizardRoute
   '/api/public/usecasex/roadmap/export': typeof ApiPublicUsecasexRoadmapExportRoute
@@ -1011,6 +1055,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sso': typeof SsoRoute
   '/about': typeof AppAboutRoute
   '/acceptable-use': typeof AppAcceptableUseRoute
   '/admin-audit': typeof AppAdminAuditRoute
@@ -1061,6 +1106,7 @@ export interface FileRoutesByTo {
   '/reports': typeof AppReportsRoute
   '/repository': typeof AppRepositoryRoute
   '/resources': typeof AppResourcesRoute
+  '/reviews': typeof AppReviewsRoute
   '/roadmap': typeof AppRoadmapRoute
   '/roi-calculator': typeof AppRoiCalculatorRoute
   '/sarpi': typeof AppSarpiRoute
@@ -1127,12 +1173,16 @@ export interface FileRoutesByTo {
   '/administration/readiness': typeof AppAdministrationReadinessIndexRoute
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
+  '/studio/use-case/$id/brief': typeof AppStudioUseCaseIdBriefRoute
   '/studio/use-case/$id/c3g-governance': typeof AppStudioUseCaseIdC3gGovernanceRoute
   '/studio/use-case/$id/data-readiness': typeof AppStudioUseCaseIdDataReadinessRoute
   '/studio/use-case/$id/deliverables': typeof AppStudioUseCaseIdDeliverablesRoute
+  '/studio/use-case/$id/evidence': typeof AppStudioUseCaseIdEvidenceRoute
   '/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
+  '/studio/use-case/$id/gates': typeof AppStudioUseCaseIdGatesRoute
   '/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
   '/studio/use-case/$id/scorecard': typeof AppStudioUseCaseIdScorecardRoute
+  '/studio/use-case/$id/solution-design': typeof AppStudioUseCaseIdSolutionDesignRoute
   '/studio/use-case/$id/value': typeof AppStudioUseCaseIdValueRoute
   '/studio/use-case/$id/wizard': typeof AppStudioUseCaseIdWizardRoute
   '/api/public/usecasex/roadmap/export': typeof ApiPublicUsecasexRoadmapExportRoute
@@ -1149,6 +1199,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sso': typeof SsoRoute
   '/_app/about': typeof AppAboutRoute
   '/_app/acceptable-use': typeof AppAcceptableUseRoute
   '/_app/account': typeof AppAccountRouteWithChildren
@@ -1201,6 +1252,7 @@ export interface FileRoutesById {
   '/_app/reports': typeof AppReportsRoute
   '/_app/repository': typeof AppRepositoryRoute
   '/_app/resources': typeof AppResourcesRoute
+  '/_app/reviews': typeof AppReviewsRoute
   '/_app/roadmap': typeof AppRoadmapRoute
   '/_app/roi-calculator': typeof AppRoiCalculatorRoute
   '/_app/sarpi': typeof AppSarpiRoute
@@ -1267,12 +1319,16 @@ export interface FileRoutesById {
   '/_app/administration/readiness/': typeof AppAdministrationReadinessIndexRoute
   '/_app/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/_app/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
+  '/_app/studio/use-case/$id/brief': typeof AppStudioUseCaseIdBriefRoute
   '/_app/studio/use-case/$id/c3g-governance': typeof AppStudioUseCaseIdC3gGovernanceRoute
   '/_app/studio/use-case/$id/data-readiness': typeof AppStudioUseCaseIdDataReadinessRoute
   '/_app/studio/use-case/$id/deliverables': typeof AppStudioUseCaseIdDeliverablesRoute
+  '/_app/studio/use-case/$id/evidence': typeof AppStudioUseCaseIdEvidenceRoute
   '/_app/studio/use-case/$id/feasibility': typeof AppStudioUseCaseIdFeasibilityRoute
+  '/_app/studio/use-case/$id/gates': typeof AppStudioUseCaseIdGatesRoute
   '/_app/studio/use-case/$id/sarpi': typeof AppStudioUseCaseIdSarpiRoute
   '/_app/studio/use-case/$id/scorecard': typeof AppStudioUseCaseIdScorecardRoute
+  '/_app/studio/use-case/$id/solution-design': typeof AppStudioUseCaseIdSolutionDesignRoute
   '/_app/studio/use-case/$id/value': typeof AppStudioUseCaseIdValueRoute
   '/_app/studio/use-case/$id/wizard': typeof AppStudioUseCaseIdWizardRoute
   '/api/public/usecasex/roadmap/export': typeof ApiPublicUsecasexRoadmapExportRoute
@@ -1289,6 +1345,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/sso'
     | '/about'
     | '/acceptable-use'
     | '/account'
@@ -1341,6 +1398,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/repository'
     | '/resources'
+    | '/reviews'
     | '/roadmap'
     | '/roi-calculator'
     | '/sarpi'
@@ -1407,12 +1465,16 @@ export interface FileRouteTypes {
     | '/administration/readiness/'
     | '/studio/use-case/$id/advisorx'
     | '/studio/use-case/$id/blueprint'
+    | '/studio/use-case/$id/brief'
     | '/studio/use-case/$id/c3g-governance'
     | '/studio/use-case/$id/data-readiness'
     | '/studio/use-case/$id/deliverables'
+    | '/studio/use-case/$id/evidence'
     | '/studio/use-case/$id/feasibility'
+    | '/studio/use-case/$id/gates'
     | '/studio/use-case/$id/sarpi'
     | '/studio/use-case/$id/scorecard'
+    | '/studio/use-case/$id/solution-design'
     | '/studio/use-case/$id/value'
     | '/studio/use-case/$id/wizard'
     | '/api/public/usecasex/roadmap/export'
@@ -1427,6 +1489,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/sso'
     | '/about'
     | '/acceptable-use'
     | '/admin-audit'
@@ -1477,6 +1540,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/repository'
     | '/resources'
+    | '/reviews'
     | '/roadmap'
     | '/roi-calculator'
     | '/sarpi'
@@ -1543,12 +1607,16 @@ export interface FileRouteTypes {
     | '/administration/readiness'
     | '/studio/use-case/$id/advisorx'
     | '/studio/use-case/$id/blueprint'
+    | '/studio/use-case/$id/brief'
     | '/studio/use-case/$id/c3g-governance'
     | '/studio/use-case/$id/data-readiness'
     | '/studio/use-case/$id/deliverables'
+    | '/studio/use-case/$id/evidence'
     | '/studio/use-case/$id/feasibility'
+    | '/studio/use-case/$id/gates'
     | '/studio/use-case/$id/sarpi'
     | '/studio/use-case/$id/scorecard'
+    | '/studio/use-case/$id/solution-design'
     | '/studio/use-case/$id/value'
     | '/studio/use-case/$id/wizard'
     | '/api/public/usecasex/roadmap/export'
@@ -1564,6 +1632,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/sso'
     | '/_app/about'
     | '/_app/acceptable-use'
     | '/_app/account'
@@ -1616,6 +1685,7 @@ export interface FileRouteTypes {
     | '/_app/reports'
     | '/_app/repository'
     | '/_app/resources'
+    | '/_app/reviews'
     | '/_app/roadmap'
     | '/_app/roi-calculator'
     | '/_app/sarpi'
@@ -1682,12 +1752,16 @@ export interface FileRouteTypes {
     | '/_app/administration/readiness/'
     | '/_app/studio/use-case/$id/advisorx'
     | '/_app/studio/use-case/$id/blueprint'
+    | '/_app/studio/use-case/$id/brief'
     | '/_app/studio/use-case/$id/c3g-governance'
     | '/_app/studio/use-case/$id/data-readiness'
     | '/_app/studio/use-case/$id/deliverables'
+    | '/_app/studio/use-case/$id/evidence'
     | '/_app/studio/use-case/$id/feasibility'
+    | '/_app/studio/use-case/$id/gates'
     | '/_app/studio/use-case/$id/sarpi'
     | '/_app/studio/use-case/$id/scorecard'
+    | '/_app/studio/use-case/$id/solution-design'
     | '/_app/studio/use-case/$id/value'
     | '/_app/studio/use-case/$id/wizard'
     | '/api/public/usecasex/roadmap/export'
@@ -1704,6 +1778,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SsoRoute: typeof SsoRoute
   CTokenRoute: typeof CTokenRoute
   PTokenRoute: typeof PTokenRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
@@ -1770,6 +1845,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sso': {
+      id: '/sso'
+      path: '/sso'
+      fullPath: '/sso'
+      preLoaderRoute: typeof SsoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/about': {
@@ -2134,6 +2216,13 @@ declare module '@tanstack/react-router' {
       path: '/resources'
       fullPath: '/resources'
       preLoaderRoute: typeof AppResourcesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/reviews': {
+      id: '/_app/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof AppReviewsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/roadmap': {
@@ -2605,6 +2694,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudioUseCaseIdBlueprintRouteImport
       parentRoute: typeof AppStudioRoute
     }
+    '/_app/studio/use-case/$id/brief': {
+      id: '/_app/studio/use-case/$id/brief'
+      path: '/use-case/$id/brief'
+      fullPath: '/studio/use-case/$id/brief'
+      preLoaderRoute: typeof AppStudioUseCaseIdBriefRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
     '/_app/studio/use-case/$id/c3g-governance': {
       id: '/_app/studio/use-case/$id/c3g-governance'
       path: '/use-case/$id/c3g-governance'
@@ -2626,11 +2722,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudioUseCaseIdDeliverablesRouteImport
       parentRoute: typeof AppStudioRoute
     }
+    '/_app/studio/use-case/$id/evidence': {
+      id: '/_app/studio/use-case/$id/evidence'
+      path: '/use-case/$id/evidence'
+      fullPath: '/studio/use-case/$id/evidence'
+      preLoaderRoute: typeof AppStudioUseCaseIdEvidenceRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
     '/_app/studio/use-case/$id/feasibility': {
       id: '/_app/studio/use-case/$id/feasibility'
       path: '/use-case/$id/feasibility'
       fullPath: '/studio/use-case/$id/feasibility'
       preLoaderRoute: typeof AppStudioUseCaseIdFeasibilityRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
+    '/_app/studio/use-case/$id/gates': {
+      id: '/_app/studio/use-case/$id/gates'
+      path: '/use-case/$id/gates'
+      fullPath: '/studio/use-case/$id/gates'
+      preLoaderRoute: typeof AppStudioUseCaseIdGatesRouteImport
       parentRoute: typeof AppStudioRoute
     }
     '/_app/studio/use-case/$id/sarpi': {
@@ -2645,6 +2755,13 @@ declare module '@tanstack/react-router' {
       path: '/use-case/$id/scorecard'
       fullPath: '/studio/use-case/$id/scorecard'
       preLoaderRoute: typeof AppStudioUseCaseIdScorecardRouteImport
+      parentRoute: typeof AppStudioRoute
+    }
+    '/_app/studio/use-case/$id/solution-design': {
+      id: '/_app/studio/use-case/$id/solution-design'
+      path: '/use-case/$id/solution-design'
+      fullPath: '/studio/use-case/$id/solution-design'
+      preLoaderRoute: typeof AppStudioUseCaseIdSolutionDesignRouteImport
       parentRoute: typeof AppStudioRoute
     }
     '/_app/studio/use-case/$id/value': {
@@ -2771,12 +2888,16 @@ interface AppStudioRouteChildren {
   AppStudioPortfolioRoute: typeof AppStudioPortfolioRoute
   AppStudioUseCaseIdAdvisorxRoute: typeof AppStudioUseCaseIdAdvisorxRoute
   AppStudioUseCaseIdBlueprintRoute: typeof AppStudioUseCaseIdBlueprintRoute
+  AppStudioUseCaseIdBriefRoute: typeof AppStudioUseCaseIdBriefRoute
   AppStudioUseCaseIdC3gGovernanceRoute: typeof AppStudioUseCaseIdC3gGovernanceRoute
   AppStudioUseCaseIdDataReadinessRoute: typeof AppStudioUseCaseIdDataReadinessRoute
   AppStudioUseCaseIdDeliverablesRoute: typeof AppStudioUseCaseIdDeliverablesRoute
+  AppStudioUseCaseIdEvidenceRoute: typeof AppStudioUseCaseIdEvidenceRoute
   AppStudioUseCaseIdFeasibilityRoute: typeof AppStudioUseCaseIdFeasibilityRoute
+  AppStudioUseCaseIdGatesRoute: typeof AppStudioUseCaseIdGatesRoute
   AppStudioUseCaseIdSarpiRoute: typeof AppStudioUseCaseIdSarpiRoute
   AppStudioUseCaseIdScorecardRoute: typeof AppStudioUseCaseIdScorecardRoute
+  AppStudioUseCaseIdSolutionDesignRoute: typeof AppStudioUseCaseIdSolutionDesignRoute
   AppStudioUseCaseIdValueRoute: typeof AppStudioUseCaseIdValueRoute
   AppStudioUseCaseIdWizardRoute: typeof AppStudioUseCaseIdWizardRoute
   AppStudioUseCaseIdIndexRoute: typeof AppStudioUseCaseIdIndexRoute
@@ -2787,12 +2908,16 @@ const AppStudioRouteChildren: AppStudioRouteChildren = {
   AppStudioPortfolioRoute: AppStudioPortfolioRoute,
   AppStudioUseCaseIdAdvisorxRoute: AppStudioUseCaseIdAdvisorxRoute,
   AppStudioUseCaseIdBlueprintRoute: AppStudioUseCaseIdBlueprintRoute,
+  AppStudioUseCaseIdBriefRoute: AppStudioUseCaseIdBriefRoute,
   AppStudioUseCaseIdC3gGovernanceRoute: AppStudioUseCaseIdC3gGovernanceRoute,
   AppStudioUseCaseIdDataReadinessRoute: AppStudioUseCaseIdDataReadinessRoute,
   AppStudioUseCaseIdDeliverablesRoute: AppStudioUseCaseIdDeliverablesRoute,
+  AppStudioUseCaseIdEvidenceRoute: AppStudioUseCaseIdEvidenceRoute,
   AppStudioUseCaseIdFeasibilityRoute: AppStudioUseCaseIdFeasibilityRoute,
+  AppStudioUseCaseIdGatesRoute: AppStudioUseCaseIdGatesRoute,
   AppStudioUseCaseIdSarpiRoute: AppStudioUseCaseIdSarpiRoute,
   AppStudioUseCaseIdScorecardRoute: AppStudioUseCaseIdScorecardRoute,
+  AppStudioUseCaseIdSolutionDesignRoute: AppStudioUseCaseIdSolutionDesignRoute,
   AppStudioUseCaseIdValueRoute: AppStudioUseCaseIdValueRoute,
   AppStudioUseCaseIdWizardRoute: AppStudioUseCaseIdWizardRoute,
   AppStudioUseCaseIdIndexRoute: AppStudioUseCaseIdIndexRoute,
@@ -2857,6 +2982,7 @@ interface AppRouteChildren {
   AppReportsRoute: typeof AppReportsRoute
   AppRepositoryRoute: typeof AppRepositoryRoute
   AppResourcesRoute: typeof AppResourcesRoute
+  AppReviewsRoute: typeof AppReviewsRoute
   AppRoadmapRoute: typeof AppRoadmapRoute
   AppRoiCalculatorRoute: typeof AppRoiCalculatorRoute
   AppSarpiRoute: typeof AppSarpiRoute
@@ -2936,6 +3062,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppReportsRoute: AppReportsRoute,
   AppRepositoryRoute: AppRepositoryRoute,
   AppResourcesRoute: AppResourcesRoute,
+  AppReviewsRoute: AppReviewsRoute,
   AppRoadmapRoute: AppRoadmapRoute,
   AppRoiCalculatorRoute: AppRoiCalculatorRoute,
   AppSarpiRoute: AppSarpiRoute,
@@ -2986,6 +3113,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SsoRoute: SsoRoute,
   CTokenRoute: CTokenRoute,
   PTokenRoute: PTokenRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,

@@ -109,15 +109,27 @@ export type OpportunityDraft = {
   strategicObjective: string;
   strategicThemeId: string | null;
   stakeholders: string[];
+  /** Who feels the pain today (roles / teams / citizen groups). */
+  affectedUsers: string;
   baseline: string;
   desiredOutcome: string;
   urgency: OpportunityUrgency;
   ownerName: string;
+  /** Named executive or business sponsor. */
+  sponsorName: string;
+  /** Geographic or jurisdiction scope. */
+  geography: string;
+  /** Policy, budget, timing, technology or regulatory limits. */
+  constraints: string;
   evidence: EvidenceItem[];
   status: OpportunityStatus;
   source: OpportunitySource;
   sourceReference: string;
 };
+
+/** Capture UX mode — same route and persistence; different disclosure. */
+export const INTAKE_MODES = ["quick", "guided"] as const;
+export type IntakeMode = (typeof INTAKE_MODES)[number];
 
 export function emptyDraft(overrides: Partial<OpportunityDraft> = {}): OpportunityDraft {
   return {
@@ -130,10 +142,14 @@ export function emptyDraft(overrides: Partial<OpportunityDraft> = {}): Opportuni
     strategicObjective: "",
     strategicThemeId: null,
     stakeholders: [],
+    affectedUsers: "",
     baseline: "",
     desiredOutcome: "",
     urgency: "unknown",
     ownerName: "",
+    sponsorName: "",
+    geography: "",
+    constraints: "",
     evidence: [],
     status: "signal",
     source: "scratch",
@@ -163,10 +179,14 @@ export const opportunityDraftSchema = z.object({
   strategicObjective: trimmed(1000).optional().default(""),
   strategicThemeId: z.string().uuid().nullable().default(null),
   stakeholders: z.array(trimmed(160).min(1)).max(25).optional().default([]),
+  affectedUsers: trimmed(2000).optional().default(""),
   baseline: trimmed(1000).optional().default(""),
   desiredOutcome: trimmed(2000).optional().default(""),
   urgency: z.enum(URGENCIES).optional().default("unknown"),
   ownerName: trimmed(160).optional().default(""),
+  sponsorName: trimmed(160).optional().default(""),
+  geography: trimmed(500).optional().default(""),
+  constraints: trimmed(2000).optional().default(""),
   evidence: z.array(evidenceItemSchema).max(20).optional().default([]),
   status: z.enum(OPPORTUNITY_STATUSES).optional().default("signal"),
   source: z.enum(OPPORTUNITY_SOURCES).optional().default("scratch"),
@@ -184,16 +204,62 @@ export type CompletionField = { key: keyof OpportunityDraft; label: string; weig
 export const COMPLETION_FIELDS: CompletionField[] = [
   { key: "title", label: "Problem name", weight: 2 },
   { key: "painPoint", label: "Pain point", weight: 2 },
-  { key: "process", label: "Affected process", weight: 1 },
+  { key: "process", label: "Current workflow", weight: 1 },
+  { key: "affectedUsers", label: "Affected users", weight: 1 },
   { key: "businessFunction", label: "Organisation / function", weight: 1 },
   { key: "strategicObjective", label: "Strategic objective", weight: 1 },
   { key: "stakeholders", label: "Stakeholders", weight: 1 },
-  { key: "baseline", label: "Today's baseline", weight: 2 },
+  { key: "baseline", label: "Pain baseline", weight: 2 },
   { key: "desiredOutcome", label: "Desired outcome", weight: 2 },
   { key: "urgency", label: "Urgency", weight: 1 },
   { key: "ownerName", label: "Owner", weight: 1 },
+  { key: "sponsorName", label: "Sponsor", weight: 1 },
+  { key: "geography", label: "Geography", weight: 1 },
+  { key: "constraints", label: "Constraints", weight: 1 },
   { key: "evidence", label: "Evidence", weight: 1 },
 ];
+
+/** Fields shown in quick capture; guided mode discloses the rest. */
+export const QUICK_MODE_KEYS: (keyof OpportunityDraft)[] = [
+  "title",
+  "painPoint",
+  "desiredOutcome",
+  "urgency",
+  "ownerName",
+];
+
+export type MissingInfoPrompt = {
+  key: keyof OpportunityDraft;
+  label: string;
+  prompt: string;
+};
+
+const MISSING_PROMPTS: Partial<Record<keyof OpportunityDraft, string>> = {
+  painPoint: "Describe what is going wrong today — without proposing a solution yet.",
+  process: "Name the current workflow or process where the pain shows up.",
+  affectedUsers: "Who feels this pain — roles, teams or citizen groups?",
+  baseline: "What is today's baseline (volume, cycle time, cost or error rate)?",
+  desiredOutcome: "What would good look like, still in business terms?",
+  strategicObjective: "Which stated strategic objective does this support?",
+  urgency: "Is this needed this quarter, next, later — or still undecided?",
+  ownerName: "Who is accountable for the outcome?",
+  sponsorName: "Who is the executive or business sponsor?",
+  geography: "Where does this apply — region, country or jurisdiction?",
+  constraints: "Any hard constraints: policy, budget, timing, tech or regulatory?",
+  stakeholders: "Who else must be consulted or informed?",
+  evidence: "Attach a link or note that backs the pain or baseline.",
+};
+
+/** Ordered missing-information prompts for the side rail (FR-02). */
+export function missingInformationPrompts(draft: OpportunityDraft): MissingInfoPrompt[] {
+  return COMPLETION_FIELDS.filter((f) => !hasValue(draft, f.key))
+    .map((f) => ({
+      key: f.key,
+      label: f.label,
+      prompt: MISSING_PROMPTS[f.key] ?? `Add ${f.label.toLowerCase()}.`,
+    }))
+    .slice(0, 6);
+}
 
 function hasValue(draft: OpportunityDraft, key: keyof OpportunityDraft): boolean {
   const value = draft[key];
@@ -288,3 +354,35 @@ export function keywordsOf(text: string): string[] {
     ),
   ).slice(0, 8);
 }
+
+/**
+ * Overlap score for duplicate / related-pattern suggestions.
+ * Returns 0–1 plus the matched tokens used as the human-readable reason.
+ */
+export function similarityScore(
+  query: string,
+  candidate: string,
+): { score: number; matched: string[] } {
+  const q = keywordsOf(query);
+  const c = new Set(keywordsOf(candidate));
+  if (q.length === 0 || c.size === 0) return { score: 0, matched: [] };
+  const matched = q.filter((w) => c.has(w));
+  return { score: matched.length / q.length, matched };
+}
+
+export function formatSimilarityReason(matched: string[]): string {
+  if (matched.length === 0) return "Title overlap";
+  if (matched.length === 1) return `Shares keyword “${matched[0]}”`;
+  return `Shares keywords: ${matched.slice(0, 4).join(", ")}`;
+}
+
+/** Server-scored related hit shown in intake (workspace or repository). */
+export type SimilarHit = {
+  id?: string;
+  slug?: string;
+  title: string;
+  status?: string;
+  score: number;
+  reason: string;
+  source: "workspace" | "repository";
+};

@@ -48,8 +48,15 @@ import {
   getScorecardStateFn,
   recordScoreFn,
   suggestScoreEvidenceFn,
+  cloneScorecardFn,
 } from "@/lib/scoring.functions";
-import { calculateScore, type Responses, type ScoreResult } from "@/lib/scoring/model";
+import {
+  calculateScore,
+  sensitivityAnalysis,
+  type CriterionAssessments,
+  type Responses,
+  type ScoreResult,
+} from "@/lib/scoring/model";
 import { clearDraft, hasConflict, readDraft, writeDraft, type LocalDraft } from "@/lib/drafts";
 import { isUnauthorizedError, signInHref, SIGN_IN_TO_SAVE } from "@/lib/auth-errors";
 
@@ -69,10 +76,13 @@ type ScorecardLocalDraft = {
 export function UseCaseScorecard({ id }: { id: string }) {
   const record = useServerFn(recordScoreFn);
   const suggestEvidence = useServerFn(suggestScoreEvidenceFn);
+  const cloneScorecard = useServerFn(cloneScorecardFn);
   const [responses, setResponses] = useState<Responses | null>(null);
   const [evidence, setEvidence] = useState<Record<string, string> | null>(null);
+  const [rationales, setRationales] = useState<Record<string, string>>({});
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
+  const [cloning, setCloning] = useState(false);
   const [viewing, setViewing] = useState<string | null>(null);
   const [compareId, setCompareId] = useState<string | null>(null);
   const [confirmIncomplete, setConfirmIncomplete] = useState(false);
@@ -100,15 +110,44 @@ export function UseCaseScorecard({ id }: { id: string }) {
     return (latest?.responses as Responses) ?? {};
   }, [responses, latest]);
 
-  const live: ScoreResult | null = useMemo(
-    () => (definition ? calculateScore(definition, current) : null),
-    [definition, current],
-  );
-
   const currentEvidence: Record<string, string> = useMemo(() => {
     if (evidence) return evidence;
     return (latest?.evidence as Record<string, string>) ?? {};
   }, [evidence, latest]);
+
+  const liveAssessments: CriterionAssessments = useMemo(() => {
+    const fromLatest = (latest?.assessments as CriterionAssessments | undefined) ?? {};
+    const merged: CriterionAssessments = { ...fromLatest };
+    for (const [criterionId, text] of Object.entries(currentEvidence)) {
+      merged[criterionId] = {
+        ...merged[criterionId],
+        evidence: text,
+        rationale: rationales[criterionId] ?? merged[criterionId]?.rationale,
+      };
+    }
+    for (const [criterionId, rationale] of Object.entries(rationales)) {
+      merged[criterionId] = { ...merged[criterionId], rationale };
+    }
+    return merged;
+  }, [currentEvidence, latest, rationales]);
+
+  const live: ScoreResult | null = useMemo(
+    () =>
+      definition
+        ? calculateScore(definition, current, { assessments: liveAssessments })
+        : null,
+    [definition, current, liveAssessments],
+  );
+
+  const sensitivity = useMemo(
+    () =>
+      definition
+        ? sensitivityAnalysis(definition, current, {
+            assessments: liveAssessments,
+          }).scenarios.slice(0, 10)
+        : [],
+    [definition, current, liveAssessments],
+  );
 
   /**
    * Session-expiry safety net. Answers are kept on this device until the
@@ -205,6 +244,28 @@ export function UseCaseScorecard({ id }: { id: string }) {
     setEvidence({ ...currentEvidence, [criterionId]: value });
   }
 
+  function setRationaleFor(criterionId: string, value: string) {
+    setRationales((prev) => ({ ...prev, [criterionId]: value }));
+  }
+
+  async function cloneTemplate() {
+    setCloning(true);
+    try {
+      const drafted = await cloneScorecard({ data: { useCaseId: id } });
+      toast.success(
+        `Draft scorecard created (${drafted.slug} v${drafted.version}). Publish from Administration when ready.`,
+      );
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Could not clone the scorecard. Workspace edit permission is required.",
+      );
+    } finally {
+      setCloning(false);
+    }
+  }
+
   /** Ask AI what evidence would support the criteria that are still unanswered. */
   async function requestSuggestions() {
     const targets = (live?.missing ?? []).map((m) => m.criterionId).slice(0, 40);
@@ -277,6 +338,7 @@ export function UseCaseScorecard({ id }: { id: string }) {
           id,
           responses: current,
           evidence: currentEvidence,
+          assessments: liveAssessments,
           note: note.trim() || undefined,
         },
       });
@@ -550,6 +612,27 @@ export function UseCaseScorecard({ id }: { id: string }) {
                         )}
                         <div className="space-y-1">
                           <Label
+                            htmlFor={`rationale-${crit.id}`}
+                            className="text-xs font-normal text-muted-foreground"
+                          >
+                            Rationale (optional)
+                          </Label>
+                          <Textarea
+                            id={`rationale-${crit.id}`}
+                            rows={2}
+                            maxLength={2000}
+                            value={
+                              rationales[crit.id] ??
+                              (latest?.assessments as CriterionAssessments | undefined)?.[crit.id]
+                                ?.rationale ??
+                              ""
+                            }
+                            placeholder="Why this rating?"
+                            onChange={(e) => setRationaleFor(crit.id, e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label
                             htmlFor={`evidence-${crit.id}`}
                             className="text-xs font-normal text-muted-foreground"
                           >
@@ -594,12 +677,24 @@ export function UseCaseScorecard({ id }: { id: string }) {
                 )}
                 Record this score
               </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => void cloneTemplate()}
+                disabled={cloning}
+              >
+                {cloning ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+                ) : null}
+                Clone template to workspace
+              </Button>
               {(responses || evidence) && (
                 <Button
                   variant="ghost"
                   onClick={() => {
                     setResponses(null);
                     setEvidence(null);
+                    setRationales({});
                   }}
                   disabled={saving}
                 >
@@ -610,7 +705,9 @@ export function UseCaseScorecard({ id }: { id: string }) {
             </div>
             <p className="text-xs text-muted-foreground">
               The score is recalculated on the server from your answers and stored as a new,
-              read-only result. Previous results are never overwritten.
+              read-only result pinned to this model version. Prioritisation bands are not
+              compliance, safety or approval labels. Clone creates an editable draft; published
+              templates stay immutable.
             </p>
           </CardContent>
         </Card>
@@ -635,7 +732,7 @@ export function UseCaseScorecard({ id }: { id: string }) {
                 — updates as you answer, saved only when you record it
               </span>
             </p>
-            <ScoreExplanation result={live} />
+            <ScoreExplanation result={live} sensitivity={sensitivity} />
           </>
         ) : null}
 

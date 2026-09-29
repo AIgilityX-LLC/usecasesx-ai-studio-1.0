@@ -125,6 +125,10 @@ export function isCountable(status: WorkshopItemStatus): boolean {
 export const VOTE_CRITERIA = ["value", "feasibility", "urgency"] as const;
 export type VoteCriterion = (typeof VOTE_CRITERIA)[number];
 
+/** Dot-voting uses a dedicated criterion; ignored by weighted scoreItems. */
+export const DOT_VOTE_CRITERION = "dots" as const;
+export type AnyVoteCriterion = VoteCriterion | typeof DOT_VOTE_CRITERION;
+
 export const CRITERION_LABEL: Record<VoteCriterion, string> = {
   value: "Business value",
   feasibility: "Feasibility",
@@ -144,7 +148,7 @@ export const CRITERION_WEIGHT: Record<VoteCriterion, number> = {
 export type VoteRecord = {
   itemId: string;
   voterId: string;
-  criterion: VoteCriterion;
+  criterion: string;
   score: number;
 };
 
@@ -370,6 +374,12 @@ export type Workshop = {
   endsOn: string | null;
   stage: WorkshopStage;
   status: WorkshopStatus;
+  agenda: Array<{ id: string; title: string; minutes?: number; notes?: string }>;
+  teams: Array<{ id: string; name: string; memberNames: string[] }>;
+  challengeStatements: Array<{ id: string; text: string }>;
+  timeboxes: Array<{ id: string; label: string; minutes: number; stage?: string }>;
+  allowAnonymous: boolean;
+  votingMode: "score" | "dot";
   createdAt: string;
   updatedAt: string;
 };
@@ -402,6 +412,8 @@ export type OutcomeSummary = {
   workshopTitle: string;
   clientName: string;
   objective: string;
+  executiveSummary: string;
+  decisionLog: Array<{ at: string; action: string; actor: string; detail: string }>;
   counts: {
     participants: number;
     painPoints: number;
@@ -511,11 +523,55 @@ export function buildOutcomeSummary(input: {
   nextSteps.push("Score the shortlist in the Studio scorecard and review it in the portfolio.");
   if (gaps.length > 0) nextSteps.push(`Revisit functions with unmet demand: ${gaps.join(", ")}.`);
 
+  const objectiveText = workshop.objective.trim() || "the stated workshop objective";
+  const executiveSummary =
+    `${workshop.title} convened ${participants.length} participant(s) against ${objectiveText}. ` +
+    `${shortlist.length} item(s) were shortlisted and ${converted} converted to owned records.`;
+
+  const decisionLog: OutcomeSummary["decisionLog"] = [];
+  for (const item of items) {
+    if (item.status === "shortlisted") {
+      decisionLog.push({
+        at: item.updatedAt,
+        action: "shortlisted",
+        actor: "Facilitator",
+        detail: item.title,
+      });
+    }
+    if (item.status === "rejected") {
+      decisionLog.push({
+        at: item.updatedAt,
+        action: "parked",
+        actor: "Facilitator",
+        detail: item.title,
+      });
+    }
+    if (item.status === "merged") {
+      decisionLog.push({
+        at: item.updatedAt,
+        action: "merged",
+        actor: "Facilitator",
+        detail: item.title,
+      });
+    }
+    if (item.opportunityId || item.useCaseId) {
+      decisionLog.push({
+        at: item.convertedAt ?? item.updatedAt,
+        action: "converted",
+        actor: "Facilitator",
+        detail: item.title,
+      });
+    }
+  }
+  decisionLog.sort((a, b) => b.at.localeCompare(a.at));
+
   return {
     generatedAt: (input.now ?? new Date()).toISOString(),
     workshopTitle: workshop.title,
     clientName: workshop.clientName,
     objective: workshop.objective,
+    executiveSummary,
+    decisionLog,
     counts: {
       participants: participants.length,
       painPoints: live.filter((i) => i.kind === "pain_point").length,

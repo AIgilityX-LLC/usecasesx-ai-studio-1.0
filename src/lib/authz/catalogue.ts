@@ -18,6 +18,8 @@ export type EntitlementKey =
   | "usecase.edit"
   | "usecase.delete"
   | "usecase.submit"
+  | "usecase.review"
+  | "usecase.decide"
   // AI assistance
   | "ai.assist"
   | "ai.bulkAssist"
@@ -120,6 +122,22 @@ export const ENTITLEMENT_CATALOGUE: Record<EntitlementKey, EntitlementDefinition
     description: "Propose a workspace use case for editorial review.",
     minEdition: "pro",
     roles: EDITORS,
+  },
+  "usecase.review": {
+    key: "usecase.review",
+    label: "Review a use case",
+    description: "Participate in peer or gate review without deciding.",
+    minEdition: "pro",
+    roles: MANAGERS,
+    flag: "stageGates",
+  },
+  "usecase.decide": {
+    key: "usecase.decide",
+    label: "Decide a gate",
+    description: "Approve, hold or reject at a human decision gate. AI never decides.",
+    minEdition: "pro",
+    roles: MANAGERS,
+    flag: "stageGates",
   },
 
   "ai.assist": {

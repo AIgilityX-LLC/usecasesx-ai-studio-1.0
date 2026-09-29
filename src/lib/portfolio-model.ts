@@ -150,6 +150,33 @@ export const DELIVERY_STAGE_DESCRIPTIONS: Record<DeliveryStage, string> = {
   unscheduled: "No delivery intent recorded yet",
 };
 
+/** Roadmap delivery status (FR-10) — distinct from portfolio decision. */
+export type RoadmapItemStatus =
+  | "planned"
+  | "in_progress"
+  | "blocked"
+  | "at_risk"
+  | "complete"
+  | "deferred";
+
+export const ROADMAP_ITEM_STATUSES: RoadmapItemStatus[] = [
+  "planned",
+  "in_progress",
+  "blocked",
+  "at_risk",
+  "complete",
+  "deferred",
+];
+
+export const ROADMAP_ITEM_STATUS_LABELS: Record<RoadmapItemStatus, string> = {
+  planned: "Planned",
+  in_progress: "In progress",
+  blocked: "Blocked",
+  at_risk: "At risk",
+  complete: "Complete",
+  deferred: "Deferred",
+};
+
 /** Roadmap fields carried on the portfolio membership record. */
 export interface PortfolioEntryRoadmap {
   deliveryStage: DeliveryStage;
@@ -160,6 +187,9 @@ export interface PortfolioEntryRoadmap {
   /** Other use case ids in the same portfolio this entry depends on. */
   dependsOn: string[];
   blockedReason?: string;
+  /** Linked decision gate key (informational). */
+  gateKey?: string;
+  roadmapStatus?: RoadmapItemStatus;
 }
 
 export type PortfolioRoadmapPatch = {
@@ -170,4 +200,6 @@ export type PortfolioRoadmapPatch = {
   deliveryOwner?: string | null;
   dependsOn?: string[];
   blockedReason?: string | null;
+  gateKey?: string | null;
+  roadmapStatus?: RoadmapItemStatus | null;
 };

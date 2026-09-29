@@ -60,7 +60,7 @@ export type PortfolioPatchInput = Partial<PortfolioCreateInput> & {
 
 const PORTFOLIO_SELECT =
   "id, name, objective, created_at, updated_at, portfolio_type, status, target_department, target_quarter, visibility, review_cadence, organization_unit_id, parent_portfolio_id, review_notes, last_reviewed_at, " +
-  "portfolio_items ( use_case_id, rank, decision, target_period, funding_state, next_action, notes, review_notes, last_reviewed_at, added_at, updated_at, delivery_stage, planned_start_date, planned_end_date, milestone, delivery_owner, depends_on, blocked_reason )";
+  "portfolio_items ( use_case_id, rank, decision, target_period, funding_state, next_action, notes, review_notes, last_reviewed_at, added_at, updated_at, delivery_stage, planned_start_date, planned_end_date, milestone, delivery_owner, depends_on, blocked_reason, gate_key, roadmap_status )";
 
 type UseCaseMeta = {
   slug: string;
@@ -359,6 +359,8 @@ export function toPortfolioEntryColumns(patch: PortfolioEntryPatch) {
     delivery_owner?: string | null;
     depends_on?: string[];
     blocked_reason?: string | null;
+    gate_key?: string | null;
+    roadmap_status?: string | null;
   } = {};
   if (patch.rank !== undefined) columns.rank = patch.rank ?? null;
   if (patch.decision !== undefined) columns.decision = patch.decision;
@@ -376,6 +378,8 @@ export function toPortfolioEntryColumns(patch: PortfolioEntryPatch) {
   if (patch.deliveryOwner !== undefined) columns.delivery_owner = patch.deliveryOwner || null;
   if (patch.dependsOn !== undefined) columns.depends_on = patch.dependsOn;
   if (patch.blockedReason !== undefined) columns.blocked_reason = patch.blockedReason || null;
+  if (patch.gateKey !== undefined) columns.gate_key = patch.gateKey || null;
+  if (patch.roadmapStatus !== undefined) columns.roadmap_status = patch.roadmapStatus || null;
   return columns;
 }
 

@@ -20,6 +20,7 @@ import {
   type MapFilters,
   type RowAxis,
 } from "@/lib/opportunity-map";
+import { detectMapConcentration } from "@/lib/portfolio/dependencies-scenarios";
 import { downloadOpportunityMap, type MapExportFormat } from "@/lib/opportunity-map-export";
 import { OPPORTUNITY_STATUSES, STATUS_META, URGENCIES, URGENCY_LABELS } from "@/lib/opportunities";
 import { OpportunityMapGrid } from "@/components/opportunities/OpportunityMapGrid";
@@ -139,6 +140,7 @@ function OpportunityMapPage() {
 
   const records = useMemo(() => query.data?.records ?? [], [query.data]);
   const filtered = useMemo(() => applyMapFilters(records, filters), [records, filters]);
+  const mapInsights = useMemo(() => detectMapConcentration(filtered), [filtered]);
   const readiness = useMemo(() => assessReadiness(records, axis), [records, axis]);
 
   const options = useMemo(() => {
@@ -428,7 +430,22 @@ function OpportunityMapPage() {
                   }
                 />
               ) : (
-                <OpportunityMapGrid records={filtered} axis={axis} view={view} />
+                <>
+                  {mapInsights.length > 0 && (
+                    <ul className="space-y-2" aria-label="Concentration insights for current filters">
+                      {mapInsights.map((ins, i) => (
+                        <li
+                          key={`${ins.kind}-${i}`}
+                          className="rounded-md border border-border bg-muted/30 p-3 text-sm"
+                        >
+                          <span className="font-medium">{ins.title}</span>
+                          <p className="text-muted-foreground">{ins.explanation}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <OpportunityMapGrid records={filtered} axis={axis} view={view} />
+                </>
               )}
 
               <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">

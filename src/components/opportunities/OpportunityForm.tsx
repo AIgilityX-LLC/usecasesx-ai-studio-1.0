@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Loader2, Sparkles, Plus, X } from "lucide-react";
+import { ArrowRight, Loader2, Sparkles, Plus, X } from "lucide-react";
 import { AiSafetyNotice } from "@/components/ai/AiSafetyNotice";
+import { AiDraftSuggestion } from "@/components/opportunities/AiDraftSuggestion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -37,6 +39,7 @@ import {
   completionOf,
   emptyDraft,
   isConvertible,
+  missingInformationPrompts,
   OPPORTUNITY_SOURCES,
   opportunityDraftKey,
   readLocalDraft,
@@ -44,12 +47,15 @@ import {
   URGENCIES,
   URGENCY_LABELS,
   writeLocalDraft,
+  type IntakeMode,
   type OpportunityDraft,
   type OpportunitySource,
+  type SimilarHit,
   type StoredLocalDraft,
 } from "@/lib/opportunities";
 
 import {
+  convertOpportunityFn,
   findSimilarOpportunitiesFn,
   recordOpportunityAssistFn,
   saveOpportunityFn,
@@ -58,13 +64,13 @@ import { enrichOpportunityFn } from "@/lib/ai.functions";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { isUnauthorizedError, signInHref, SIGN_IN_TO_SAVE } from "@/lib/auth-errors";
 
-type SavedRow = { id: string; title: string; status: string };
-
 type Suggestions = {
   refinedProblemStatement?: string;
   suggestedKpis?: string[];
   suggestedRisks?: string[];
   clarifyingQuestions?: string[];
+  suggestedCapabilities?: string[];
+  suggestedDataRequirements?: string[];
 };
 
 export function OpportunityForm({
@@ -73,6 +79,7 @@ export function OpportunityForm({
   sourceUseCaseId,
   serverUpdatedAt,
   onSaved,
+  convertedUseCaseId,
 }: {
   opportunityId?: string | null;
   initial?: OpportunityDraft;
@@ -80,6 +87,8 @@ export function OpportunityForm({
   /** `updated_at` of the saved record, used to detect draft conflicts. */
   serverUpdatedAt?: string | null;
   onSaved?: (id: string) => void;
+  /** When already converted, show Continue rather than Design. */
+  convertedUseCaseId?: string | null;
 }) {
   const navigate = useNavigate();
   const session = useSupabaseSession();
@@ -88,27 +97,33 @@ export function OpportunityForm({
   const findSimilar = useServerFn(findSimilarOpportunitiesFn);
   const enrich = useServerFn(enrichOpportunityFn);
   const recordAssist = useServerFn(recordOpportunityAssistFn);
+  const convert = useServerFn(convertOpportunityFn);
 
+  const [mode, setMode] = useState<IntakeMode>("quick");
   const [draft, setDraft] = useState<OpportunityDraft>(() => initial ?? emptyDraft());
   const [id, setId] = useState<string | null>(opportunityId ?? null);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [converting, setConverting] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
   const [saveFailed, setSaveFailed] = useState(false);
   const [duplicates, setDuplicates] = useState<{
-    opportunities: SavedRow[];
-    repository: { slug: string; title: string }[];
+    opportunities: SimilarHit[];
+    repository: SimilarHit[];
   }>({ opportunities: [], repository: [] });
   const [assistLoading, setAssistLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestions | null>(null);
+  const [piiOpen, setPiiOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [stakeholderInput, setStakeholderInput] = useState("");
   const [evidenceLabel, setEvidenceLabel] = useState("");
   const [evidenceUrl, setEvidenceUrl] = useState("");
 
   const completion = useMemo(() => completionOf(draft), [draft]);
+  const missingPrompts = useMemo(() => missingInformationPrompts(draft), [draft]);
   const canSave = draft.title.trim().length >= 3;
   const draftKey = opportunityDraftKey(id);
+  const convertible = isConvertible(draft);
 
   useUnsavedChanges(dirty && !saving);
 
@@ -160,8 +175,6 @@ export function OpportunityForm({
   const persist = useCallback(
     async (silent: boolean) => {
       if (!canSave) return null;
-      // A signed-out visitor cannot persist: keep the local draft, say so
-      // plainly and offer the way back instead of failing silently.
       if (signedOut) {
         if (!silent) {
           toast.error(SIGN_IN_TO_SAVE, {
@@ -234,7 +247,7 @@ export function OpportunityForm({
     };
   }, [draft, dirty, canSave, persist, signedOut]);
 
-  /* --- non-blocking duplicate hints --------------------------------------- */
+  /* --- non-blocking duplicate / pattern hints ----------------------------- */
   useEffect(() => {
     const title = draft.title.trim();
     if (title.length < 6) {
@@ -242,16 +255,22 @@ export function OpportunityForm({
       return;
     }
     const t = setTimeout(() => {
-      findSimilar({ data: { title, excludeId: id } })
+      findSimilar({
+        data: {
+          title,
+          painPoint: draft.painPoint.trim() || undefined,
+          excludeId: id,
+        },
+      })
         .then(setDuplicates)
         .catch(() => setDuplicates({ opportunities: [], repository: [] }));
     }, 700);
     return () => clearTimeout(t);
-  }, [draft.title, findSimilar, id]);
+  }, [draft.title, draft.painPoint, findSimilar, id]);
 
-  /* --- AI clarification (suggestions only, never overwrites) -------------- */
+  /* --- AI clarification: PII warning first, then suggestions only --------- */
   async function runAssist() {
-    const description = [draft.painPoint, draft.baseline, draft.desiredOutcome]
+    const description = [draft.painPoint, draft.baseline, draft.desiredOutcome, draft.constraints]
       .filter(Boolean)
       .join("\n\n");
     if (!draft.title.trim() || description.trim().length < 20) {
@@ -285,6 +304,32 @@ export function OpportunityForm({
       );
     } finally {
       setAssistLoading(false);
+    }
+  }
+
+  async function continueToCanvas() {
+    if (!convertible) {
+      toast.error("Add the pain point and desired outcome before designing a use case.");
+      return;
+    }
+    setConverting(true);
+    try {
+      const savedId = id ?? (await persist(true));
+      if (!savedId) {
+        toast.error("Save the opportunity before continuing to Studio.");
+        return;
+      }
+      if (convertedUseCaseId) {
+        navigate({ to: "/studio/use-case/$id", params: { id: convertedUseCaseId } });
+        return;
+      }
+      const result = await convert({ data: { id: savedId } });
+      toast.success(result.reused ? "Opening the existing use case" : "Opening Studio Canvas");
+      navigate({ to: "/studio/use-case/$id", params: { id: result.draftId } });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not open Studio.");
+    } finally {
+      setConverting(false);
     }
   }
 
@@ -340,7 +385,20 @@ export function OpportunityForm({
             {signedOut ? "Sign in to save it to your workspace." : "Saving to your workspace…"}
           </p>
         ) : null}
-        {/* Essentials — the only required framing */}
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <Tabs value={mode} onValueChange={(v) => setMode(v as IntakeMode)}>
+            <TabsList aria-label="Capture mode">
+              <TabsTrigger value="quick">Quick capture</TabsTrigger>
+              <TabsTrigger value="guided">Guided intake</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <p className="text-xs text-muted-foreground">
+            {mode === "quick"
+              ? "Name the problem, pain and outcome. Add more later."
+              : "Walk through workflow, users, sponsor, geography and constraints."}
+          </p>
+        </div>
 
         <Card>
           <CardHeader>
@@ -384,235 +442,345 @@ export function OpportunityForm({
               />
             </div>
 
+            {mode === "quick" ? (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="opp-urgency-quick">Urgency</Label>
+                  <Select
+                    value={draft.urgency}
+                    onValueChange={(v) => set("urgency", v as OpportunityDraft["urgency"])}
+                  >
+                    <SelectTrigger id="opp-urgency-quick">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {URGENCIES.map((u) => (
+                        <SelectItem key={u} value={u}>
+                          {URGENCY_LABELS[u]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="opp-owner-quick">Accountable owner</Label>
+                  <Input
+                    id="opp-owner-quick"
+                    value={draft.ownerName}
+                    onChange={(e) => set("ownerName", e.target.value)}
+                    placeholder="Name or role"
+                  />
+                </div>
+              </div>
+            ) : null}
+
             {(duplicates.opportunities.length > 0 || duplicates.repository.length > 0) && (
               <div className="rounded-md border border-border bg-muted/40 p-3 text-sm">
                 <p className="font-medium">Possibly related — you can carry on regardless</p>
-                <ul className="mt-2 space-y-1 text-muted-foreground">
+                <ul className="mt-2 space-y-2 text-muted-foreground">
                   {duplicates.opportunities.map((d) => (
                     <li key={d.id}>
-                      Opportunity: <span className="text-foreground">{d.title}</span> ({d.status})
+                      <span className="text-foreground">{d.title}</span>
+                      {d.status ? ` (${d.status})` : ""}
+                      <span className="block text-xs">
+                        Workspace · {d.reason}
+                        {d.score > 0 ? ` · ${Math.round(d.score * 100)}% overlap` : ""}
+                      </span>
                     </li>
                   ))}
                   {duplicates.repository.map((d) => (
                     <li key={d.slug}>
-                      Repository: <span className="text-foreground">{d.title}</span>
+                      Repository pattern: <span className="text-foreground">{d.title}</span>
+                      <span className="block text-xs">
+                        {d.reason}
+                        {d.score > 0 ? ` · ${Math.round(d.score * 100)}% overlap` : ""}
+                      </span>
                     </li>
                   ))}
                 </ul>
               </div>
             )}
+
+            {mode === "quick" ? (
+              <Button type="button" variant="link" className="h-auto px-0" onClick={() => setMode("guided")}>
+                Need more structure? Switch to guided intake
+              </Button>
+            ) : null}
           </CardContent>
         </Card>
 
-        {/* Progressive disclosure — everything below is optional */}
-        <Accordion type="multiple" className="rounded-lg border border-border px-4">
-          <AccordionItem value="context">
-            <AccordionTrigger>Where it happens</AccordionTrigger>
-            <AccordionContent className="space-y-4 pb-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="opp-process">Affected process</Label>
-                  <Input
-                    id="opp-process"
-                    value={draft.process}
-                    onChange={(e) => set("process", e.target.value)}
-                    placeholder="e.g. First notification of loss"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="opp-function">Organisation / function</Label>
-                  <Input
-                    id="opp-function"
-                    value={draft.businessFunction}
-                    onChange={(e) => set("businessFunction", e.target.value)}
-                    placeholder="e.g. Operations — Claims"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="opp-objective">Strategic objective it supports</Label>
-                <Textarea
-                  id="opp-objective"
-                  rows={2}
-                  value={draft.strategicObjective}
-                  onChange={(e) => set("strategicObjective", e.target.value)}
-                  placeholder="Link the problem to a stated business objective."
-                />
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="people">
-            <AccordionTrigger>Who is involved</AccordionTrigger>
-            <AccordionContent className="space-y-4 pb-4">
-              <div className="space-y-2">
-                <Label htmlFor="opp-owner">Accountable owner</Label>
-                <Input
-                  id="opp-owner"
-                  value={draft.ownerName}
-                  onChange={(e) => set("ownerName", e.target.value)}
-                  placeholder="Name or role that owns the outcome"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="opp-stakeholder">Stakeholders</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="opp-stakeholder"
-                    value={stakeholderInput}
-                    onChange={(e) => setStakeholderInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addStakeholder();
-                      }
-                    }}
-                    placeholder="Add a stakeholder and press Enter"
-                  />
-                  <Button type="button" variant="secondary" onClick={addStakeholder}>
-                    <Plus className="h-4 w-4" />
-                    <span className="sr-only">Add stakeholder</span>
-                  </Button>
-                </div>
-                {draft.stakeholders.length > 0 && (
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    {draft.stakeholders.map((s, i) => (
-                      <Badge key={`${s}-${i}`} variant="secondary" className="gap-1">
-                        {s}
-                        <button
-                          type="button"
-                          aria-label={`Remove ${s}`}
-                          onClick={() =>
-                            set(
-                              "stakeholders",
-                              draft.stakeholders.filter((_, idx) => idx !== i),
-                            )
-                          }
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </Badge>
-                    ))}
+        {mode === "guided" ? (
+          <Accordion
+            key={mode}
+            type="multiple"
+            defaultValue={["context", "people", "baseline", "scope", "origin"]}
+            className="rounded-lg border border-border px-4"
+          >
+            <AccordionItem value="context">
+              <AccordionTrigger>Current workflow and strategy</AccordionTrigger>
+              <AccordionContent className="space-y-4 pb-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="opp-process">Current workflow</Label>
+                    <Input
+                      id="opp-process"
+                      value={draft.process}
+                      onChange={(e) => set("process", e.target.value)}
+                      placeholder="e.g. First notification of loss"
+                    />
                   </div>
-                )}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="evidence">
-            <AccordionTrigger>Baseline, urgency and evidence</AccordionTrigger>
-            <AccordionContent className="space-y-4 pb-4">
-              <div className="space-y-2">
-                <Label htmlFor="opp-baseline">Today&apos;s baseline</Label>
-                <Textarea
-                  id="opp-baseline"
-                  rows={2}
-                  value={draft.baseline}
-                  onChange={(e) => set("baseline", e.target.value)}
-                  placeholder="Current volume, cycle time, cost or error rate."
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="opp-urgency">Urgency</Label>
-                <Select
-                  value={draft.urgency}
-                  onValueChange={(v) => set("urgency", v as OpportunityDraft["urgency"])}
-                >
-                  <SelectTrigger id="opp-urgency">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {URGENCIES.map((u) => (
-                      <SelectItem key={u} value={u}>
-                        {URGENCY_LABELS[u]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="opp-evidence">Evidence</Label>
-                <div className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
-                  <Input
-                    id="opp-evidence"
-                    value={evidenceLabel}
-                    onChange={(e) => setEvidenceLabel(e.target.value)}
-                    placeholder="What it shows"
-                  />
-                  <Input
-                    value={evidenceUrl}
-                    onChange={(e) => setEvidenceUrl(e.target.value)}
-                    placeholder="https://… (optional)"
-                  />
-                  <Button type="button" variant="secondary" onClick={addEvidence}>
-                    Add
-                  </Button>
+                  <div className="space-y-2">
+                    <Label htmlFor="opp-function">Organisation / function</Label>
+                    <Input
+                      id="opp-function"
+                      value={draft.businessFunction}
+                      onChange={(e) => set("businessFunction", e.target.value)}
+                      placeholder="e.g. Operations — Claims"
+                    />
+                  </div>
                 </div>
-                {draft.evidence.length > 0 && (
-                  <ul className="space-y-1 pt-1 text-sm text-muted-foreground">
-                    {draft.evidence.map((e, i) => (
-                      <li key={`${e.label}-${i}`} className="flex items-center gap-2">
-                        <span className="text-foreground">{e.label}</span>
-                        {e.url ? <span className="truncate">{e.url}</span> : null}
-                        <button
-                          type="button"
-                          aria-label={`Remove ${e.label}`}
-                          onClick={() =>
-                            set(
-                              "evidence",
-                              draft.evidence.filter((_, idx) => idx !== i),
-                            )
-                          }
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
+                <div className="space-y-2">
+                  <Label htmlFor="opp-objective">Strategic objective</Label>
+                  <Textarea
+                    id="opp-objective"
+                    rows={2}
+                    value={draft.strategicObjective}
+                    onChange={(e) => set("strategicObjective", e.target.value)}
+                    placeholder="Link the problem to a stated business objective."
+                  />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
 
-          <AccordionItem value="origin">
-            <AccordionTrigger>Where this came from</AccordionTrigger>
-            <AccordionContent className="space-y-4 pb-4">
-              <div className="space-y-2">
-                <Label htmlFor="opp-source">Origin</Label>
-                <Select
-                  value={draft.source}
-                  onValueChange={(v) => set("source", v as OpportunitySource)}
-                >
-                  <SelectTrigger id="opp-source">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {OPPORTUNITY_SOURCES.map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {SOURCE_LABELS[s]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="opp-source-ref">Reference</Label>
-                <Input
-                  id="opp-source-ref"
-                  value={draft.sourceReference}
-                  onChange={(e) => set("sourceReference", e.target.value)}
-                  placeholder="Workshop name, referral or ticket reference"
-                />
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+            <AccordionItem value="people">
+              <AccordionTrigger>Affected users, owner and sponsor</AccordionTrigger>
+              <AccordionContent className="space-y-4 pb-4">
+                <div className="space-y-2">
+                  <Label htmlFor="opp-affected">Affected users</Label>
+                  <Textarea
+                    id="opp-affected"
+                    rows={2}
+                    value={draft.affectedUsers}
+                    onChange={(e) => set("affectedUsers", e.target.value)}
+                    placeholder="Roles, teams or citizen groups who feel this pain"
+                  />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="opp-owner">Accountable owner</Label>
+                    <Input
+                      id="opp-owner"
+                      value={draft.ownerName}
+                      onChange={(e) => set("ownerName", e.target.value)}
+                      placeholder="Name or role that owns the outcome"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="opp-sponsor">Sponsor</Label>
+                    <Input
+                      id="opp-sponsor"
+                      value={draft.sponsorName}
+                      onChange={(e) => set("sponsorName", e.target.value)}
+                      placeholder="Executive or business sponsor"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="opp-stakeholder">Stakeholders</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="opp-stakeholder"
+                      value={stakeholderInput}
+                      onChange={(e) => setStakeholderInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addStakeholder();
+                        }
+                      }}
+                      placeholder="Add a stakeholder and press Enter"
+                    />
+                    <Button type="button" variant="secondary" onClick={addStakeholder}>
+                      <Plus className="h-4 w-4" />
+                      <span className="sr-only">Add stakeholder</span>
+                    </Button>
+                  </div>
+                  {draft.stakeholders.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {draft.stakeholders.map((s, i) => (
+                        <Badge key={`${s}-${i}`} variant="secondary" className="gap-1">
+                          {s}
+                          <button
+                            type="button"
+                            aria-label={`Remove ${s}`}
+                            onClick={() =>
+                              set(
+                                "stakeholders",
+                                draft.stakeholders.filter((_, idx) => idx !== i),
+                              )
+                            }
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="baseline">
+              <AccordionTrigger>Pain baseline, urgency and evidence</AccordionTrigger>
+              <AccordionContent className="space-y-4 pb-4">
+                <div className="space-y-2">
+                  <Label htmlFor="opp-baseline">Pain baseline</Label>
+                  <Textarea
+                    id="opp-baseline"
+                    rows={2}
+                    value={draft.baseline}
+                    onChange={(e) => set("baseline", e.target.value)}
+                    placeholder="Current volume, cycle time, cost or error rate."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="opp-urgency">Urgency</Label>
+                  <Select
+                    value={draft.urgency}
+                    onValueChange={(v) => set("urgency", v as OpportunityDraft["urgency"])}
+                  >
+                    <SelectTrigger id="opp-urgency">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {URGENCIES.map((u) => (
+                        <SelectItem key={u} value={u}>
+                          {URGENCY_LABELS[u]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="opp-evidence">Evidence</Label>
+                  <div className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+                    <Input
+                      id="opp-evidence"
+                      value={evidenceLabel}
+                      onChange={(e) => setEvidenceLabel(e.target.value)}
+                      placeholder="What it shows"
+                    />
+                    <Input
+                      value={evidenceUrl}
+                      onChange={(e) => setEvidenceUrl(e.target.value)}
+                      placeholder="https://… (optional)"
+                    />
+                    <Button type="button" variant="secondary" onClick={addEvidence}>
+                      Add
+                    </Button>
+                  </div>
+                  {draft.evidence.length > 0 && (
+                    <ul className="space-y-1 pt-1 text-sm text-muted-foreground">
+                      {draft.evidence.map((e, i) => (
+                        <li key={`${e.label}-${i}`} className="flex items-center gap-2">
+                          <span className="text-foreground">{e.label}</span>
+                          {e.url ? <span className="truncate">{e.url}</span> : null}
+                          <button
+                            type="button"
+                            aria-label={`Remove ${e.label}`}
+                            onClick={() =>
+                              set(
+                                "evidence",
+                                draft.evidence.filter((_, idx) => idx !== i),
+                              )
+                            }
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="scope">
+              <AccordionTrigger>Geography and constraints</AccordionTrigger>
+              <AccordionContent className="space-y-4 pb-4">
+                <div className="space-y-2">
+                  <Label htmlFor="opp-geography">Geography</Label>
+                  <Input
+                    id="opp-geography"
+                    value={draft.geography}
+                    onChange={(e) => set("geography", e.target.value)}
+                    placeholder="Region, country or jurisdiction"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="opp-constraints">Constraints</Label>
+                  <Textarea
+                    id="opp-constraints"
+                    rows={3}
+                    value={draft.constraints}
+                    onChange={(e) => set("constraints", e.target.value)}
+                    placeholder="Policy, budget, timing, technology or regulatory limits"
+                  />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="origin">
+              <AccordionTrigger>Where this came from</AccordionTrigger>
+              <AccordionContent className="space-y-4 pb-4">
+                <div className="space-y-2">
+                  <Label htmlFor="opp-source">Origin</Label>
+                  <Select
+                    value={draft.source}
+                    onValueChange={(v) => set("source", v as OpportunitySource)}
+                  >
+                    <SelectTrigger id="opp-source">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {OPPORTUNITY_SOURCES.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {SOURCE_LABELS[s]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="opp-source-ref">Reference</Label>
+                  <Input
+                    id="opp-source-ref"
+                    value={draft.sourceReference}
+                    onChange={(e) => set("sourceReference", e.target.value)}
+                    placeholder="Workshop name, referral or ticket reference"
+                  />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        ) : null}
 
         <div className="flex flex-wrap items-center gap-3">
           <Button onClick={() => void persist(false)} disabled={!canSave || saving}>
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save opportunity
           </Button>
+          {convertible && !signedOut ? (
+            <Button
+              variant="default"
+              onClick={() => void continueToCanvas()}
+              disabled={converting || saving}
+            >
+              {converting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {convertedUseCaseId ? "Continue to Studio Canvas" : "Continue to Studio Canvas"}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          ) : null}
           <Button
             variant="ghost"
             onClick={() => (dirty ? setCancelOpen(true) : navigate({ to: "/opportunities" }))}
@@ -629,7 +797,6 @@ export function OpportunityForm({
         </div>
       </div>
 
-      {/* Side rail: capture quality + AI clarification */}
       <aside className="space-y-4">
         <Card>
           <CardHeader className="pb-3">
@@ -638,21 +805,71 @@ export function OpportunityForm({
           <CardContent className="space-y-3">
             <Progress value={completion.percent} aria-label="Capture completeness" />
             <p className="text-sm text-muted-foreground">{completion.percent}% captured</p>
-            {completion.missing.length > 0 && (
-              <ul className="space-y-1 text-sm text-muted-foreground">
-                {completion.missing.slice(0, 5).map((f) => (
-                  <li key={f.key as string}>· {f.label}</li>
+            {missingPrompts.length > 0 && (
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                {missingPrompts.map((f) => (
+                  <li key={f.key as string}>
+                    <span className="font-medium text-foreground">{f.label}</span>
+                    <span className="block text-xs">{f.prompt}</span>
+                  </li>
                 ))}
               </ul>
             )}
             <Separator />
             <p className="text-xs text-muted-foreground">
-              {isConvertible(draft)
-                ? "Ready to design a use case from this problem."
+              {convertible
+                ? "Ready to open Studio Canvas from this problem."
                 : "Add the pain point and desired outcome before designing a solution."}
             </p>
+            {convertible && !signedOut ? (
+              <Button
+                className="w-full"
+                size="sm"
+                onClick={() => void continueToCanvas()}
+                disabled={converting || saving}
+              >
+                {converting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Open Studio Canvas
+              </Button>
+            ) : null}
           </CardContent>
         </Card>
+
+        {(duplicates.repository.length > 0 || duplicates.opportunities.length > 0) && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm">Related patterns</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              {duplicates.repository.map((d) => (
+                <div key={d.slug} className="rounded-md border border-border p-2">
+                  <p className="font-medium text-foreground">{d.title}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Repository · {d.reason}
+                    {d.slug ? (
+                      <>
+                        {" · "}
+                        <Link
+                          to="/use-cases/$slug"
+                          params={{ slug: d.slug }}
+                          className="underline-offset-2 hover:underline"
+                        >
+                          View
+                        </Link>
+                      </>
+                    ) : null}
+                  </p>
+                </div>
+              ))}
+              {duplicates.opportunities.map((d) => (
+                <div key={d.id} className="rounded-md border border-border p-2">
+                  <p className="font-medium text-foreground">{d.title}</p>
+                  <p className="text-xs text-muted-foreground">Workspace · {d.reason}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader className="pb-3">
@@ -662,59 +879,90 @@ export function OpportunityForm({
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Suggestions appear here as prompts. Your words are never replaced.
+              Suggestions appear as drafts. Nothing is written into your form until you Apply.
             </p>
             <AiSafetyNotice what="Each suggestion below" />
             <Button
               variant="secondary"
               className="w-full"
-              onClick={() => void runAssist()}
+              onClick={() => setPiiOpen(true)}
               disabled={assistLoading}
             >
               {assistLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Suggest clarifications
             </Button>
             {suggestions && (
-              <div className="space-y-3 text-sm">
-                {suggestions.clarifyingQuestions?.length ? (
-                  <div>
-                    <p className="font-medium">Questions to answer</p>
-                    <ul className="mt-1 space-y-1 text-muted-foreground">
-                      {suggestions.clarifyingQuestions.map((q, i) => (
-                        <li key={i}>· {q}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                {suggestions.suggestedKpis?.length ? (
-                  <div>
-                    <p className="font-medium">Possible measures</p>
-                    <ul className="mt-1 space-y-1 text-muted-foreground">
-                      {suggestions.suggestedKpis.map((k, i) => (
-                        <li key={i}>· {k}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
+              <div className="space-y-3">
                 {suggestions.refinedProblemStatement ? (
-                  <div>
-                    <p className="font-medium">Sharper problem statement</p>
-                    <p className="text-muted-foreground">{suggestions.refinedProblemStatement}</p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                      onClick={() =>
-                        set(
-                          "painPoint",
-                          `${draft.painPoint}\n\n${suggestions.refinedProblemStatement}`.trim(),
-                        )
-                      }
-                    >
-                      Append to my description
-                    </Button>
-                  </div>
+                  <AiDraftSuggestion
+                    title="Sharper problem statement"
+                    body={suggestions.refinedProblemStatement}
+                    reason="Rewording for clarity from your pain and outcome text"
+                    source="AI assistant · enrichOpportunity"
+                    applyLabel="Apply to pain point"
+                    onApply={() => {
+                      set("painPoint", suggestions.refinedProblemStatement!.trim());
+                      toast.success("Applied AI draft to pain point");
+                    }}
+                  />
                 ) : null}
+                {suggestions.clarifyingQuestions?.length
+                  ? suggestions.clarifyingQuestions.map((q, i) => (
+                      <AiDraftSuggestion
+                        key={`q-${i}`}
+                        title="Clarifying question"
+                        body={q}
+                        reason="Missing information the assistant thinks would strengthen capture"
+                        source="AI assistant · enrichOpportunity"
+                        applyLabel="Append to pain point"
+                        onApply={() => {
+                          set(
+                            "painPoint",
+                            `${draft.painPoint}\n\nOpen question: ${q}`.trim(),
+                          );
+                          toast.success("Appended clarifying question");
+                        }}
+                      />
+                    ))
+                  : null}
+                {suggestions.suggestedKpis?.length
+                  ? suggestions.suggestedKpis.map((k, i) => (
+                      <AiDraftSuggestion
+                        key={`k-${i}`}
+                        title="Possible measure"
+                        body={k}
+                        reason="Suggested KPI derived from the stated outcome"
+                        source="AI assistant · enrichOpportunity"
+                        applyLabel="Append to outcome"
+                        onApply={() => {
+                          set(
+                            "desiredOutcome",
+                            `${draft.desiredOutcome}\n\nMeasure: ${k}`.trim(),
+                          );
+                          toast.success("Appended measure to outcome");
+                        }}
+                      />
+                    ))
+                  : null}
+                {suggestions.suggestedRisks?.length
+                  ? suggestions.suggestedRisks.map((r, i) => (
+                      <AiDraftSuggestion
+                        key={`r-${i}`}
+                        title="Possible risk / constraint"
+                        body={r}
+                        reason="Risk themes inferred from the problem framing"
+                        source="AI assistant · enrichOpportunity"
+                        applyLabel="Apply to constraints"
+                        onApply={() => {
+                          set(
+                            "constraints",
+                            `${draft.constraints}\n${r}`.trim(),
+                          );
+                          toast.success("Applied to constraints");
+                        }}
+                      />
+                    ))
+                  : null}
               </div>
             )}
           </CardContent>
@@ -730,6 +978,18 @@ export function OpportunityForm({
         onConfirm={() => {
           setDirty(false);
           navigate({ to: "/opportunities" });
+        }}
+      />
+
+      <ConfirmDialog
+        open={piiOpen}
+        onOpenChange={setPiiOpen}
+        title="Send text to external AI?"
+        description="The clarification assistant sends your problem title and description to an external AI service. Remove personal data, secrets, credentials and confidential identifiers before continuing. Suggestions remain drafts until you Apply them."
+        confirmLabel="I understand — continue"
+        onConfirm={() => {
+          setPiiOpen(false);
+          void runAssist();
         }}
       />
     </div>

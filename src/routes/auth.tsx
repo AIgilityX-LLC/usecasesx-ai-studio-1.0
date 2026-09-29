@@ -23,10 +23,18 @@ import {
   validateSignInForm,
 } from "@/lib/admin/password-policy";
 
+/**
+ * Temporary UI gate: hide Create account and force the sign-in view.
+ * Flip to `true` to restore the signup tab and default signup mode.
+ * Signup handlers / `supabase.auth.signUp` below stay intact.
+ */
+const SIGNUPS_ENABLED = false;
+
 /** `redirect` + `intent` let a signed-out action resume after sign-in. */
 const authSearchSchema = z.object({
   redirect: fallback(z.string().optional(), undefined),
   intent: fallback(z.string().optional(), undefined),
+  mode: fallback(z.enum(["signin", "signup"]).optional(), undefined),
 });
 
 export const Route = createFileRoute("/auth")({
@@ -53,8 +61,11 @@ const CHECKS = [
 
 function AuthPage() {
   const navigate = useNavigate();
-  const { redirect, intent } = Route.useSearch();
-  const [mode, setMode] = useState<"signin" | "signup">("signup");
+  const { redirect, intent, mode: modeParam } = Route.useSearch();
+  const [mode, setMode] = useState<"signin" | "signup">(() => {
+    if (!SIGNUPS_ENABLED) return "signin";
+    return modeParam === "signin" ? "signin" : "signup";
+  });
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,6 +73,22 @@ function AuthPage() {
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // When signups are paused, never leave the user on the signup view — including
+  // deep links like /auth?mode=signup.
+  useEffect(() => {
+    if (SIGNUPS_ENABLED) return;
+    setMode("signin");
+    if (modeParam !== "signup") return;
+    navigate({
+      to: "/auth",
+      search: {
+        ...(redirect ? { redirect } : {}),
+        ...(intent ? { intent } : {}),
+      },
+      replace: true,
+    });
+  }, [modeParam, redirect, intent, navigate]);
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((_e, session) => {
@@ -84,6 +111,13 @@ function AuthPage() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // UI gate only — signup branch below is unchanged and ready to re-enable.
+    if (!SIGNUPS_ENABLED && mode === "signup") {
+      setMode("signin");
+      setError("Sign-ups are paused. Please sign in.");
+      return;
+    }
 
     if (mode === "signup" && !name.trim()) {
       setError("Please enter your name.");
@@ -213,32 +247,34 @@ function AuthPage() {
               : "Sign in to continue your practice."}
           </p>
 
-          <div className="ux-auth-tabs" role="tablist" aria-label="Authentication mode">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={!isSignup}
-              className={!isSignup ? "is-active" : undefined}
-              onClick={() => {
-                setMode("signin");
-                setError(null);
-              }}
-            >
-              Sign in
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={isSignup}
-              className={isSignup ? "is-active" : undefined}
-              onClick={() => {
-                setMode("signup");
-                setError(null);
-              }}
-            >
-              Create account
-            </button>
-          </div>
+          {SIGNUPS_ENABLED ? (
+            <div className="ux-auth-tabs" role="tablist" aria-label="Authentication mode">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={!isSignup}
+                className={!isSignup ? "is-active" : undefined}
+                onClick={() => {
+                  setMode("signin");
+                  setError(null);
+                }}
+              >
+                Sign in
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={isSignup}
+                className={isSignup ? "is-active" : undefined}
+                onClick={() => {
+                  setMode("signup");
+                  setError(null);
+                }}
+              >
+                Create account
+              </button>
+            </div>
+          ) : null}
 
           <form onSubmit={onSubmit} noValidate>
             {isSignup ? (
@@ -335,6 +371,8 @@ function AuthPage() {
           {!isSignup ? (
             <p className="ux-auth-forgot">
               <Link to="/forgot-password">Forgot your password?</Link>
+              {" · "}
+              <Link to="/sso">Continue with SSO</Link>
             </p>
           ) : null}
 

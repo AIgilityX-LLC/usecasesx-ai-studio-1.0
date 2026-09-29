@@ -541,23 +541,33 @@ function Page() {
         }
       >
         <form onSubmit={submitSearch} className="relative flex max-w-2xl">
+          <label htmlFor="repository-search" className="sr-only">
+            Search use cases
+          </label>
           <svg
             className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
+            aria-hidden="true"
           >
             <circle cx="11" cy="11" r="7" />
             <path d="m20 20-3-3" strokeLinecap="round" />
           </svg>
           <input
+            id="repository-search"
+            type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search 'fraud detection', 'citizen services', 'document AI'…"
+            aria-label="Search use cases"
             className="w-full rounded-lg border border-input bg-card py-3 pl-12 pr-28 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
           />
-          <button className="absolute right-1.5 top-1.5 rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-110">
+          <button
+            type="submit"
+            className="absolute right-1.5 top-1.5 rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-110"
+          >
             Search
           </button>
         </form>
@@ -616,12 +626,17 @@ function Page() {
                 )}
               </p>
               <div className="flex items-center gap-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                <label
+                  htmlFor="repository-sort"
+                  className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
+                >
                   Sort
                 </label>
                 <select
+                  id="repository-sort"
                   value={sort}
                   onChange={(e) => update({ sort: e.target.value as SortKey })}
+                  aria-label="Sort use cases"
                   className="rounded-md border border-input bg-background px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   {(Object.keys(SORT_LABELS) as SortKey[]).map((k) => (

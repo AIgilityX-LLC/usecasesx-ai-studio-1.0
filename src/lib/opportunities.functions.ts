@@ -41,17 +41,26 @@ export const getOpportunityFn = createServerFn({ method: "GET" })
     return getOpportunity(context.supabase, data.id);
   });
 
-/** Non-blocking duplicate hint while typing a title. */
+/** Non-blocking duplicate / related-pattern hint while typing. */
 export const findSimilarOpportunitiesFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
     z
-      .object({ title: z.string().trim().max(300), excludeId: z.string().uuid().nullish() })
+      .object({
+        title: z.string().trim().max(300),
+        painPoint: z.string().trim().max(4000).optional(),
+        excludeId: z.string().uuid().nullish(),
+      })
       .parse(d),
   )
   .handler(async ({ data, context }) => {
     const { findSimilar } = await import("@/lib/opportunities.server");
-    return findSimilar(context.supabase, data.title, data.excludeId ?? null);
+    return findSimilar(
+      context.supabase,
+      data.title,
+      data.excludeId ?? null,
+      data.painPoint ?? null,
+    );
   });
 
 /** Create or update. Used by both autosave and explicit save. */
@@ -174,6 +183,32 @@ export const setOpportunityStatusFn = createServerFn({ method: "POST" })
       previous: { status: current.status },
       next: { status: saved.status },
     });
+    // Mirror onto the V2 canonical lifecycle when both ends map cleanly.
+    const { mapStatus, lifecycleTransitionAuditInput, permissionForTransition } = await import(
+      "@/lib/lifecycle"
+    );
+    const fromCanon = mapStatus("opportunity", current.status);
+    const toCanon = mapStatus("opportunity", saved.status);
+    if (
+      fromCanon.ok &&
+      toCanon.ok &&
+      fromCanon.canonical &&
+      toCanon.canonical &&
+      fromCanon.canonical !== toCanon.canonical
+    ) {
+      await writeAuditEvent(
+        ctx,
+        lifecycleTransitionAuditInput({
+          entityType: "opportunity",
+          entityId: saved.id,
+          from: fromCanon.canonical,
+          to: toCanon.canonical,
+          requiredPermission: permissionForTransition(fromCanon.canonical, toCanon.canonical),
+          workspaceId: saved.workspaceId,
+          organizationId: saved.organizationId,
+        }),
+      );
+    }
     await writeProductEvent(ctx, {
       event: PRODUCT_EVENTS.opportunityStatusChanged,
       entity: { type: "opportunity", id: saved.id },
@@ -257,12 +292,27 @@ export const convertOpportunityFn = createServerFn({ method: "POST" })
         source_opportunity_id: opp.id,
         source_use_case_id: opp.sourceUseCaseId,
         title: opp.title,
-        problem_statement: opp.painPoint || null,
-        current_state: opp.baseline || null,
+        problem_statement: [opp.painPoint, opp.affectedUsers ? `Affected users: ${opp.affectedUsers}` : ""]
+          .filter(Boolean)
+          .join("\n\n") || null,
+        current_state: [opp.baseline, opp.process ? `Workflow: ${opp.process}` : ""]
+          .filter(Boolean)
+          .join("\n\n") || null,
         future_state: opp.desiredOutcome || null,
-        beneficiaries: opp.businessFunction || null,
-        stakeholders: opp.stakeholders ?? [],
-        risks: [],
+        beneficiaries: [opp.businessFunction, opp.geography].filter(Boolean).join(" · ") || null,
+        stakeholders: [
+          ...(opp.stakeholders ?? []),
+          ...(opp.sponsorName ? [`Sponsor: ${opp.sponsorName}`] : []),
+          ...(opp.ownerName ? [`Owner: ${opp.ownerName}`] : []),
+        ],
+        risks: opp.constraints ? [`Constraint: ${opp.constraints}`] : [],
+        wizard_state: {
+          fromOpportunity: opp.id,
+          geography: opp.geography || null,
+          constraints: opp.constraints || null,
+          sponsorName: opp.sponsorName || null,
+          affectedUsers: opp.affectedUsers || null,
+        },
         status: "idea",
         position,
         created_by: userId,

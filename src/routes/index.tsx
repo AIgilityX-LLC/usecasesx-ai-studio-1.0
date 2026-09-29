@@ -21,11 +21,11 @@ import {
   Target,
   Workflow,
   X,
-  Crown,
 } from "lucide-react";
 import { SITE_NAME, SITE_URL } from "@/lib/seo";
 import { useReveal } from "@/hooks/useReveal";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
+import { LandingAuthActions } from "@/components/AuthNavActions";
 import heroImage from "@/assets/usecasesx-hero-background.png";
 import architectureImage from "@/assets/landing-studio.jpg";
 import sovereignImage from "@/assets/landing-sovereign.jpg";
@@ -533,28 +533,7 @@ function LandingPage() {
             </Link>
           ))}
         </nav>
-        <div className="ux-nav-actions">
-          <Link className="ux-nav-login" to="/auth">
-            Sign in
-          </Link>
-          <Link
-            className="ux-gratis-bar"
-            to="/pricing"
-            hash="founding"
-            onClick={() =>
-              trackCTAEvent("waitlist_join_clicked", {
-                source_page: "/",
-                target_route: "/pricing#founding",
-                location: "landing_nav",
-              })
-            }
-            data-analytics-id="waitlist-cta-nav"
-          >
-            <Crown size={14} strokeWidth={2} aria-hidden />
-            <span className="ux-gratis-full">Join the Waitlist – Early Gratis (Free) Access</span>
-            <span className="ux-gratis-short">Join Waitlist</span>
-          </Link>
-        </div>
+        <LandingAuthActions />
         <button
           type="button"
           className="ux-menu-toggle"
@@ -573,23 +552,7 @@ function LandingPage() {
               {item.label}
             </Link>
           ))}
-          <Link to="/auth" onClick={() => setMenuOpen(false)}>
-            Sign in
-          </Link>
-          <Link
-            to="/pricing"
-            hash="founding"
-            onClick={() => {
-              setMenuOpen(false);
-              trackCTAEvent("waitlist_join_clicked", {
-                source_page: "/",
-                target_route: "/pricing#founding",
-                location: "landing_nav_mobile",
-              });
-            }}
-          >
-            Join the Waitlist – Early Gratis (Free) Access
-          </Link>
+          <LandingAuthActions mobile onNavigate={() => setMenuOpen(false)} />
         </div>
       )}
 
