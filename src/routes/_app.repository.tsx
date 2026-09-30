@@ -14,7 +14,6 @@ import { ErrorState } from "@/components/ui-kit/ErrorState";
 import { CardSkeleton } from "@/components/LoadingSkeleton";
 
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
-import { PresetBar } from "@/components/usecasex/PresetBar";
 import { CompareTray } from "@/components/usecasex/CompareTray";
 import { track, trackSearch } from "@/lib/usecasex.tracking";
 import { trackModuleEvent } from "@/lib/module-analytics";
@@ -80,7 +79,7 @@ const FACET_LABELS: Record<string, string> = {
   industries: "Industry",
   capabilities: "AI Pattern",
   businessFunctions: "Business Function",
-  objectives: "Objective",
+  objectives: "By objective",
   processes: "Business Process",
   countries: "Country",
   govFunctions: "Public-sector function",
@@ -608,7 +607,6 @@ function Page() {
       <div className="mx-auto max-w-[1400px] px-6 py-10">
         <div className="flex flex-col gap-8">
           <div className="flex-1">
-            <PresetBar currentSearch={search as Record<string, unknown>} />
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
               <p className="text-sm text-muted-foreground" aria-live="polite">
                 <span className="font-mono text-base font-bold text-foreground">

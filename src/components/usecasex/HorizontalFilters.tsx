@@ -34,6 +34,7 @@ const KEY_FACETS = new Set<keyof FacetState>([
   "industries",
   "capabilities",
   "businessFunctions",
+  "objectives",
   "priority",
   "roiRange",
 ]);
@@ -80,7 +81,7 @@ export function HorizontalFilters({ tax, value, onChange, onClear, activeCount }
     ...(tax.sectors && tax.sectors.length
       ? [{ key: "sectors" as const, label: "Sector", options: tax.sectors }]
       : []),
-    { key: "objectives", label: "Objective", options: tax.objectives },
+    { key: "objectives", label: "By objective", options: tax.objectives },
     {
       key: "maturity",
       label: "Maturity",
@@ -259,14 +260,18 @@ export function HorizontalFilters({ tax, value, onChange, onClear, activeCount }
           }
         />
       </button>
-      {activeCount > 0 && (
-        <button
-          onClick={onClear}
-          className="ml-1 rounded-full px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-widest text-primary hover:underline"
-        >
-          Clear ({activeCount})
-        </button>
-      )}
+      <button
+        onClick={onClear}
+        disabled={activeCount === 0}
+        className={
+          "ml-1 rounded-full px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-widest " +
+          (activeCount > 0
+            ? "text-primary hover:underline"
+            : "cursor-not-allowed text-muted-foreground/50")
+        }
+      >
+        Clear{activeCount > 0 ? ` (${activeCount})` : ""}
+      </button>
       {showAdvanced && (
         <div className="mt-2 flex w-full flex-wrap items-center gap-2 border-t border-border pt-2">
           <span className="mr-1 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">

@@ -186,7 +186,9 @@ function AuthPage() {
           </div>
 
           <h1 className="ux-auth-headline">
-            Build AI <span className="ux-auth-accent">use cases</span> that hold up.
+            Build a Validated AI Use Case
+            <br />
+            <span className="ux-auth-accent">Before</span> You Spend A Dollar Building It.
           </h1>
           <p className="ux-auth-sub">
             Move from curiosity to governed, measurable action — without the guesswork.

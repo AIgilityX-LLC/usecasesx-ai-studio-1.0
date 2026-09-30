@@ -363,15 +363,6 @@ export function LeadCaptureModal(props: LeadCaptureProps) {
               />
             </div>
 
-            <SelectField
-              name="interestArea"
-              label="Interest area"
-              value={form.interestArea ?? ""}
-              onChange={(v) => set("interestArea", (v || undefined) as InterestArea | undefined)}
-              options={INTEREST_AREAS as unknown as string[]}
-              error={errors.interestArea}
-            />
-
             <TextareaField
               name="message"
               label="Message or notes"

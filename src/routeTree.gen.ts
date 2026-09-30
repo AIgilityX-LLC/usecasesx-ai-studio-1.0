@@ -88,6 +88,7 @@ import { Route as AppAdministrationAiEnginesRouteImport } from './routes/_app.ad
 import { Route as AppAdministrationAnalyticsRouteImport } from './routes/_app.administration.analytics'
 import { Route as AppAdministrationEmailDeliveryRouteImport } from './routes/_app.administration.email-delivery'
 import { Route as AppAdministrationFeedbackRouteImport } from './routes/_app.administration.feedback'
+import { Route as AppAdministrationFoundingAccessRouteImport } from './routes/_app.administration.founding-access'
 import { Route as AppAdministrationLaunchChecksRouteImport } from './routes/_app.administration.launch-checks'
 import { Route as AppAdministrationLaunchLearningRouteImport } from './routes/_app.administration.launch-learning'
 import { Route as AppAdministrationLaunchReadinessRouteImport } from './routes/_app.administration.launch-readiness'
@@ -551,6 +552,12 @@ const AppAdministrationFeedbackRoute =
     path: '/feedback',
     getParentRoute: () => AppAdministrationRoute,
   } as any)
+const AppAdministrationFoundingAccessRoute =
+  AppAdministrationFoundingAccessRouteImport.update({
+    id: '/founding-access',
+    path: '/founding-access',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
 const AppAdministrationLaunchChecksRoute =
   AppAdministrationLaunchChecksRouteImport.update({
     id: '/launch-checks',
@@ -982,6 +989,7 @@ export interface FileRoutesByFullPath {
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/administration/email-delivery': typeof AppAdministrationEmailDeliveryRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
+  '/administration/founding-access': typeof AppAdministrationFoundingAccessRoute
   '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/administration/launch-readiness': typeof AppAdministrationLaunchReadinessRoute
@@ -1124,6 +1132,7 @@ export interface FileRoutesByTo {
   '/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/administration/email-delivery': typeof AppAdministrationEmailDeliveryRoute
   '/administration/feedback': typeof AppAdministrationFeedbackRoute
+  '/administration/founding-access': typeof AppAdministrationFoundingAccessRoute
   '/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/administration/launch-readiness': typeof AppAdministrationLaunchReadinessRoute
@@ -1270,6 +1279,7 @@ export interface FileRoutesById {
   '/_app/administration/analytics': typeof AppAdministrationAnalyticsRoute
   '/_app/administration/email-delivery': typeof AppAdministrationEmailDeliveryRoute
   '/_app/administration/feedback': typeof AppAdministrationFeedbackRoute
+  '/_app/administration/founding-access': typeof AppAdministrationFoundingAccessRoute
   '/_app/administration/launch-checks': typeof AppAdministrationLaunchChecksRoute
   '/_app/administration/launch-learning': typeof AppAdministrationLaunchLearningRoute
   '/_app/administration/launch-readiness': typeof AppAdministrationLaunchReadinessRoute
@@ -1416,6 +1426,7 @@ export interface FileRouteTypes {
     | '/administration/analytics'
     | '/administration/email-delivery'
     | '/administration/feedback'
+    | '/administration/founding-access'
     | '/administration/launch-checks'
     | '/administration/launch-learning'
     | '/administration/launch-readiness'
@@ -1558,6 +1569,7 @@ export interface FileRouteTypes {
     | '/administration/analytics'
     | '/administration/email-delivery'
     | '/administration/feedback'
+    | '/administration/founding-access'
     | '/administration/launch-checks'
     | '/administration/launch-learning'
     | '/administration/launch-readiness'
@@ -1703,6 +1715,7 @@ export interface FileRouteTypes {
     | '/_app/administration/analytics'
     | '/_app/administration/email-delivery'
     | '/_app/administration/feedback'
+    | '/_app/administration/founding-access'
     | '/_app/administration/launch-checks'
     | '/_app/administration/launch-learning'
     | '/_app/administration/launch-readiness'
@@ -2351,6 +2364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdministrationFeedbackRouteImport
       parentRoute: typeof AppAdministrationRoute
     }
+    '/_app/administration/founding-access': {
+      id: '/_app/administration/founding-access'
+      path: '/founding-access'
+      fullPath: '/administration/founding-access'
+      preLoaderRoute: typeof AppAdministrationFoundingAccessRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/administration/launch-checks': {
       id: '/_app/administration/launch-checks'
       path: '/launch-checks'
@@ -2827,6 +2847,7 @@ interface AppAdministrationRouteChildren {
   AppAdministrationAnalyticsRoute: typeof AppAdministrationAnalyticsRoute
   AppAdministrationEmailDeliveryRoute: typeof AppAdministrationEmailDeliveryRoute
   AppAdministrationFeedbackRoute: typeof AppAdministrationFeedbackRoute
+  AppAdministrationFoundingAccessRoute: typeof AppAdministrationFoundingAccessRoute
   AppAdministrationLaunchChecksRoute: typeof AppAdministrationLaunchChecksRoute
   AppAdministrationLaunchLearningRoute: typeof AppAdministrationLaunchLearningRoute
   AppAdministrationLaunchReadinessRoute: typeof AppAdministrationLaunchReadinessRoute
@@ -2847,6 +2868,7 @@ const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationAnalyticsRoute: AppAdministrationAnalyticsRoute,
   AppAdministrationEmailDeliveryRoute: AppAdministrationEmailDeliveryRoute,
   AppAdministrationFeedbackRoute: AppAdministrationFeedbackRoute,
+  AppAdministrationFoundingAccessRoute: AppAdministrationFoundingAccessRoute,
   AppAdministrationLaunchChecksRoute: AppAdministrationLaunchChecksRoute,
   AppAdministrationLaunchLearningRoute: AppAdministrationLaunchLearningRoute,
   AppAdministrationLaunchReadinessRoute: AppAdministrationLaunchReadinessRoute,

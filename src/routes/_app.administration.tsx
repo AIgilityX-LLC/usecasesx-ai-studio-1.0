@@ -149,7 +149,9 @@ function AdminPageInner() {
             <TabsTrigger value="categories">Categories</TabsTrigger>
             <TabsTrigger value="organizations">Organizations</TabsTrigger>
             <TabsTrigger value="studio-templates">Studio Templates</TabsTrigger>
-            <TabsTrigger value="integrations">Integrations</TabsTrigger>
+            <TabsTrigger value="integrations" disabled className="opacity-40">
+              Integrations
+            </TabsTrigger>
             <TabsTrigger value="report-templates">Report Templates</TabsTrigger>
             <TabsTrigger value="taxonomy">Taxonomy</TabsTrigger>
             <TabsTrigger value="import">Import</TabsTrigger>

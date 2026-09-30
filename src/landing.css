@@ -480,7 +480,7 @@
   font-weight: 800;
   color: var(--ux-fg-on-dark);
   margin: 22px 0 20px;
-  max-width: 12ch;
+  max-width: 18ch;
 }
 .ux-landing .ux-hero-word {
   display: inline-block;

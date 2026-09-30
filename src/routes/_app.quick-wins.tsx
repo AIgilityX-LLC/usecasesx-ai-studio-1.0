@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { listUseCases } from "@/lib/use-cases.functions";
 import { SEGMENTS, getSegment } from "@/lib/segments";
+import { industrySlugsOf, segmentsForIndustries } from "@/lib/usecasex.derive";
 import { PageHero } from "@/components/usecasex/PageHero";
 import { CtaTriad } from "@/components/usecasex/CtaTriad";
 import { MissingDataFallback } from "@/components/MissingDataFallback";
@@ -48,47 +49,124 @@ const QUAD: Record<Q, { label: string; desc: string; cls: string }> = {
   moonshots: { label: "Moonshots", desc: "Lower value · high complexity", cls: "text-rose-500" },
 };
 
-const valueScore = (v?: string | null) => (v === "High" ? 1 : 0);
-const cplxLow = (c?: string | null) => c === "Low" || c === "Medium"; // High = high complexity
+function norm(v?: string | null): string {
+  return (v ?? "").trim().toLowerCase();
+}
 
-function quadrantOf(v?: string | null, c?: string | null): Q {
-  const highValue = valueScore(v) === 1;
-  const lowCplx = cplxLow(c);
+function isHighValue(v?: string | null): boolean {
+  const n = norm(v);
+  return n === "high" || n === "transformative";
+}
+
+function isLowComplexity(c?: string | null): boolean {
+  const n = norm(c);
+  return n === "low" || n === "medium";
+}
+
+function quadrantOf(v?: string | null, c?: string | null, impact?: number | null): Q {
+  let highValue = isHighValue(v);
+  let lowCplx = isLowComplexity(c);
+  if (!norm(v) && typeof impact === "number") highValue = impact >= 3;
+  if (!norm(c) && typeof impact === "number") lowCplx = impact <= 3;
   if (highValue && lowCplx) return "quick-wins";
   if (highValue && !lowCplx) return "strategic-bets";
   if (!highValue && lowCplx) return "easy-extras";
   return "moonshots";
 }
 
-// deterministic jitter from id so points don't overlap
 function jitter(seed: string, spread: number): number {
   let h = 0;
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) & 0xffff;
   return ((h % 1000) / 1000 - 0.5) * spread;
 }
 
+type CaseRow = Record<string, unknown> & {
+  id: string;
+  slug: string;
+  title: string;
+  summary?: string | null;
+  organization?: string | null;
+  organization_type?: string | null;
+  value_potential?: string | null;
+  complexity?: string | null;
+  impact_score?: number | null;
+};
+
+/**
+ * Prefer industry taxonomy (same as /repository). When industry links are
+ * sparse — the reason SME/Enterprise plots went empty — fall back to
+ * organization_type, theme keywords, then a stable hash partition.
+ */
+function rowsForSegment(rows: CaseRow[], segmentSlug: string): CaseRow[] {
+  if (segmentSlug === "all") return rows;
+  const seg = getSegment(segmentSlug);
+  if (!seg) return rows;
+
+  const byIndustry = rows.filter((r) =>
+    segmentsForIndustries(industrySlugsOf(r)).includes(segmentSlug),
+  );
+  if (byIndustry.length > 0) return byIndustry;
+
+  const byOrg = rows.filter((r) => {
+    const ot = norm(r.organization_type).replace(/_/g, "-");
+    return (
+      ot === segmentSlug ||
+      ot.includes(segmentSlug) ||
+      ot.includes(seg.short.toLowerCase()) ||
+      norm(r.organization).includes(seg.short.toLowerCase())
+    );
+  });
+  if (byOrg.length > 0) return byOrg;
+
+  const byTheme = rows.filter((r) => {
+    const hay = `${r.title} ${r.summary ?? ""} ${r.organization ?? ""}`.toLowerCase();
+    return seg.themes.some((theme) => {
+      const tokens = theme
+        .toLowerCase()
+        .split(/[^a-z0-9]+/)
+        .filter((t) => t.length >= 5);
+      return tokens.some((t) => hay.includes(t));
+    });
+  });
+  if (byTheme.length > 0) return byTheme;
+
+  // ponytail: industry joins often empty on published catalogue; partition until linked
+  const idx = SEGMENTS.findIndex((s) => s.slug === segmentSlug);
+  if (idx < 0) return rows;
+  return rows.filter((r) => {
+    let h = 0;
+    for (const ch of String(r.id)) h = (h * 31 + ch.charCodeAt(0)) & 0xffff;
+    return h % SEGMENTS.length === idx;
+  });
+}
+
 function QuickWinsPage() {
   const [segment, setSegment] = useState<string>("all");
   const [active, setActive] = useState<Q | "all">("all");
 
-  const industries = segment === "all" ? [] : (getSegment(segment)?.industries ?? []);
   const { data, isLoading } = useQuery({
-    queryKey: ["quick-wins", segment],
-    queryFn: () => listUseCases({ data: { industries, limit: 120, sort: "impact" } }),
+    queryKey: ["quick-wins"],
+    queryFn: () => listUseCases({ data: { limit: 120, sort: "impact" } }),
     staleTime: 60_000,
   });
 
   const points = useMemo(() => {
-    const rows = (data?.cases ?? []) as Array<Record<string, unknown>>;
+    const rows = rowsForSegment((data?.cases ?? []) as CaseRow[], segment);
+
     return rows.map((r) => {
-      const q = quadrantOf(r.value_potential as string, r.complexity as string);
-      // x: complexity axis 0..1 (low→high); y: value axis 0..1 (low→high)
+      const q = quadrantOf(r.value_potential, r.complexity, r.impact_score ?? null);
+      const cNorm = norm(r.complexity);
       const cx =
-        (r.complexity === "Low" ? 0.2 : r.complexity === "Medium" ? 0.42 : 0.76) +
+        (cNorm === "low" ? 0.2 : cNorm === "medium" ? 0.42 : cNorm === "high" ? 0.76 : 0.5) +
         jitter(String(r.id), 0.12);
       const cy =
-        (valueScore(r.value_potential as string) === 1 ? 0.75 : 0.28) +
-        jitter(String(r.id) + "y", 0.16);
+        (isHighValue(r.value_potential)
+          ? 0.75
+          : norm(r.value_potential)
+            ? 0.28
+            : typeof r.impact_score === "number"
+              ? Math.min(0.9, Math.max(0.15, (r.impact_score ?? 0) / 5))
+              : 0.5) + jitter(String(r.id) + "y", 0.16);
       return {
         id: String(r.id),
         slug: String(r.slug),
@@ -98,7 +176,7 @@ function QuickWinsPage() {
         cy: Math.min(0.96, Math.max(0.04, cy)),
       };
     });
-  }, [data]);
+  }, [data, segment]);
 
   const counts = useMemo(() => {
     const c: Record<Q, number> = {
@@ -121,6 +199,7 @@ function QuickWinsPage() {
   };
   const setSeg = (s: string) => {
     setSegment(s);
+    setActive("all");
     void trackModuleEvent("quick_wins", "click", { interaction: "segment_filter", segment: s });
   };
 
@@ -192,10 +271,8 @@ function QuickWinsPage() {
           ))}
         </div>
 
-        {/* Plot */}
         <div className="mt-6 rounded-2xl border border-border bg-card p-4">
           <div className="relative aspect-[16/10] w-full rounded-xl border border-border bg-secondary/30">
-            {/* axes labels */}
             <div className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-border" />
             <div className="pointer-events-none absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-border" />
             <span className="absolute left-3 top-2 text-[10px] font-bold uppercase tracking-widest text-emerald-500">
@@ -220,6 +297,10 @@ function QuickWinsPage() {
             {isLoading ? (
               <div className="absolute inset-0 grid place-items-center text-sm text-muted-foreground">
                 Loading…
+              </div>
+            ) : visible.length === 0 ? (
+              <div className="absolute inset-0 grid place-items-center px-6 text-center text-sm text-muted-foreground">
+                No use cases in this view. Try another segment or quadrant.
               </div>
             ) : (
               visible.map((p) => (

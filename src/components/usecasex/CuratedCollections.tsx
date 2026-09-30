@@ -1,4 +1,4 @@
-import { Layers, Building2, Target, Workflow } from "lucide-react";
+import { Layers, Building2, Workflow } from "lucide-react";
 
 export interface FacetOption {
   slug: string;
@@ -40,12 +40,6 @@ const GROUPS: {
     blurb: "Where the value lands operationally.",
     icon: Workflow,
   },
-  {
-    key: "objectives",
-    label: "By objective",
-    blurb: "Outcomes the business is buying.",
-    icon: Target,
-  },
 ];
 
 /**
@@ -78,7 +72,7 @@ export function CuratedCollections({
       >
         Start with a collection
       </h2>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {groups.map((g) => {
           const Icon = g.icon;
           return (

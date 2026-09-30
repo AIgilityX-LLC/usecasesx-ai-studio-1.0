@@ -110,6 +110,12 @@ const ADMIN: Item[] = [
   { to: "/reports", label: "Reports", icon: FileBarChart },
   { to: "/administration", label: "Admin Panel", icon: Settings, admin: true },
   { to: "/administration/requests", label: "Requests Inbox", icon: Inbox, admin: true },
+  {
+    to: "/administration/founding-access",
+    label: "Founding Access",
+    icon: Crown,
+    admin: true,
+  },
   { to: "/administration/leads", label: "Lead Pipeline", icon: Users, admin: true },
   {
     to: "/administration/email-delivery",
@@ -260,10 +266,28 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          {!collapsed && <SidebarGroupLabel>Integrations</SidebarGroupLabel>}
+        <SidebarGroup className="opacity-40 pointer-events-none select-none" aria-disabled="true">
+          {!collapsed && (
+            <SidebarGroupLabel className="opacity-70">Integrations</SidebarGroupLabel>
+          )}
           <SidebarGroupContent>
-            <SidebarMenu>{visible(INTEGRATIONS).map(renderItem)}</SidebarMenu>
+            <SidebarMenu>
+              {INTEGRATIONS.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <SidebarMenuItem key={item.to}>
+                    <SidebarMenuButton
+                      disabled
+                      tooltip={collapsed ? `${item.label} — Coming soon` : undefined}
+                      className="cursor-not-allowed"
+                    >
+                      <Icon className="h-4 w-4 shrink-0" />
+                      {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 

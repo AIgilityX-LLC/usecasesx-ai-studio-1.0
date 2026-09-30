@@ -1,12 +1,13 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Crown } from "lucide-react";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { AppBreadcrumb } from "./AppBreadcrumb";
 import { MobileNav } from "./MobileNav";
-import { UserAccountMenu } from "./AuthNavActions";
+import { UserAccountMenu, GRATIS_LABEL_FULL } from "./AuthNavActions";
+import { FoundingAccessRequestModal } from "./FoundingAccessRequestModal";
 
 import { UseCasesXFooter } from "./UseCasesXFooter";
 import brandMark from "@/assets/usecasesx-logo.png";
@@ -28,6 +29,17 @@ const TOP_NAV: { to: string; label: string }[] = [
 export function SiteShell({ children }: { children: ReactNode }) {
   const session = useSupabaseSession();
   const isAuthed = !!session;
+  const [foundingOpen, setFoundingOpen] = useState(false);
+
+  const openFoundingRequest = (location: string) => {
+    void import("@/lib/usecasex.tracking").then(({ trackCTAEvent }) =>
+      trackCTAEvent("waitlist_join_clicked", {
+        target_route: "founding_access_modal",
+        location,
+      }),
+    );
+    setFoundingOpen(true);
+  };
 
   // Dev-only: verify every primary nav target resolves to a real route.
   useNavLinkIntegrityCheck();
@@ -95,25 +107,17 @@ export function SiteShell({ children }: { children: ReactNode }) {
       <div className="flex items-center gap-2">
         {isAuthed ? (
           <>
-            <UserAccountMenu variant="shell" />
-            <Link
-              to="/pricing"
-              hash="founding"
-              onClick={() =>
-                void import("@/lib/usecasex.tracking").then(({ trackCTAEvent }) =>
-                  trackCTAEvent("waitlist_join_clicked", {
-                    target_route: "/pricing#founding",
-                    location: "site_nav_signed_in",
-                  }),
-                )
-              }
+            <button
+              type="button"
+              onClick={() => openFoundingRequest("site_nav_signed_in")}
               data-analytics-id="waitlist-cta-nav"
               className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3.5 py-1.5 text-[13px] font-bold text-primary-foreground shadow-[var(--shadow-gold)] hover:brightness-110"
             >
               <Crown className="h-3.5 w-3.5 shrink-0" aria-hidden />
-              <span className="hidden sm:inline">Join the Waitlist — Early Gratis (Free) Access</span>
+              <span className="hidden sm:inline">{GRATIS_LABEL_FULL}</span>
               <span className="sm:hidden">Join Waitlist</span>
-            </Link>
+            </button>
+            <UserAccountMenu variant="shell" />
           </>
         ) : (
           <>
@@ -123,27 +127,20 @@ export function SiteShell({ children }: { children: ReactNode }) {
             >
               Sign in
             </Link>
-            <Link
-              to="/pricing"
-              hash="founding"
-              onClick={() =>
-                void import("@/lib/usecasex.tracking").then(({ trackCTAEvent }) =>
-                  trackCTAEvent("waitlist_join_clicked", {
-                    target_route: "/pricing#founding",
-                    location: "site_nav",
-                  }),
-                )
-              }
+            <button
+              type="button"
+              onClick={() => openFoundingRequest("site_nav")}
               data-analytics-id="waitlist-cta-nav"
               className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3.5 py-1.5 text-[13px] font-bold text-primary-foreground shadow-[var(--shadow-gold)] hover:brightness-110"
             >
               <Crown className="h-3.5 w-3.5 shrink-0" aria-hidden />
-              <span className="hidden sm:inline">Join the Waitlist — Early Gratis (Free) Access</span>
+              <span className="hidden sm:inline">{GRATIS_LABEL_FULL}</span>
               <span className="sm:hidden">Join Waitlist</span>
-            </Link>
+            </button>
           </>
         )}
       </div>
+      <FoundingAccessRequestModal open={foundingOpen} onClose={() => setFoundingOpen(false)} />
     </header>
   );
 

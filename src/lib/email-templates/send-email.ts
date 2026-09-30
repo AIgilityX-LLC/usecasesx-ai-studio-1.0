@@ -23,6 +23,11 @@ export interface SendTemplateEmailOptions {
   /** Dedupes retries of the same logical send; defaults to a random UUID (no dedupe). */
   idempotencyKey?: string;
   replyTo?: string;
+  /**
+   * Optional From: override (must stay on the verified FROM_DOMAIN).
+   * Defaults to noreply@FROM_DOMAIN. Used for founder-ops mail from info@.
+   */
+  from?: string;
 }
 
 /**
@@ -67,7 +72,7 @@ export async function sendTemplateEmail(
     await sendLovableEmail(
       {
         to: recipient,
-        from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+        from: options.from ?? `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
         sender_domain: SENDER_DOMAIN,
         subject,
         html,

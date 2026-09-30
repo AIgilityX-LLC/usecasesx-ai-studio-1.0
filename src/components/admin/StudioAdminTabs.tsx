@@ -616,11 +616,6 @@ export function IntegrationsAdminTab() {
   useEffect(() => {
     setS(readLS<IntegrationSettings>(LS.integrations, DEFAULT_INTEGRATIONS));
   }, []);
-  const update = (key: keyof IntegrationSettings, patch: Partial<IntegrationConfig>) => {
-    const next = { ...s, [key]: { ...s[key], ...patch } };
-    setS(next);
-    writeLS(LS.integrations, next);
-  };
 
   const cards: { key: keyof IntegrationSettings; label: string }[] = [
     { key: "sarpi", label: "SARPI™" },
@@ -629,49 +624,43 @@ export function IntegrationsAdminTab() {
   ];
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-lg font-semibold">Integrations</h2>
-        <p className="text-sm text-muted-foreground">
-          Connect Studio modules to external assessment and governance platforms.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {cards.map((c) => {
-          const cfg = s[c.key];
-          return (
-            <Card key={c.key}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">{c.label}</CardTitle>
-                  <Switch
-                    checked={cfg.enabled}
-                    onCheckedChange={(v) => update(c.key, { enabled: v })}
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground">{cfg.notes}</p>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Field label="API URL">
-                  <Input
-                    value={cfg.api_url}
-                    onChange={(e) => update(c.key, { api_url: e.target.value })}
-                    placeholder="https://…"
-                  />
-                </Field>
-                <Field label="API Key Secret Name">
-                  <Input
-                    value={cfg.api_key_label}
-                    onChange={(e) => update(c.key, { api_key_label: e.target.value })}
-                  />
-                </Field>
-                <p className="text-xs text-muted-foreground">
-                  Add the matching secret in Lovable Cloud settings.
-                </p>
-              </CardContent>
-            </Card>
-          );
-        })}
+    <div className="relative space-y-4">
+      <div className="pointer-events-none absolute inset-0 z-10 rounded-lg bg-background/55 backdrop-blur-[1px]" />
+      <div className="opacity-45" aria-disabled="true">
+        <div>
+          <h2 className="text-lg font-semibold">Integrations</h2>
+          <p className="text-sm text-muted-foreground">
+            Connect Studio modules to external assessment and governance platforms. Coming soon —
+            temporarily unavailable.
+          </p>
+        </div>
+        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+          {cards.map((c) => {
+            const cfg = s[c.key];
+            return (
+              <Card key={c.key}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base">{c.label}</CardTitle>
+                    <Switch checked={cfg.enabled} disabled />
+                  </div>
+                  <p className="text-xs text-muted-foreground">{cfg.notes}</p>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Field label="API URL">
+                    <Input value={cfg.api_url} disabled placeholder="https://…" />
+                  </Field>
+                  <Field label="API Key Secret Name">
+                    <Input value={cfg.api_key_label} disabled />
+                  </Field>
+                  <p className="text-xs text-muted-foreground">
+                    Add the matching secret in Lovable Cloud settings.
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

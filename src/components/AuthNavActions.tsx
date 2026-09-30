@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Crown, LayoutDashboard, LogOut, Settings, UserRound } from "lucide-react";
+import { Crown, LayoutDashboard, LogOut, Shield, UserRound } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -9,11 +10,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { FoundingAccessRequestModal } from "@/components/FoundingAccessRequestModal";
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
 import { PLATFORM_ADMIN_ROLES } from "@/lib/admin/platform-admin";
 import { useRoles } from "@/lib/usecasex.roles";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+
+const GRATIS_LABEL_FULL = "Join the Waitlist – Early Gratis (Pro) Access";
+const GRATIS_LABEL_SHORT = "Join Waitlist";
 
 /** Initials for the signed-in avatar. Platform admins show "PA". */
 export function accountAvatarLabel(input: {
@@ -97,7 +102,7 @@ export function UserAccountMenu({ variant = "shell", className }: UserAccountMen
         {isPlatformAdmin && (
           <DropdownMenuItem asChild>
             <Link to="/administration">
-              <Settings />
+              <Shield />
               Admin panel
             </Link>
           </DropdownMenuItem>
@@ -123,18 +128,42 @@ type LandingAuthActionsProps = {
   mobile?: boolean;
 };
 
+function trackWaitlistOpen(location: string) {
+  void import("@/lib/usecasex.tracking").then(({ trackCTAEvent }) =>
+    trackCTAEvent("waitlist_join_clicked", {
+      source_page: typeof window !== "undefined" ? window.location.pathname : "/",
+      target_route: "founding_access_modal",
+      location,
+    }),
+  );
+}
+
 /**
  * Landing header / mobile menu auth CTAs:
- * signed out → Sign in + Waitlist; signed in → Dashboard + avatar menu.
+ * signed out → Sign in + Waitlist modal; signed in → Waitlist modal + avatar.
+ * Gratis never navigates or auto-grants access.
  */
 export function LandingAuthActions({ onNavigate, mobile = false }: LandingAuthActionsProps) {
   const session = useSupabaseSession();
+  const { hasAny, loading: rolesLoading } = useRoles();
   const isAuthed = !!session;
+  const showAdmin = !rolesLoading && hasAny(PLATFORM_ADMIN_ROLES);
+  const [requestOpen, setRequestOpen] = useState(false);
+
+  const openRequest = (location: string) => {
+    trackWaitlistOpen(location);
+    setRequestOpen(true);
+    onNavigate?.();
+  };
 
   if (session === undefined) {
     // Avoid flashing the wrong CTA while the session resolves.
     return <div className={mobile ? undefined : "ux-nav-actions"} aria-hidden />;
   }
+
+  const modal = (
+    <FoundingAccessRequestModal open={requestOpen} onClose={() => setRequestOpen(false)} />
+  );
 
   if (!isAuthed) {
     if (mobile) {
@@ -143,50 +172,32 @@ export function LandingAuthActions({ onNavigate, mobile = false }: LandingAuthAc
           <Link to="/auth" onClick={onNavigate}>
             Sign in
           </Link>
-          <Link
-            to="/pricing"
-            hash="founding"
-            onClick={() => {
-              onNavigate?.();
-              void import("@/lib/usecasex.tracking").then(({ trackCTAEvent }) =>
-                trackCTAEvent("waitlist_join_clicked", {
-                  source_page: "/",
-                  target_route: "/pricing#founding",
-                  location: "landing_nav_mobile",
-                }),
-              );
-            }}
-          >
-            Join the Waitlist – Early Gratis (Free) Access
-          </Link>
+          <button type="button" onClick={() => openRequest("landing_nav_mobile")}>
+            {GRATIS_LABEL_FULL}
+          </button>
+          {modal}
         </>
       );
     }
     return (
-      <div className="ux-nav-actions">
-        <Link className="ux-nav-login" to="/auth">
-          Sign in
-        </Link>
-        <Link
-          className="ux-gratis-bar"
-          to="/pricing"
-          hash="founding"
-          onClick={() =>
-            void import("@/lib/usecasex.tracking").then(({ trackCTAEvent }) =>
-              trackCTAEvent("waitlist_join_clicked", {
-                source_page: "/",
-                target_route: "/pricing#founding",
-                location: "landing_nav",
-              }),
-            )
-          }
-          data-analytics-id="waitlist-cta-nav"
-        >
-          <Crown size={14} strokeWidth={2} aria-hidden />
-          <span className="ux-gratis-full">Join the Waitlist – Early Gratis (Free) Access</span>
-          <span className="ux-gratis-short">Join Waitlist</span>
-        </Link>
-      </div>
+      <>
+        <div className="ux-nav-actions">
+          <Link className="ux-nav-login" to="/auth">
+            Sign in
+          </Link>
+          <button
+            type="button"
+            className="ux-gratis-bar"
+            onClick={() => openRequest("landing_nav")}
+            data-analytics-id="waitlist-cta-nav"
+          >
+            <Crown size={14} strokeWidth={2} aria-hidden />
+            <span className="ux-gratis-full">{GRATIS_LABEL_FULL}</span>
+            <span className="ux-gratis-short">{GRATIS_LABEL_SHORT}</span>
+          </button>
+        </div>
+        {modal}
+      </>
     );
   }
 
@@ -199,22 +210,14 @@ export function LandingAuthActions({ onNavigate, mobile = false }: LandingAuthAc
         <Link to="/account" onClick={onNavigate}>
           Account
         </Link>
-        <Link
-          to="/pricing"
-          hash="founding"
-          onClick={() => {
-            onNavigate?.();
-            void import("@/lib/usecasex.tracking").then(({ trackCTAEvent }) =>
-              trackCTAEvent("waitlist_join_clicked", {
-                source_page: "/",
-                target_route: "/pricing#founding",
-                location: "landing_nav_mobile_signed_in",
-              }),
-            );
-          }}
-        >
-          Join the Waitlist – Early Gratis (Free) Access
-        </Link>
+        {showAdmin && (
+          <Link to="/administration" onClick={onNavigate}>
+            Admin dashboard
+          </Link>
+        )}
+        <button type="button" onClick={() => openRequest("landing_nav_mobile_signed_in")}>
+          {GRATIS_LABEL_FULL}
+        </button>
         <button
           type="button"
           onClick={() => {
@@ -224,32 +227,29 @@ export function LandingAuthActions({ onNavigate, mobile = false }: LandingAuthAc
         >
           Sign out
         </button>
+        {modal}
       </>
     );
   }
 
   return (
-    <div className="ux-nav-actions">
-      <UserAccountMenu variant="landing" />
-      <Link
-        className="ux-gratis-bar"
-        to="/pricing"
-        hash="founding"
-        onClick={() =>
-          void import("@/lib/usecasex.tracking").then(({ trackCTAEvent }) =>
-            trackCTAEvent("waitlist_join_clicked", {
-              source_page: "/",
-              target_route: "/pricing#founding",
-              location: "landing_nav_signed_in",
-            }),
-          )
-        }
-        data-analytics-id="waitlist-cta-nav"
-      >
-        <Crown size={14} strokeWidth={2} aria-hidden />
-        <span className="ux-gratis-full">Join the Waitlist – Early Gratis (Free) Access</span>
-        <span className="ux-gratis-short">Join Waitlist</span>
-      </Link>
-    </div>
+    <>
+      <div className="ux-nav-actions">
+        <button
+          type="button"
+          className="ux-gratis-bar"
+          onClick={() => openRequest("landing_nav_signed_in")}
+          data-analytics-id="waitlist-cta-nav"
+        >
+          <Crown size={14} strokeWidth={2} aria-hidden />
+          <span className="ux-gratis-full">{GRATIS_LABEL_FULL}</span>
+          <span className="ux-gratis-short">{GRATIS_LABEL_SHORT}</span>
+        </button>
+        <UserAccountMenu variant="landing" />
+      </div>
+      {modal}
+    </>
   );
 }
+
+export { GRATIS_LABEL_FULL, GRATIS_LABEL_SHORT };

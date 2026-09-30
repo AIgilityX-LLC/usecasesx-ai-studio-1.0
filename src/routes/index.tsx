@@ -6,18 +6,14 @@ import {
   Check,
   Compass,
   Database,
-  FileCheck2,
   Globe2,
   Layers3,
   Lightbulb,
   Lock,
   Menu,
-  Network,
   Play,
-  Radar,
   Scale,
   ShieldCheck,
-  Sparkles,
   Target,
   Workflow,
   X,
@@ -215,31 +211,6 @@ const OS_AUDIENCES = [
   },
 ];
 
-const GOVERNANCE_CARDS = [
-  {
-    title: "Security Posture",
-    copy: "See the controls that sit around every initiative before it moves.",
-    icon: Lock,
-  },
-  {
-    title: "Compliance Trail",
-    copy: "Keep the reasoning, evidence, and approvals ready for review.",
-    icon: FileCheck2,
-  },
-  {
-    title: "Governance Owner",
-    copy: "Make accountability visible so gates are earned, not assumed.",
-    icon: ShieldCheck,
-  },
-];
-
-const ROADMAP = [
-  { title: "Prioritized", copy: "Rank cases by value, readiness, and strategic fit." },
-  { title: "Resourced", copy: "Attach owners, capacity, and delivery constraints." },
-  { title: "Sequenced", copy: "Order the work so dependencies stay honest." },
-  { title: "Funded", copy: "Package a board-ready recommendation ready to approve." },
-];
-
 const PRICING = [
   {
     name: "Lite",
@@ -269,45 +240,6 @@ const PRICING = [
       "Advanced controls & support",
     ],
     featured: false,
-  },
-];
-
-const CLAIMS = [
-  {
-    no: "01",
-    title: "Evidence-Backed Value",
-    copy: "Every claim carries the reasoning and sources behind it.",
-    icon: Sparkles,
-  },
-  {
-    no: "02",
-    title: "Transparent Reasoning",
-    copy: "See how a case moved from signal to recommendation.",
-    icon: Radar,
-  },
-  {
-    no: "03",
-    title: "Approved With Context",
-    copy: "Decisions keep the constraints and trade-offs attached.",
-    icon: Check,
-  },
-  {
-    no: "04",
-    title: "Owners And Next Steps",
-    copy: "Accountability is explicit, not buried in a slide deck.",
-    icon: Target,
-  },
-  {
-    no: "05",
-    title: "Portfolio-Level Signal",
-    copy: "Compare cases without losing the detail that matters.",
-    icon: Network,
-  },
-  {
-    no: "06",
-    title: "Built To Be Checked",
-    copy: "Open the product and verify the claim yourself.",
-    icon: ShieldCheck,
   },
 ];
 
@@ -442,6 +374,9 @@ function BrandLink({ className = "" }: { className?: string }) {
   );
 }
 
+/** Split after "Case" so the hero reads as two lines. */
+const HERO_BREAK_AFTER = 5;
+
 function HeroHeading() {
   const { ref, ready, visible } = useInViewOnce<HTMLHeadingElement>({ immediate: true });
   return (
@@ -451,13 +386,15 @@ function HeroHeading() {
       aria-label="Build a validated AI use case before you spend a dollar building it."
     >
       {HERO_WORDS.map((word, i) => (
-        <span
-          key={`${word.text}-${i}`}
-          className={`ux-hero-word${word.accent ? " is-accent" : ""}`}
-          style={{ transitionDelay: `${i * 50}ms` }}
-        >
-          {word.text}
-          {i < HERO_WORDS.length - 1 ? "\u00a0" : ""}
+        <span key={`${word.text}-${i}`}>
+          {i === HERO_BREAK_AFTER + 1 ? <br /> : null}
+          <span
+            className={`ux-hero-word${word.accent ? " is-accent" : ""}`}
+            style={{ transitionDelay: `${i * 50}ms` }}
+          >
+            {word.text}
+            {i < HERO_WORDS.length - 1 && i !== HERO_BREAK_AFTER ? "\u00a0" : ""}
+          </span>
         </span>
       ))}
     </h1>
@@ -575,13 +512,7 @@ function LandingPage() {
               <span className="ux-eyebrow-dot" /> AI use cases, made operational
             </div>
             <HeroHeading />
-            <p className="ux-hero-lead">
-              Turn any AI idea into a Value-Driven AI Discovery · Design · Prioritize · Manage.
-            </p>
-            <p className="ux-hero-copy">
-              UseCasesX Studio helps ambitious teams move from curiosity to governed, measurable
-              action — without the guesswork.
-            </p>
+            <p className="ux-hero-lead">Turn any AI idea into a Value</p>
             <div className="ux-hero-actions">
               <Link
                 className="ux-button ux-button-gold"
@@ -641,7 +572,8 @@ function LandingPage() {
                 01 / The studio
               </Reveal>
               <SectionHeading anim="ux-heading-mask">
-                The AI Use Case Studio — Built For{" "}
+                The AI Use Case Studio — Built For
+                <br />
                 <span className="ux-accent">Real-World AI ROI &amp; Business Impact.</span>
               </SectionHeading>
               <p className="ux-lead">
@@ -1021,60 +953,10 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* 17. Governance */}
-        <section id="governance" className="ux-section-dark ux-gov-section">
-          <div className="ux-container">
-            <SectionHeading anim="ux-heading-mask">
-              Cybersecurity, Compliance &amp; Governance For Every AI Initiative.
-            </SectionHeading>
-            <p className="ux-section-lead ux-on-dark">
-              Make the invisible work of responsible AI visible, shared, and ready for review.
-            </p>
-            <Link className="ux-under-link ux-under-link-light" to="/governance">
-              Explore governance <ArrowRight size={15} aria-hidden />
-            </Link>
-            <div className="ux-gov-grid">
-              {GOVERNANCE_CARDS.map(({ title, copy, icon: Icon }, i) => (
-                <Reveal key={title} className="ux-gov-card" delay={i * 90} variant="up">
-                  <Icon size={22} strokeWidth={1.4} aria-hidden />
-                  <h3>{title}</h3>
-                  <p>{copy}</p>
-                  <span className="ux-active-pill">
-                    <i aria-hidden /> Active
-                  </span>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 18. Delivery roadmap */}
-        <section id="roadmap" className="ux-section-light ux-roadmap-section">
-          <div className="ux-container">
-            <SectionHeading anim="ux-heading-lines">
-              From Prioritized Use Case To Funded Delivery Roadmap.
-            </SectionHeading>
-            <div className="ux-roadmap-row">
-              {ROADMAP.map((item, i) => (
-                <Reveal key={item.title} className="ux-roadmap-card" delay={i * 80} variant="draw">
-                  <span className="ux-roadmap-no">0{i + 1}</span>
-                  <h3>{item.title}</h3>
-                  <p>{item.copy}</p>
-                  {i < ROADMAP.length - 1 && (
-                    <ArrowRight className="ux-roadmap-arrow" size={16} aria-hidden />
-                  )}
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* 19. Pricing */}
         <section id="editions" className="ux-section-dark ux-pricing-section">
           <div className="ux-container">
-            <SectionHeading anim="ux-heading-up">
-              Lite · Pro · Enterprise <span className="ux-accent">(incl. Sovereign AI System)</span>
-            </SectionHeading>
+            <SectionHeading anim="ux-heading-up">Lite · Pro · Enterprise</SectionHeading>
             <div className="ux-pricing-grid">
               {PRICING.map((tier, i) => (
                 <Reveal
@@ -1111,7 +993,9 @@ function LandingPage() {
           <div className="ux-container ux-sovereign-layout">
             <div>
             <SectionHeading anim="ux-heading-up">
-                Built For Ministries, Regulators &amp; Sovereign AI Programs.
+                Built For Ministries, Regulators
+                <br />
+                &amp; Sovereign AI Programs.
               </SectionHeading>
               <p className="ux-lead">
                 Move at the speed of innovation without losing the transparency, control, and public
@@ -1144,34 +1028,14 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* 21. Claims */}
-        <section id="claims" className="ux-section-dark ux-claims-section">
-          <div className="ux-container">
-            <SectionHeading anim="ux-heading-up">
-              Claims You Can Check Inside The Product.
-            </SectionHeading>
-            <div className="ux-claims-grid">
-              {CLAIMS.map(({ no, title, copy, icon: Icon }, i) => (
-                <Reveal key={no} className="ux-claim-card" delay={i * 50} variant="up">
-                  <div className="ux-claim-top">
-                    <Icon size={18} strokeWidth={1.5} aria-hidden />
-                    <span className="ux-mono">{no}</span>
-                  </div>
-                  <h3>{title}</h3>
-                  <p>{copy}</p>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 22. Final CTA */}
+        {/* 21. Final CTA */}
         <section className="ux-section-light ux-cta-section" id="contact">
           <div className="ux-cta-orb" aria-hidden />
           <div className="ux-container ux-cta-content">
             <SectionHeading anim="ux-heading-scale">
-              Your Next AI Decision <span className="ux-accent">Deserves Evidence,</span> Not
-              Opinion.
+              Your Next AI Decision <span className="ux-accent">Deserves Evidence,</span>
+              <br />
+              Not Opinion.
             </SectionHeading>
             <p>Start with one use case. Leave with a clearer path to value.</p>
             <Link
@@ -1222,7 +1086,7 @@ function LandingPage() {
           ))}
         </div>
         <div className="ux-container ux-footer-bottom">
-          <span>© 2026 UseCasesX Studio</span>
+          <span>© 2026 UseCasesX Studio by AIgilityX</span>
           <span>AI decisions with evidence.</span>
           <span>Built for responsible ambition.</span>
         </div>
