@@ -32,7 +32,7 @@ export function EvidenceActivityView({
     enabled: Boolean(workspaceId),
   });
 
-  const rows = query.data ?? [];
+  const rows = (query.data ?? []) as any[];
 
   return (
     <div className="space-y-2">

@@ -73,5 +73,5 @@ export const listEvidenceActivityFn = createServerFn({ method: "GET" })
   )
   .handler(async ({ data, context }) => {
     const { listEvidenceActivity } = await import("./evidence.server");
-    return listEvidenceActivity(context.supabase, data);
+    return (await listEvidenceActivity(context.supabase, data)) as any[];
   });

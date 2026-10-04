@@ -531,7 +531,7 @@ export const proposeWorkshopClustersFn = createServerFn({ method: "POST" })
     const drafts = proposeClusters(board.items);
     const rows = [];
     for (const draft of drafts) {
-      const { data: row, error } = await supabase
+      const { data: row, error } = await (supabase as any)
         .from("workshop_cluster_proposals")
         .insert({
           workshop_id: data.workshopId,
@@ -556,7 +556,7 @@ export const listWorkshopClusterProposalsFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ workshopId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { data: rows, error } = await context.supabase
+    const { data: rows, error } = await (context.supabase as any)
       .from("workshop_cluster_proposals")
       .select("id, proposed_label, summary, item_ids, status, reason, source, created_at")
       .eq("workshop_id", data.workshopId)
@@ -584,7 +584,7 @@ export const decideWorkshopClusterProposalFn = createServerFn({ method: "POST" }
     const { assertFacilitator } = await import("@/lib/workshops.server");
     await assertFacilitator(supabase, data.workshopId, userId);
 
-    const { data: proposal, error: loadError } = await supabase
+    const { data: proposal, error: loadError } = await (supabase as any)
       .from("workshop_cluster_proposals")
       .select("id, item_ids, proposed_label, status")
       .eq("id", data.proposalId)
@@ -594,7 +594,7 @@ export const decideWorkshopClusterProposalFn = createServerFn({ method: "POST" }
     if (!proposal || proposal.status !== "pending") throw new Error("Proposal not pending.");
 
     if (data.decision === "rejected") {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("workshop_cluster_proposals")
         .update({
           status: "rejected",
@@ -631,7 +631,7 @@ export const decideWorkshopClusterProposalFn = createServerFn({ method: "POST" }
       if (error) throw new Error(error.message);
     }
 
-    const { error: updError } = await supabase
+    const { error: updError } = await (supabase as any)
       .from("workshop_cluster_proposals")
       .update({
         status: "accepted",
