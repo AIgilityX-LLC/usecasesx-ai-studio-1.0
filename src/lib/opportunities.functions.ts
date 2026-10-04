@@ -85,7 +85,7 @@ export const saveOpportunityFn = createServerFn({ method: "POST" })
     const columns = toColumns(data.draft);
 
     if (data.id) {
-      const { data: row, error } = await supabase
+      const { data: row, error } = await (supabase as any)
         .from("opportunities")
         .update(columns)
         .eq("id", data.id)
@@ -112,7 +112,7 @@ export const saveOpportunityFn = createServerFn({ method: "POST" })
     }
 
     const workspaceId = await resolveWorkspaceId(supabase);
-    const { data: row, error } = await supabase
+    const { data: row, error } = await (supabase as any)
       .from("opportunities")
       .insert({
         ...columns,
@@ -164,7 +164,7 @@ export const setOpportunityStatusFn = createServerFn({ method: "POST" })
       throw new Error(`Cannot move from ${current.status} to ${data.status}.`);
     }
 
-    const { data: row, error } = await supabase
+    const { data: row, error } = await (supabase as any)
       .from("opportunities")
       .update({ status: data.status })
       .eq("id", data.id)
@@ -237,7 +237,7 @@ export const recordOpportunityAssistFn = createServerFn({ method: "POST" })
     const { writeProductEvent } = await import("@/lib/telemetry/recorder.server");
     const { PRODUCT_EVENTS } = await import("@/lib/telemetry/events");
 
-    const { data: row, error } = await supabase
+    const { data: row, error } = await (supabase as any)
       .from("opportunities")
       .update({
         ai_assisted: true,
@@ -321,7 +321,7 @@ export const convertOpportunityFn = createServerFn({ method: "POST" })
       .single();
     if (error || !draft) throw new Error(error?.message ?? "Could not create the use case draft.");
 
-    const { error: updErr } = await supabase
+    const { error: updErr } = await (supabase as any)
       .from("opportunities")
       .update({
         status: "converted",
@@ -354,7 +354,7 @@ export const deleteOpportunityFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => idSchema.parse(d))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.from("opportunities").delete().eq("id", data.id);
+    const { error } = await (context.supabase as any).from("opportunities").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

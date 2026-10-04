@@ -286,7 +286,7 @@ export const recordAiFeedbackFn = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { resolveSubject } = await import("@/lib/authz.server");
     const subject = await resolveSubject(context.supabase, context.userId);
-    const { error } = await context.supabase.from("ai_suggestion_feedback").insert({
+    const { error } = await (context.supabase as any).from("ai_suggestion_feedback").insert({
       user_id: context.userId,
       organization_id: subject.organizationId,
       workspace_id: subject.workspaceId,

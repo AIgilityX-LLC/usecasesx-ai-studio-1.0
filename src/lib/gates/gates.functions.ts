@@ -99,7 +99,7 @@ export const decideGateReviewFn = createServerFn({ method: "POST" })
     const { decideGateReview } = await import("./gates.server");
     const { resolveSubject } = await import("@/lib/authz.server");
 
-    const { data: review, error } = await context.supabase
+    const { data: review, error } = await (context.supabase as any)
       .from("decision_gate_reviews")
       .select("workspace_id")
       .eq("id", data.reviewId)
@@ -121,7 +121,7 @@ export const closeGateOpenItemFn = createServerFn({ method: "POST" })
     const { closeOpenItem } = await import("./gates.server");
     const { resolveSubject } = await import("@/lib/authz.server");
 
-    const { data: item, error } = await context.supabase
+    const { data: item, error } = await (context.supabase as any)
       .from("decision_gate_open_items")
       .select("workspace_id")
       .eq("id", data.itemId)
