@@ -27,9 +27,9 @@ import sovereignImage from "@/assets/landing-sovereign.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => {
-    const title = "UseCasesX™ — Discover, Design & Prioritize AI Use Cases";
+    const title = "UseCasesX™ — Enterprise AI Use Case Operating System";
     const description =
-      "Discover 180 provenance-labelled AI use cases, design and score them, and manage a board-ready AI portfolio. Pro Founding Access Free Until 31 December 2026.";
+      "Discover, design, score and prioritize AI use cases in one evidence-led enterprise workspace. Pro Founding Access is complimentary through 2026.";
     return {
       meta: [
         { title },
