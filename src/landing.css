@@ -1119,6 +1119,13 @@
   color: var(--ux-cobalt);
 }
 
+.ux-landing .ux-reco-evidence {
+  color: var(--ux-ink-muted);
+  font: 11px var(--ux-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
 /* Audience */
 .ux-landing .ux-audience-grid {
   display: grid;
