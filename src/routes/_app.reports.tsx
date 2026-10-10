@@ -34,6 +34,7 @@ import { useWorkspacePortfolios } from "@/hooks/useWorkspacePortfolios";
 
 import { ExportReceipt, type ExportReceiptData } from "@/components/reports/ExportReceipt";
 import { ReportDocument } from "@/components/reports/ReportDocument";
+import { RequireCapability } from "@/components/RequireCapability";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -96,7 +97,11 @@ export const Route = createFileRoute("/_app/reports")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: ReportsPage,
+  component: () => (
+    <RequireCapability capability="report.read" action="open AI opportunity reports">
+      <ReportsPage />
+    </RequireCapability>
+  ),
 });
 
 function ReportsPage() {

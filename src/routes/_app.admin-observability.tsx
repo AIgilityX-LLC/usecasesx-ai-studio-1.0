@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toUserMessage } from "@/lib/domain/errors";
+import { RequireCapability } from "@/components/RequireCapability";
 
 export const Route = createFileRoute("/_app/admin-observability")({
   head: () => ({
@@ -38,7 +39,14 @@ export const Route = createFileRoute("/_app/admin-observability")({
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
-  component: Observability,
+  component: () => (
+    <RequireCapability
+      capability="workspace.manage"
+      action="view export and AI activity trails"
+    >
+      <Observability />
+    </RequireCapability>
+  ),
 });
 
 const WINDOWS = [7, 30, 90] as const;

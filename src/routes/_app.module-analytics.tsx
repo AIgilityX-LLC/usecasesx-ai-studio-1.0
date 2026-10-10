@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Eye, MousePointerClick, Lock, Unlock } from "lucide-react";
 import { moduleLabel, type ModuleEventType } from "@/lib/module-analytics";
+import { RequireCapability } from "@/components/RequireCapability";
 
 export const Route = createFileRoute("/_app/module-analytics")({
   head: () => ({
@@ -19,7 +20,11 @@ export const Route = createFileRoute("/_app/module-analytics")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: ModuleAnalyticsPage,
+  component: () => (
+    <RequireCapability capability="analytics.read" action="view module analytics">
+      <ModuleAnalyticsPage />
+    </RequireCapability>
+  ),
 });
 
 type Ev = {

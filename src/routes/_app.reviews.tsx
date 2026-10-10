@@ -8,10 +8,15 @@ import { useWorkspaceContext } from "@/hooks/useWorkspaceContext";
 import { ReviewInbox } from "@/components/gates/ReviewInbox";
 import { EmptyState } from "@/components/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
+import { RequireCapability } from "@/components/RequireCapability";
 
 export const Route = createFileRoute("/_app/reviews")({
   head: () => privateHead("Review inbox"),
-  component: ReviewsPage,
+  component: () => (
+    <RequireCapability capability="decision.read" action="open the review inbox">
+      <ReviewsPage />
+    </RequireCapability>
+  ),
 });
 
 function ReviewsPage() {
