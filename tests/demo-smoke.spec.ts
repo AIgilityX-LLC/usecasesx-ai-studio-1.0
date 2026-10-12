@@ -10,6 +10,8 @@ import { test, expect, type Page } from "@playwright/test";
 const SUPABASE_URL = process.env.SUPABASE_URL!;
 const SUPABASE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY!;
 const BASE = process.env.E2E_BASE_URL ?? "http://localhost:8080";
+// Demo password comes from the environment only — never commit it.
+const DEMO_PASSWORD = process.env.DEMO_PERSONA_PASSWORD ?? "";
 
 type Demo = {
   email: string;
@@ -23,35 +25,35 @@ type Demo = {
 const DEMOS: Demo[] = [
   {
     email: "admin@demo.usecasex.app",
-    password: "Demo@123",
+    password: DEMO_PASSWORD,
     label: "admin",
     primaryRoute: "/administration",
     mustSee: /admin|manage|users/i,
   },
   {
     email: "moderator@demo.usecasex.app",
-    password: "Demo@123",
+    password: DEMO_PASSWORD,
     label: "moderator",
     primaryRoute: "/administration",
     mustSee: /admin|manage|users|moderation/i,
   },
   {
     email: "enterprise@demo.usecasex.app",
-    password: "Demo@123",
+    password: DEMO_PASSWORD,
     label: "enterprise",
     primaryRoute: "/studio/portfolio",
     mustSee: /portfolio|roadmap/i,
   },
   {
     email: "pro@demo.usecasex.app",
-    password: "Demo@123",
+    password: DEMO_PASSWORD,
     label: "pro",
     primaryRoute: "/studio/portfolio",
     mustSee: /portfolio|roadmap/i,
   },
   {
     email: "lite@demo.usecasex.app",
-    password: "Demo@123",
+    password: DEMO_PASSWORD,
     label: "lite",
     primaryRoute: "/dashboard",
     mustSee: /dashboard|explore|repository/i,
@@ -81,8 +83,8 @@ async function injectSession(page: Page, session: unknown) {
 let canaryBoardId: string | null = null;
 
 test.beforeAll(async () => {
-  if (!SUPABASE_URL || !SUPABASE_KEY) return;
-  const session = await mintSession("pro@demo.usecasex.app", "Demo@123");
+  if (!SUPABASE_URL || !SUPABASE_KEY || !DEMO_PASSWORD) return;
+  const session = await mintSession("pro@demo.usecasex.app", DEMO_PASSWORD);
   const headers = {
     apikey: SUPABASE_KEY,
     Authorization: `Bearer ${session.access_token}`,
@@ -117,7 +119,7 @@ for (const demo of DEMOS) {
     page,
   }) => {
     test.setTimeout(90_000);
-    if (!SUPABASE_URL || !SUPABASE_KEY) test.skip(true, "Supabase env not set");
+    if (!SUPABASE_URL || !SUPABASE_KEY || !DEMO_PASSWORD) test.skip(true, "Supabase env or DEMO_PERSONA_PASSWORD not set");
 
     const session = await mintSession(demo.email, demo.password);
     expect(session.access_token, "session minted").toBeTruthy();

@@ -175,7 +175,7 @@ export function scoreItems(votes: VoteRecord[]): Map<string, ItemScore> {
   >();
 
   for (const vote of votes) {
-    if (!VOTE_CRITERIA.includes(vote.criterion)) continue;
+    if (!VOTE_CRITERIA.includes(vote.criterion as VoteCriterion)) continue;
     if (!Number.isFinite(vote.score)) continue;
     const clamped = Math.min(VOTE_MAX, Math.max(VOTE_MIN, vote.score));
     const entry = byItem.get(vote.itemId) ?? {
@@ -183,10 +183,10 @@ export function scoreItems(votes: VoteRecord[]): Map<string, ItemScore> {
       voters: new Set<string>(),
       votes: 0,
     };
-    const bucket = entry.sums.get(vote.criterion) ?? { total: 0, n: 0 };
+    const bucket = entry.sums.get(vote.criterion as VoteCriterion) ?? { total: 0, n: 0 };
     bucket.total += clamped;
     bucket.n += 1;
-    entry.sums.set(vote.criterion, bucket);
+    entry.sums.set(vote.criterion as VoteCriterion, bucket);
     entry.voters.add(vote.voterId);
     entry.votes += 1;
     byItem.set(vote.itemId, entry);

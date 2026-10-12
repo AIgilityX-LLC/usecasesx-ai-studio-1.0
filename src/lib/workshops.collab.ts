@@ -254,7 +254,11 @@ export function downloadWorkshopAuditPDF(
   );
 }
 
-const csvCell = (value: string) => `"${value.replace(/"/g, '""')}"`;
+const csvCell = (value: string) => {
+  // Neutralise spreadsheet formula injection (=, +, -, @, tab, CR).
+  const safe = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
+  return `"${safe.replace(/"/g, '""')}"`;
+};
 
 /** Spreadsheet-friendly variant: one row per action, stage as a column. */
 export function buildWorkshopAuditCSV(entries: WorkshopAuditEntry[]): string {

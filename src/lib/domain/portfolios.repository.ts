@@ -270,7 +270,7 @@ export async function listPortfoliosVisibleToUser(userId: string | null) {
     .order("id", { ascending: true })
     .limit(PORTFOLIO_MAX_ROWS);
   const rows = unwrapResult(result, { allowNull: true }) ?? [];
-  return attachUseCases(rows as PortfolioRow[]) as unknown as Promise<
+  return attachUseCases(rows as unknown as PortfolioRow[]) as unknown as Promise<
     (PortfolioRow & { user_id: string; workspace_id: string | null })[]
   >;
 }
@@ -465,7 +465,7 @@ export async function updatePortfolioEntry(
   if (Object.keys(columns).length === 0) return;
   const result = await supabase
     .from("portfolio_items")
-    .update(columns)
+    .update(columns as any)
     .eq("portfolio_id", pid)
     .eq("use_case_id", ucid);
   if (result.error) throw normalizeError(result.error);

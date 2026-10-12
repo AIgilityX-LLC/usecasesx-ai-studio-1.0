@@ -30,6 +30,7 @@ import {
   grantSupportAccessFn,
   revokeSupportAccessFn,
 } from "@/lib/enterprise/enterprise.functions";
+import { DATA_REGIONS, DATA_REGION_LABEL, AI_PROVIDER_ROUTES } from "@/lib/enterprise/tenant-policy";
 import { SCIM_STATUS } from "@/lib/enterprise/sso";
 import { IMPERSONATION_PROHIBITED } from "@/lib/enterprise/support-access";
 import { CLIENT_CAPABILITY_FLAGS } from "@/lib/feature-flags";

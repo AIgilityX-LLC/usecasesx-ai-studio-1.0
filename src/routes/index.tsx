@@ -11,7 +11,6 @@ import {
   Lightbulb,
   Lock,
   Menu,
-  Play,
   Scale,
   ShieldCheck,
   Target,
@@ -28,9 +27,9 @@ import sovereignImage from "@/assets/landing-sovereign.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => {
-    const title = "UseCasesX™ — Discover, Design & Prioritize AI Use Cases";
+    const title = "UseCasesX™ — Enterprise AI Use Case Operating System";
     const description =
-      "Discover 180 provenance-labelled AI use cases, design and score them, and manage a board-ready AI portfolio. Pro Founding Access Free Until 31 December 2026.";
+      "Discover, design, score and prioritize AI use cases in one evidence-led enterprise workspace. Pro Founding Access is complimentary through 2026.";
     return {
       meta: [
         { title },
@@ -82,22 +81,6 @@ const MARQUEE = [
   "Public sector",
   "Healthcare",
   "Finance",
-];
-
-const HERO_WORDS: { text: string; accent?: boolean }[] = [
-  { text: "Build" },
-  { text: "A" },
-  { text: "Validated" },
-  { text: "AI" },
-  { text: "Use" },
-  { text: "Case" },
-  { text: "Before", accent: true },
-  { text: "You" },
-  { text: "Spend" },
-  { text: "A" },
-  { text: "Dollar" },
-  { text: "Building" },
-  { text: "It." },
 ];
 
 const ORG_TYPES = [
@@ -161,31 +144,31 @@ const OS_STEPS = [
 ];
 
 const BROWSER_ROWS = [
-  { name: "Claims document intelligence", status: "Active", score: "88", industry: "Insurance" },
-  { name: "Service knowledge copilot", status: "Validation", score: "81", industry: "Services" },
-  { name: "Demand sensing engine", status: "Discovery", score: "76", industry: "Retail" },
+  { name: "Claims document intelligence", industry: "Insurance" },
+  { name: "Service knowledge copilot", industry: "Services" },
+  { name: "Demand sensing engine", industry: "Retail" },
 ];
 
 const BOARD_COLUMNS = [
   {
     title: "Discovery",
     cards: [
-      { name: "Customer service copilot", meta: "Owner · Maya", score: "72%" },
-      { name: "Knowledge search", meta: "Owner · Ravi", score: "68%" },
+      { name: "Customer service copilot", meta: "Customer experience" },
+      { name: "Knowledge search", meta: "Knowledge management" },
     ],
   },
   {
     title: "Validation",
     cards: [
-      { name: "Demand forecasting", meta: "Owner · Lena", score: "86%" },
-      { name: "Claims triage", meta: "Owner · Omar", score: "81%" },
+      { name: "Demand forecasting", meta: "Operations" },
+      { name: "Claims triage", meta: "Insurance" },
     ],
   },
   {
     title: "Ready For Gate",
     cards: [
-      { name: "Case routing agent", meta: "Owner · Priya", score: "92%" },
-      { name: "Supplier insights", meta: "Owner · Sam", score: "88%" },
+      { name: "Case routing agent", meta: "Service delivery" },
+      { name: "Supplier insights", meta: "Procurement" },
     ],
   },
 ];
@@ -374,33 +357,6 @@ function BrandLink({ className = "" }: { className?: string }) {
   );
 }
 
-/** Split after "Case" so the hero reads as two lines. */
-const HERO_BREAK_AFTER = 5;
-
-function HeroHeading() {
-  const { ref, ready, visible } = useInViewOnce<HTMLHeadingElement>({ immediate: true });
-  return (
-    <h1
-      ref={ref}
-      className={animClass("ux-hero-heading", ready, visible)}
-      aria-label="Build a validated AI use case before you spend a dollar building it."
-    >
-      {HERO_WORDS.map((word, i) => (
-        <span key={`${word.text}-${i}`}>
-          {i === HERO_BREAK_AFTER + 1 ? <br /> : null}
-          <span
-            className={`ux-hero-word${word.accent ? " is-accent" : ""}`}
-            style={{ transitionDelay: `${i * 50}ms` }}
-          >
-            {word.text}
-            {i < HERO_WORDS.length - 1 && i !== HERO_BREAK_AFTER ? "\u00a0" : ""}
-          </span>
-        </span>
-      ))}
-    </h1>
-  );
-}
-
 function SectionHeading({
   children,
   className = "",
@@ -415,15 +371,6 @@ function SectionHeading({
     <h2 ref={ref} className={animClass(`${anim} ${className}`.trim(), ready, visible)}>
       {children}
     </h2>
-  );
-}
-
-function ProgressBar({ value }: { value: number }) {
-  const { ref, visible } = useInViewOnce<HTMLDivElement>();
-  return (
-    <div ref={ref} className={`ux-progress${visible ? " is-visible" : ""}`}>
-      <i style={{ ["--progress" as string]: `${value}%` }} />
-    </div>
   );
 }
 
@@ -494,7 +441,7 @@ function LandingPage() {
       )}
 
       <main id="main-content" tabIndex={-1} className="outline-none">
-        {/* 5. Hero */}
+        {/* Product hero */}
         <section className="ux-hero ux-section-dark">
           <img
             className="ux-hero-background"
@@ -509,10 +456,15 @@ function LandingPage() {
           <div className="ux-hero-overlay" aria-hidden />
           <div className="ux-hero-content">
             <div className="ux-eyebrow">
-              <span className="ux-eyebrow-dot" /> AI use cases, made operational
+              <span className="ux-eyebrow-dot" /> Enterprise AI portfolio management
             </div>
-            <HeroHeading />
-            <p className="ux-hero-lead">Turn any AI idea into a Value</p>
+            <h1 className="ux-hero-heading">
+              Operationalize <span className="is-accent">high-value</span> AI use cases.
+            </h1>
+            <p className="ux-hero-lead">
+              UseCasesX brings discovery, design, scoring and portfolio decisions into one
+              evidence-led workspace.
+            </p>
             <div className="ux-hero-actions">
               <Link
                 className="ux-button ux-button-gold"
@@ -527,19 +479,11 @@ function LandingPage() {
               >
                 Explore the studio <ArrowRight size={17} aria-hidden />
               </Link>
-              <a className="ux-text-link" href="#platform">
-                <span className="ux-play-icon">
-                  <Play size={12} fill="currentColor" aria-hidden />
-                </span>{" "}
-                See how it works
-              </a>
+              <Link className="ux-button ux-button-ghost" to="/enterprise">
+                Explore Enterprise <ArrowRight size={17} aria-hidden />
+              </Link>
             </div>
-            <div className="ux-hero-proof">
-              <span>Trusted thinking for</span>
-              <b>Strategy teams</b>
-              <b>Innovation leaders</b>
-              <b>Risk &amp; governance</b>
-            </div>
+            <p className="ux-hero-proof">From opportunity to a decision you can defend.</p>
           </div>
           <div className="ux-hero-scroll" aria-hidden="true">
             <span>Scroll to explore</span>
@@ -598,7 +542,7 @@ function LandingPage() {
             <Reveal className="ux-architecture-card" variant="scale" delay={120}>
               <img src={architectureImage} alt="Layered AI architecture visual" />
               <div className="ux-architecture-caption">
-                <span className="ux-pulse" aria-hidden /> Governance layer active <b>72%</b>
+                <span className="ux-pulse" aria-hidden /> Design with evidence and ownership
               </div>
             </Reveal>
           </div>
@@ -713,7 +657,7 @@ function LandingPage() {
                 <span />
                 <span />
                 <span />
-                <div className="ux-browser-url">usecasesx.studio / repository</div>
+                <div className="ux-browser-url">UseCasesX / repository · illustrative view</div>
               </div>
               <div className="ux-browser-toolbar">
                 <input
@@ -732,17 +676,15 @@ function LandingPage() {
                 <div className="ux-browser-row ux-browser-head" role="row">
                   <span>Use case</span>
                   <span>Industry</span>
-                  <span>Status</span>
-                  <span>Score</span>
+                  <span>Explore</span>
+                  <span>Use case</span>
                 </div>
                 {BROWSER_ROWS.map((row) => (
                   <div key={row.name} className="ux-browser-row" role="row">
                     <span>{row.name}</span>
                     <span>{row.industry}</span>
-                    <span className={`ux-status ux-status-${row.status.toLowerCase()}`}>
-                      {row.status}
-                    </span>
-                    <span className="ux-mono">{row.score}</span>
+                    <span>Discover</span>
+                    <span>View details</span>
                   </div>
                 ))}
               </div>
@@ -806,13 +748,8 @@ function LandingPage() {
             </SectionHeading>
             <Reveal className="ux-board-mock" variant="left" delay={60}>
               <div className="ux-board-top">
-                <span>Portfolio board</span>
-                <span className="ux-synced">
-                  <i aria-hidden /> Synced
-                </span>
-                <button type="button" className="ux-add-case">
-                  + Add use case
-                </button>
+                <span>Portfolio board · illustrative view</span>
+                <Link to="/portfoliox" className="ux-add-case">View portfolios <ArrowRight size={13} aria-hidden /></Link>
               </div>
               <div className="ux-board-columns">
                 {BOARD_COLUMNS.map((col) => (
@@ -822,88 +759,12 @@ function LandingPage() {
                       <article key={card.name} className="ux-board-card">
                         <strong>{card.name}</strong>
                         <span>{card.meta}</span>
-                        <b>{card.score}</b>
                       </article>
                     ))}
                   </div>
                 ))}
               </div>
             </Reveal>
-          </div>
-        </section>
-
-        {/* 14. Readiness index */}
-        <section id="readiness" className="ux-section-dark ux-readiness-section">
-          <div className="ux-container">
-            <SectionHeading anim="ux-heading-blur">
-              Know Where You Stand. Track Readiness, Value, And Risk In One Index.
-            </SectionHeading>
-            <div className="ux-readiness-layout">
-              <Reveal className="ux-metric-board" variant="left">
-                <div className="ux-metric-header">
-                  <span>Portfolio readiness</span>
-                  <span>
-                    Live signal <i className="ux-green-dot" aria-hidden />
-                  </span>
-                </div>
-                <div className="ux-metric-score">
-                  <span className="ux-metric-score-number">82</span>
-                  <div className="ux-metric-score-meta">
-                    <span className="ux-metric-score-denominator">/100</span>
-                    <span className="ux-metric-score-label">validated index</span>
-                  </div>
-                </div>
-                <div className="ux-radar" aria-hidden>
-                  <span />
-                  <span />
-                  <span />
-                </div>
-                <div className="ux-bar-row">
-                  <span>Business value</span>
-                  <div>
-                    <i style={{ width: "88%" }} />
-                  </div>
-                  <b>88</b>
-                </div>
-                <div className="ux-bar-row">
-                  <span>Delivery readiness</span>
-                  <div>
-                    <i style={{ width: "76%" }} />
-                  </div>
-                  <b>76</b>
-                </div>
-                <div className="ux-bar-row">
-                  <span>Governance fit</span>
-                  <div>
-                    <i style={{ width: "92%" }} />
-                  </div>
-                  <b>92</b>
-                </div>
-                <div className="ux-board-footer">
-                  <span>
-                    <Check size={13} aria-hidden /> Evidence-backed
-                  </span>
-                  <span>
-                    <Check size={13} aria-hidden /> Owner assigned
-                  </span>
-                  <span>
-                    <Check size={13} aria-hidden /> Gate ready
-                  </span>
-                </div>
-              </Reveal>
-              <div className="ux-summary-cards">
-                {[
-                  { label: "Readiness", value: "82" },
-                  { label: "Value", value: "$4.2M" },
-                  { label: "Risk", value: "Low" },
-                ].map((item, i) => (
-                  <Reveal key={item.label} className="ux-summary-card" delay={i * 70} variant="up">
-                    <span>{item.label}</span>
-                    <strong>{item.value}</strong>
-                  </Reveal>
-                ))}
-              </div>
-            </div>
           </div>
         </section>
 
@@ -944,8 +805,7 @@ function LandingPage() {
                 <span className="ux-reco-label">Recommendation status</span>
                 <strong>Ready for decision</strong>
               </div>
-              <ProgressBar value={88} />
-              <span className="ux-mono">88%</span>
+              <span className="ux-reco-evidence">Evidence · value · feasibility · risk</span>
               <Link to="/contact" className="ux-reco-arrow" aria-label="Talk to the studio">
                 <ArrowRight size={18} aria-hidden />
               </Link>

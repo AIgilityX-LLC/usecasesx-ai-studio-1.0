@@ -87,13 +87,25 @@ export const completeSsoJitFn = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // Bind the claimed email to the caller's own verified identity.
+    const { data: userData, error: userErr } = await context.supabase.auth.getUser();
+    const authUser = userData?.user;
+    if (userErr || !authUser || authUser.id !== context.userId) {
+      throw new Error("Unauthorized");
+    }
+    if (!authUser.email || authUser.email.toLowerCase() !== data.email.toLowerCase()) {
+      throw new Error("Email must match your signed-in account.");
+    }
+    if (!authUser.email_confirmed_at) {
+      throw new Error("Please verify your email before joining an organization.");
+    }
     const { completeSsoJit } = await import("./sso.server");
     const { writeAuditEvent } = await import("@/lib/telemetry/recorder.server");
     const result = await completeSsoJit({
       supabase: context.supabase as any,
       admin: supabaseAdmin,
       userId: context.userId,
-      email: data.email,
+      email: authUser.email,
       organizationId: data.organizationId,
     });
 

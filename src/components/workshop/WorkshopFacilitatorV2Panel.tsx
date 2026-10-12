@@ -209,7 +209,7 @@ export function WorkshopFacilitatorV2Panel({
           <p className="text-sm text-muted-foreground">No pending proposals.</p>
         ) : (
           <ul className="space-y-3">
-            {proposals.data?.map((p) => (
+            {proposals.data?.map((p: any) => (
               <li key={p.id as string} className="rounded-md border p-3 text-sm space-y-2">
                 <p className="font-medium">{p.proposed_label as string}</p>
                 <p className="text-muted-foreground">{p.summary as string}</p>
