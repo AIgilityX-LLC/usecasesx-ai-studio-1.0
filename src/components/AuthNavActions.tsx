@@ -101,9 +101,9 @@ export function UserAccountMenu({ variant = "shell", className }: UserAccountMen
         </DropdownMenuItem>
         {isPlatformAdmin && (
           <DropdownMenuItem asChild>
-            <Link to="/administration">
+            <Link to="/platform-admin">
               <Shield />
-              Admin panel
+              Platform Administration
             </Link>
           </DropdownMenuItem>
         )}
@@ -211,8 +211,8 @@ export function LandingAuthActions({ onNavigate, mobile = false }: LandingAuthAc
           Account
         </Link>
         {showAdmin && (
-          <Link to="/administration" onClick={onNavigate}>
-            Admin dashboard
+          <Link to="/platform-admin" onClick={onNavigate}>
+            Platform Administration
           </Link>
         )}
         <button type="button" onClick={() => openRequest("landing_nav_mobile_signed_in")}>

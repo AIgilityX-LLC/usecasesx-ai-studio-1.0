@@ -15,6 +15,15 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
 
 const navSrc = readFileSync(resolve(root, "src/lib/nav-integrity.ts"), "utf8");
+const enterpriseNavSrc = readFileSync(
+  resolve(root, "src/lib/navigation/enterprise-nav.ts"),
+  "utf8",
+);
+const commandPaletteSrc = readFileSync(
+  resolve(root, "src/lib/navigation/command-palette.ts"),
+  "utf8",
+);
+const reportsHubSrc = readFileSync(resolve(root, "src/lib/reports/reports-hub.ts"), "utf8");
 
 function arrayLiteral(name) {
   const re = new RegExp(`${name}\\s*=\\s*\\[([\\s\\S]*?)\\]`);
@@ -23,9 +32,28 @@ function arrayLiteral(name) {
   return [...m[1].matchAll(/"([^"]+)"/g)].map((x) => x[1]);
 }
 
+/** Sidebar targets come from the enterprise nav config (`to: "/…"`). */
+function enterpriseSidebarTargets() {
+  const fromConfig = [...enterpriseNavSrc.matchAll(/\bto:\s*"(\/[^"]+)"/g)].map((m) => m[1]);
+  return [...new Set([...fromConfig, "/account", "/account/security", "/entitlement", "/account/data"])];
+}
+
+/** Static command-palette destinations (`to: "/…"`). */
+function commandPaletteTargets() {
+  return [...new Set([...commandPaletteSrc.matchAll(/\bto:\s*"(\/[^"]+)"/g)].map((m) => m[1]))];
+}
+
+/** Reports Hub slugs (`slug: "…"` → `/reports/<slug>`). */
+function reportsHubTargets() {
+  const slugs = [...reportsHubSrc.matchAll(/\bslug:\s*"([^"]+)"/g)].map((m) => m[1]);
+  return ["/reports", ...slugs.map((s) => `/reports/${s}`)];
+}
+
 const primary = arrayLiteral("PRIMARY_NAV_TARGETS");
-const sidebar = arrayLiteral("SIDEBAR_NAV_TARGETS");
+const sidebar = enterpriseSidebarTargets();
 const transparency = arrayLiteral("TRANSPARENCY_NAV_TARGETS");
+const commandPalette = commandPaletteTargets();
+const reportsHub = reportsHubTargets();
 const redirects = {};
 const redirectBlock = navSrc.match(/EXPECTED_REDIRECTS[^{]*\{([\s\S]*?)\}/);
 if (redirectBlock) {
@@ -47,7 +75,9 @@ for (const m of tree.matchAll(/path:\s*['"]([^'"]+)['"]/g)) declared.add(m[1]);
 // Full paths string also appears in the generated file id map; index it too.
 for (const m of tree.matchAll(/'(\/[a-zA-Z0-9/_$:-]*)'/g)) declared.add(m[1]);
 
-const targets = [...new Set([...primary, ...sidebar, ...transparency])];
+const targets = [
+  ...new Set([...primary, ...sidebar, ...transparency, ...commandPalette, ...reportsHub]),
+];
 const failures = [];
 
 for (const t of targets) {

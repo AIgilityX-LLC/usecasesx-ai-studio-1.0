@@ -1,12 +1,8 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { describe, expect, it, beforeEach, afterEach, mock } from "bun:test";
 
-/**
- * The download helpers now re-check permission on the server. Stub that call so
- * this suite still tests the client-side matrix in isolation; the server-side
- * decision has its own coverage.
- */
 const serverVerdict = { allowed: true as boolean, reason: "Access denied." };
-vi.mock("@/lib/reports/report-export.functions", () => ({
+
+mock.module("@/lib/reports/report-export.functions", () => ({
   authorizeReportExportFn: async () =>
     serverVerdict.allowed ? { allowed: true } : { allowed: false, reason: serverVerdict.reason },
 }));
@@ -32,7 +28,7 @@ const ITEMS: ReportItemInput[] = [
       valuePotential: "High",
       complexity: "Medium",
       riskLevel: "Low",
-      timeToValue: "3–6 months",
+      timeToValue: "3-6 months",
       maturityLevel: "Pilot",
       maturity: "Pilot",
       industry: { slug: "retail", name: "Retail" },
@@ -42,7 +38,6 @@ const ITEMS: ReportItemInput[] = [
   },
 ];
 
-/** The locked permission matrix. Changing a cell is a governance decision. */
 const EXPECTED: Record<string, Record<ExportFormat, boolean>> = {
   owner: { pdf: true, csv: true, csv_benefits: true },
   admin: { pdf: true, csv: true, csv_benefits: true },
@@ -96,9 +91,6 @@ describe("report export permissions", () => {
 describe("export helpers enforce access, not just the UI", () => {
   const clicks: string[] = [];
   const printed: number[] = [];
-
-  // The bun runner's `vi` shim has no stubGlobal/unstubAllGlobals, so stash and
-  // restore the globals by hand — same effect, runner-agnostic.
   const saved: Record<string, unknown> = {};
   const stub = (key: string, value: unknown) => {
     if (!(key in saved)) saved[key] = (globalThis as Record<string, unknown>)[key];
@@ -108,8 +100,6 @@ describe("export helpers enforce access, not just the UI", () => {
   beforeEach(() => {
     clicks.length = 0;
     printed.length = 0;
-    // No DOM in this runner: stub the minimum surface the helpers touch so the
-    // assertion is "did a file get produced?", not "does jsdom work?".
     const anchor = {
       href: "",
       download: "",

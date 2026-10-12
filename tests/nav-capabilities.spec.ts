@@ -10,12 +10,13 @@ import { test, expect } from "@playwright/test";
  */
 
 const PROTECTED: Array<{ path: string; expectDeniedOrSignIn: boolean }> = [
+  { path: "/platform-admin", expectDeniedOrSignIn: true },
+  { path: "/platform-admin/submissions", expectDeniedOrSignIn: true },
   { path: "/administration", expectDeniedOrSignIn: true },
   { path: "/admin-observability", expectDeniedOrSignIn: true },
   { path: "/reviews", expectDeniedOrSignIn: true },
   { path: "/reports", expectDeniedOrSignIn: true },
   { path: "/module-analytics", expectDeniedOrSignIn: true },
-  { path: "/admin-submissions", expectDeniedOrSignIn: true },
 ];
 
 async function showsGuard(page: import("@playwright/test").Page): Promise<boolean> {

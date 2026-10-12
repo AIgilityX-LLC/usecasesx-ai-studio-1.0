@@ -199,16 +199,16 @@ describe("resolveNavPersonas / capabilities from existing roles", () => {
 
 describe("NAV_ROUTE_CAPABILITIES alignment", () => {
   it("keeps platform administration on platform.manage", () => {
-    expect(NAV_ROUTE_CAPABILITIES["/administration"]).toBe("platform.manage");
-    expect(NAV_ROUTE_CAPABILITIES["/admin-submissions"]).toBe("platform.manage");
+    expect(NAV_ROUTE_CAPABILITIES["/platform-admin"]).toBe("platform.manage");
+    expect(NAV_ROUTE_CAPABILITIES["/platform-admin/submissions"]).toBe("platform.manage");
     expect(NAV_ROUTE_CAPABILITIES["/admin-observability"]).toBe("workspace.manage");
     expect(NAV_ROUTE_CAPABILITIES["/reviews"]).toBe("decision.read");
     expect(NAV_ROUTE_CAPABILITIES["/reports"]).toBe("report.read");
   });
 
-  it("resolves nested administration paths via prefix", () => {
-    expect(capabilityForRoute("/administration/leads")).toBe("platform.manage");
-    expect(capabilityForRoute("/administration/founding-access")).toBe("platform.manage");
+  it("resolves nested platform-admin paths via prefix", () => {
+    expect(capabilityForRoute("/platform-admin/leads")).toBe("platform.manage");
+    expect(capabilityForRoute("/platform-admin/founding-access")).toBe("platform.manage");
   });
 
   it("denies platform routes for plain contributor", () => {
@@ -218,7 +218,7 @@ describe("NAV_ROUTE_CAPABILITIES alignment", () => {
       isPlatformAdminTier: false,
       appRoles: ["user" as const],
     };
-    expect(hasNavCapability(ctx, capabilityForRoute("/administration")!)).toBe(false);
+    expect(hasNavCapability(ctx, capabilityForRoute("/platform-admin")!)).toBe(false);
     expect(hasNavCapability(ctx, capabilityForRoute("/admin-observability")!)).toBe(false);
     expect(hasNavCapability(ctx, capabilityForRoute("/reviews")!)).toBe(true);
     expect(hasNavCapability(ctx, capabilityForRoute("/reports")!)).toBe(true);

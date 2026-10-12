@@ -130,7 +130,11 @@ test.describe("journey: opportunity to portfolio", () => {
 
       /* ---- Report ------------------------------------------------------ */
       await page.goto("/reports", { waitUntil: "networkidle" });
-      await expect(page.getByText("AI Opportunity Reports").first()).toBeVisible({
+      await expect(page.getByText("Reports Hub").first()).toBeVisible({
+        timeout: 45_000,
+      });
+      await page.goto("/reports/use-case-business-case", { waitUntil: "networkidle" });
+      await expect(page.getByText("Use Case Business Case").first()).toBeVisible({
         timeout: 45_000,
       });
       const generate = page.getByRole("button", { name: /Generate report/ });

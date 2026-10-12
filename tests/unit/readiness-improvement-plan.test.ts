@@ -59,6 +59,7 @@ describe("readiness improvement plan", () => {
       "investor",
       "demo",
       "client",
+      "deployment",
       "production",
     ]);
     for (const audience of plan.projectedByAudience) {

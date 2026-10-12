@@ -52,9 +52,11 @@ Single source of truth: `src/lib/telemetry/events.ts` (client-safe).
   generated, `ai.assist.used`, `ai.assist.denied`, `admin.action`.
 - `PRODUCT_EVENTS` — registration, workspace created, opportunity captured,
   use case completed, use case scored, portfolio created, report exported,
-  workshop started, advisory requested.
+  workshop started, advisory requested, plus privacy-conscious navigation
+  events (`nav.*` — see `docs/analytics/navigation-events.md`).
 - `ACTIVATION_FUNNEL` — the ordered subset of product events that defines
-  activation, from registration to first export.
+  activation, from registration to first export. Navigation `nav.*` events
+  are **not** part of the activation funnel.
 
 Adding a new event means adding it to this catalogue. Free-text event names
 are not allowed anywhere in the codebase.

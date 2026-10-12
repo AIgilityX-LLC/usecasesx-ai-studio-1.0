@@ -10,6 +10,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { useSupabaseSession } from "@/hooks/useSupabaseSession";
+import { useWorkspaceContext } from "@/hooks/useWorkspaceContext";
 import { supabase } from "@/integrations/supabase/client";
 import { listPortfoliosVisibleToUser } from "@/lib/domain/portfolios.repository";
 import { mapPortfolioRow } from "@/hooks/usecasex-pro";
@@ -22,10 +23,18 @@ export type VisiblePortfolio = {
   isMine: boolean;
 };
 
-async function fetchVisiblePortfolios(userId: string): Promise<VisiblePortfolio[]> {
+async function fetchVisiblePortfolios(
+  userId: string,
+  activeWorkspaceId: string | null,
+): Promise<VisiblePortfolio[]> {
   const rows = await listPortfoliosVisibleToUser(userId);
-  const ownerIds = Array.from(new Set(rows.map((r) => r.user_id).filter(Boolean)));
-  const workspaceId = rows.find((r) => r.workspace_id)?.workspace_id ?? null;
+  // UX scope: active workspace only. RLS still limits to memberships.
+  const scoped = activeWorkspaceId
+    ? rows.filter((r) => r.workspace_id === activeWorkspaceId)
+    : rows;
+  const ownerIds = Array.from(new Set(scoped.map((r) => r.user_id).filter(Boolean)));
+  const workspaceId =
+    activeWorkspaceId ?? scoped.find((r) => r.workspace_id)?.workspace_id ?? null;
 
   const names = new Map<string, string>();
   if (workspaceId && ownerIds.length > 0) {
@@ -38,7 +47,7 @@ async function fetchVisiblePortfolios(userId: string): Promise<VisiblePortfolio[
     }
   }
 
-  return rows.map((row) => ({
+  return scoped.map((row) => ({
     portfolio: mapPortfolioRow(row),
     ownerUserId: row.user_id,
     ownerName: row.user_id === userId ? "You" : (names.get(row.user_id) ?? "Workspace member"),
@@ -49,10 +58,12 @@ async function fetchVisiblePortfolios(userId: string): Promise<VisiblePortfolio[
 export function useWorkspacePortfolios() {
   const session = useSupabaseSession();
   const userId = session?.user.id ?? null;
+  const { data: workspace } = useWorkspaceContext();
+  const activeWorkspaceId = workspace?.workspace?.id ?? null;
   return useQuery({
-    queryKey: ["portfolios", "visible", userId],
+    queryKey: ["portfolios", "visible", userId, activeWorkspaceId],
     enabled: Boolean(userId),
-    queryFn: () => fetchVisiblePortfolios(userId as string),
+    queryFn: () => fetchVisiblePortfolios(userId as string, activeWorkspaceId),
     staleTime: 30_000,
   });
 }

@@ -531,7 +531,7 @@ function Page() {
         actions={
           <Can action="repo.create">
             <Link
-              to="/administration"
+              to="/platform-admin"
               className="inline-flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/20"
             >
               + Submit new use case

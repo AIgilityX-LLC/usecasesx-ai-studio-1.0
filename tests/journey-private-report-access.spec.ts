@@ -11,15 +11,12 @@
 import type { Page } from "@playwright/test";
 import { adminClient, anonClient, expect, grantPro, pageAs, test } from "./fixtures/workspace";
 
-/** Opens /reports, switches to the portfolio report and lists the visible portfolios. */
+/** Opens the Portfolio Report hub recipe and lists the visible portfolios. */
 async function visiblePortfolios(page: Page): Promise<string[]> {
-  await page.goto("/reports", { waitUntil: "networkidle" });
-  await expect(page.getByText("AI Opportunity Reports").first()).toBeVisible({ timeout: 45_000 });
+  await page.goto("/reports/portfolio", { waitUntil: "networkidle" });
+  await expect(page.getByText("Portfolio Report").first()).toBeVisible({ timeout: 45_000 });
 
-  // The portfolio picker only renders for the portfolio report type.
-  await page.getByRole("combobox").first().click();
-  await page.getByRole("option", { name: "AI Opportunity Portfolio Report" }).click();
-
+  // Hub locks the recipe on the first combobox; portfolio picker is the second.
   const picker = page.getByRole("combobox").nth(1);
   await expect(picker).toBeVisible({ timeout: 30_000 });
   await picker.click();

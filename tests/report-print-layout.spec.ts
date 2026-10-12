@@ -52,7 +52,7 @@ async function signIn(page: Page) {
 }
 
 async function generateReport(page: Page) {
-  await page.goto(`${BASE}/reports`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${BASE}/reports/use-case-business-case`, { waitUntil: "domcontentloaded" });
   const generate = page.getByRole("button", { name: /generate report/i });
   await expect(generate).toBeVisible({ timeout: 20_000 });
   await generate.click();
@@ -110,7 +110,7 @@ for (const paper of PAPERS) {
   }) => {
     await signIn(page);
     await page.setViewportSize({ width: paper.cssWidth, height: 1400 });
-    await page.goto(`${BASE}/reports`, { waitUntil: "domcontentloaded" });
+    await page.goto(`${BASE}/reports/use-case-business-case`, { waitUntil: "domcontentloaded" });
 
     // Prefer the portfolio-led report: it carries the matrix and the widest tables.
     const typeSelect = page.getByLabel(/report type/i);

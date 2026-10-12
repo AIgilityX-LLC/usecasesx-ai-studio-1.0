@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "@tanstack/react-router";
+import { collectEnterpriseNavTargets } from "@/lib/navigation/enterprise-nav";
 
 /**
  * Centralized list of primary navigation link targets. Both the top nav and the
@@ -18,53 +19,13 @@ export const PRIMARY_NAV_TARGETS = [
 ] as const;
 
 /**
- * Sidebar (signed-in) navigation link targets. Kept in sync with AppSidebar's
- * NAV definition so the integrity check covers both navigation surfaces.
+ * Sidebar (signed-in) navigation link targets.
+ * Derived from `ENTERPRISE_NAV_SECTIONS` so integrity cannot drift from the UI.
  */
 export const SIDEBAR_NAV_TARGETS = [
-  "/dashboard",
-  "/repository",
-  "/discover",
-  "/opportunities",
-  "/quick-wins",
-  "/roi-calculator",
-  "/insights",
-  "/studio",
-  "/my-use-cases",
-  "/boards",
-  "/submit",
-  "/patterns",
-  "/roadmap",
-  "/sarpi",
-  "/advisorx",
-  "/cyberx/c3g/intake",
-  "/handoffs",
-  "/reviews",
-
-  "/reports",
-  "/administration",
-  "/administration/requests",
-  "/administration/leads",
-  "/administration/email-delivery",
-  "/administration/ai-engines",
-  "/administration/pilot",
-  "/administration/readiness",
-  "/administration/launch-readiness",
-  "/administration/platform-admins",
-  "/administration/launch-checks",
-  "/administration/release-candidate",
-  "/administration/production-readiness",
-  "/pilot",
-  "/admin-submissions",
-  "/admin-audit",
-  "/admin-observability",
-  "/admin-waitlist",
-  "/support",
-  "/account",
-  "/account/security",
+  ...collectEnterpriseNavTargets(),
+  // Account sub-pages linked from the user menu / footer (not always in sections).
   "/account/data",
-  "/entitlement",
-  "/module-analytics",
 ] as const;
 
 /**
@@ -95,6 +56,27 @@ export const EXPECTED_REDIRECTS: Record<string, string> = {
   "/data-readiness": "/studio",
   "/blueprint": "/studio",
   "/portfoliox": "/studio/portfolio",
+  "/administration": "/platform-admin",
+  "/administration/requests": "/platform-admin/requests",
+  "/administration/founding-access": "/platform-admin/founding-access",
+  "/administration/leads": "/platform-admin/leads",
+  "/administration/pilot": "/platform-admin/pilot",
+  "/administration/pilot-milestones": "/platform-admin/pilot-milestones",
+  "/administration/ai-engines": "/platform-admin/ai-engines",
+  "/administration/email-delivery": "/platform-admin/email-delivery",
+  "/administration/platform-admins": "/platform-admin/platform-admins",
+  "/administration/readiness": "/platform-admin/readiness",
+  "/administration/production-readiness": "/platform-admin/production-readiness",
+  "/administration/production-data": "/platform-admin/production-data",
+  "/administration/launch-checks": "/platform-admin/launch-checks",
+  "/administration/release-candidate": "/platform-admin/release-candidate",
+  "/administration/launch-readiness": "/platform-admin/launch-readiness",
+  "/administration/launch-learning": "/platform-admin/launch-learning",
+  "/administration/feedback": "/platform-admin/feedback",
+  "/administration/analytics": "/platform-admin/analytics",
+  "/admin-submissions": "/platform-admin/submissions",
+  "/admin-waitlist": "/platform-admin/waitlist",
+  "/admin-audit": "/platform-admin/submission-audit",
 };
 
 /**

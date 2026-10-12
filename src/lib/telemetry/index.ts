@@ -14,3 +14,23 @@ export {
   setTelemetryTenant,
   getTelemetryTenant,
 } from "./recorder";
+export {
+  moduleFromPath,
+  moduleFromSectionId,
+  planFromTier,
+  roleCategoryFromWorkspaceRole,
+  sanitizeNavProperties,
+  trackCommandPaletteOpened,
+  trackModuleOpened,
+  trackNavEvent,
+  trackNavSearchUsed,
+  trackNavigationClicked,
+  trackSidebarToggle,
+  trackWorkspaceSwitched,
+  workspaceTypeFromPlan,
+  type NavAnalyticsBase,
+  type NavEventProperties,
+  type NavPlan,
+  type NavRoleCategory,
+  type NavWorkspaceType,
+} from "./navigation-analytics";

@@ -60,6 +60,7 @@ import { Route as AppOnboardingRouteImport } from './routes/_app.onboarding'
 import { Route as AppOpportunityMapRouteImport } from './routes/_app.opportunity-map'
 import { Route as AppPatternsRouteImport } from './routes/_app.patterns'
 import { Route as AppPilotRouteImport } from './routes/_app.pilot'
+import { Route as AppPlatformAdminRouteImport } from './routes/_app.platform-admin'
 import { Route as AppPortfolioxRouteImport } from './routes/_app.portfoliox'
 import { Route as AppPricingRouteImport } from './routes/_app.pricing'
 import { Route as AppPrivacyRouteImport } from './routes/_app.privacy'
@@ -112,6 +113,28 @@ import { Route as AppOpportunitiesIdRouteImport } from './routes/_app.opportunit
 import { Route as AppOpportunitiesNewRouteImport } from './routes/_app.opportunities.new'
 import { Route as AppPilotApplyRouteImport } from './routes/_app.pilot_.apply'
 import { Route as AppPilotPortalRouteImport } from './routes/_app.pilot_.portal'
+import { Route as AppPlatformAdminIndexRouteImport } from './routes/_app.platform-admin.index'
+import { Route as AppPlatformAdminAiEnginesRouteImport } from './routes/_app.platform-admin.ai-engines'
+import { Route as AppPlatformAdminAnalyticsRouteImport } from './routes/_app.platform-admin.analytics'
+import { Route as AppPlatformAdminEmailDeliveryRouteImport } from './routes/_app.platform-admin.email-delivery'
+import { Route as AppPlatformAdminFeedbackRouteImport } from './routes/_app.platform-admin.feedback'
+import { Route as AppPlatformAdminFoundingAccessRouteImport } from './routes/_app.platform-admin.founding-access'
+import { Route as AppPlatformAdminLaunchChecksRouteImport } from './routes/_app.platform-admin.launch-checks'
+import { Route as AppPlatformAdminLaunchLearningRouteImport } from './routes/_app.platform-admin.launch-learning'
+import { Route as AppPlatformAdminLaunchReadinessRouteImport } from './routes/_app.platform-admin.launch-readiness'
+import { Route as AppPlatformAdminLeadsRouteImport } from './routes/_app.platform-admin.leads'
+import { Route as AppPlatformAdminPilotRouteImport } from './routes/_app.platform-admin.pilot'
+import { Route as AppPlatformAdminPilotMilestonesRouteImport } from './routes/_app.platform-admin.pilot-milestones'
+import { Route as AppPlatformAdminPlatformAdminsRouteImport } from './routes/_app.platform-admin.platform-admins'
+import { Route as AppPlatformAdminProductionDataRouteImport } from './routes/_app.platform-admin.production-data'
+import { Route as AppPlatformAdminProductionReadinessRouteImport } from './routes/_app.platform-admin.production-readiness'
+import { Route as AppPlatformAdminReleaseCandidateRouteImport } from './routes/_app.platform-admin.release-candidate'
+import { Route as AppPlatformAdminRequestsRouteImport } from './routes/_app.platform-admin.requests'
+import { Route as AppPlatformAdminSubmissionAuditRouteImport } from './routes/_app.platform-admin.submission-audit'
+import { Route as AppPlatformAdminSubmissionsRouteImport } from './routes/_app.platform-admin.submissions'
+import { Route as AppPlatformAdminWaitlistRouteImport } from './routes/_app.platform-admin.waitlist'
+import { Route as AppReportsIndexRouteImport } from './routes/_app.reports.index'
+import { Route as AppReportsSlugRouteImport } from './routes/_app.reports.$slug'
 import { Route as AppSectorsSectorRouteImport } from './routes/_app.sectors.$sector'
 import { Route as AppSegmentsSegmentRouteImport } from './routes/_app.segments.$segment'
 import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.portfolio'
@@ -124,6 +147,8 @@ import { Route as AppAdministrationReadinessIndexRouteImport } from './routes/_a
 import { Route as AppAdministrationReadinessAudienceRouteImport } from './routes/_app.administration.readiness.$audience'
 import { Route as AppCategoriesTypeSlugRouteImport } from './routes/_app.categories.$type.$slug'
 import { Route as AppCyberxC3gIntakeRouteImport } from './routes/_app.cyberx.c3g.intake'
+import { Route as AppPlatformAdminReadinessIndexRouteImport } from './routes/_app.platform-admin.readiness.index'
+import { Route as AppPlatformAdminReadinessAudienceRouteImport } from './routes/_app.platform-admin.readiness.$audience'
 import { Route as AppWorkshopsJoinTokenRouteImport } from './routes/_app.workshops.join.$token'
 import { Route as ApiPublicHooksEmailDeliveryAlertsRouteImport } from './routes/api/public/hooks/email-delivery-alerts'
 import { Route as ApiPublicHooksErpReconciliationRouteImport } from './routes/api/public/hooks/erp-reconciliation'
@@ -408,6 +433,11 @@ const AppPilotRoute = AppPilotRouteImport.update({
   path: '/pilot',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPlatformAdminRoute = AppPlatformAdminRouteImport.update({
+  id: '/platform-admin',
+  path: '/platform-admin',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPortfolioxRoute = AppPortfolioxRouteImport.update({
   id: '/portfoliox',
   path: '/portfoliox',
@@ -682,6 +712,133 @@ const AppPilotPortalRoute = AppPilotPortalRouteImport.update({
   path: '/pilot/portal',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPlatformAdminIndexRoute = AppPlatformAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppPlatformAdminRoute,
+} as any)
+const AppPlatformAdminAiEnginesRoute =
+  AppPlatformAdminAiEnginesRouteImport.update({
+    id: '/ai-engines',
+    path: '/ai-engines',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminAnalyticsRoute =
+  AppPlatformAdminAnalyticsRouteImport.update({
+    id: '/analytics',
+    path: '/analytics',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminEmailDeliveryRoute =
+  AppPlatformAdminEmailDeliveryRouteImport.update({
+    id: '/email-delivery',
+    path: '/email-delivery',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminFeedbackRoute =
+  AppPlatformAdminFeedbackRouteImport.update({
+    id: '/feedback',
+    path: '/feedback',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminFoundingAccessRoute =
+  AppPlatformAdminFoundingAccessRouteImport.update({
+    id: '/founding-access',
+    path: '/founding-access',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminLaunchChecksRoute =
+  AppPlatformAdminLaunchChecksRouteImport.update({
+    id: '/launch-checks',
+    path: '/launch-checks',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminLaunchLearningRoute =
+  AppPlatformAdminLaunchLearningRouteImport.update({
+    id: '/launch-learning',
+    path: '/launch-learning',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminLaunchReadinessRoute =
+  AppPlatformAdminLaunchReadinessRouteImport.update({
+    id: '/launch-readiness',
+    path: '/launch-readiness',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminLeadsRoute = AppPlatformAdminLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => AppPlatformAdminRoute,
+} as any)
+const AppPlatformAdminPilotRoute = AppPlatformAdminPilotRouteImport.update({
+  id: '/pilot',
+  path: '/pilot',
+  getParentRoute: () => AppPlatformAdminRoute,
+} as any)
+const AppPlatformAdminPilotMilestonesRoute =
+  AppPlatformAdminPilotMilestonesRouteImport.update({
+    id: '/pilot-milestones',
+    path: '/pilot-milestones',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminPlatformAdminsRoute =
+  AppPlatformAdminPlatformAdminsRouteImport.update({
+    id: '/platform-admins',
+    path: '/platform-admins',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminProductionDataRoute =
+  AppPlatformAdminProductionDataRouteImport.update({
+    id: '/production-data',
+    path: '/production-data',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminProductionReadinessRoute =
+  AppPlatformAdminProductionReadinessRouteImport.update({
+    id: '/production-readiness',
+    path: '/production-readiness',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminReleaseCandidateRoute =
+  AppPlatformAdminReleaseCandidateRouteImport.update({
+    id: '/release-candidate',
+    path: '/release-candidate',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminRequestsRoute =
+  AppPlatformAdminRequestsRouteImport.update({
+    id: '/requests',
+    path: '/requests',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminSubmissionAuditRoute =
+  AppPlatformAdminSubmissionAuditRouteImport.update({
+    id: '/submission-audit',
+    path: '/submission-audit',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminSubmissionsRoute =
+  AppPlatformAdminSubmissionsRouteImport.update({
+    id: '/submissions',
+    path: '/submissions',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminWaitlistRoute =
+  AppPlatformAdminWaitlistRouteImport.update({
+    id: '/waitlist',
+    path: '/waitlist',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppReportsIndexRoute = AppReportsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppReportsRoute,
+} as any)
+const AppReportsSlugRoute = AppReportsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => AppReportsRoute,
+} as any)
 const AppSectorsSectorRoute = AppSectorsSectorRouteImport.update({
   id: '/sectors/$sector',
   path: '/sectors/$sector',
@@ -744,6 +901,18 @@ const AppCyberxC3gIntakeRoute = AppCyberxC3gIntakeRouteImport.update({
   path: '/cyberx/c3g/intake',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPlatformAdminReadinessIndexRoute =
+  AppPlatformAdminReadinessIndexRouteImport.update({
+    id: '/readiness/',
+    path: '/readiness/',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminReadinessAudienceRoute =
+  AppPlatformAdminReadinessAudienceRouteImport.update({
+    id: '/readiness/$audience',
+    path: '/readiness/$audience',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
 const AppWorkshopsJoinTokenRoute = AppWorkshopsJoinTokenRouteImport.update({
   id: '/workshops/join/$token',
   path: '/workshops/join/$token',
@@ -962,13 +1131,14 @@ export interface FileRoutesByFullPath {
   '/opportunity-map': typeof AppOpportunityMapRoute
   '/patterns': typeof AppPatternsRoute
   '/pilot': typeof AppPilotRoute
+  '/platform-admin': typeof AppPlatformAdminRouteWithChildren
   '/portfoliox': typeof AppPortfolioxRoute
   '/pricing': typeof AppPricingRoute
   '/privacy': typeof AppPrivacyRoute
   '/pro': typeof AppProRoute
   '/profile': typeof AppProfileRoute
   '/quick-wins': typeof AppQuickWinsRoute
-  '/reports': typeof AppReportsRoute
+  '/reports': typeof AppReportsRouteWithChildren
   '/repository': typeof AppRepositoryRoute
   '/resources': typeof AppResourcesRoute
   '/reviews': typeof AppReviewsRoute
@@ -1009,6 +1179,26 @@ export interface FileRoutesByFullPath {
   '/opportunities/new': typeof AppOpportunitiesNewRoute
   '/pilot/apply': typeof AppPilotApplyRoute
   '/pilot/portal': typeof AppPilotPortalRoute
+  '/platform-admin/ai-engines': typeof AppPlatformAdminAiEnginesRoute
+  '/platform-admin/analytics': typeof AppPlatformAdminAnalyticsRoute
+  '/platform-admin/email-delivery': typeof AppPlatformAdminEmailDeliveryRoute
+  '/platform-admin/feedback': typeof AppPlatformAdminFeedbackRoute
+  '/platform-admin/founding-access': typeof AppPlatformAdminFoundingAccessRoute
+  '/platform-admin/launch-checks': typeof AppPlatformAdminLaunchChecksRoute
+  '/platform-admin/launch-learning': typeof AppPlatformAdminLaunchLearningRoute
+  '/platform-admin/launch-readiness': typeof AppPlatformAdminLaunchReadinessRoute
+  '/platform-admin/leads': typeof AppPlatformAdminLeadsRoute
+  '/platform-admin/pilot': typeof AppPlatformAdminPilotRoute
+  '/platform-admin/pilot-milestones': typeof AppPlatformAdminPilotMilestonesRoute
+  '/platform-admin/platform-admins': typeof AppPlatformAdminPlatformAdminsRoute
+  '/platform-admin/production-data': typeof AppPlatformAdminProductionDataRoute
+  '/platform-admin/production-readiness': typeof AppPlatformAdminProductionReadinessRoute
+  '/platform-admin/release-candidate': typeof AppPlatformAdminReleaseCandidateRoute
+  '/platform-admin/requests': typeof AppPlatformAdminRequestsRoute
+  '/platform-admin/submission-audit': typeof AppPlatformAdminSubmissionAuditRoute
+  '/platform-admin/submissions': typeof AppPlatformAdminSubmissionsRoute
+  '/platform-admin/waitlist': typeof AppPlatformAdminWaitlistRoute
+  '/reports/$slug': typeof AppReportsSlugRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
   '/segments/$segment': typeof AppSegmentsSegmentRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
@@ -1021,10 +1211,13 @@ export interface FileRoutesByFullPath {
   '/categories/': typeof AppCategoriesIndexRoute
   '/collections/': typeof AppCollectionsIndexRoute
   '/opportunities/': typeof AppOpportunitiesIndexRoute
+  '/platform-admin/': typeof AppPlatformAdminIndexRoute
+  '/reports/': typeof AppReportsIndexRoute
   '/workshops/': typeof AppWorkshopsIndexRoute
   '/administration/readiness/$audience': typeof AppAdministrationReadinessAudienceRoute
   '/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
+  '/platform-admin/readiness/$audience': typeof AppPlatformAdminReadinessAudienceRoute
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/email-delivery-alerts': typeof ApiPublicHooksEmailDeliveryAlertsRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
@@ -1037,6 +1230,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/administration/readiness/': typeof AppAdministrationReadinessIndexRoute
+  '/platform-admin/readiness/': typeof AppPlatformAdminReadinessIndexRoute
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/studio/use-case/$id/brief': typeof AppStudioUseCaseIdBriefRoute
@@ -1111,7 +1305,6 @@ export interface FileRoutesByTo {
   '/pro': typeof AppProRoute
   '/profile': typeof AppProfileRoute
   '/quick-wins': typeof AppQuickWinsRoute
-  '/reports': typeof AppReportsRoute
   '/repository': typeof AppRepositoryRoute
   '/resources': typeof AppResourcesRoute
   '/reviews': typeof AppReviewsRoute
@@ -1152,6 +1345,26 @@ export interface FileRoutesByTo {
   '/opportunities/new': typeof AppOpportunitiesNewRoute
   '/pilot/apply': typeof AppPilotApplyRoute
   '/pilot/portal': typeof AppPilotPortalRoute
+  '/platform-admin/ai-engines': typeof AppPlatformAdminAiEnginesRoute
+  '/platform-admin/analytics': typeof AppPlatformAdminAnalyticsRoute
+  '/platform-admin/email-delivery': typeof AppPlatformAdminEmailDeliveryRoute
+  '/platform-admin/feedback': typeof AppPlatformAdminFeedbackRoute
+  '/platform-admin/founding-access': typeof AppPlatformAdminFoundingAccessRoute
+  '/platform-admin/launch-checks': typeof AppPlatformAdminLaunchChecksRoute
+  '/platform-admin/launch-learning': typeof AppPlatformAdminLaunchLearningRoute
+  '/platform-admin/launch-readiness': typeof AppPlatformAdminLaunchReadinessRoute
+  '/platform-admin/leads': typeof AppPlatformAdminLeadsRoute
+  '/platform-admin/pilot': typeof AppPlatformAdminPilotRoute
+  '/platform-admin/pilot-milestones': typeof AppPlatformAdminPilotMilestonesRoute
+  '/platform-admin/platform-admins': typeof AppPlatformAdminPlatformAdminsRoute
+  '/platform-admin/production-data': typeof AppPlatformAdminProductionDataRoute
+  '/platform-admin/production-readiness': typeof AppPlatformAdminProductionReadinessRoute
+  '/platform-admin/release-candidate': typeof AppPlatformAdminReleaseCandidateRoute
+  '/platform-admin/requests': typeof AppPlatformAdminRequestsRoute
+  '/platform-admin/submission-audit': typeof AppPlatformAdminSubmissionAuditRoute
+  '/platform-admin/submissions': typeof AppPlatformAdminSubmissionsRoute
+  '/platform-admin/waitlist': typeof AppPlatformAdminWaitlistRoute
+  '/reports/$slug': typeof AppReportsSlugRoute
   '/sectors/$sector': typeof AppSectorsSectorRoute
   '/segments/$segment': typeof AppSegmentsSegmentRoute
   '/studio/portfolio': typeof AppStudioPortfolioRoute
@@ -1164,10 +1377,13 @@ export interface FileRoutesByTo {
   '/categories': typeof AppCategoriesIndexRoute
   '/collections': typeof AppCollectionsIndexRoute
   '/opportunities': typeof AppOpportunitiesIndexRoute
+  '/platform-admin': typeof AppPlatformAdminIndexRoute
+  '/reports': typeof AppReportsIndexRoute
   '/workshops': typeof AppWorkshopsIndexRoute
   '/administration/readiness/$audience': typeof AppAdministrationReadinessAudienceRoute
   '/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
+  '/platform-admin/readiness/$audience': typeof AppPlatformAdminReadinessAudienceRoute
   '/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/email-delivery-alerts': typeof ApiPublicHooksEmailDeliveryAlertsRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
@@ -1180,6 +1396,7 @@ export interface FileRoutesByTo {
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/administration/readiness': typeof AppAdministrationReadinessIndexRoute
+  '/platform-admin/readiness': typeof AppPlatformAdminReadinessIndexRoute
   '/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/studio/use-case/$id/brief': typeof AppStudioUseCaseIdBriefRoute
@@ -1252,13 +1469,14 @@ export interface FileRoutesById {
   '/_app/opportunity-map': typeof AppOpportunityMapRoute
   '/_app/patterns': typeof AppPatternsRoute
   '/_app/pilot': typeof AppPilotRoute
+  '/_app/platform-admin': typeof AppPlatformAdminRouteWithChildren
   '/_app/portfoliox': typeof AppPortfolioxRoute
   '/_app/pricing': typeof AppPricingRoute
   '/_app/privacy': typeof AppPrivacyRoute
   '/_app/pro': typeof AppProRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/quick-wins': typeof AppQuickWinsRoute
-  '/_app/reports': typeof AppReportsRoute
+  '/_app/reports': typeof AppReportsRouteWithChildren
   '/_app/repository': typeof AppRepositoryRoute
   '/_app/resources': typeof AppResourcesRoute
   '/_app/reviews': typeof AppReviewsRoute
@@ -1299,6 +1517,26 @@ export interface FileRoutesById {
   '/_app/opportunities/new': typeof AppOpportunitiesNewRoute
   '/_app/pilot_/apply': typeof AppPilotApplyRoute
   '/_app/pilot_/portal': typeof AppPilotPortalRoute
+  '/_app/platform-admin/ai-engines': typeof AppPlatformAdminAiEnginesRoute
+  '/_app/platform-admin/analytics': typeof AppPlatformAdminAnalyticsRoute
+  '/_app/platform-admin/email-delivery': typeof AppPlatformAdminEmailDeliveryRoute
+  '/_app/platform-admin/feedback': typeof AppPlatformAdminFeedbackRoute
+  '/_app/platform-admin/founding-access': typeof AppPlatformAdminFoundingAccessRoute
+  '/_app/platform-admin/launch-checks': typeof AppPlatformAdminLaunchChecksRoute
+  '/_app/platform-admin/launch-learning': typeof AppPlatformAdminLaunchLearningRoute
+  '/_app/platform-admin/launch-readiness': typeof AppPlatformAdminLaunchReadinessRoute
+  '/_app/platform-admin/leads': typeof AppPlatformAdminLeadsRoute
+  '/_app/platform-admin/pilot': typeof AppPlatformAdminPilotRoute
+  '/_app/platform-admin/pilot-milestones': typeof AppPlatformAdminPilotMilestonesRoute
+  '/_app/platform-admin/platform-admins': typeof AppPlatformAdminPlatformAdminsRoute
+  '/_app/platform-admin/production-data': typeof AppPlatformAdminProductionDataRoute
+  '/_app/platform-admin/production-readiness': typeof AppPlatformAdminProductionReadinessRoute
+  '/_app/platform-admin/release-candidate': typeof AppPlatformAdminReleaseCandidateRoute
+  '/_app/platform-admin/requests': typeof AppPlatformAdminRequestsRoute
+  '/_app/platform-admin/submission-audit': typeof AppPlatformAdminSubmissionAuditRoute
+  '/_app/platform-admin/submissions': typeof AppPlatformAdminSubmissionsRoute
+  '/_app/platform-admin/waitlist': typeof AppPlatformAdminWaitlistRoute
+  '/_app/reports/$slug': typeof AppReportsSlugRoute
   '/_app/sectors/$sector': typeof AppSectorsSectorRoute
   '/_app/segments/$segment': typeof AppSegmentsSegmentRoute
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
@@ -1311,10 +1549,13 @@ export interface FileRoutesById {
   '/_app/categories/': typeof AppCategoriesIndexRoute
   '/_app/collections/': typeof AppCollectionsIndexRoute
   '/_app/opportunities/': typeof AppOpportunitiesIndexRoute
+  '/_app/platform-admin/': typeof AppPlatformAdminIndexRoute
+  '/_app/reports/': typeof AppReportsIndexRoute
   '/_app/workshops/': typeof AppWorkshopsIndexRoute
   '/_app/administration/readiness/$audience': typeof AppAdministrationReadinessAudienceRoute
   '/_app/categories/$type/$slug': typeof AppCategoriesTypeSlugRoute
   '/_app/cyberx/c3g/intake': typeof AppCyberxC3gIntakeRoute
+  '/_app/platform-admin/readiness/$audience': typeof AppPlatformAdminReadinessAudienceRoute
   '/_app/workshops/join/$token': typeof AppWorkshopsJoinTokenRoute
   '/api/public/hooks/email-delivery-alerts': typeof ApiPublicHooksEmailDeliveryAlertsRoute
   '/api/public/hooks/erp-reconciliation': typeof ApiPublicHooksErpReconciliationRoute
@@ -1327,6 +1568,7 @@ export interface FileRoutesById {
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/_app/administration/readiness/': typeof AppAdministrationReadinessIndexRoute
+  '/_app/platform-admin/readiness/': typeof AppPlatformAdminReadinessIndexRoute
   '/_app/studio/use-case/$id/advisorx': typeof AppStudioUseCaseIdAdvisorxRoute
   '/_app/studio/use-case/$id/blueprint': typeof AppStudioUseCaseIdBlueprintRoute
   '/_app/studio/use-case/$id/brief': typeof AppStudioUseCaseIdBriefRoute
@@ -1399,6 +1641,7 @@ export interface FileRouteTypes {
     | '/opportunity-map'
     | '/patterns'
     | '/pilot'
+    | '/platform-admin'
     | '/portfoliox'
     | '/pricing'
     | '/privacy'
@@ -1446,6 +1689,26 @@ export interface FileRouteTypes {
     | '/opportunities/new'
     | '/pilot/apply'
     | '/pilot/portal'
+    | '/platform-admin/ai-engines'
+    | '/platform-admin/analytics'
+    | '/platform-admin/email-delivery'
+    | '/platform-admin/feedback'
+    | '/platform-admin/founding-access'
+    | '/platform-admin/launch-checks'
+    | '/platform-admin/launch-learning'
+    | '/platform-admin/launch-readiness'
+    | '/platform-admin/leads'
+    | '/platform-admin/pilot'
+    | '/platform-admin/pilot-milestones'
+    | '/platform-admin/platform-admins'
+    | '/platform-admin/production-data'
+    | '/platform-admin/production-readiness'
+    | '/platform-admin/release-candidate'
+    | '/platform-admin/requests'
+    | '/platform-admin/submission-audit'
+    | '/platform-admin/submissions'
+    | '/platform-admin/waitlist'
+    | '/reports/$slug'
     | '/sectors/$sector'
     | '/segments/$segment'
     | '/studio/portfolio'
@@ -1458,10 +1721,13 @@ export interface FileRouteTypes {
     | '/categories/'
     | '/collections/'
     | '/opportunities/'
+    | '/platform-admin/'
+    | '/reports/'
     | '/workshops/'
     | '/administration/readiness/$audience'
     | '/categories/$type/$slug'
     | '/cyberx/c3g/intake'
+    | '/platform-admin/readiness/$audience'
     | '/workshops/join/$token'
     | '/api/public/hooks/email-delivery-alerts'
     | '/api/public/hooks/erp-reconciliation'
@@ -1474,6 +1740,7 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
     | '/administration/readiness/'
+    | '/platform-admin/readiness/'
     | '/studio/use-case/$id/advisorx'
     | '/studio/use-case/$id/blueprint'
     | '/studio/use-case/$id/brief'
@@ -1548,7 +1815,6 @@ export interface FileRouteTypes {
     | '/pro'
     | '/profile'
     | '/quick-wins'
-    | '/reports'
     | '/repository'
     | '/resources'
     | '/reviews'
@@ -1589,6 +1855,26 @@ export interface FileRouteTypes {
     | '/opportunities/new'
     | '/pilot/apply'
     | '/pilot/portal'
+    | '/platform-admin/ai-engines'
+    | '/platform-admin/analytics'
+    | '/platform-admin/email-delivery'
+    | '/platform-admin/feedback'
+    | '/platform-admin/founding-access'
+    | '/platform-admin/launch-checks'
+    | '/platform-admin/launch-learning'
+    | '/platform-admin/launch-readiness'
+    | '/platform-admin/leads'
+    | '/platform-admin/pilot'
+    | '/platform-admin/pilot-milestones'
+    | '/platform-admin/platform-admins'
+    | '/platform-admin/production-data'
+    | '/platform-admin/production-readiness'
+    | '/platform-admin/release-candidate'
+    | '/platform-admin/requests'
+    | '/platform-admin/submission-audit'
+    | '/platform-admin/submissions'
+    | '/platform-admin/waitlist'
+    | '/reports/$slug'
     | '/sectors/$sector'
     | '/segments/$segment'
     | '/studio/portfolio'
@@ -1601,10 +1887,13 @@ export interface FileRouteTypes {
     | '/categories'
     | '/collections'
     | '/opportunities'
+    | '/platform-admin'
+    | '/reports'
     | '/workshops'
     | '/administration/readiness/$audience'
     | '/categories/$type/$slug'
     | '/cyberx/c3g/intake'
+    | '/platform-admin/readiness/$audience'
     | '/workshops/join/$token'
     | '/api/public/hooks/email-delivery-alerts'
     | '/api/public/hooks/erp-reconciliation'
@@ -1617,6 +1906,7 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
     | '/administration/readiness'
+    | '/platform-admin/readiness'
     | '/studio/use-case/$id/advisorx'
     | '/studio/use-case/$id/blueprint'
     | '/studio/use-case/$id/brief'
@@ -1688,6 +1978,7 @@ export interface FileRouteTypes {
     | '/_app/opportunity-map'
     | '/_app/patterns'
     | '/_app/pilot'
+    | '/_app/platform-admin'
     | '/_app/portfoliox'
     | '/_app/pricing'
     | '/_app/privacy'
@@ -1735,6 +2026,26 @@ export interface FileRouteTypes {
     | '/_app/opportunities/new'
     | '/_app/pilot_/apply'
     | '/_app/pilot_/portal'
+    | '/_app/platform-admin/ai-engines'
+    | '/_app/platform-admin/analytics'
+    | '/_app/platform-admin/email-delivery'
+    | '/_app/platform-admin/feedback'
+    | '/_app/platform-admin/founding-access'
+    | '/_app/platform-admin/launch-checks'
+    | '/_app/platform-admin/launch-learning'
+    | '/_app/platform-admin/launch-readiness'
+    | '/_app/platform-admin/leads'
+    | '/_app/platform-admin/pilot'
+    | '/_app/platform-admin/pilot-milestones'
+    | '/_app/platform-admin/platform-admins'
+    | '/_app/platform-admin/production-data'
+    | '/_app/platform-admin/production-readiness'
+    | '/_app/platform-admin/release-candidate'
+    | '/_app/platform-admin/requests'
+    | '/_app/platform-admin/submission-audit'
+    | '/_app/platform-admin/submissions'
+    | '/_app/platform-admin/waitlist'
+    | '/_app/reports/$slug'
     | '/_app/sectors/$sector'
     | '/_app/segments/$segment'
     | '/_app/studio/portfolio'
@@ -1747,10 +2058,13 @@ export interface FileRouteTypes {
     | '/_app/categories/'
     | '/_app/collections/'
     | '/_app/opportunities/'
+    | '/_app/platform-admin/'
+    | '/_app/reports/'
     | '/_app/workshops/'
     | '/_app/administration/readiness/$audience'
     | '/_app/categories/$type/$slug'
     | '/_app/cyberx/c3g/intake'
+    | '/_app/platform-admin/readiness/$audience'
     | '/_app/workshops/join/$token'
     | '/api/public/hooks/email-delivery-alerts'
     | '/api/public/hooks/erp-reconciliation'
@@ -1763,6 +2077,7 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
     | '/_app/administration/readiness/'
+    | '/_app/platform-admin/readiness/'
     | '/_app/studio/use-case/$id/advisorx'
     | '/_app/studio/use-case/$id/blueprint'
     | '/_app/studio/use-case/$id/brief'
@@ -2168,6 +2483,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPilotRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/platform-admin': {
+      id: '/_app/platform-admin'
+      path: '/platform-admin'
+      fullPath: '/platform-admin'
+      preLoaderRoute: typeof AppPlatformAdminRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/portfoliox': {
       id: '/_app/portfoliox'
       path: '/portfoliox'
@@ -2532,6 +2854,160 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPilotPortalRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/platform-admin/': {
+      id: '/_app/platform-admin/'
+      path: '/'
+      fullPath: '/platform-admin/'
+      preLoaderRoute: typeof AppPlatformAdminIndexRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/ai-engines': {
+      id: '/_app/platform-admin/ai-engines'
+      path: '/ai-engines'
+      fullPath: '/platform-admin/ai-engines'
+      preLoaderRoute: typeof AppPlatformAdminAiEnginesRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/analytics': {
+      id: '/_app/platform-admin/analytics'
+      path: '/analytics'
+      fullPath: '/platform-admin/analytics'
+      preLoaderRoute: typeof AppPlatformAdminAnalyticsRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/email-delivery': {
+      id: '/_app/platform-admin/email-delivery'
+      path: '/email-delivery'
+      fullPath: '/platform-admin/email-delivery'
+      preLoaderRoute: typeof AppPlatformAdminEmailDeliveryRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/feedback': {
+      id: '/_app/platform-admin/feedback'
+      path: '/feedback'
+      fullPath: '/platform-admin/feedback'
+      preLoaderRoute: typeof AppPlatformAdminFeedbackRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/founding-access': {
+      id: '/_app/platform-admin/founding-access'
+      path: '/founding-access'
+      fullPath: '/platform-admin/founding-access'
+      preLoaderRoute: typeof AppPlatformAdminFoundingAccessRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/launch-checks': {
+      id: '/_app/platform-admin/launch-checks'
+      path: '/launch-checks'
+      fullPath: '/platform-admin/launch-checks'
+      preLoaderRoute: typeof AppPlatformAdminLaunchChecksRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/launch-learning': {
+      id: '/_app/platform-admin/launch-learning'
+      path: '/launch-learning'
+      fullPath: '/platform-admin/launch-learning'
+      preLoaderRoute: typeof AppPlatformAdminLaunchLearningRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/launch-readiness': {
+      id: '/_app/platform-admin/launch-readiness'
+      path: '/launch-readiness'
+      fullPath: '/platform-admin/launch-readiness'
+      preLoaderRoute: typeof AppPlatformAdminLaunchReadinessRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/leads': {
+      id: '/_app/platform-admin/leads'
+      path: '/leads'
+      fullPath: '/platform-admin/leads'
+      preLoaderRoute: typeof AppPlatformAdminLeadsRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/pilot': {
+      id: '/_app/platform-admin/pilot'
+      path: '/pilot'
+      fullPath: '/platform-admin/pilot'
+      preLoaderRoute: typeof AppPlatformAdminPilotRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/pilot-milestones': {
+      id: '/_app/platform-admin/pilot-milestones'
+      path: '/pilot-milestones'
+      fullPath: '/platform-admin/pilot-milestones'
+      preLoaderRoute: typeof AppPlatformAdminPilotMilestonesRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/platform-admins': {
+      id: '/_app/platform-admin/platform-admins'
+      path: '/platform-admins'
+      fullPath: '/platform-admin/platform-admins'
+      preLoaderRoute: typeof AppPlatformAdminPlatformAdminsRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/production-data': {
+      id: '/_app/platform-admin/production-data'
+      path: '/production-data'
+      fullPath: '/platform-admin/production-data'
+      preLoaderRoute: typeof AppPlatformAdminProductionDataRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/production-readiness': {
+      id: '/_app/platform-admin/production-readiness'
+      path: '/production-readiness'
+      fullPath: '/platform-admin/production-readiness'
+      preLoaderRoute: typeof AppPlatformAdminProductionReadinessRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/release-candidate': {
+      id: '/_app/platform-admin/release-candidate'
+      path: '/release-candidate'
+      fullPath: '/platform-admin/release-candidate'
+      preLoaderRoute: typeof AppPlatformAdminReleaseCandidateRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/requests': {
+      id: '/_app/platform-admin/requests'
+      path: '/requests'
+      fullPath: '/platform-admin/requests'
+      preLoaderRoute: typeof AppPlatformAdminRequestsRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/submission-audit': {
+      id: '/_app/platform-admin/submission-audit'
+      path: '/submission-audit'
+      fullPath: '/platform-admin/submission-audit'
+      preLoaderRoute: typeof AppPlatformAdminSubmissionAuditRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/submissions': {
+      id: '/_app/platform-admin/submissions'
+      path: '/submissions'
+      fullPath: '/platform-admin/submissions'
+      preLoaderRoute: typeof AppPlatformAdminSubmissionsRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/waitlist': {
+      id: '/_app/platform-admin/waitlist'
+      path: '/waitlist'
+      fullPath: '/platform-admin/waitlist'
+      preLoaderRoute: typeof AppPlatformAdminWaitlistRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/reports/': {
+      id: '/_app/reports/'
+      path: '/'
+      fullPath: '/reports/'
+      preLoaderRoute: typeof AppReportsIndexRouteImport
+      parentRoute: typeof AppReportsRoute
+    }
+    '/_app/reports/$slug': {
+      id: '/_app/reports/$slug'
+      path: '/$slug'
+      fullPath: '/reports/$slug'
+      preLoaderRoute: typeof AppReportsSlugRouteImport
+      parentRoute: typeof AppReportsRoute
+    }
     '/_app/sectors/$sector': {
       id: '/_app/sectors/$sector'
       path: '/sectors/$sector'
@@ -2615,6 +3091,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/cyberx/c3g/intake'
       preLoaderRoute: typeof AppCyberxC3gIntakeRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/_app/platform-admin/readiness/': {
+      id: '/_app/platform-admin/readiness/'
+      path: '/readiness'
+      fullPath: '/platform-admin/readiness/'
+      preLoaderRoute: typeof AppPlatformAdminReadinessIndexRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/readiness/$audience': {
+      id: '/_app/platform-admin/readiness/$audience'
+      path: '/readiness/$audience'
+      fullPath: '/platform-admin/readiness/$audience'
+      preLoaderRoute: typeof AppPlatformAdminReadinessAudienceRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
     }
     '/_app/workshops/join/$token': {
       id: '/_app/workshops/join/$token'
@@ -2906,6 +3396,75 @@ const AppBoardsRouteWithChildren = AppBoardsRoute._addFileChildren(
   AppBoardsRouteChildren,
 )
 
+interface AppPlatformAdminRouteChildren {
+  AppPlatformAdminAiEnginesRoute: typeof AppPlatformAdminAiEnginesRoute
+  AppPlatformAdminAnalyticsRoute: typeof AppPlatformAdminAnalyticsRoute
+  AppPlatformAdminEmailDeliveryRoute: typeof AppPlatformAdminEmailDeliveryRoute
+  AppPlatformAdminFeedbackRoute: typeof AppPlatformAdminFeedbackRoute
+  AppPlatformAdminFoundingAccessRoute: typeof AppPlatformAdminFoundingAccessRoute
+  AppPlatformAdminLaunchChecksRoute: typeof AppPlatformAdminLaunchChecksRoute
+  AppPlatformAdminLaunchLearningRoute: typeof AppPlatformAdminLaunchLearningRoute
+  AppPlatformAdminLaunchReadinessRoute: typeof AppPlatformAdminLaunchReadinessRoute
+  AppPlatformAdminLeadsRoute: typeof AppPlatformAdminLeadsRoute
+  AppPlatformAdminPilotRoute: typeof AppPlatformAdminPilotRoute
+  AppPlatformAdminPilotMilestonesRoute: typeof AppPlatformAdminPilotMilestonesRoute
+  AppPlatformAdminPlatformAdminsRoute: typeof AppPlatformAdminPlatformAdminsRoute
+  AppPlatformAdminProductionDataRoute: typeof AppPlatformAdminProductionDataRoute
+  AppPlatformAdminProductionReadinessRoute: typeof AppPlatformAdminProductionReadinessRoute
+  AppPlatformAdminReleaseCandidateRoute: typeof AppPlatformAdminReleaseCandidateRoute
+  AppPlatformAdminRequestsRoute: typeof AppPlatformAdminRequestsRoute
+  AppPlatformAdminSubmissionAuditRoute: typeof AppPlatformAdminSubmissionAuditRoute
+  AppPlatformAdminSubmissionsRoute: typeof AppPlatformAdminSubmissionsRoute
+  AppPlatformAdminWaitlistRoute: typeof AppPlatformAdminWaitlistRoute
+  AppPlatformAdminIndexRoute: typeof AppPlatformAdminIndexRoute
+  AppPlatformAdminReadinessAudienceRoute: typeof AppPlatformAdminReadinessAudienceRoute
+  AppPlatformAdminReadinessIndexRoute: typeof AppPlatformAdminReadinessIndexRoute
+}
+
+const AppPlatformAdminRouteChildren: AppPlatformAdminRouteChildren = {
+  AppPlatformAdminAiEnginesRoute: AppPlatformAdminAiEnginesRoute,
+  AppPlatformAdminAnalyticsRoute: AppPlatformAdminAnalyticsRoute,
+  AppPlatformAdminEmailDeliveryRoute: AppPlatformAdminEmailDeliveryRoute,
+  AppPlatformAdminFeedbackRoute: AppPlatformAdminFeedbackRoute,
+  AppPlatformAdminFoundingAccessRoute: AppPlatformAdminFoundingAccessRoute,
+  AppPlatformAdminLaunchChecksRoute: AppPlatformAdminLaunchChecksRoute,
+  AppPlatformAdminLaunchLearningRoute: AppPlatformAdminLaunchLearningRoute,
+  AppPlatformAdminLaunchReadinessRoute: AppPlatformAdminLaunchReadinessRoute,
+  AppPlatformAdminLeadsRoute: AppPlatformAdminLeadsRoute,
+  AppPlatformAdminPilotRoute: AppPlatformAdminPilotRoute,
+  AppPlatformAdminPilotMilestonesRoute: AppPlatformAdminPilotMilestonesRoute,
+  AppPlatformAdminPlatformAdminsRoute: AppPlatformAdminPlatformAdminsRoute,
+  AppPlatformAdminProductionDataRoute: AppPlatformAdminProductionDataRoute,
+  AppPlatformAdminProductionReadinessRoute:
+    AppPlatformAdminProductionReadinessRoute,
+  AppPlatformAdminReleaseCandidateRoute: AppPlatformAdminReleaseCandidateRoute,
+  AppPlatformAdminRequestsRoute: AppPlatformAdminRequestsRoute,
+  AppPlatformAdminSubmissionAuditRoute: AppPlatformAdminSubmissionAuditRoute,
+  AppPlatformAdminSubmissionsRoute: AppPlatformAdminSubmissionsRoute,
+  AppPlatformAdminWaitlistRoute: AppPlatformAdminWaitlistRoute,
+  AppPlatformAdminIndexRoute: AppPlatformAdminIndexRoute,
+  AppPlatformAdminReadinessAudienceRoute:
+    AppPlatformAdminReadinessAudienceRoute,
+  AppPlatformAdminReadinessIndexRoute: AppPlatformAdminReadinessIndexRoute,
+}
+
+const AppPlatformAdminRouteWithChildren =
+  AppPlatformAdminRoute._addFileChildren(AppPlatformAdminRouteChildren)
+
+interface AppReportsRouteChildren {
+  AppReportsSlugRoute: typeof AppReportsSlugRoute
+  AppReportsIndexRoute: typeof AppReportsIndexRoute
+}
+
+const AppReportsRouteChildren: AppReportsRouteChildren = {
+  AppReportsSlugRoute: AppReportsSlugRoute,
+  AppReportsIndexRoute: AppReportsIndexRoute,
+}
+
+const AppReportsRouteWithChildren = AppReportsRoute._addFileChildren(
+  AppReportsRouteChildren,
+)
+
 interface AppStudioRouteChildren {
   AppStudioPortfolioRoute: typeof AppStudioPortfolioRoute
   AppStudioUseCaseIdAdvisorxRoute: typeof AppStudioUseCaseIdAdvisorxRoute
@@ -2995,13 +3554,14 @@ interface AppRouteChildren {
   AppOpportunityMapRoute: typeof AppOpportunityMapRoute
   AppPatternsRoute: typeof AppPatternsRoute
   AppPilotRoute: typeof AppPilotRoute
+  AppPlatformAdminRoute: typeof AppPlatformAdminRouteWithChildren
   AppPortfolioxRoute: typeof AppPortfolioxRoute
   AppPricingRoute: typeof AppPricingRoute
   AppPrivacyRoute: typeof AppPrivacyRoute
   AppProRoute: typeof AppProRoute
   AppProfileRoute: typeof AppProfileRoute
   AppQuickWinsRoute: typeof AppQuickWinsRoute
-  AppReportsRoute: typeof AppReportsRoute
+  AppReportsRoute: typeof AppReportsRouteWithChildren
   AppRepositoryRoute: typeof AppRepositoryRoute
   AppResourcesRoute: typeof AppResourcesRoute
   AppReviewsRoute: typeof AppReviewsRoute
@@ -3075,13 +3635,14 @@ const AppRouteChildren: AppRouteChildren = {
   AppOpportunityMapRoute: AppOpportunityMapRoute,
   AppPatternsRoute: AppPatternsRoute,
   AppPilotRoute: AppPilotRoute,
+  AppPlatformAdminRoute: AppPlatformAdminRouteWithChildren,
   AppPortfolioxRoute: AppPortfolioxRoute,
   AppPricingRoute: AppPricingRoute,
   AppPrivacyRoute: AppPrivacyRoute,
   AppProRoute: AppProRoute,
   AppProfileRoute: AppProfileRoute,
   AppQuickWinsRoute: AppQuickWinsRoute,
-  AppReportsRoute: AppReportsRoute,
+  AppReportsRoute: AppReportsRouteWithChildren,
   AppRepositoryRoute: AppRepositoryRoute,
   AppResourcesRoute: AppResourcesRoute,
   AppReviewsRoute: AppReviewsRoute,

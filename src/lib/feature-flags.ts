@@ -19,6 +19,12 @@ export const PUBLIC_LAUNCH_FEATURES = Object.freeze({
    * OFF by default — the data foundation ships before any UI does.
    */
   tenancyV2: import.meta.env.VITE_TENANCY_V2_ENABLED === "true",
+  /**
+   * Enterprise navigation v2 (sectioned sidebar, command palette, platform-admin split).
+   * OFF by default — classic `ClassicAppSidebar` remains the signed-in chrome until rollout.
+   * Rollback: set `VITE_ENTERPRISE_NAVIGATION_V2_ENABLED=false` (or omit) and redeploy.
+   */
+  enterpriseNavigationV2: import.meta.env.VITE_ENTERPRISE_NAVIGATION_V2_ENABLED === "true",
 });
 
 /**

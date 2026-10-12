@@ -48,7 +48,7 @@ async function fetchAuditEvent(token: string, id: string) {
 test("receipt identifies the audit row that was appended", async ({ page }) => {
   const token = await authenticate(page);
 
-  await page.goto(`${BASE}/reports`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${BASE}/reports/use-case-business-case`, { waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: /generate report/i }).click();
   await expect(page.locator("#usecasex-report")).toBeVisible({ timeout: 20_000 });
 

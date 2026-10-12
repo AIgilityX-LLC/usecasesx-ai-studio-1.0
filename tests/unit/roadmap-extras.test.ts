@@ -103,8 +103,10 @@ describe("roadmap export", () => {
 
   it("escapes CSV cells and includes a header", () => {
     const csv = roadmapToCsv(items);
-    const [header, row] = csv.split("\r\n");
-    expect(header.startsWith("Use case,Stage,Target period")).toBe(true);
+    const lines = csv.split(/\r?\n/);
+    const header = lines.find((l) => l.startsWith("Use case,")) ?? "";
+    const row = lines.find((l) => l.includes("Fraud")) ?? "";
+    expect(header.startsWith("Use case,Wave / stage,Target period")).toBe(true);
     expect(row).toContain('"Fraud, ""AI"" triage"');
   });
 
@@ -131,7 +133,8 @@ describe("roadmap export columns", () => {
 
   it("CSV honours the selected columns", () => {
     const csv = roadmapToCsv(items, ["use_case", "stage"]);
-    expect(csv.split("\r\n")[0]).toBe("Use case,Stage");
+    const header = csv.split(/\r?\n/).find((l) => l.startsWith("Use case,")) ?? "";
+    expect(header).toBe("Use case,Wave / stage");
   });
 
   it("JSON honours the selected columns", () => {

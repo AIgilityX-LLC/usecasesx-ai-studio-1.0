@@ -99,7 +99,7 @@ async function signIn(page: Page, creds: { email: string; password: string }) {
 }
 
 async function generate(page: Page) {
-  await page.goto(`${BASE}/reports`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${BASE}/reports/use-case-business-case`, { waitUntil: "domcontentloaded" });
   const button = page.getByRole("button", { name: /generate report/i });
   await expect(button).toBeVisible({ timeout: 20_000 });
   await button.click();

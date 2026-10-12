@@ -158,8 +158,24 @@ export function SiteShell({ children }: { children: ReactNode }) {
     );
   }
 
+  /** Prefer cookie (shadcn SidebarProvider) then localStorage mirror. */
+  const sidebarDefaultOpen = (() => {
+    if (typeof document === "undefined") return true;
+    try {
+      const match = document.cookie.match(/(?:^|; )sidebar_state=([^;]*)/);
+      if (match?.[1] === "false") return false;
+      if (match?.[1] === "true") return true;
+      const stored = window.localStorage.getItem("usecasesx.sidebar.open");
+      if (stored === "0") return false;
+      if (stored === "1") return true;
+    } catch {
+      /* ignore */
+    }
+    return true;
+  })();
+
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={sidebarDefaultOpen}>
       <div className="flex min-h-dvh w-full bg-background text-foreground">
         <SkipToContent />
         <div className="dark">

@@ -108,6 +108,19 @@ export const PRODUCT_EVENTS = {
   // journey funnel (dashboard next-action surface)
   journeyStageViewed: "journey.stage_viewed",
   journeyActionTaken: "journey.action_taken",
+
+  // product navigation (privacy-conscious chrome usage — see docs/analytics/navigation-events.md)
+  navigationClicked: "nav.clicked",
+  sidebarExpanded: "nav.sidebar_expanded",
+  sidebarCollapsed: "nav.sidebar_collapsed",
+  workspaceSwitched: "nav.workspace_switched",
+  commandPaletteOpened: "nav.command_palette_opened",
+  searchUsed: "nav.search_used",
+  moduleOpened: "nav.module_opened",
+  /** Which signed-in chrome is active (`classic` | `enterprise_v2`). */
+  navVariantActive: "nav.variant_active",
+  /** Enterprise chrome threw; boundary fell back to classic. */
+  navRenderError: "nav.render_error",
 } as const;
 
 export type ProductEventName = (typeof PRODUCT_EVENTS)[keyof typeof PRODUCT_EVENTS];
