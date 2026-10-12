@@ -51,8 +51,19 @@ if (compareCalls < EXPECTED_INTERACTIONS.length) {
 }
 
 // Type-check the project so a broken /compare page fails the build.
-console.log("• type-checking (tsgo)…");
-const tc = spawnSync("bunx", ["tsgo", "--noEmit"], { cwd: root, stdio: "inherit" });
+// Match CI: prefer tsgo, fall back to tsc when the native preview is unavailable.
+console.log("• type-checking (tsgo || tsc)…");
+function runTypecheck(cmd, args, { shell = false } = {}) {
+  return spawnSync(cmd, args, { cwd: root, stdio: "inherit", shell });
+}
+let tc = runTypecheck("bunx", ["tsgo", "--noEmit"], { shell: true });
+if (tc.status !== 0) tc = runTypecheck("bunx", ["tsc", "--noEmit"], { shell: true });
+if (tc.status !== 0) {
+  tc = runTypecheck(process.execPath, [
+    resolve(root, "node_modules/typescript/lib/tsc.js"),
+    "--noEmit",
+  ]);
+}
 if (tc.status !== 0) {
   console.error(
     "\u001b[31m✗ type-check failed — /compare (or the project) does not compile\u001b[0m",

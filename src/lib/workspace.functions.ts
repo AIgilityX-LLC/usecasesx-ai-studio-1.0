@@ -76,32 +76,31 @@ async function loadMembershipOptions(
     ((orgs ?? []) as Array<{ id: string; name: string | null }>).map((o) => [o.id, o.name]),
   );
   const orgMeta = new Map(
-    (
-      (orgMembers ?? []) as Array<{ organization_id: string; role: string; status: string }>
-    ).map((m) => [m.organization_id, m]),
+    ((orgMembers ?? []) as Array<{ organization_id: string; role: string; status: string }>).map(
+      (m) => [m.organization_id, m],
+    ),
   );
   const wsById = new Map(
-    (
-      (workspaces ?? []) as Array<{ id: string; name: string; organization_id: string }>
-    ).map((w) => [w.id, w]),
+    ((workspaces ?? []) as Array<{ id: string; name: string; organization_id: string }>).map(
+      (w) => [w.id, w],
+    ),
   );
 
-  return rows
-    .map((r) => {
-      const ws = wsById.get(r.workspace_id);
-      if (!ws) return null;
-      const om = orgMeta.get(ws.organization_id);
-      return {
-        id: ws.id,
-        name: ws.name,
-        organizationId: ws.organization_id,
-        organizationName: orgName.get(ws.organization_id) ?? null,
-        role: r.role,
-        orgStatus: om?.status ?? "active",
-      } satisfies WorkspaceMembershipOption;
-    })
-    .filter((x): x is WorkspaceMembershipOption => x != null)
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const options: WorkspaceMembershipOption[] = [];
+  for (const r of rows) {
+    const ws = wsById.get(r.workspace_id);
+    if (!ws) continue;
+    const om = orgMeta.get(ws.organization_id);
+    options.push({
+      id: ws.id,
+      name: ws.name,
+      organizationId: ws.organization_id,
+      organizationName: orgName.get(ws.organization_id) ?? null,
+      role: r.role,
+      orgStatus: om?.status ?? "active",
+    });
+  }
+  return options.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 async function buildContext(
@@ -142,11 +141,7 @@ async function buildContext(
   const organizationId = active.organizationId;
 
   const [orgResult, memberResult, entitlementResult] = await Promise.all([
-    admin
-      .from("organizations")
-      .select("id, name, plan")
-      .eq("id", organizationId)
-      .maybeSingle(),
+    admin.from("organizations").select("id, name, plan").eq("id", organizationId).maybeSingle(),
     admin
       .from("organization_members" as any)
       .select("role, status")
@@ -204,17 +199,11 @@ async function buildContext(
 export const getWorkspaceContextFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
-    z
-      .object({ preferredWorkspaceId: z.string().uuid().optional().nullable() })
-      .parse(d ?? {}),
+    z.object({ preferredWorkspaceId: z.string().uuid().optional().nullable() }).parse(d ?? {}),
   )
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    return buildContext(
-      supabaseAdmin,
-      context.userId,
-      data.preferredWorkspaceId ?? null,
-    );
+    return buildContext(supabaseAdmin, context.userId, data.preferredWorkspaceId ?? null);
   });
 
 /**

@@ -297,8 +297,8 @@ export function ReportsGenerator({
       },
       // Tenancy is stated explicitly so the row is readable under the
       // workspace-scoped audit policy even if ambient context is unset.
-      workspaceId: workspace.data?.workspace.id ?? null,
-      organizationId: workspace.data?.organization.id ?? null,
+      workspaceId: workspace.data?.workspace?.id ?? null,
+      organizationId: workspace.data?.organization?.id ?? null,
     });
 
     setReceipt({

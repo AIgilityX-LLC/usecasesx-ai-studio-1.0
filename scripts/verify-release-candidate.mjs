@@ -66,11 +66,15 @@ try {
 } catch {
   fail(`${MANIFEST} is missing`);
 }
+// Filenames are either UUID-suffixed (legacy Lovable) or descriptive
+// (`v2_04_…`, `fix_anon_…`). Match both so recorded exceptions and manifest
+// coverage work after the V2 migration rename.
+const MIGRATION_FILE_RE = /(\d{14}_[\w.-]+\.sql)/g;
 const exceptions = new Set(
   manifest
     .split("\n")
     .filter((line) => /recorded exception/i.test(line))
-    .flatMap((line) => [...line.matchAll(/(\d{14}_[0-9a-f-]+\.sql)/g)].map((m) => m[1])),
+    .flatMap((line) => [...line.matchAll(MIGRATION_FILE_RE)].map((m) => m[1])),
 );
 
 // 4 + 5: destructive / seed scan
@@ -110,8 +114,14 @@ for (const f of files) {
     (i) => !CONFIG_TABLES.some((t) => new RegExp(`public\\.${t}$`, "i").test(i)),
   );
   if (dataInserts.length > 0) {
-    seedHits += dataInserts.length;
-    fail(`${f}: contains ${dataInserts.length} data INSERT(s); demo seeds belong in scripts/seed`);
+    if (exceptions.has(f)) {
+      ok(`${f}: ${dataInserts.length} data INSERT(s) allowed by recorded manifest exception`);
+    } else {
+      seedHits += dataInserts.length;
+      fail(
+        `${f}: contains ${dataInserts.length} data INSERT(s); demo seeds belong in scripts/seed`,
+      );
+    }
   }
 }
 if (seedHits === 0) ok("no demo/sample seed rows in migrations");
@@ -119,7 +129,7 @@ if (seedHits === 0) ok("no demo/sample seed rows in migrations");
 // 6: manifest coverage
 if (manifest) {
   const missing = files.filter((f) => !manifest.includes(f));
-  const extra = [...manifest.matchAll(/(\d{14}_[0-9a-f-]+\.sql)/g)]
+  const extra = [...manifest.matchAll(MIGRATION_FILE_RE)]
     .map((m) => m[1])
     .filter((f) => !files.includes(f));
   if (missing.length) fail(`manifest missing: ${missing.join(", ")}`);

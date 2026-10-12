@@ -2,7 +2,8 @@
 
 Authoritative list of the migrations that make up the candidate. Verified by
 `bun run verify:release`, which fails if a migration is missing from this table, unknown to it,
-out of timestamp order, destructive, or carries demo/sample seed rows.
+out of timestamp order, destructive, or carries demo/sample seed rows (unless annotated as a
+**recorded exception**).
 
 Properties enforced for every entry:
 
@@ -11,66 +12,64 @@ Properties enforced for every entry:
   before create, so re-application is a no-op.
 - **Additive** — no `DROP TABLE`, `DROP COLUMN`, `TRUNCATE`, `DELETE FROM`, `RENAME COLUMN`, or
   `DISABLE ROW LEVEL SECURITY`.
-- **Seed-free** — no content rows. Only singleton config rows are permitted
-  (`pilot_settings`, `taxonomy_meta`, `plans`, `platform_modules`, `ai_capabilities`).
+- **Seed-free** — no content rows, except narrow recorded exceptions below. Only singleton config
+  rows are otherwise permitted (`pilot_settings`, `taxonomy_meta`, `plans`, `platform_modules`,
+  `ai_capabilities`).
 
 ## Apply order
 
-| #   | Migration                                                | Purpose                                                                                | Kind             |
-| --- | -------------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------- |
-| 1   | `20260811021640_b971d59c-f321-40af-bc27-e677da862a13.sql` | `publish_use_case_submission()` SECURITY DEFINER publish routine (admin-gated)          | Function         |
-| 2   | `20260811024402_6310c076-8e2b-4e0f-9dbb-3841610be68e.sql` | Revoke API-role EXECUTE on internal trigger routines                                   | Hardening        |
-| 3   | `20260811024451_aa5c18d7-c0b2-47c5-a563-e8e64dc90a38.sql` | Continue routine-privilege hardening sweep                                             | Hardening        |
-| 4   | `20260811024641_93bf03cf-233d-4868-a92e-ba3ea9bb9795.sql` | Public read policy + `anon` GRANT for publicly visible use-case feedback               | Policy + grant   |
-| 5   | `20260811033915_d2e22d78-8744-47ee-a4c6-b5d958443a61.sql` | Indexes for highest-traffic list reads (opportunities, portfolios, repository)          | Index            |
-| 6   | `20260811041900_37cd5a61-cf51-4f74-a054-5847ba39a38a.sql` | `product_feedback` triage columns (assignment, priority, SLA)                           | Additive columns |
-| 7   | `20260811041936_9561752f-ad9b-48aa-af1f-979569753437.sql` | `v_feedback_queue` set to `security_invoker`                                             | Hardening        |
-| 8   | `20260811043346_b61bc27d-656a-418c-a4bc-883d2040dda7.sql` | Pilot programme: invitations, checkpoints, settings singleton                            | Tables + RLS     |
-| 9   | `20260811044550_485781c3-11f2-439e-9e43-8b746c61e000.sql` | `pilot_audit_events` append-only audit trail                                            | Tables + RLS     |
-| 10  | `20260811054329_9790a17c-ab86-4fb8-9ba9-77eef3234f8a.sql` | Data rights: export and deletion request tables, consent records                        | Tables + RLS     |
-| 11  | `20260811060031_237356d1-be44-4312-902c-21763004184e.sql` | Workshop item author-edit policy tightened (status changes reviewer-only)                | Policy           |
-| 12  | `20260811060653_4c7e53cb-d762-4dea-bf25-76b37f438f61.sql` | `pilot_rc_waivers` launch waiver governance + launch check runs                          | Tables + RLS     |
-| 13  | `20260811062851_aaff588a-071a-418f-b704-e45908d0adc6.sql` | Sovereign Public Value Canvas™ storage                                                  | Tables + RLS     |
-| 14  | `20260811070036_e855aa33-0e99-40ac-9942-3e5a35acfe44.sql` | Canvas document attachments and append-only version snapshots                            | Tables + RLS     |
-| 15  | `20260811070115_ba4c9269-48cb-4a58-84b0-29e7bd1acb54.sql` | Storage policies for the private `canvas-documents` bucket                               | Storage policy   |
-| 16  | `20260811091632_f71f9e0a-3264-4cbb-943e-b3d30828ce00.sql` | Removes synthetic release-verification rows from `cta_events` (analytics-only, no customer content) | Data correction — **recorded exception** |
-| 17  | `20260813005243_4a29d843-9a41-4b73-95f9-10db8e83bcdf.sql` | `lead_captures` attribution and status columns for waitlist/advisor leads                | Additive columns |
-| 18  | `20260814002125_10f5f58d-cd55-417d-ad52-624e626a7168.sql` | Lead confirmation-delivery columns, `lead_events` audit trail, draft-submission edit policy | Tables + RLS     |
-| 19  | `20260821042802_de814f1b-51c2-476f-98f2-768f067e2aa0.sql` | `pilot_onboarding_profiles` participant onboarding record                                | Tables + RLS     |
-| 20  | `20260822042302_ab02cdb5-2047-439d-a31f-2d498b1692d8.sql` | `prevent_profile_org_self_change()` trigger blocking self-service tenant reassignment    | Function         |
-| 21  | `20260822042319_59b8f3b8-1f86-4141-99bb-79dac76ab328.sql` | Revokes API-role EXECUTE on the new trigger routine                                     | Hardening        |
+| #   | Migration                                               | Purpose                                                                                                                                 | Kind                |
+| --- | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| 1   | `20260907155028_fix_anon_read_use_cases.sql`            | Correct anon read posture on `use_cases` (forward-fix companion to entry 2)                                                             | Policy              |
+| 2   | `20260907160000_anon_read_use_cases.sql`                | Column-level `anon` SELECT grants for publicly visible use-case fields                                                                  | Grant               |
+| 3   | `20260923120000_v2_04_versioned_core_model.sql`         | Versioned core model: opportunity/use-case versions and canvas sections — **recorded exception** (bootstrap `opportunity_versions` row) | Tables + RLS + seed |
+| 4   | `20260923140000_v2_05_evidence_foundation.sql`          | Evidence items, provenance, and audit foundation                                                                                        | Tables + RLS        |
+| 5   | `20260923160000_v2_06_opportunity_intake.sql`           | Opportunity intake fields (sponsor, geography, constraints)                                                                             | Additive columns    |
+| 6   | `20260923180000_v2_08_solution_design.sql`              | Agentic / AI solution-design records per Studio use case                                                                                | Tables + RLS        |
+| 7   | `20260923200000_v2_09_scoring_engine.sql`               | Scoring engine criterion assessments and evidence completeness                                                                          | Tables + RLS        |
+| 8   | `20260923220000_v2_10_decision_gates.sql`               | Decision gates, reviews, and immutable decision events                                                                                  | Tables + RLS        |
+| 9   | `20260923240000_v2_11_governance_preview.sql`           | Governance applicability preview and CyberX handoff metadata                                                                            | Tables + RLS        |
+| 10  | `20260923260000_v2_12_dependencies_scenarios.sql`       | Portfolio dependencies and saved scenarios                                                                                              | Tables + RLS        |
+| 11  | `20260923280000_v2_14_roadmap_brief.sql`                | Roadmap gate/status + versioned implementation brief                                                                                    | Tables + RLS        |
+| 12  | `20260923300000_v2_15_workshop_mode.sql`                | Workshop mode agenda, ideation, clustering, voting                                                                                      | Tables + RLS        |
+| 13  | `20260923320000_v2_17_ai_feedback.sql`                  | Redacted AI suggestion feedback telemetry                                                                                               | Tables + RLS        |
+| 14  | `20260923340000_v2_18_enterprise_identity.sql`          | Enterprise identity, localization, and sovereignty readiness                                                                            | Tables + RLS        |
+| 15  | `20260923360000_v2_19_content_governance.sql`           | Repository content governance workflow and provenance                                                                                   | Tables + RLS        |
+| 16  | `20260923360100_v2_19_pattern_template_seed.sql`        | Reviewed pattern-template rows (no client names / ROI) — **recorded exception**                                                         | Seed                |
+| 17  | `20260929120000_v2_19_anon_use_cases_column_grants.sql` | Extend anon column-level SELECT after content-governance columns                                                                        | Grant               |
+| 18  | `20260929180000_founding_access_requests.sql`           | Founding Access request → review → invite flow                                                                                          | Tables + RLS        |
 
+### Recorded exceptions for entries 3 and 16
 
+`bun run verify:release` detects top-level `INSERT INTO public.*` outside the config-table allow-list
+and allows them **only when this row is annotated `recorded exception`**.
 
-### Recorded exception for entry 16
+- **Entry 3** — installs a single bootstrap `opportunity_versions` row required for the versioned
+  core model to initialize. No client or demo portfolio content.
+- **Entry 16** — idempotent pattern-template seed (`use_case_patterns`) with evidence class
+  `pattern_template`. No client names and no numeric ROI.
 
-`bun run verify:release` detects the `DELETE FROM` in entry 16 and allows it **because this row is
-annotated `recorded exception`** — the verifier reads this manifest and permits a destructive
-statement only in a file annotated here. The exception is
-deliberate and narrow: the statement removes rows this project's own verification runs wrote into
-`public.cta_events` (`utm_source = 'verify_run'` and the untagged probe events created before
-2026-08-11 09:12 UTC), so launch analytics do not report synthetic traffic. It touches no customer
-content, no schema and no policy. Any further data-correction migration needs the data owner's
-approval and its own `recorded exception` row here; without one the integrity gate fails.
+Any further data-bearing migration needs the data owner's approval and its own `recorded exception`
+row here; without one the integrity gate fails.
 
 ## Demo and reference data (not migrations)
 
-Content is applied separately so a schema apply never writes rows:
+Content is applied separately so a schema apply never writes rows beyond the exceptions above:
 
-| Data set                            | Applied by                                       |
-| ----------------------------------- | ------------------------------------------------ |
+| Data set                                         | Applied by                                                      |
+| ------------------------------------------------ | --------------------------------------------------------------- |
 | Launch reference corpus (54 published use cases) | `scripts/seed/apply-launch-corpus.mjs`, `bun run seed:baseline` |
-| Demo personas / accounts            | `bun run seed:demo-accounts`, `scripts/seed/demo-personas.mjs` |
-| Super-admin bootstrap               | `bun run seed:superadmin`                        |
-| Baseline refresh                    | `bun run seed:refresh`                           |
+| Demo personas / accounts                         | `bun run seed:demo-accounts`, `scripts/seed/demo-personas.mjs`  |
+| Super-admin bootstrap                            | `bun run seed:superadmin`                                       |
+| Baseline refresh                                 | `bun run seed:refresh`                                          |
 
 ## Backup and rollback
 
 - **Backup before apply** — Lovable Cloud takes automatic daily backups; request an on-demand
   data export from Cloud → Advanced settings immediately before applying to production.
-- **Rollback posture** — all 21 migrations are additive (entry 16 is the one recorded data correction), so the safe rollback for the *application*
-  is to revert the app to the previous version; the schema can stay ahead. No `DROP` is required
-  and none is authorised.
+- **Rollback posture** — all 18 migrations are additive (entries 3 and 16 are recorded seed
+  exceptions), so the safe rollback for the _application_ is to revert the app to the previous
+  version; the schema can stay ahead. No `DROP` is required and none is authorised.
 - **Forward-fix** — defects in a policy or routine are corrected with a new additive migration
   (`CREATE OR REPLACE FUNCTION`, `DROP POLICY IF EXISTS` + `CREATE POLICY`), never by editing an
   applied file. Editing an applied migration file breaks repeatability and is treated as a P0
