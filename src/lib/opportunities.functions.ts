@@ -184,9 +184,8 @@ export const setOpportunityStatusFn = createServerFn({ method: "POST" })
       next: { status: saved.status },
     });
     // Mirror onto the V2 canonical lifecycle when both ends map cleanly.
-    const { mapStatus, lifecycleTransitionAuditInput, permissionForTransition } = await import(
-      "@/lib/lifecycle"
-    );
+    const { mapStatus, lifecycleTransitionAuditInput, permissionForTransition } =
+      await import("@/lib/lifecycle");
     const fromCanon = mapStatus("opportunity", current.status);
     const toCanon = mapStatus("opportunity", saved.status);
     if (
@@ -292,12 +291,14 @@ export const convertOpportunityFn = createServerFn({ method: "POST" })
         source_opportunity_id: opp.id,
         source_use_case_id: opp.sourceUseCaseId,
         title: opp.title,
-        problem_statement: [opp.painPoint, opp.affectedUsers ? `Affected users: ${opp.affectedUsers}` : ""]
-          .filter(Boolean)
-          .join("\n\n") || null,
-        current_state: [opp.baseline, opp.process ? `Workflow: ${opp.process}` : ""]
-          .filter(Boolean)
-          .join("\n\n") || null,
+        problem_statement:
+          [opp.painPoint, opp.affectedUsers ? `Affected users: ${opp.affectedUsers}` : ""]
+            .filter(Boolean)
+            .join("\n\n") || null,
+        current_state:
+          [opp.baseline, opp.process ? `Workflow: ${opp.process}` : ""]
+            .filter(Boolean)
+            .join("\n\n") || null,
         future_state: opp.desiredOutcome || null,
         beneficiaries: [opp.businessFunction, opp.geography].filter(Boolean).join(" · ") || null,
         stakeholders: [
@@ -354,7 +355,10 @@ export const deleteOpportunityFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => idSchema.parse(d))
   .handler(async ({ data, context }) => {
-    const { error } = await (context.supabase as any).from("opportunities").delete().eq("id", data.id);
+    const { error } = await (context.supabase as any)
+      .from("opportunities")
+      .delete()
+      .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

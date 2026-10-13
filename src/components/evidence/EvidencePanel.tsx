@@ -202,17 +202,13 @@ export function EvidencePanel({
             <ShieldAlert className="h-3 w-3" /> {summary.conflict} conflict
           </Badge>
         )}
-        {summary.missing > 0 && (
-          <Badge variant="secondary">{summary.missing} missing</Badge>
-        )}
+        {summary.missing > 0 && <Badge variant="secondary">{summary.missing} missing</Badge>}
         <Button type="button" variant="ghost" size="sm" onClick={() => void refresh()}>
           <RefreshCw className="h-3.5 w-3.5" />
         </Button>
       </div>
 
-      {query.isLoading && (
-        <p className="text-sm text-muted-foreground">Loading evidence…</p>
-      )}
+      {query.isLoading && <p className="text-sm text-muted-foreground">Loading evidence…</p>}
       {query.isError && (
         <p className="text-sm text-destructive">
           Evidence could not be loaded. Confirm the V2-05 migration is applied.
@@ -223,10 +219,7 @@ export function EvidencePanel({
         {items.map((item) => {
           const ind = evidenceIndicator(item);
           return (
-            <li
-              key={item.id}
-              className="rounded-md border border-border bg-card px-3 py-2 text-sm"
-            >
+            <li key={item.id} className="rounded-md border border-border bg-card px-3 py-2 text-sm">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0 space-y-1">
                   <div className="flex flex-wrap items-center gap-2 font-medium">
@@ -403,9 +396,7 @@ export function EvidencePanel({
         </div>
       )}
 
-      {showActivity && (
-        <EvidenceActivityView workspaceId={workspaceId} subjectId={subjectId} />
-      )}
+      {showActivity && <EvidenceActivityView workspaceId={workspaceId} subjectId={subjectId} />}
     </div>
   );
 }

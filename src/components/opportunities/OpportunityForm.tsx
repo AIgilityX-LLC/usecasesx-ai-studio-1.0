@@ -502,7 +502,12 @@ export function OpportunityForm({
             )}
 
             {mode === "quick" ? (
-              <Button type="button" variant="link" className="h-auto px-0" onClick={() => setMode("guided")}>
+              <Button
+                type="button"
+                variant="link"
+                className="h-auto px-0"
+                onClick={() => setMode("guided")}
+              >
                 Need more structure? Switch to guided intake
               </Button>
             ) : null}
@@ -916,10 +921,7 @@ export function OpportunityForm({
                         source="AI assistant · enrichOpportunity"
                         applyLabel="Append to pain point"
                         onApply={() => {
-                          set(
-                            "painPoint",
-                            `${draft.painPoint}\n\nOpen question: ${q}`.trim(),
-                          );
+                          set("painPoint", `${draft.painPoint}\n\nOpen question: ${q}`.trim());
                           toast.success("Appended clarifying question");
                         }}
                       />
@@ -935,10 +937,7 @@ export function OpportunityForm({
                         source="AI assistant · enrichOpportunity"
                         applyLabel="Append to outcome"
                         onApply={() => {
-                          set(
-                            "desiredOutcome",
-                            `${draft.desiredOutcome}\n\nMeasure: ${k}`.trim(),
-                          );
+                          set("desiredOutcome", `${draft.desiredOutcome}\n\nMeasure: ${k}`.trim());
                           toast.success("Appended measure to outcome");
                         }}
                       />
@@ -954,10 +953,7 @@ export function OpportunityForm({
                         source="AI assistant · enrichOpportunity"
                         applyLabel="Apply to constraints"
                         onApply={() => {
-                          set(
-                            "constraints",
-                            `${draft.constraints}\n${r}`.trim(),
-                          );
+                          set("constraints", `${draft.constraints}\n${r}`.trim());
                           toast.success("Applied to constraints");
                         }}
                       />

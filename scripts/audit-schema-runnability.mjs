@@ -61,9 +61,7 @@ function splitStatements(text) {
 const p6 = sql.indexOf("-- Phase 6: CREATE OR REPLACE FUNCTION");
 const p6b = sql.indexOf("-- Phase 6b: CREATE VIEW\n");
 const phase6 = sql.slice(p6, p6b);
-const funcs = splitStatements(phase6).filter((s) =>
-  /^CREATE OR REPLACE FUNCTION/i.test(s),
-);
+const funcs = splitStatements(phase6).filter((s) => /^CREATE OR REPLACE FUNCTION/i.test(s));
 const byName = new Map();
 for (const body of funcs) {
   const name = body.match(/^CREATE OR REPLACE FUNCTION (public\.\w+)/i)[1];
@@ -79,8 +77,7 @@ for (const [name, body] of byName) {
   let c;
   while ((c = callRe.exec(impl))) {
     const callee = "public." + c[1];
-    if (callee !== name && names.has(callee) && !deps.includes(callee))
-      deps.push(callee);
+    if (callee !== name && names.has(callee) && !deps.includes(callee)) deps.push(callee);
   }
   depsOf.set(name, deps);
 }
@@ -106,8 +103,7 @@ console.log(
 
 // --- FK refs to non-unique columns ---
 const tables = {};
-const tableRe =
-  /CREATE TABLE IF NOT EXISTS (public\.\w+)\s*\(([\s\S]*?)\n\);/g;
+const tableRe = /CREATE TABLE IF NOT EXISTS (public\.\w+)\s*\(([\s\S]*?)\n\);/g;
 let m;
 while ((m = tableRe.exec(sql))) {
   const unique = new Set();
@@ -120,8 +116,7 @@ while ((m = tableRe.exec(sql))) {
   }
   tables[m[1]] = unique;
 }
-const idxRe =
-  /CREATE UNIQUE INDEX[^\n]*ON\s+(public\.\w+)\s*\(([^)]+)\)/gi;
+const idxRe = /CREATE UNIQUE INDEX[^\n]*ON\s+(public\.\w+)\s*\(([^)]+)\)/gi;
 while ((m = idxRe.exec(sql))) {
   const cols = m[2].split(",").map((s) => s.trim().replace(/\s+.*$/, ""));
   if (cols.length === 1 && tables[m[1]]) tables[m[1]].add(cols[0]);
@@ -157,9 +152,7 @@ while ((m = callRe.exec(sql))) {
 }
 // Filter: keep only those that appear outside DROP FUNCTION lines
 const realMissing = [...missingCalls].filter((n) => {
-  const re = new RegExp(
-    String.raw`(?<!DROP FUNCTION IF EXISTS )${n.replace(".", "\\.")}\s*\(`,
-  );
+  const re = new RegExp(String.raw`(?<!DROP FUNCTION IF EXISTS )${n.replace(".", "\\.")}\s*\(`);
   // simpler: if CREATE OR REPLACE FUNCTION exists, not missing
   if (sql.includes("CREATE OR REPLACE FUNCTION " + n)) return false;
   // if it's a type cast like public.app_role - types aren't functions
@@ -176,8 +169,7 @@ console.log(
   "phases",
   [1, 2, 3, 4, 5, 6, "6b", 7, 8, 9, 10, 11]
     .map((p) => {
-      const marker =
-        p === "6b" ? "-- Phase 6b: CREATE VIEW" : `-- Phase ${p}:`;
+      const marker = p === "6b" ? "-- Phase 6b: CREATE VIEW" : `-- Phase ${p}:`;
       // count only body markers (not TOC): prefer those followed by dashes or newline+CREATE
       return `${p}:${(sql.match(new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) || []).length}`;
     })

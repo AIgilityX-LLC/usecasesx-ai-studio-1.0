@@ -3,11 +3,7 @@
  * Every export carries tenant, filters, versions, generated-at and confidentiality.
  */
 
-export const CONFIDENTIALITY_MARKINGS = [
-  "Internal",
-  "Confidential",
-  "Restricted",
-] as const;
+export const CONFIDENTIALITY_MARKINGS = ["Internal", "Confidential", "Restricted"] as const;
 export type ConfidentialityMarking = (typeof CONFIDENTIALITY_MARKINGS)[number];
 
 export type ExportEnvelope = {
@@ -33,8 +29,9 @@ export function buildExportEnvelope(input: {
   itemCount: number;
   now?: Date;
 }): ExportEnvelope {
-  const uniq = (values: Array<string | null | undefined>) =>
-    [...new Set(values.map((v) => v?.trim()).filter((v): v is string => Boolean(v)))];
+  const uniq = (values: Array<string | null | undefined>) => [
+    ...new Set(values.map((v) => v?.trim()).filter((v): v is string => Boolean(v))),
+  ];
 
   return {
     tenantName: input.tenantName?.trim() || "Workspace",

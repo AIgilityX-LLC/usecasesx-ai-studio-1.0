@@ -78,10 +78,7 @@ describe("similarity scoring", () => {
   });
 
   test("scores overlapping titles and explains the match", () => {
-    const { score, matched } = similarityScore(
-      "Claims triage backlog",
-      "Claims triage automation",
-    );
+    const { score, matched } = similarityScore("Claims triage backlog", "Claims triage automation");
     expect(score).toBeGreaterThan(0.4);
     expect(matched).toContain("claims");
     expect(formatSimilarityReason(matched)).toMatch(/claims/i);
@@ -96,9 +93,7 @@ describe("completion and convertibility", () => {
   test("isConvertible requires pain and outcome", () => {
     expect(isConvertible(emptyDraft({ title: "Abc" }))).toBe(false);
     expect(
-      isConvertible(
-        emptyDraft({ title: "Abc", painPoint: "pain", desiredOutcome: "good" }),
-      ),
+      isConvertible(emptyDraft({ title: "Abc", painPoint: "pain", desiredOutcome: "good" })),
     ).toBe(true);
   });
 

@@ -13,10 +13,7 @@ import {
   templateCoverageGaps,
   PATTERN_TEMPLATE_SEEDS,
 } from "@/lib/content-governance";
-import {
-  validateUseCaseDraft,
-  hasBlockingIssues,
-} from "@/lib/admin/content-validation";
+import { validateUseCaseDraft, hasBlockingIssues } from "@/lib/admin/content-validation";
 
 describe("V2-19 content workflow", () => {
   it("allows draft → review → approved → published → deprecated", () => {

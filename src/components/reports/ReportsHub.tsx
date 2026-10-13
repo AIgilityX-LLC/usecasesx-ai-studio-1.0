@@ -15,14 +15,8 @@ import { StatusChip } from "@/components/ui-kit";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavCapabilities } from "@/hooks/useNavCapabilities";
-import {
-  EXPORT_FORMAT_LABELS,
-  type ExportFormat,
-} from "@/lib/reports/report-access";
-import {
-  REPORTS_HUB_ITEMS,
-  type ReportHubItem,
-} from "@/lib/reports/reports-hub";
+import { EXPORT_FORMAT_LABELS, type ExportFormat } from "@/lib/reports/report-access";
+import { REPORTS_HUB_ITEMS, type ReportHubItem } from "@/lib/reports/reports-hub";
 
 const ICONS: Record<string, LucideIcon> = {
   "executive-summary": Landmark,
@@ -67,7 +61,8 @@ function HubCard({ item }: { item: ReportHubItem }) {
           <span className="font-medium text-foreground">Audience:</span> {item.audience}
         </p>
         <p>
-          <span className="font-medium text-foreground">Formats:</span> {formatList(item.liveFormats)}
+          <span className="font-medium text-foreground">Formats:</span>{" "}
+          {formatList(item.liveFormats)}
         </p>
         {planned ? (
           <p className="pt-1 text-muted-foreground">

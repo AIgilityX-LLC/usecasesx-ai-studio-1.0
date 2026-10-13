@@ -108,10 +108,15 @@ export const decideGateReviewFn = createServerFn({ method: "POST" })
     const workspaceId = (review as { workspace_id?: string } | null)?.workspace_id ?? null;
     const authz = await resolveSubject(context.supabase, context.userId, workspaceId);
 
-    return decideGateReview(context.supabase, context.userId, {
-      workspaceRole: authz.workspaceRole,
-      isPlatformAdmin: authz.isPlatformAdmin,
-    }, data);
+    return decideGateReview(
+      context.supabase,
+      context.userId,
+      {
+        workspaceRole: authz.workspaceRole,
+        isPlatformAdmin: authz.isPlatformAdmin,
+      },
+      data,
+    );
   });
 
 export const closeGateOpenItemFn = createServerFn({ method: "POST" })
@@ -130,10 +135,15 @@ export const closeGateOpenItemFn = createServerFn({ method: "POST" })
     const workspaceId = (item as { workspace_id?: string } | null)?.workspace_id ?? null;
     const authz = await resolveSubject(context.supabase, context.userId, workspaceId);
 
-    return closeOpenItem(context.supabase, context.userId, {
-      workspaceRole: authz.workspaceRole,
-      isPlatformAdmin: authz.isPlatformAdmin,
-    }, data);
+    return closeOpenItem(
+      context.supabase,
+      context.userId,
+      {
+        workspaceRole: authz.workspaceRole,
+        isPlatformAdmin: authz.isPlatformAdmin,
+      },
+      data,
+    );
   });
 
 export const listGateEventsFn = createServerFn({ method: "GET" })

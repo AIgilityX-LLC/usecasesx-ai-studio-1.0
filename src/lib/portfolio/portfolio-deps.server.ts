@@ -143,10 +143,7 @@ export async function addDependency(
   return rowToDep(data as Record<string, unknown>);
 }
 
-export async function softDeleteDependency(
-  supabase: Client,
-  dependencyId: string,
-): Promise<void> {
+export async function softDeleteDependency(supabase: Client, dependencyId: string): Promise<void> {
   const { error } = await supabase
     .from("portfolio_dependencies")
     .update({ deleted_at: new Date().toISOString() })
@@ -197,10 +194,7 @@ export async function saveScenario(
   return rowToScenario(data as Record<string, unknown>);
 }
 
-export async function softDeleteScenario(
-  supabase: Client,
-  scenarioId: string,
-): Promise<void> {
+export async function softDeleteScenario(supabase: Client, scenarioId: string): Promise<void> {
   const { error } = await supabase
     .from("portfolio_scenarios")
     .update({ deleted_at: new Date().toISOString() })

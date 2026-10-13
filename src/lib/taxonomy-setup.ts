@@ -7,12 +7,7 @@
  */
 
 export type ChecklistStepKey =
-  | "orgUnits"
-  | "strategicThemes"
-  | "valueThemes"
-  | "processes"
-  | "opportunities"
-  | "classified";
+  "orgUnits" | "strategicThemes" | "valueThemes" | "processes" | "opportunities" | "classified";
 
 export type ChecklistStep = {
   key: ChecklistStepKey;

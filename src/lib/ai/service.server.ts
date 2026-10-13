@@ -277,9 +277,7 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
 
   // 3. Provider call.
   const startedAt = Date.now();
-  const grounded = ctx.groundedPromptBlock?.trim()
-    ? `\n\n${ctx.groundedPromptBlock.trim()}`
-    : "";
+  const grounded = ctx.groundedPromptBlock?.trim() ? `\n\n${ctx.groundedPromptBlock.trim()}` : "";
   const response = await callGateway({
     model,
     system: `${prompt.system}\n\n${FENCE_NOTICE}`,
@@ -547,10 +545,7 @@ export const AIService = {
     return run(
       "rewriteText",
       ctx,
-      lines([
-        input.intent && `Rewrite intent: ${input.intent}`,
-        `Text to rewrite:\n${input.text}`,
-      ]),
+      lines([input.intent && `Rewrite intent: ${input.intent}`, `Text to rewrite:\n${input.text}`]),
     );
   },
 
@@ -561,10 +556,7 @@ export const AIService = {
     return run(
       "classifyContent",
       ctx,
-      lines([
-        `Allowed labels: ${input.allowedLabels.join(" | ")}`,
-        `Content:\n${input.text}`,
-      ]),
+      lines([`Allowed labels: ${input.allowedLabels.join(" | ")}`, `Content:\n${input.text}`]),
     );
   },
 

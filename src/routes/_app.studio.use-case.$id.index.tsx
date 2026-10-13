@@ -111,11 +111,7 @@ function UseCaseDetailPage() {
               <Link className={linkClass} to="/studio/use-case/$id/evidence" params={{ id }}>
                 Evidence
               </Link>
-              <Link
-                className={linkClass}
-                to="/studio/use-case/$id/solution-design"
-                params={{ id }}
-              >
+              <Link className={linkClass} to="/studio/use-case/$id/solution-design" params={{ id }}>
                 Solution Design
               </Link>
               <Link className={linkClass} to="/studio/use-case/$id/gates" params={{ id }}>

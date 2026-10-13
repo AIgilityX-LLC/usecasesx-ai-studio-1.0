@@ -8,14 +8,10 @@
  */
 
 export type PilotMilestoneKey =
-  | "onboarding"
-  | "first_use_case"
-  | "scored"
-  | "portfolio"
-  | "roadmap"
-  | "checkpoint";
+  "onboarding" | "first_use_case" | "scored" | "portfolio" | "roadmap" | "checkpoint";
 
-export type PilotMilestoneStatus = "locked" | "ready" | "submitted" | "approved" | "changes_requested";
+export type PilotMilestoneStatus =
+  "locked" | "ready" | "submitted" | "approved" | "changes_requested";
 
 export type PilotMilestoneDefinition = {
   key: PilotMilestoneKey;

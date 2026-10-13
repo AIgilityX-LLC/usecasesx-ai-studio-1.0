@@ -28,17 +28,13 @@ describe("solution type catalogue", () => {
   test("OWASP pack is versioned and non-empty with disclaimers", () => {
     expect(OWASP_PROMPT_PACK_VERSION.length).toBeGreaterThan(0);
     expect(OWASP_GENAI_PROMPTS.length).toBeGreaterThanOrEqual(8);
-    expect(OWASP_GENAI_PROMPTS.every((p) => p.disclaimer.includes("not a compliance"))).toBe(
-      true,
-    );
+    expect(OWASP_GENAI_PROMPTS.every((p) => p.disclaimer.includes("not a compliance"))).toBe(true);
   });
 });
 
 describe("Pilot Authorization readiness (agentic)", () => {
   test("non-agentic designs are ready without control fields", () => {
-    const r = pilotAuthorizationReadiness(
-      emptySolutionDesign({ solutionType: "analytics" }),
-    );
+    const r = pilotAuthorizationReadiness(emptySolutionDesign({ solutionType: "analytics" }));
     expect(r.ready).toBe(true);
     expect(r.isAgentic).toBe(false);
   });

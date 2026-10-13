@@ -172,7 +172,9 @@ function RoadmapSurface() {
         confidentiality: "Internal",
       },
       preferences.columns ?? undefined,
-    ).then(() => toast.success(`Exported ${items.length} roadmap items as ${format.toUpperCase()}`));
+    ).then(() =>
+      toast.success(`Exported ${items.length} roadmap items as ${format.toUpperCase()}`),
+    );
   };
 
   /** Streamed server-side export — reliable for large filtered sets. */

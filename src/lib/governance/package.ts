@@ -94,7 +94,9 @@ export function buildCyberXPackage(input: {
     },
     consent: {
       confirmed: input.consentConfirmed,
-      confirmedAt: input.consentConfirmed ? (input.consentConfirmedAt ?? new Date().toISOString()) : null,
+      confirmedAt: input.consentConfirmed
+        ? (input.consentConfirmedAt ?? new Date().toISOString())
+        : null,
       statement: CYBERX_CONSENT_STATEMENT,
     },
     facts: confirmedFacts(input.facts),

@@ -109,7 +109,9 @@ export function parsePlaywrightReport(report: unknown): {
               ? (status as BrowserSpecResult["status"])
               : "skipped",
           durationMs: Number(last?.duration ?? 0),
-          error: last?.error?.message ? String(last.error.message).split("\n")[0]!.slice(0, 2000) : null,
+          error: last?.error?.message
+            ? String(last.error.message).split("\n")[0]!.slice(0, 2000)
+            : null,
         });
       }
     }

@@ -1145,7 +1145,9 @@
 }
 .ux-landing .ux-audience-card.is-featured {
   border-color: rgba(232, 183, 70, 0.55);
-  box-shadow: 0 0 0 1px rgba(232, 183, 70, 0.2), 0 18px 40px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    0 0 0 1px rgba(232, 183, 70, 0.2),
+    0 18px 40px rgba(0, 0, 0, 0.25);
 }
 .ux-landing .ux-audience-card h3 {
   font-family: var(--ux-font-display);
@@ -1319,7 +1321,9 @@
 }
 .ux-landing .ux-price-card.is-featured {
   border-color: rgba(232, 183, 70, 0.65);
-  box-shadow: 0 0 0 1px rgba(232, 183, 70, 0.18), 0 20px 48px rgba(0, 0, 0, 0.28);
+  box-shadow:
+    0 0 0 1px rgba(232, 183, 70, 0.18),
+    0 20px 48px rgba(0, 0, 0, 0.28);
 }
 .ux-landing .ux-price-badge {
   position: absolute;

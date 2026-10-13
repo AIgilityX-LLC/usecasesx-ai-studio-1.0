@@ -152,10 +152,7 @@ export async function saveBriefDraft(
   return toBrief(data);
 }
 
-export async function publishBrief(
-  supabase: Db,
-  briefId: string,
-): Promise<ImplementationBrief> {
+export async function publishBrief(supabase: Db, briefId: string): Promise<ImplementationBrief> {
   const { data, error } = await supabase
     .from("implementation_briefs")
     .update({

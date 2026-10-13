@@ -13,11 +13,7 @@ export type WorkspaceMembershipOption = {
   orgStatus: string;
 };
 
-export type WorkspaceContextStatus =
-  | "ready"
-  | "no_workspace"
-  | "suspended"
-  | "forbidden";
+export type WorkspaceContextStatus = "ready" | "no_workspace" | "suspended" | "forbidden";
 
 export const ACTIVE_WORKSPACE_STORAGE_PREFIX = "usecasesx.active_workspace.";
 export const ACTIVE_WORKSPACE_COOKIE = "usecasesx_workspace";
@@ -57,8 +53,7 @@ export function pickActiveWorkspace(
   const byId = (id: string | null | undefined) =>
     id ? (selectable.find((w) => w.id === id) ?? null) : null;
 
-  const active =
-    byId(preferredId) ?? byId(provisionedId) ?? selectable[0] ?? null;
+  const active = byId(preferredId) ?? byId(provisionedId) ?? selectable[0] ?? null;
 
   return {
     active,
@@ -76,9 +71,7 @@ export function readStoredWorkspaceId(userId: string): string | null {
     /* ignore */
   }
   try {
-    const match = document.cookie.match(
-      new RegExp(`(?:^|; )${ACTIVE_WORKSPACE_COOKIE}=([^;]*)`),
-    );
+    const match = document.cookie.match(new RegExp(`(?:^|; )${ACTIVE_WORKSPACE_COOKIE}=([^;]*)`));
     const v = match?.[1] ? decodeURIComponent(match[1]) : null;
     if (v && /^[0-9a-f-]{36}$/i.test(v)) return v;
   } catch {

@@ -51,9 +51,7 @@ describe("uncertainty and evidence completeness", () => {
     expect(withoutEvidence.evidenceCompleteness).toBe(0);
 
     const withEvidence = calculateScore(FIVE_PILLAR_SCORECARD, responses, {
-      assessments: Object.fromEntries(
-        pillarCriteria.map((c) => [c.id, { evidence: "KPI pack" }]),
-      ),
+      assessments: Object.fromEntries(pillarCriteria.map((c) => [c.id, { evidence: "KPI pack" }])),
     });
     expect(withEvidence.evidenceCompleteness).toBe(1);
     expect(withEvidence.completeness).toBe(1);

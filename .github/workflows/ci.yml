@@ -37,13 +37,14 @@ jobs:
         run: bun run test:unit
       - name: Upload build diagnostics
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: build-output
           path: |
             dist/**
             .output/**
-          retention-days: 5
+          retention-days: 3
           if-no-files-found: ignore
 
   playwright:
@@ -52,6 +53,9 @@ jobs:
     timeout-minutes: 30
     env:
       CI: "1"
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -63,10 +67,36 @@ jobs:
         run: node scripts/ci-test-env.mjs
       - name: Install Playwright browsers
         run: bunx playwright install --with-deps chromium firefox webkit
-      - name: Run Playwright specs
-        run: bunx playwright test 2>&1 | tee playwright-run.log
+      - name: Detect backend credentials
+        id: creds
+        run: |
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::No service-role secrets — running UI-only Playwright subset."
+          fi
+      - name: Run Playwright specs (full suite)
+        if: steps.creds.outputs.available == 'true'
+        run: |
+          set -o pipefail
+          bunx playwright test 2>&1 | tee playwright-run.log
+      - name: Run Playwright specs (UI-only subset)
+        if: steps.creds.outputs.available != 'true'
+        run: |
+          set -o pipefail
+          bunx playwright test \
+            tests/navbar.spec.ts \
+            tests/browse-facets.spec.ts \
+            tests/seo-metadata.spec.ts \
+            tests/mobile-responsive.spec.ts \
+            tests/compare-analytics.spec.ts \
+            tests/anonymous-access-sweep.spec.ts \
+            --project=chromium \
+            2>&1 | tee playwright-run.log
       - name: Upload Playwright report, traces, screenshots & videos
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: playwright-diagnostics
@@ -74,5 +104,5 @@ jobs:
             playwright-report/**
             test-results/**
             playwright-run.log
-          retention-days: 7
+          retention-days: 3
           if-no-files-found: ignore

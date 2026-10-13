@@ -79,9 +79,7 @@ export function toDependencyEdges(
 ): DependencyEdge[] {
   return deps.map((d) => {
     const toId = d.toUseCaseId ?? `ext:${d.dependencyType}:${d.label}`;
-    const toLabel = d.toUseCaseId
-      ? (titleById[d.toUseCaseId] ?? d.label)
-      : d.label;
+    const toLabel = d.toUseCaseId ? (titleById[d.toUseCaseId] ?? d.label) : d.label;
     return {
       id: d.id,
       fromId: d.fromUseCaseId,
@@ -209,11 +207,7 @@ export function applyScenarioScores(
 /* ---------------------------------------------------------------- insights */
 
 export type PortfolioInsightKind =
-  | "duplicate"
-  | "shared_enabler"
-  | "bottleneck"
-  | "concentration"
-  | "no_regret";
+  "duplicate" | "shared_enabler" | "bottleneck" | "concentration" | "no_regret";
 
 export type PortfolioInsight = {
   kind: PortfolioInsightKind;
@@ -343,7 +337,12 @@ export function detectPortfolioInsights(input: {
 /* -------------------------------------------- opportunity-map concentration */
 
 export function detectMapConcentration(
-  records: Array<{ id: string; title: string; orgUnitName: string | null; strategicThemeName: string | null }>,
+  records: Array<{
+    id: string;
+    title: string;
+    orgUnitName: string | null;
+    strategicThemeName: string | null;
+  }>,
 ): PortfolioInsight[] {
   if (records.length < 4) return [];
   const insights: PortfolioInsight[] = [];

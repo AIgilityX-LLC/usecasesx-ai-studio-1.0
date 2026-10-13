@@ -70,9 +70,8 @@ export const recordScoreFn = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { resolveScorecard, insertResult, useCaseTenancy } = await import("@/lib/scoring.server");
-    const { calculateScore, pruneResponses, pruneAssessments } = await import(
-      "@/lib/scoring/model"
-    );
+    const { calculateScore, pruneResponses, pruneAssessments } =
+      await import("@/lib/scoring/model");
     const { writeAuditEvent, writeProductEvent } = await import("@/lib/telemetry/recorder.server");
     const { AUDIT_EVENTS, PRODUCT_EVENTS } = await import("@/lib/telemetry/events");
 
@@ -224,10 +223,7 @@ export const cloneScorecardFn = createServerFn({ method: "POST" })
       await import("@/lib/scoring.server");
     const useCase = await useCaseTenancy(context.supabase, data.useCaseId);
     if (!useCase?.workspace_id) throw new Error("Use case workspace is required to clone.");
-    const scorecard = await resolveScorecard(
-      context.supabase,
-      useCase.workspace_id as string,
-    );
+    const scorecard = await resolveScorecard(context.supabase, useCase.workspace_id as string);
     return cloneScorecardToWorkspace(context.supabase, {
       sourceScorecardId: scorecard.id,
       workspaceId: useCase.workspace_id as string,

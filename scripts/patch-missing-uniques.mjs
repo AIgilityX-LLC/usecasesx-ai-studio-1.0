@@ -14,44 +14,199 @@ const OUT = path.join(ROOT, "docs/migration/add-missing-unique-constraints.sql")
 const MISSING = [
   // --- 18 column-level ---
   { table: "ai_capabilities", cols: ["slug"], name: "ai_capabilities_slug_key", columnLevel: true },
-  { table: "ai_engine_credentials", cols: ["engine_slug"], name: "ai_engine_credentials_engine_slug_key", columnLevel: true },
-  { table: "business_functions", cols: ["slug"], name: "business_functions_slug_key", columnLevel: true },
-  { table: "business_objectives", cols: ["slug"], name: "business_objectives_slug_key", columnLevel: true },
+  {
+    table: "ai_engine_credentials",
+    cols: ["engine_slug"],
+    name: "ai_engine_credentials_engine_slug_key",
+    columnLevel: true,
+  },
+  {
+    table: "business_functions",
+    cols: ["slug"],
+    name: "business_functions_slug_key",
+    columnLevel: true,
+  },
+  {
+    table: "business_objectives",
+    cols: ["slug"],
+    name: "business_objectives_slug_key",
+    columnLevel: true,
+  },
   { table: "countries", cols: ["code"], name: "countries_code_key", columnLevel: true },
   { table: "gov_functions", cols: ["slug"], name: "gov_functions_slug_key", columnLevel: true },
   { table: "industries", cols: ["slug"], name: "industries_slug_key", columnLevel: true },
-  { table: "pilot_invitations", cols: ["invite_token"], name: "pilot_invitations_invite_token_key", columnLevel: true },
-  { table: "platform_modules", cols: ["slug"], name: "platform_modules_slug_key", columnLevel: true },
+  {
+    table: "pilot_invitations",
+    cols: ["invite_token"],
+    name: "pilot_invitations_invite_token_key",
+    columnLevel: true,
+  },
+  {
+    table: "platform_modules",
+    cols: ["slug"],
+    name: "platform_modules_slug_key",
+    columnLevel: true,
+  },
   { table: "profiles", cols: ["user_id"], name: "profiles_user_id_key", columnLevel: true },
-  { table: "taxonomy_maturity_levels", cols: ["slug"], name: "taxonomy_maturity_levels_slug_key", columnLevel: true },
-  { table: "taxonomy_sectors", cols: ["slug"], name: "taxonomy_sectors_slug_key", columnLevel: true },
+  {
+    table: "taxonomy_maturity_levels",
+    cols: ["slug"],
+    name: "taxonomy_maturity_levels_slug_key",
+    columnLevel: true,
+  },
+  {
+    table: "taxonomy_sectors",
+    cols: ["slug"],
+    name: "taxonomy_sectors_slug_key",
+    columnLevel: true,
+  },
   { table: "taxonomy_tags", cols: ["slug"], name: "taxonomy_tags_slug_key", columnLevel: true },
   { table: "use_cases", cols: ["slug"], name: "use_cases_slug_key", columnLevel: true },
-  { table: "workshop_canvas_documents", cols: ["storage_path"], name: "workshop_canvas_documents_storage_path_key", columnLevel: true },
-  { table: "workshop_invitations", cols: ["token"], name: "workshop_invitations_token_key", columnLevel: true },
-  { table: "workshop_outcomes", cols: ["workshop_id"], name: "workshop_outcomes_workshop_id_key", columnLevel: true },
-  { table: "workshop_public_value_canvas", cols: ["workshop_id"], name: "workshop_public_value_canvas_workshop_id_key", columnLevel: true },
-  { table: "workspace_invitations", cols: ["token"], name: "workspace_invitations_token_key", columnLevel: true },
+  {
+    table: "workshop_canvas_documents",
+    cols: ["storage_path"],
+    name: "workshop_canvas_documents_storage_path_key",
+    columnLevel: true,
+  },
+  {
+    table: "workshop_invitations",
+    cols: ["token"],
+    name: "workshop_invitations_token_key",
+    columnLevel: true,
+  },
+  {
+    table: "workshop_outcomes",
+    cols: ["workshop_id"],
+    name: "workshop_outcomes_workshop_id_key",
+    columnLevel: true,
+  },
+  {
+    table: "workshop_public_value_canvas",
+    cols: ["workshop_id"],
+    name: "workshop_public_value_canvas_workshop_id_key",
+    columnLevel: true,
+  },
+  {
+    table: "workspace_invitations",
+    cols: ["token"],
+    name: "workspace_invitations_token_key",
+    columnLevel: true,
+  },
   // --- 20 composite ---
-  { table: "collab_assignments", cols: ["entity_type", "entity_id", "user_id", "assignment_role"], name: "collab_assignments_entity_user_role_key", columnLevel: false },
-  { table: "collab_review_states", cols: ["entity_type", "entity_id"], name: "collab_review_states_entity_key", columnLevel: false },
-  { table: "collection_items", cols: ["collection_id", "use_case_id"], name: "collection_items_collection_id_use_case_id_key", columnLevel: false },
-  { table: "organization_members", cols: ["organization_id", "user_id"], name: "organization_members_organization_id_user_id_key", columnLevel: false },
-  { table: "organization_units", cols: ["organization_id", "slug"], name: "organization_units_organization_id_slug_key", columnLevel: false },
-  { table: "pilot_milestone_approvals", cols: ["user_id", "cohort", "milestone_key"], name: "pilot_milestone_approvals_user_cohort_milestone_key", columnLevel: false },
-  { table: "pilot_onboarding_profiles", cols: ["user_id", "cohort"], name: "pilot_onboarding_profiles_user_id_cohort_key", columnLevel: false },
-  { table: "saved_use_cases", cols: ["user_id", "use_case_id"], name: "saved_use_cases_user_id_use_case_id_key", columnLevel: false },
-  { table: "use_case_deliverable_versions", cols: ["deliverable_id", "version"], name: "use_case_deliverable_versions_deliverable_id_version_key", columnLevel: false },
-  { table: "use_case_deliverables", cols: ["use_case_id", "deliverable_type"], name: "use_case_deliverables_use_case_id_deliverable_type_key", columnLevel: false },
-  { table: "use_case_ratings", cols: ["use_case_slug", "user_id"], name: "use_case_ratings_use_case_slug_user_id_key", columnLevel: false },
-  { table: "use_case_scores", cols: ["user_id", "use_case_id"], name: "use_case_scores_user_id_use_case_id_key", columnLevel: false },
-  { table: "use_case_versions", cols: ["use_case_id", "version"], name: "use_case_versions_use_case_id_version_key", columnLevel: false },
-  { table: "user_roles", cols: ["user_id", "role"], name: "user_roles_user_id_role_key", columnLevel: false },
-  { table: "workshop_canvas_versions", cols: ["workshop_id", "version"], name: "workshop_canvas_versions_workshop_id_version_key", columnLevel: false },
-  { table: "workshop_votes", cols: ["item_id", "voter_id", "criterion"], name: "workshop_votes_item_id_voter_id_criterion_key", columnLevel: false },
-  { table: "workspace_ai_engines", cols: ["workspace_id", "engine_slug"], name: "workspace_ai_engines_workspace_id_engine_slug_key", columnLevel: false },
-  { table: "workspace_export_preferences", cols: ["workspace_id", "export_key"], name: "workspace_export_preferences_workspace_id_export_key_key", columnLevel: false },
-  { table: "workspace_members", cols: ["workspace_id", "user_id"], name: "workspace_members_workspace_id_user_id_key", columnLevel: false },
+  {
+    table: "collab_assignments",
+    cols: ["entity_type", "entity_id", "user_id", "assignment_role"],
+    name: "collab_assignments_entity_user_role_key",
+    columnLevel: false,
+  },
+  {
+    table: "collab_review_states",
+    cols: ["entity_type", "entity_id"],
+    name: "collab_review_states_entity_key",
+    columnLevel: false,
+  },
+  {
+    table: "collection_items",
+    cols: ["collection_id", "use_case_id"],
+    name: "collection_items_collection_id_use_case_id_key",
+    columnLevel: false,
+  },
+  {
+    table: "organization_members",
+    cols: ["organization_id", "user_id"],
+    name: "organization_members_organization_id_user_id_key",
+    columnLevel: false,
+  },
+  {
+    table: "organization_units",
+    cols: ["organization_id", "slug"],
+    name: "organization_units_organization_id_slug_key",
+    columnLevel: false,
+  },
+  {
+    table: "pilot_milestone_approvals",
+    cols: ["user_id", "cohort", "milestone_key"],
+    name: "pilot_milestone_approvals_user_cohort_milestone_key",
+    columnLevel: false,
+  },
+  {
+    table: "pilot_onboarding_profiles",
+    cols: ["user_id", "cohort"],
+    name: "pilot_onboarding_profiles_user_id_cohort_key",
+    columnLevel: false,
+  },
+  {
+    table: "saved_use_cases",
+    cols: ["user_id", "use_case_id"],
+    name: "saved_use_cases_user_id_use_case_id_key",
+    columnLevel: false,
+  },
+  {
+    table: "use_case_deliverable_versions",
+    cols: ["deliverable_id", "version"],
+    name: "use_case_deliverable_versions_deliverable_id_version_key",
+    columnLevel: false,
+  },
+  {
+    table: "use_case_deliverables",
+    cols: ["use_case_id", "deliverable_type"],
+    name: "use_case_deliverables_use_case_id_deliverable_type_key",
+    columnLevel: false,
+  },
+  {
+    table: "use_case_ratings",
+    cols: ["use_case_slug", "user_id"],
+    name: "use_case_ratings_use_case_slug_user_id_key",
+    columnLevel: false,
+  },
+  {
+    table: "use_case_scores",
+    cols: ["user_id", "use_case_id"],
+    name: "use_case_scores_user_id_use_case_id_key",
+    columnLevel: false,
+  },
+  {
+    table: "use_case_versions",
+    cols: ["use_case_id", "version"],
+    name: "use_case_versions_use_case_id_version_key",
+    columnLevel: false,
+  },
+  {
+    table: "user_roles",
+    cols: ["user_id", "role"],
+    name: "user_roles_user_id_role_key",
+    columnLevel: false,
+  },
+  {
+    table: "workshop_canvas_versions",
+    cols: ["workshop_id", "version"],
+    name: "workshop_canvas_versions_workshop_id_version_key",
+    columnLevel: false,
+  },
+  {
+    table: "workshop_votes",
+    cols: ["item_id", "voter_id", "criterion"],
+    name: "workshop_votes_item_id_voter_id_criterion_key",
+    columnLevel: false,
+  },
+  {
+    table: "workspace_ai_engines",
+    cols: ["workspace_id", "engine_slug"],
+    name: "workspace_ai_engines_workspace_id_engine_slug_key",
+    columnLevel: false,
+  },
+  {
+    table: "workspace_export_preferences",
+    cols: ["workspace_id", "export_key"],
+    name: "workspace_export_preferences_workspace_id_export_key_key",
+    columnLevel: false,
+  },
+  {
+    table: "workspace_members",
+    cols: ["workspace_id", "user_id"],
+    name: "workspace_members_workspace_id_user_id_key",
+    columnLevel: false,
+  },
 ];
 
 // Fix: I listed 19 column-level above. Count again from audit:
@@ -160,10 +315,7 @@ function patchFullSchema() {
     }
     let body = m[2];
     // Match column line; allow commas inside DEFAULT fn args by matching to trailing comma-or-EOL
-    const colLineRe = new RegExp(
-      `^(\\s*${col}\\s+)(.+?)(,)?\\s*$`,
-      "im",
-    );
+    const colLineRe = new RegExp(`^(\\s*${col}\\s+)(.+?)(,)?\\s*$`, "im");
     const cm = body.match(colLineRe);
     if (!cm) {
       console.error("WARN: column not found", table, col);
@@ -193,16 +345,17 @@ function patchFullSchema() {
       continue;
     }
     let body = m[2];
-    if (new RegExp(`\\bUNIQUE\\s*\\(\\s*${c.cols.map(escapeRe).join("\\s*,\\s*")}\\s*\\)`, "i").test(body)) {
+    if (
+      new RegExp(`\\bUNIQUE\\s*\\(\\s*${c.cols.map(escapeRe).join("\\s*,\\s*")}\\s*\\)`, "i").test(
+        body,
+      )
+    ) {
       console.log("SKIP (already table UNIQUE):", table + "(" + colList + ")");
       continue;
     }
     // Insert before PRIMARY KEY line
     if (/\n\s*PRIMARY KEY\s*\(/i.test(body)) {
-      body = body.replace(
-        /(\n\s*)(PRIMARY KEY\s*\()/i,
-        `$1UNIQUE (${colList}),\n$1$2`,
-      );
+      body = body.replace(/(\n\s*)(PRIMARY KEY\s*\()/i, `$1UNIQUE (${colList}),\n$1$2`);
     } else {
       // append before closing
       body = body.replace(/\s*$/, "") + `,\n  UNIQUE (${colList})\n`;
@@ -236,10 +389,7 @@ function patchFullSchema() {
       uniqueAlters.push(constraintDoBlock(c.table, c.name, c.cols));
       uniqueAlters.push("");
     }
-    sql = sql.replace(
-      phase5Marker,
-      uniqueAlters.join("\n") + phase5Marker,
-    );
+    sql = sql.replace(phase5Marker, uniqueAlters.join("\n") + phase5Marker);
     console.log("Inserted Phase 4b UNIQUE section before Phase 5");
   } else {
     console.log("Phase 4b already present; skipping insert");

@@ -4,7 +4,8 @@ const path = "docs/migration/full-schema.sql";
 const sql = fs.readFileSync(path, "utf8");
 
 const P6 = "-- Phase 6: CREATE OR REPLACE FUNCTION";
-const P6B = "-- Phase 6b: CREATE VIEW\n-- ---------------------------------------------------------------------------";
+const P6B =
+  "-- Phase 6b: CREATE VIEW\n-- ---------------------------------------------------------------------------";
 
 const firstP6 = sql.indexOf(P6);
 const secondP6 = sql.indexOf(P6, firstP6 + 10);
@@ -16,16 +17,26 @@ if (firstP6 < 0 || secondP6 < 0 || realP6b < 0) {
 
 // Prefix: everything through Phase 6 title + following dashes line
 const afterFirstP6 = sql.indexOf("\n", firstP6);
-const dashes = sql.indexOf("-- ---------------------------------------------------------------------------\n", afterFirstP6);
+const dashes = sql.indexOf(
+  "-- ---------------------------------------------------------------------------\n",
+  afterFirstP6,
+);
 if (dashes < 0 || dashes > secondP6) {
   throw new Error("Could not find Phase 6 separator after first marker");
 }
-const prefixEnd = dashes + "-- ---------------------------------------------------------------------------\n".length;
+const prefixEnd =
+  dashes +
+  "-- ---------------------------------------------------------------------------\n".length;
 const prefix = sql.slice(0, prefixEnd);
 
 // Function bodies from the intact second Phase 6 copy
-const secondDashes = sql.indexOf("-- ---------------------------------------------------------------------------\n", secondP6);
-const funcsStart = secondDashes + "-- ---------------------------------------------------------------------------\n".length;
+const secondDashes = sql.indexOf(
+  "-- ---------------------------------------------------------------------------\n",
+  secondP6,
+);
+const funcsStart =
+  secondDashes +
+  "-- ---------------------------------------------------------------------------\n".length;
 const funcsRaw = sql.slice(funcsStart, realP6b);
 const suffix = sql.slice(realP6b);
 
@@ -84,9 +95,7 @@ function splitStatements(text) {
   return stmts;
 }
 
-const stmts = splitStatements(funcsRaw).filter((s) =>
-  /^CREATE OR REPLACE FUNCTION/i.test(s),
-);
+const stmts = splitStatements(funcsRaw).filter((s) => /^CREATE OR REPLACE FUNCTION/i.test(s));
 
 if (stmts.length < 40) {
   throw new Error(`Expected ~45 functions, got ${stmts.length}`);
@@ -155,7 +164,10 @@ while (ready.length) {
 
 if (sorted.length !== funcs.length) {
   const left = funcs.filter((f) => !sorted.includes(f));
-  console.error("CYCLE leftover:", left.map((f) => f.name));
+  console.error(
+    "CYCLE leftover:",
+    left.map((f) => f.name),
+  );
   for (const f of left) sorted.push(f);
 }
 
@@ -170,8 +182,7 @@ for (const f of sorted) {
 console.log("Forward refs after sort:", remaining.length);
 remaining.forEach((o) => console.log(`  ${o.fn} [${o.lang}] needs ${o.needs}`));
 
-const phase6Body =
-  sorted.map((f) => f.body.replace(/\s*;\s*$/, "") + ";").join("\n\n") + "\n\n";
+const phase6Body = sorted.map((f) => f.body.replace(/\s*;\s*$/, "") + ";").join("\n\n") + "\n\n";
 
 const out = prefix + phase6Body + suffix;
 fs.writeFileSync(path, out);

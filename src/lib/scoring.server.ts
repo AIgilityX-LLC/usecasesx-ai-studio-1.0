@@ -135,12 +135,14 @@ function toStored(row: any): StoredResult {
       {}) as import("@/lib/scoring/model").CriterionAssessments,
     composite: row.composite_score === null ? null : Number(row.composite_score),
     riskAdjusted: row.risk_adjusted_score === null ? null : Number(row.risk_adjusted_score),
-    uncertaintyLow: row.uncertainty_low === null || row.uncertainty_low === undefined
-      ? null
-      : Number(row.uncertainty_low),
-    uncertaintyHigh: row.uncertainty_high === null || row.uncertainty_high === undefined
-      ? null
-      : Number(row.uncertainty_high),
+    uncertaintyLow:
+      row.uncertainty_low === null || row.uncertainty_low === undefined
+        ? null
+        : Number(row.uncertainty_low),
+    uncertaintyHigh:
+      row.uncertainty_high === null || row.uncertainty_high === undefined
+        ? null
+        : Number(row.uncertainty_high),
     completeness: row.completeness === null ? 0 : Number(row.completeness),
     evidenceCompleteness:
       row.evidence_completeness === null || row.evidence_completeness === undefined

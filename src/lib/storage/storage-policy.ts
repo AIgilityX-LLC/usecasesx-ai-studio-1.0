@@ -235,12 +235,7 @@ export function parseEvidenceItemsPath(path: string): {
   if (path.includes("..") || path.startsWith("/")) return null;
   const parts = path.split("/");
   if (parts.length !== 4) return null;
-  const [workspaceId, subjectType, subjectId, file] = parts as [
-    string,
-    string,
-    string,
-    string,
-  ];
+  const [workspaceId, subjectType, subjectId, file] = parts as [string, string, string, string];
   const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (
     !uuid.test(workspaceId) ||

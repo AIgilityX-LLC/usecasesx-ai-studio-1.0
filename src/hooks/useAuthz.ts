@@ -44,8 +44,7 @@ export function useAuthz(): AuthzState {
 
   const resolvedSubject = queryClient.getQueryData<{ subject?: AuthzSubject }>(queryKey)
     ?.subject as
-    | (AuthzSubject & { organizationId: string | null; workspaceId: string | null })
-    | undefined;
+    (AuthzSubject & { organizationId: string | null; workspaceId: string | null }) | undefined;
   const policy = authzQueryPolicy(resolvedSubject ?? null);
 
   const query = useQuery({
@@ -72,8 +71,7 @@ export function useAuthz(): AuthzState {
       flags: CLIENT_CAPABILITY_FLAGS,
     };
     const resolved = query.data?.subject as
-      | (AuthzSubject & { organizationId: string | null; workspaceId: string | null })
-      | undefined;
+      (AuthzSubject & { organizationId: string | null; workspaceId: string | null }) | undefined;
     const subject: AuthzSubject = resolved ?? anonymous;
 
     return {

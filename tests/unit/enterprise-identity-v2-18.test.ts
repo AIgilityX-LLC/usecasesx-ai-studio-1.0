@@ -22,11 +22,7 @@ import {
   SUPPORT_ACCESS_MAX_HOURS,
   IMPERSONATION_PROHIBITED,
 } from "@/lib/enterprise/support-access";
-import {
-  journeyStrings,
-  localeDirection,
-  isUiLocale,
-} from "@/lib/i18n/locale";
+import { journeyStrings, localeDirection, isUiLocale } from "@/lib/i18n/locale";
 import {
   REPORT_LANGUAGES,
   reportLanguageDirection,

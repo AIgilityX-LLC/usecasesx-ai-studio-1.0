@@ -45,12 +45,7 @@ import {
 
 /** Where a block of a report came from. Rendered next to every section. */
 export type ProvenanceSource =
-  | "repository"
-  | "score"
-  | "portfolio"
-  | "studio_value"
-  | "derived"
-  | "narrative";
+  "repository" | "score" | "portfolio" | "studio_value" | "derived" | "narrative";
 
 export const PROVENANCE_LABELS: Record<ProvenanceSource, string> = {
   repository: "Repository record",

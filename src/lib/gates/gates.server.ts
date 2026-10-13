@@ -236,12 +236,7 @@ export async function listInbox(
     .select(REVIEW_SELECT)
     .eq("workspace_id", workspaceId)
     .is("deleted_at", null)
-    .in("status", [
-      "submitted",
-      "in_review",
-      "changes_requested",
-      "approved_with_conditions",
-    ])
+    .in("status", ["submitted", "in_review", "changes_requested", "approved_with_conditions"])
     .order("sla_due_at", { ascending: true, nullsFirst: false });
   if (error) throw new Error(error.message);
 
@@ -261,7 +256,10 @@ export async function listInbox(
   ]);
 
   const titleById = new Map(
-    (ucRows ?? []).map((u) => [String((u as { id: string }).id), (u as { title: string | null }).title]),
+    (ucRows ?? []).map((u) => [
+      String((u as { id: string }).id),
+      (u as { title: string | null }).title,
+    ]),
   );
   const openByReview = new Map<string, { conditions: number; changes: number }>();
   for (const row of openRows ?? []) {
@@ -285,10 +283,7 @@ export async function listInbox(
   });
 }
 
-export async function listOpenItems(
-  supabase: Client,
-  reviewId: string,
-): Promise<GateOpenItem[]> {
+export async function listOpenItems(supabase: Client, reviewId: string): Promise<GateOpenItem[]> {
   const { data, error } = await supabase
     .from("decision_gate_open_items")
     .select(ITEM_SELECT)
@@ -298,10 +293,7 @@ export async function listOpenItems(
   return (data ?? []).map((r) => rowToItem(r as Record<string, unknown>));
 }
 
-export async function listEvents(
-  supabase: Client,
-  reviewId: string,
-): Promise<GateEvent[]> {
+export async function listEvents(supabase: Client, reviewId: string): Promise<GateEvent[]> {
   const { data, error } = await supabase
     .from("decision_gate_events")
     .select(EVENT_SELECT)
@@ -443,11 +435,7 @@ export async function decideGateReview(
     actorUserId: userId,
   });
 
-  if (
-    review.status === "approved" ||
-    review.status === "rejected" ||
-    review.status === "held"
-  ) {
+  if (review.status === "approved" || review.status === "rejected" || review.status === "held") {
     throw new Error(`Review is already ${review.status} and cannot be decided again.`);
   }
 

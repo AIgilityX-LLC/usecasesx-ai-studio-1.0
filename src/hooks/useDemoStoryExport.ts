@@ -13,13 +13,7 @@ import { exportDemoStoryPDF, type LineageEntry } from "@/lib/demo/demo-story-exp
 import { recordDemoStoryExportFn } from "@/lib/demo/demo-scenarios.functions";
 
 export type StoryExportPhase =
-  | "idle"
-  | "queued"
-  | "collecting"
-  | "composing"
-  | "rendering"
-  | "done"
-  | "failed";
+  "idle" | "queued" | "collecting" | "composing" | "rendering" | "done" | "failed";
 
 export interface StoryExportJob {
   phase: StoryExportPhase;

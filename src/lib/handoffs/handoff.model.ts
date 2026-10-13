@@ -443,8 +443,7 @@ export type HandoffDraft = {
 };
 
 export type HandoffValidation =
-  | { ok: true; errors: Record<string, string> }
-  | { ok: false; errors: Record<string, string> };
+  { ok: true; errors: Record<string, string> } | { ok: false; errors: Record<string, string> };
 
 /**
  * Validates a draft against its target's schema plus the cross-cutting rules:

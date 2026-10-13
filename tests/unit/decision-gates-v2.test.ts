@@ -25,9 +25,7 @@ describe("decision gate catalogue (FR-08)", () => {
       "retirement_review",
     ]);
     expect(DEFAULT_GATES).toHaveLength(6);
-    expect(DEFAULT_GATES.every((g) => g.slaHours > 0 && g.decisionAuthority.length > 0)).toBe(
-      true,
-    );
+    expect(DEFAULT_GATES.every((g) => g.slaHours > 0 && g.decisionAuthority.length > 0)).toBe(true);
   });
 
   test("actions map to review statuses", () => {
@@ -63,11 +61,7 @@ describe("missing inputs (AI may flag, cannot decide)", () => {
 
   test("identifyMissingInputs lists empty required fields", () => {
     const missing = identifyMissingInputs(intake, { title: "X" });
-    expect(missing.map((m) => m.field).sort()).toEqual([
-      "desiredOutcome",
-      "owner",
-      "problem",
-    ]);
+    expect(missing.map((m) => m.field).sort()).toEqual(["desiredOutcome", "owner", "problem"]);
     expect(missing.every((m) => m.source === "rule")).toBe(true);
   });
 

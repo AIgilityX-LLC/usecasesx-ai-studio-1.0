@@ -77,8 +77,7 @@ function splitTopLevelEntries(block) {
 
 function parseFields(rowBody) {
   const fields = [];
-  const re =
-    /^\s*([a-z0-9_]+):\s*(.+)$/gm;
+  const re = /^\s*([a-z0-9_]+):\s*(.+)$/gm;
   let m;
   while ((m = re.exec(rowBody))) {
     const name = m[1];
@@ -259,8 +258,7 @@ function parseColumnDefs(colBlock) {
 }
 
 function ingestCreateTable(sql) {
-  const re =
-    /CREATE TABLE(?: IF NOT EXISTS)? public\.([a-z0-9_]+)\s*\(([\s\S]*?)\)\s*;/gi;
+  const re = /CREATE TABLE(?: IF NOT EXISTS)? public\.([a-z0-9_]+)\s*\(([\s\S]*?)\)\s*;/gi;
   let m;
   while ((m = re.exec(sql))) {
     const table = m[1];
@@ -269,9 +267,7 @@ function ingestCreateTable(sql) {
     for (const part of parts) {
       const pkMatch = part.match(/^PRIMARY KEY\s*\(([^)]+)\)/i);
       if (pkMatch) {
-        pkCols.push(
-          ...pkMatch[1].split(",").map((s) => s.trim().replace(/"/g, "")),
-        );
+        pkCols.push(...pkMatch[1].split(",").map((s) => s.trim().replace(/"/g, "")));
         continue;
       }
       if (/^(UNIQUE|CHECK|CONSTRAINT|FOREIGN KEY)/i.test(part)) continue;
@@ -350,9 +346,7 @@ function extractDefault(rest) {
       break;
     } else if (/\s/.test(ch) && depth === 0) {
       const tail = rest.slice(i + 1);
-      if (
-        /^(NOT\s+NULL|NULL|PRIMARY|UNIQUE|CHECK|REFERENCES|COLLATE)\b/i.test(tail)
-      ) {
+      if (/^(NOT\s+NULL|NULL|PRIMARY|UNIQUE|CHECK|REFERENCES|COLLATE)\b/i.test(tail)) {
         break;
       }
     }
@@ -362,8 +356,7 @@ function extractDefault(rest) {
 
 function ingestAlterAddColumn(sql) {
   // Match whole ALTER TABLE ... ; then find each ADD COLUMN clause inside
-  const alterRe =
-    /ALTER TABLE(?: IF EXISTS)? public\.([a-z0-9_]+)\s+([\s\S]*?);/gi;
+  const alterRe = /ALTER TABLE(?: IF EXISTS)? public\.([a-z0-9_]+)\s+([\s\S]*?);/gi;
   let am;
   while ((am = alterRe.exec(sql))) {
     const table = am[1];
@@ -578,9 +571,7 @@ const latestRls = latestByKey(rlsEnables, rlsKey);
 
 // For policies: replay DROP+CREATE chronologically is safest; alternatively keep drops + latest creates.
 // Use chronological DROP POLICY + CREATE POLICY from all migrations (dedupe consecutive).
-const policyReplay = [...drops, ...policies].sort((a, b) =>
-  a.file.localeCompare(b.file),
-);
+const policyReplay = [...drops, ...policies].sort((a, b) => a.file.localeCompare(b.file));
 
 // --- Type inference from types.ts when enrichment missing ---
 function mapTsType(colName, typeExpr, insertMeta, tableName) {
@@ -596,9 +587,7 @@ function mapTsType(colName, typeExpr, insertMeta, tableName) {
   let base = typeExpr.replace(/\s*\|\s*null/g, "").trim();
 
   // Enums
-  const enumMatch = base.match(
-    /Database\["public"\]\["Enums"\]\["([a-z0-9_]+)"\]/,
-  );
+  const enumMatch = base.match(/Database\["public"\]\["Enums"\]\["([a-z0-9_]+)"\]/);
   if (enumMatch) {
     return { sqlType: `public.${enumMatch[1]}`, defaultSql: undefined };
   }
@@ -666,18 +655,14 @@ function inferDefault(colName, typeExpr, insertMeta, sqlType, enrichedDefault) {
   if (!insertMeta?.optional) return undefined;
   const requiredInRow = !/\|\s*null/.test(typeExpr);
   if (colName === "id" && sqlType === "uuid") return "gen_random_uuid()";
-  if (
-    (colName === "created_at" || colName === "updated_at") &&
-    requiredInRow
-  ) {
+  if ((colName === "created_at" || colName === "updated_at") && requiredInRow) {
     return "now()";
   }
   // boolean NOT NULL optional insert → often false
   if (sqlType === "boolean" && requiredInRow) return "false";
   if (sqlType === "text[]" && requiredInRow) return "'{}'::text[]";
   if (sqlType === "jsonb" && requiredInRow) return "'{}'::jsonb";
-  if (sqlType === "integer" && requiredInRow && /order|sort/.test(colName))
-    return "0";
+  if (sqlType === "integer" && requiredInRow && /order|sort/.test(colName)) return "0";
   return undefined;
 }
 
@@ -712,7 +697,10 @@ function primaryKeyFor(table) {
   if (fkCols.size >= 2) return [...fkCols];
   if (fkCols.size === 1) return [...fkCols];
   // fallback: all NOT NULL columns without defaults that look like keys
-  return table.row.filter((f) => !/\|\s*null/.test(f.typeExpr)).slice(0, 1).map((f) => f.name);
+  return table.row
+    .filter((f) => !/\|\s*null/.test(f.typeExpr))
+    .slice(0, 1)
+    .map((f) => f.name);
 }
 
 // Emit SQL
@@ -727,7 +715,9 @@ out.push(`-- DOCUMENTATION ARTIFACT ONLY - do not execute blindly against a live
 out.push(`-- Types/defaults are enriched from historical CREATE/ALTER when available;`);
 out.push(`-- otherwise inferred from generated TypeScript types.`);
 out.push(`-- Generated: ${new Date().toISOString().slice(0, 10)}`);
-out.push(`-- Tables: ${tables.length} | Enums: ${enums.length} | Views (types.ts): ${viewsEntries.length}`);
+out.push(
+  `-- Tables: ${tables.length} | Enums: ${enums.length} | Views (types.ts): ${viewsEntries.length}`,
+);
 out.push(`-- =============================================================================`);
 out.push(``);
 
@@ -750,7 +740,9 @@ for (const e of enums) {
 }
 
 // Also include ALTER TYPE additions from migrations for completeness notes
-out.push(`-- Historical ALTER TYPE / CREATE TYPE statements from migrations (idempotent best-effort):`);
+out.push(
+  `-- Historical ALTER TYPE / CREATE TYPE statements from migrations (idempotent best-effort):`,
+);
 for (const t of typesFromMigrations) {
   out.push(`-- from ${t.file}`);
   out.push(t.stmt);
@@ -770,7 +762,8 @@ for (const table of tables) {
     const enriched = colEnrichment.get(table.name)?.get(field.name);
     const notNull =
       enriched?.notNull === true ||
-      (!/\|\s*null/.test(field.typeExpr) && !(pk.length > 1 && pk.includes(field.name) === false && false));
+      (!/\|\s*null/.test(field.typeExpr) &&
+        !(pk.length > 1 && pk.includes(field.name) === false && false));
     // Row non-null => NOT NULL
     const isNotNull = !/\|\s*null/.test(field.typeExpr);
     const defaultSql = inferDefault(
@@ -802,8 +795,9 @@ for (const ix of latestIndexes) {
   // Make idempotent if not already
   let s = ix.stmt;
   if (!/IF NOT EXISTS/i.test(s)) {
-    s = s.replace(/CREATE\s+(UNIQUE\s+)?INDEX\s+/i, (m, u) =>
-      `CREATE ${u || ""}INDEX IF NOT EXISTS `,
+    s = s.replace(
+      /CREATE\s+(UNIQUE\s+)?INDEX\s+/i,
+      (m, u) => `CREATE ${u || ""}INDEX IF NOT EXISTS `,
     );
   }
   out.push(s);
@@ -832,7 +826,9 @@ for (const v of latestViews.sort((a, b) => viewKey(a).localeCompare(viewKey(b)))
 const knownViewSql = new Set(latestViews.map(viewKey));
 for (const v of viewsEntries) {
   if (!knownViewSql.has(v.name.toLowerCase())) {
-    out.push(`-- NOTE: View public.${v.name} appears in types.ts but no CREATE VIEW was found in migration history.`);
+    out.push(
+      `-- NOTE: View public.${v.name} appears in types.ts but no CREATE VIEW was found in migration history.`,
+    );
   }
 }
 
@@ -899,6 +895,10 @@ fs.writeFileSync(OUT, out.join("\n"), "utf8");
 
 console.log(`Wrote ${OUT}`);
 console.log(`tables=${tables.length} enums=${enums.length} views_types=${viewsEntries.length}`);
-console.log(`functions=${latestFns.length} triggers=${latestTriggers.length} views_sql=${latestViews.length}`);
-console.log(`policies_replay=${policyReplay.length} grants=${grants.length} indexes=${latestIndexes.length}`);
+console.log(
+  `functions=${latestFns.length} triggers=${latestTriggers.length} views_sql=${latestViews.length}`,
+);
+console.log(
+  `policies_replay=${policyReplay.length} grants=${grants.length} indexes=${latestIndexes.length}`,
+);
 console.log(`enrichment_tables=${colEnrichment.size}`);

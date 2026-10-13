@@ -17,10 +17,7 @@ export const Route = createFileRoute("/_app/platform-admin")({
     }
   },
   head: () => ({
-    meta: [
-      { title: "Platform Administration" },
-      { name: "robots", content: "noindex, nofollow" },
-    ],
+    meta: [{ title: "Platform Administration" }, { name: "robots", content: "noindex, nofollow" }],
   }),
   component: PlatformAdminLayout,
 });

@@ -76,12 +76,7 @@ export const Route = createFileRoute("/_app/opportunity-map")({
 });
 
 type FilterKey =
-  | "orgUnitIds"
-  | "businessFunctions"
-  | "themeIds"
-  | "statuses"
-  | "urgencies"
-  | "owners";
+  "orgUnitIds" | "businessFunctions" | "themeIds" | "statuses" | "urgencies" | "owners";
 
 function FilterGroup({
   label,
@@ -432,7 +427,10 @@ function OpportunityMapPage() {
               ) : (
                 <>
                   {mapInsights.length > 0 && (
-                    <ul className="space-y-2" aria-label="Concentration insights for current filters">
+                    <ul
+                      className="space-y-2"
+                      aria-label="Concentration insights for current filters"
+                    >
                       {mapInsights.map((ins, i) => (
                         <li
                           key={`${ins.kind}-${i}`}

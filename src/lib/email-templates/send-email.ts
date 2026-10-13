@@ -15,8 +15,7 @@ const SENDER_DOMAIN = "notify.aigilityx.com";
 const FROM_DOMAIN = "aigilityx.com";
 
 export type SendTemplateEmailResult =
-  | { sent: true }
-  | { sent: false; reason: "recipient_suppressed" };
+  { sent: true } | { sent: false; reason: "recipient_suppressed" };
 
 export interface SendTemplateEmailOptions {
   templateData?: Record<string, any>;

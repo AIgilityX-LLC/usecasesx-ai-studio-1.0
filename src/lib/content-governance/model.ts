@@ -155,8 +155,7 @@ export function publishBlockingIssues(input: {
 }
 
 /** Reject seed/import payloads that invent numeric ROI or named clients without verification. */
-const INVENTED_CLAIM =
-  /(\d+\s*%|\bROI\b|\$\s*\d|\bclient\s+[A-Z]|\bFortune\s*500\b)/i;
+const INVENTED_CLAIM = /(\d+\s*%|\bROI\b|\$\s*\d|\bclient\s+[A-Z]|\bFortune\s*500\b)/i;
 
 export function looksLikeInventedOutcomeClaim(text: string | null | undefined): boolean {
   if (!text?.trim()) return false;

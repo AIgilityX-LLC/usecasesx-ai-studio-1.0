@@ -55,10 +55,7 @@ describe("workspace selection", () => {
   });
 
   it("falls back to the provisioned workspace then the first selectable", () => {
-    const available = [
-      ws({ id: "w1", name: "Alpha" }),
-      ws({ id: "w2", name: "Beta" }),
-    ];
+    const available = [ws({ id: "w1", name: "Alpha" }), ws({ id: "w2", name: "Beta" })];
     expect(pickActiveWorkspace(available, null, "w2").active?.id).toBe("w2");
     expect(pickActiveWorkspace(available, null, null).active?.id).toBe("w1");
   });

@@ -133,9 +133,7 @@ export function UseCaseScorecard({ id }: { id: string }) {
 
   const live: ScoreResult | null = useMemo(
     () =>
-      definition
-        ? calculateScore(definition, current, { assessments: liveAssessments })
-        : null,
+      definition ? calculateScore(definition, current, { assessments: liveAssessments }) : null,
     [definition, current, liveAssessments],
   );
 
@@ -683,9 +681,7 @@ export function UseCaseScorecard({ id }: { id: string }) {
                 onClick={() => void cloneTemplate()}
                 disabled={cloning}
               >
-                {cloning ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
-                ) : null}
+                {cloning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden /> : null}
                 Clone template to workspace
               </Button>
               {(responses || evidence) && (

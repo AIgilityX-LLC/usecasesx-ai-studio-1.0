@@ -45,9 +45,7 @@ export function WorkshopFacilitatorV2Panel({
   const [challengesText, setChallengesText] = useState(
     workshop.challengeStatements.map((c) => c.text).join("\n") || "",
   );
-  const [teamsText, setTeamsText] = useState(
-    workshop.teams.map((t) => t.name).join("\n") || "",
-  );
+  const [teamsText, setTeamsText] = useState(workshop.teams.map((t) => t.name).join("\n") || "");
   const [allowAnonymous, setAllowAnonymous] = useState(workshop.allowAnonymous);
   const [votingMode, setVotingMode] = useState<"score" | "dot">(workshop.votingMode);
 
@@ -168,11 +166,7 @@ export function WorkshopFacilitatorV2Panel({
 
       <div className="flex flex-wrap items-center gap-6">
         <div className="flex items-center gap-2">
-          <Switch
-            id="ws-anon"
-            checked={allowAnonymous}
-            onCheckedChange={setAllowAnonymous}
-          />
+          <Switch id="ws-anon" checked={allowAnonymous} onCheckedChange={setAllowAnonymous} />
           <Label htmlFor="ws-anon">Allow anonymous ideation</Label>
         </div>
         <div className="space-y-1">

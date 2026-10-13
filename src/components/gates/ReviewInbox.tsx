@@ -45,10 +45,7 @@ export function ReviewInbox({ workspaceId }: Props) {
   });
 
   const mutation = useMutation({
-    mutationFn: (input: {
-      reviewId: string;
-      action: Exclude<GateAction, "submit">;
-    }) => {
+    mutationFn: (input: { reviewId: string; action: Exclude<GateAction, "submit"> }) => {
       const r = rationale[input.reviewId]?.trim() ?? "";
       if (!r) throw new Error("Rationale is required.");
       const conditions =
@@ -108,8 +105,7 @@ export function ReviewInbox({ workspaceId }: Props) {
   return (
     <ul className="space-y-4">
       {rows.map((row) => {
-        const gateLabel =
-          DEFAULT_GATES.find((g) => g.key === row.gateKey)?.label ?? row.gateKey;
+        const gateLabel = DEFAULT_GATES.find((g) => g.key === row.gateKey)?.label ?? row.gateKey;
         return (
           <li key={row.id}>
             <Card>
@@ -128,9 +124,7 @@ export function ReviewInbox({ workspaceId }: Props) {
                     <Badge variant="secondary">{row.openConditionCount} open conditions</Badge>
                   )}
                   {row.openChangeRequestCount > 0 && (
-                    <Badge variant="secondary">
-                      {row.openChangeRequestCount} change requests
-                    </Badge>
+                    <Badge variant="secondary">{row.openChangeRequestCount} change requests</Badge>
                   )}
                 </div>
                 <CardDescription>

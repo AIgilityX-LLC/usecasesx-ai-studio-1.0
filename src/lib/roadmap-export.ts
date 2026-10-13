@@ -83,7 +83,11 @@ function envelopeFromMeta(items: RoadmapItem[], meta: RoadmapExportMeta): Export
 }
 
 /** One row per roadmap item currently in view, with envelope preamble. */
-export function roadmapToCsv(items: RoadmapItem[], columns?: readonly string[], meta: RoadmapExportMeta = {}): string {
+export function roadmapToCsv(
+  items: RoadmapItem[],
+  columns?: readonly string[],
+  meta: RoadmapExportMeta = {},
+): string {
   const selected = normalizeColumns(columns);
   const labels = new Map(ROADMAP_EXPORT_COLUMNS.map((c) => [c.key, c.label] as const));
   const rows = toRoadmapRows(items);
@@ -169,13 +173,13 @@ export function roadmapToXlsx(
   const rows = toRoadmapRows(items);
   const env = envelopeFromMeta(items, meta);
   const esc = (v: string) =>
-    String(v)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
+    String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
   const metaRows = envelopeHeaderLines(env)
-    .map((line) => `<Row><Cell><Data ss:Type="String">${esc(line.replace(/^#\s*/, ""))}</Data></Cell></Row>`)
+    .map(
+      (line) =>
+        `<Row><Cell><Data ss:Type="String">${esc(line.replace(/^#\s*/, ""))}</Data></Cell></Row>`,
+    )
     .join("");
   const header = `<Row>${selected
     .map((key) => `<Cell><Data ss:Type="String">${esc(labels.get(key) ?? key)}</Data></Cell>`)
@@ -230,11 +234,21 @@ export async function roadmapToPdfBlob(
   }
   y += 8;
   pdf.setFont("helvetica", "bold");
-  pdf.text(selected.map((k) => labels.get(k) ?? k).join(" | ").slice(0, 140), margin, y);
+  pdf.text(
+    selected
+      .map((k) => labels.get(k) ?? k)
+      .join(" | ")
+      .slice(0, 140),
+    margin,
+    y,
+  );
   y += 14;
   pdf.setFont("helvetica", "normal");
   for (const row of rows) {
-    const line = selected.map((k) => String(row[k] ?? "")).join(" | ").slice(0, 160);
+    const line = selected
+      .map((k) => String(row[k] ?? ""))
+      .join(" | ")
+      .slice(0, 160);
     const wrapped = pdf.splitTextToSize(line, pageW - margin * 2);
     if (y + wrapped.length * 11 > pdf.internal.pageSize.getHeight() - margin) {
       pdf.addPage();

@@ -47,7 +47,10 @@ type AdminClient = (typeof import("@/integrations/supabase/client.server"))["sup
 
 /** Resolve a count=exact query to a plain number. */
 async function counted(
-  query: PromiseLike<{ count: number | null; error?: import("@supabase/supabase-js").PostgrestError | null }>,
+  query: PromiseLike<{
+    count: number | null;
+    error?: import("@supabase/supabase-js").PostgrestError | null;
+  }>,
 ): Promise<number> {
   const res = await query;
   if (res.error) {
@@ -202,7 +205,8 @@ export async function collectProductionData(input: {
   ]);
 
   if (signOffRows.error) throw new Error(`Failed to fetch sign-offs: ${signOffRows.error.message}`);
-  if (demoAccounts.error) throw new Error(`Failed to fetch demo accounts: ${demoAccounts.error.message}`);
+  if (demoAccounts.error)
+    throw new Error(`Failed to fetch demo accounts: ${demoAccounts.error.message}`);
 
   const signOffs: SignOffRecord[] = (signOffRows.data ?? []).map((row) => {
     const payload = (row.new_value ?? {}) as { by?: string; verdict?: string; note?: string };

@@ -200,7 +200,9 @@ for (const persona of PERSONAS) {
     if (error) throw error;
     userId = data.user.id;
   } else {
-    const { error } = await admin.auth.admin.updateUserById(userId, { password: passwordFor(persona) });
+    const { error } = await admin.auth.admin.updateUserById(userId, {
+      password: passwordFor(persona),
+    });
     if (error) throw error;
   }
   idByEmail.set(persona.email, userId);

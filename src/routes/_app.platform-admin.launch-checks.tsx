@@ -500,8 +500,7 @@ function BrowserSuitePanel({ stamp }: { stamp: string }) {
             variant="outline"
             disabled={!latest}
             onClick={() =>
-              latest &&
-              download(`browser-suite-${stamp}.csv`, "text/csv", browserRunToCsv(latest))
+              latest && download(`browser-suite-${stamp}.csv`, "text/csv", browserRunToCsv(latest))
             }
           >
             <Download className="mr-2 h-4 w-4" aria-hidden /> Latest run CSV

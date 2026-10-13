@@ -145,7 +145,10 @@ export const UNMAPPED_STATUS_VALUES: ReadonlyArray<{
   },
 ];
 
-export function mapStatus(domain: StatusDomain, raw: string | null | undefined): StatusMappingResult {
+export function mapStatus(
+  domain: StatusDomain,
+  raw: string | null | undefined,
+): StatusMappingResult {
   const source = (raw ?? "").trim();
   if (!source) {
     return { ok: false, canonical: null, domain, source: "", reason: "unmapped" };

@@ -17,10 +17,7 @@ export const DEMO_DISCLAIMER =
 export const DEMO_TEMPLATE_VERSION = "v1";
 
 export type DemoScenarioKey =
-  | "diversified-group"
-  | "financial-services"
-  | "manufacturing"
-  | "sme-professional-services";
+  "diversified-group" | "financial-services" | "manufacturing" | "sme-professional-services";
 
 export interface DemoOpportunitySpec {
   title: string;

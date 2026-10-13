@@ -62,10 +62,7 @@ export function domainAllowed(domain: string, allowed: string[]): boolean {
 export const ssoConfigInputSchema = z.object({
   protocol: z.enum(SSO_PROTOCOLS),
   enabled: z.boolean(),
-  allowedDomains: z
-    .array(z.string().trim().toLowerCase().min(3).max(253))
-    .min(1)
-    .max(50),
+  allowedDomains: z.array(z.string().trim().toLowerCase().min(3).max(253)).min(1).max(50),
   jitEnabled: z.boolean().default(true),
   defaultMemberRole: z.enum(SSO_DEFAULT_ROLES).default("viewer"),
   providerSlug: z.string().trim().min(1).max(120).nullable().optional(),

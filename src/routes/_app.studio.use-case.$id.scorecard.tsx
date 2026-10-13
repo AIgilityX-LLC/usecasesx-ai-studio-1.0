@@ -24,7 +24,9 @@ export const Route = createFileRoute("/_app/studio/use-case/$id/scorecard")({
   }),
   component: ScorecardPage,
   errorComponent: ({ error }) => (
-    <div className="container mx-auto px-4 py-12 text-center text-destructive">{(error as Error).message}</div>
+    <div className="container mx-auto px-4 py-12 text-center text-destructive">
+      {(error as Error).message}
+    </div>
   ),
 });
 

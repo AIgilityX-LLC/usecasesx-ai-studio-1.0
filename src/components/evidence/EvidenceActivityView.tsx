@@ -37,12 +37,8 @@ export function EvidenceActivityView({
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-medium">Evidence activity</h3>
-      {query.isLoading && (
-        <p className="text-xs text-muted-foreground">Loading activity…</p>
-      )}
-      {query.isError && (
-        <p className="text-xs text-muted-foreground">Activity unavailable.</p>
-      )}
+      {query.isLoading && <p className="text-xs text-muted-foreground">Loading activity…</p>}
+      {query.isError && <p className="text-xs text-muted-foreground">Activity unavailable.</p>}
       {!query.isLoading && rows.length === 0 && (
         <p className="text-xs text-muted-foreground">No evidence events yet.</p>
       )}

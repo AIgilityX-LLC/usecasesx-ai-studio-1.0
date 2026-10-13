@@ -43,12 +43,7 @@ export const REVIEW_CADENCE_LABELS: Record<ReviewCadence, string> = {
 
 /** Portfolio-specific decision. Never written back onto the use case itself. */
 export type PortfolioItemDecision =
-  | "under_review"
-  | "shortlisted"
-  | "approved"
-  | "deferred"
-  | "rejected"
-  | "delivered";
+  "under_review" | "shortlisted" | "approved" | "deferred" | "rejected" | "delivered";
 
 export const PORTFOLIO_ITEM_DECISIONS: PortfolioItemDecision[] = [
   "under_review",
@@ -152,12 +147,7 @@ export const DELIVERY_STAGE_DESCRIPTIONS: Record<DeliveryStage, string> = {
 
 /** Roadmap delivery status (FR-10) — distinct from portfolio decision. */
 export type RoadmapItemStatus =
-  | "planned"
-  | "in_progress"
-  | "blocked"
-  | "at_risk"
-  | "complete"
-  | "deferred";
+  "planned" | "in_progress" | "blocked" | "at_risk" | "complete" | "deferred";
 
 export const ROADMAP_ITEM_STATUSES: RoadmapItemStatus[] = [
   "planned",

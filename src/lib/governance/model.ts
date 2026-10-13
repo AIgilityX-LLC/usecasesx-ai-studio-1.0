@@ -18,12 +18,7 @@ export const GOVERNANCE_CONTENT_PACK_SOURCE =
 
 /* ------------------------------------------------------------------- facts */
 
-export const PROVIDER_DEPLOYER_POSTURES = [
-  "provider",
-  "deployer",
-  "both",
-  "undetermined",
-] as const;
+export const PROVIDER_DEPLOYER_POSTURES = ["provider", "deployer", "both", "undetermined"] as const;
 export type ProviderDeployerPosture = (typeof PROVIDER_DEPLOYER_POSTURES)[number];
 
 export const TRI_STATE = ["yes", "no", "not_determined"] as const;
@@ -307,14 +302,17 @@ export function mapFactsToThemes(facts: GovernanceFacts): MappedTheme[] {
       case "nist.govern":
       case "nist.map":
         applicability = hasPurpose || roleKnown ? "applicable" : "not_determined";
-        rationale = hasPurpose || roleKnown
-          ? "Purpose or role facts support mapping this function."
-          : rationale;
+        rationale =
+          hasPurpose || roleKnown
+            ? "Purpose or role facts support mapping this function."
+            : rationale;
         break;
       case "nist.measure":
       case "nist.manage":
         applicability =
-          hasPurpose || facts.highImpactDecisions === "yes" || facts.prohibitedUseIndicators === "yes"
+          hasPurpose ||
+          facts.highImpactDecisions === "yes" ||
+          facts.prohibitedUseIndicators === "yes"
             ? "applicable"
             : "not_determined";
         rationale =
@@ -341,8 +339,7 @@ export function mapFactsToThemes(facts: GovernanceFacts): MappedTheme[] {
         break;
       case "iso.supplier":
         applicability =
-          facts.providerDeployerPosture === "provider" ||
-          facts.providerDeployerPosture === "both"
+          facts.providerDeployerPosture === "provider" || facts.providerDeployerPosture === "both"
             ? "applicable"
             : roleKnown
               ? "not_applicable"
@@ -391,7 +388,9 @@ export function mapFactsToThemes(facts: GovernanceFacts): MappedTheme[] {
         break;
       case "owasp.prompt_injection":
         applicability = hasPurpose ? "applicable" : "not_determined";
-        rationale = hasPurpose ? "GenAI abuse themes apply when purpose involves AI systems." : rationale;
+        rationale = hasPurpose
+          ? "GenAI abuse themes apply when purpose involves AI systems."
+          : rationale;
         break;
       case "owasp.data_exposure":
         applicability = hasData
@@ -403,9 +402,7 @@ export function mapFactsToThemes(facts: GovernanceFacts): MappedTheme[] {
               : "not_determined";
         if (facts.biometrics === "yes") applicability = "applicable";
         rationale =
-          applicability === "applicable"
-            ? "Data categories or biometrics confirmed."
-            : rationale;
+          applicability === "applicable" ? "Data categories or biometrics confirmed." : rationale;
         break;
       case "owasp.oversight":
         applicability = tri(facts.highImpactDecisions, "applicable");

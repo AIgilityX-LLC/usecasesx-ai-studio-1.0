@@ -35,7 +35,9 @@ function arrayLiteral(name) {
 /** Sidebar targets come from the enterprise nav config (`to: "/…"`). */
 function enterpriseSidebarTargets() {
   const fromConfig = [...enterpriseNavSrc.matchAll(/\bto:\s*"(\/[^"]+)"/g)].map((m) => m[1]);
-  return [...new Set([...fromConfig, "/account", "/account/security", "/entitlement", "/account/data"])];
+  return [
+    ...new Set([...fromConfig, "/account", "/account/security", "/entitlement", "/account/data"]),
+  ];
 }
 
 /** Static command-palette destinations (`to: "/…"`). */

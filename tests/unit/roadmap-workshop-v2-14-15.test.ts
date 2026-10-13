@@ -3,10 +3,7 @@
  */
 
 import { describe, expect, test } from "bun:test";
-import {
-  buildExportEnvelope,
-  envelopeHeaderLines,
-} from "@/lib/roadmap/export-envelope";
+import { buildExportEnvelope, envelopeHeaderLines } from "@/lib/roadmap/export-envelope";
 import {
   briefCompleteness,
   emptyBriefDraft,
@@ -107,7 +104,12 @@ describe("V2-15 workshop clusters and anonymity", () => {
   test("proposeClusters groups similar titles and never auto-merges", () => {
     const proposals = proposeClusters([
       { id: "1", title: "Automate invoice matching", status: "submitted", kind: "opportunity" },
-      { id: "2", title: "Automate invoice match process", status: "submitted", kind: "opportunity" },
+      {
+        id: "2",
+        title: "Automate invoice match process",
+        status: "submitted",
+        kind: "opportunity",
+      },
       { id: "3", title: "Citizen chat assistant", status: "submitted", kind: "use_case" },
     ]);
     expect(proposals.length).toBeGreaterThanOrEqual(1);

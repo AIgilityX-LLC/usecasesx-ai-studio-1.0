@@ -12,8 +12,15 @@ export const getGovernancePreviewFn = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ useCaseId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { getGovernancePreview } = await import("./governance.server");
-    const { emptyGovernanceFacts, mapFactsToThemes, GOVERNANCE_DISCLAIMER, FRAMEWORK_META, GOVERNANCE_CONTENT_PACK_VERSION, GOVERNANCE_CONTENT_PACK_DATE, GOVERNANCE_CONTENT_PACK_SOURCE } =
-      await import("./model");
+    const {
+      emptyGovernanceFacts,
+      mapFactsToThemes,
+      GOVERNANCE_DISCLAIMER,
+      FRAMEWORK_META,
+      GOVERNANCE_CONTENT_PACK_VERSION,
+      GOVERNANCE_CONTENT_PACK_DATE,
+      GOVERNANCE_CONTENT_PACK_SOURCE,
+    } = await import("./model");
     const row = await getGovernancePreview(context.supabase, data.useCaseId);
     if (row) return row;
     const facts = emptyGovernanceFacts();

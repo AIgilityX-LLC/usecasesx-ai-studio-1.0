@@ -70,8 +70,8 @@ export function ReportsExportCenter() {
                 })}
               </ul>
               <p className="text-xs text-muted-foreground">
-                Open a live report below, generate it, then use Print / CSV on that page. Exports are
-                not fabricated here without a generated report.
+                Open a live report below, generate it, then use Print / CSV on that page. Exports
+                are not fabricated here without a generated report.
               </p>
             </CardContent>
           </Card>
@@ -82,7 +82,12 @@ export function ReportsExportCenter() {
             </CardHeader>
             <CardContent className="grid gap-3 sm:grid-cols-2">
               {openable.map((item) => (
-                <Button key={item.id} asChild variant="outline" className="justify-start h-auto py-3">
+                <Button
+                  key={item.id}
+                  asChild
+                  variant="outline"
+                  className="justify-start h-auto py-3"
+                >
                   <Link to="/reports/$slug" params={{ slug: item.slug }}>
                     <FileBarChart className="mr-2 h-4 w-4 shrink-0" aria-hidden />
                     <span className="text-left">

@@ -129,12 +129,7 @@ const AUTHOR_CORE: NavCapability[] = [
 
 /** Role → capability map (personas). Platform.manage is staff-only. */
 export const ROLE_CAPABILITY_MAP: Record<NavPersona, readonly NavCapability[]> = {
-  EXECUTIVE: [
-    ...READ_CORE,
-    "decision.read",
-    "analytics.read",
-    "report.generate",
-  ],
+  EXECUTIVE: [...READ_CORE, "decision.read", "analytics.read", "report.generate"],
   AI_LEADER: [
     ...AUTHOR_CORE,
     "opportunity.manage",

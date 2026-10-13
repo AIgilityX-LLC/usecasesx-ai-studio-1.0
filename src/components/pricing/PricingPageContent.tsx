@@ -449,10 +449,7 @@ export function PricingPageContent() {
         </div>
       </section>
 
-      <FoundingAccessRequestModal
-        open={waitlistOpen}
-        onClose={() => setWaitlistOpen(false)}
-      />
+      <FoundingAccessRequestModal open={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
     </>
   );
 }

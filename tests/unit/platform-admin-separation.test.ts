@@ -4,7 +4,10 @@ import {
   PLATFORM_ADMIN_REDIRECTS,
   collectPlatformAdminNavTargets,
 } from "@/lib/navigation/platform-admin-nav";
-import { ENTERPRISE_NAV_SECTIONS, collectEnterpriseNavTargets } from "@/lib/navigation/enterprise-nav";
+import {
+  ENTERPRISE_NAV_SECTIONS,
+  collectEnterpriseNavTargets,
+} from "@/lib/navigation/enterprise-nav";
 import { EXPECTED_REDIRECTS } from "@/lib/nav-integrity";
 import { capabilityForRoute, hasNavCapability } from "@/lib/authz/nav-capabilities";
 import { PLATFORM_ADMIN_ROLES } from "@/lib/admin/platform-admin";

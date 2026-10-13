@@ -28,8 +28,13 @@ export type TestUser = {
   fullName: string;
 };
 
+/** True when fixture suites can talk to a real backend with service role. */
+export function hasServiceRoleCredentials(): boolean {
+  return Boolean(SUPABASE_URL && SERVICE_KEY);
+}
+
 export function adminClient(): SupabaseClient {
-  if (!SUPABASE_URL || !SERVICE_KEY) {
+  if (!hasServiceRoleCredentials()) {
     throw new Error("SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY are required for the test fixtures");
   }
   return createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
@@ -184,6 +189,9 @@ export async function captureOpportunity(page: Page, name: string): Promise<stri
 
 export const test = base.extend<{ users: UserFactory }>({
   users: async ({}, use) => {
+    if (!hasServiceRoleCredentials()) {
+      base.skip(true, "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not configured");
+    }
     const factory = new UserFactory();
     await use(factory);
     await factory.cleanup();

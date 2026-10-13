@@ -8,13 +8,7 @@ const SCHEMA = path.join(ROOT, "docs/migration/full-schema.sql");
 function normalizeCols(raw) {
   return raw
     .split(",")
-    .map((s) =>
-      s
-        .trim()
-        .replace(/^"|"$/g, "")
-        .replace(/\s+/g, " ")
-        .toLowerCase(),
-    )
+    .map((s) => s.trim().replace(/^"|"$/g, "").replace(/\s+/g, " ").toLowerCase())
     .filter(Boolean)
     .join(",");
 }
@@ -38,9 +32,7 @@ function extractFromSql(sql, source) {
 
     // Strip nested parens content for crude line parsing of constraints is hard;
     // use regexes on body.
-    for (const cm of body.matchAll(
-      /^\s*([a-zA-Z0-9_]+)\s+[^,\n]*?\bUNIQUE\b/gim,
-    )) {
+    for (const cm of body.matchAll(/^\s*([a-zA-Z0-9_]+)\s+[^,\n]*?\bUNIQUE\b/gim)) {
       const col = cm[1].toLowerCase();
       // skip if this looks like a table-level UNIQUE line start somehow
       if (/^unique$/i.test(col)) continue;
@@ -69,9 +61,7 @@ function extractFromSql(sql, source) {
       });
     }
 
-    for (const pm of body.matchAll(
-      /^\s*([a-zA-Z0-9_]+)\s+[^,\n]*?\bPRIMARY\s+KEY\b/gim,
-    )) {
+    for (const pm of body.matchAll(/^\s*([a-zA-Z0-9_]+)\s+[^,\n]*?\bPRIMARY\s+KEY\b/gim)) {
       const col = pm[1].toLowerCase();
       add(pk, `${table}(${col})`, {
         kind: "col-PK",
@@ -135,16 +125,10 @@ function presentInSchema(schemaSql, key) {
     const m = schemaSql.match(re);
     if (!m) return { present: false, reason: "table-missing" };
     const body = m[1];
-    const colRe = new RegExp(
-      `^\\s*${col}\\s+[^,\\n]*?\\bUNIQUE\\b`,
-      "im",
-    );
+    const colRe = new RegExp(`^\\s*${col}\\s+[^,\\n]*?\\bUNIQUE\\b`, "im");
     if (colRe.test(body)) return { present: true, via: "col-UNIQUE" };
     // also UNIQUE (col) table-level
-    const tableUniq = new RegExp(
-      `\\bUNIQUE\\s*\\(\\s*${col}\\s*\\)`,
-      "i",
-    );
+    const tableUniq = new RegExp(`\\bUNIQUE\\s*\\(\\s*${col}\\s*\\)`, "i");
     if (tableUniq.test(body)) return { present: true, via: "table-UNIQUE" };
     // ALTER ADD CONSTRAINT UNIQUE (col)
     const alter = new RegExp(
@@ -235,10 +219,7 @@ for (const file of migFiles) {
 }
 
 const schemaSql = fs.readFileSync(SCHEMA, "utf8");
-const { unique: schemaUnique, pk: schemaPk } = extractFromSql(
-  schemaSql,
-  "full-schema.sql",
-);
+const { unique: schemaUnique, pk: schemaPk } = extractFromSql(schemaSql, "full-schema.sql");
 
 const missingUnique = [];
 const missingPk = [];
@@ -270,12 +251,8 @@ for (const key of [...migPk.keys()].sort()) {
 }
 
 // Also: schema uniques not in migrations (informational)
-const extraSchemaUnique = [...schemaUnique.keys()]
-  .filter((k) => !migUnique.has(k))
-  .sort();
-const extraSchemaPk = [...schemaPk.keys()]
-  .filter((k) => !migPk.has(k))
-  .sort();
+const extraSchemaUnique = [...schemaUnique.keys()].filter((k) => !migUnique.has(k)).sort();
+const extraSchemaPk = [...schemaPk.keys()].filter((k) => !migPk.has(k)).sort();
 
 console.log("Migration files scanned:", migFiles.length);
 console.log("Migration UNIQUE keys:", migUnique.size);

@@ -38,11 +38,7 @@ export const TRIAGE_CLASS_TONE: Record<
 };
 
 export type TriageSource =
-  | "pilot_checkpoint"
-  | "feedback"
-  | "ai_usage"
-  | "search"
-  | "security_alert";
+  "pilot_checkpoint" | "feedback" | "ai_usage" | "search" | "security_alert";
 
 export type TriageFinding = {
   /** Stable key so the same signal does not produce two findings. */

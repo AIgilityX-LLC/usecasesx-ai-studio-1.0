@@ -172,7 +172,13 @@ export const EvidenceCreateInput = z
     note: z.string().trim().min(1).max(4000).nullable().optional(),
     storagePath: z.string().trim().min(3).max(500).nullable().optional(),
     mimeType: z.string().trim().max(120).nullable().optional(),
-    sizeBytes: z.number().int().positive().max(50 * 1024 * 1024).nullable().optional(),
+    sizeBytes: z
+      .number()
+      .int()
+      .positive()
+      .max(50 * 1024 * 1024)
+      .nullable()
+      .optional(),
     source: z.string().trim().max(300).nullable().optional(),
     ownerLabel: z.string().trim().max(160).nullable().optional(),
     collectedAt: z.string().date().nullable().optional(),
@@ -192,7 +198,11 @@ export const EvidenceCreateInput = z
       ctx.addIssue({ code: "custom", message: "Link evidence requires a URL.", path: ["url"] });
     }
     if (val.kind === "note" && !val.note) {
-      ctx.addIssue({ code: "custom", message: "Note evidence requires note text.", path: ["note"] });
+      ctx.addIssue({
+        code: "custom",
+        message: "Note evidence requires note text.",
+        path: ["note"],
+      });
     }
     if (val.kind === "file" && !val.storagePath) {
       ctx.addIssue({

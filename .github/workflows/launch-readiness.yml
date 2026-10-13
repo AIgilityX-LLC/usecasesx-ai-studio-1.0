@@ -48,9 +48,12 @@ jobs:
           fi
       - name: Run integration suites (fails the build on any regression)
         if: steps.creds.outputs.available == 'true'
-        run: bun run test:integration 2>&1 | tee launch-e2e.log
+        run: |
+          set -o pipefail
+          bun run test:integration 2>&1 | tee launch-e2e.log
       - name: Upload integration evidence
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: evidence-integration
@@ -58,7 +61,7 @@ jobs:
             launch-e2e.log
             test-evidence/integration/**
             test-results/**
-          retention-days: 14
+          retention-days: 3
           if-no-files-found: ignore
 
   browser-p0-gate:
@@ -82,13 +85,37 @@ jobs:
         run: bunx playwright install --with-deps chromium
       - name: Prepare test-mode env
         run: node scripts/ci-test-env.mjs
-      - name: Run P0 browser journeys
-        run: bun run test:p0 2>&1 | tee playwright-p0.log
-      # Traces, screenshots, videos and the HTML report are configured in
-      # playwright.config.ts (retain-on-failure) so every failed gate ships
-      # reviewable evidence.
+      - name: Detect backend credentials
+        id: browser_creds
+        run: |
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::No service-role secrets — running UI-only P0 Playwright subset."
+          fi
+      - name: Run P0 browser journeys (full)
+        if: steps.browser_creds.outputs.available == 'true'
+        run: |
+          set -o pipefail
+          bun run test:p0 2>&1 | tee playwright-p0.log
+      - name: Run P0 browser journeys (UI-only)
+        if: steps.browser_creds.outputs.available != 'true'
+        run: |
+          set -o pipefail
+          bunx playwright test \
+            tests/navbar.spec.ts \
+            tests/browse-facets.spec.ts \
+            tests/seo-metadata.spec.ts \
+            tests/mobile-responsive.spec.ts \
+            tests/compare-analytics.spec.ts \
+            tests/anonymous-access-sweep.spec.ts \
+            --project=chromium \
+            2>&1 | tee playwright-p0.log
+      # Soft-fail uploads when Actions artifact quota is full.
       - name: Upload browser evidence (report, screenshots, videos, traces)
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: evidence-browser-p0
@@ -96,5 +123,5 @@ jobs:
             playwright-p0.log
             playwright-report/**
             test-results/**
-          retention-days: 14
+          retention-days: 3
           if-no-files-found: ignore

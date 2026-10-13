@@ -119,7 +119,8 @@ for (const demo of DEMOS) {
     page,
   }) => {
     test.setTimeout(90_000);
-    if (!SUPABASE_URL || !SUPABASE_KEY || !DEMO_PASSWORD) test.skip(true, "Supabase env or DEMO_PERSONA_PASSWORD not set");
+    if (!SUPABASE_URL || !SUPABASE_KEY || !DEMO_PASSWORD)
+      test.skip(true, "Supabase env or DEMO_PERSONA_PASSWORD not set");
 
     const session = await mintSession(demo.email, demo.password);
     expect(session.access_token, "session minted").toBeTruthy();

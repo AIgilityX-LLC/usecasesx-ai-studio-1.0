@@ -231,9 +231,7 @@ export function computeSla(
     dueAt: due.toISOString(),
     hoursRemaining,
     overdue,
-    label: overdue
-      ? `Overdue by ${Math.abs(hoursRemaining)}h`
-      : `${hoursRemaining}h remaining`,
+    label: overdue ? `Overdue by ${Math.abs(hoursRemaining)}h` : `${hoursRemaining}h remaining`,
   };
 }
 
@@ -251,10 +249,7 @@ export type MissingInput = {
  * Deterministic gap check used as the default "AI may identify missing inputs"
  * surface. Never mutates review state; never approves or closes conditions.
  */
-export function identifyMissingInputs(
-  gate: GateDefinition,
-  fields: FieldPresence,
-): MissingInput[] {
+export function identifyMissingInputs(gate: GateDefinition, fields: FieldPresence): MissingInput[] {
   const out: MissingInput[] = [];
   for (const field of gate.requiredFields) {
     const v = fields[field];
@@ -295,9 +290,7 @@ export function assertReadyToSubmit(
 
 export class AiMayNotDecideError extends Error {
   constructor(action: GateAction) {
-    super(
-      `AI cannot ${action.replace(/_/g, " ")} a decision gate. A human reviewer must act.`,
-    );
+    super(`AI cannot ${action.replace(/_/g, " ")} a decision gate. A human reviewer must act.`);
     this.name = "AiMayNotDecideError";
   }
 }
@@ -349,13 +342,7 @@ export const changeRequestInputSchema = z.object({
 
 export const decideGateInputSchema = z.object({
   reviewId: z.string().uuid(),
-  action: z.enum([
-    "request_changes",
-    "approve_with_conditions",
-    "approve",
-    "hold",
-    "reject",
-  ]),
+  action: z.enum(["request_changes", "approve_with_conditions", "approve", "hold", "reject"]),
   rationale: z.string().trim().min(1).max(4000),
   conditions: z.array(z.string().trim().min(1).max(2000)).max(20).optional(),
   changeRequests: z.array(changeRequestInputSchema).max(40).optional(),

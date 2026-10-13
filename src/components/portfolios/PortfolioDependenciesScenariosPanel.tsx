@@ -132,7 +132,7 @@ export function PortfolioDependenciesScenariosPanel({
           label:
             label.trim() ||
             (depType === "prerequisite_use_case"
-              ? titleById[toId] ?? "Prerequisite"
+              ? (titleById[toId] ?? "Prerequisite")
               : DEPENDENCY_TYPE_LABEL[depType]),
           notes: null,
         },
@@ -195,10 +195,7 @@ export function PortfolioDependenciesScenariosPanel({
                 </div>
                 <div className="space-y-1">
                   <Label>Type</Label>
-                  <Select
-                    value={depType}
-                    onValueChange={(v) => setDepType(v as DependencyType)}
-                  >
+                  <Select value={depType} onValueChange={(v) => setDepType(v as DependencyType)}>
                     <SelectTrigger aria-label="Dependency type">
                       <SelectValue />
                     </SelectTrigger>
@@ -271,9 +268,7 @@ export function PortfolioDependenciesScenariosPanel({
                       <Badge variant="secondary" className="mr-1">
                         {DEPENDENCY_TYPE_LABEL[d.dependencyType]}
                       </Badge>
-                      {d.toUseCaseId
-                        ? (titleById[d.toUseCaseId] ?? d.label)
-                        : d.label}
+                      {d.toUseCaseId ? (titleById[d.toUseCaseId] ?? d.label) : d.label}
                     </span>
                     {canManage && (
                       <Button
@@ -442,7 +437,10 @@ export function PortfolioDependenciesScenariosPanel({
             ) : (
               <ul className="space-y-2">
                 {insights.map((ins, i) => (
-                  <li key={`${ins.kind}-${i}`} className="rounded-md border border-border p-3 text-sm">
+                  <li
+                    key={`${ins.kind}-${i}`}
+                    className="rounded-md border border-border p-3 text-sm"
+                  >
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge variant="outline">{ins.kind.replaceAll("_", " ")}</Badge>
                       <span className="font-medium">{ins.title}</span>

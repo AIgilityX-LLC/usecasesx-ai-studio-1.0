@@ -38,12 +38,7 @@ export type LegalSection = {
 };
 
 export type LegalDocumentKey =
-  | "terms"
-  | "privacy"
-  | "acceptable-use"
-  | "ai-notice"
-  | "founding-access-terms"
-  | "data-rights";
+  "terms" | "privacy" | "acceptable-use" | "ai-notice" | "founding-access-terms" | "data-rights";
 
 export type LegalDocument = {
   key: LegalDocumentKey;

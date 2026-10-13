@@ -33,8 +33,7 @@ async function fetchVisiblePortfolios(
     ? rows.filter((r) => r.workspace_id === activeWorkspaceId)
     : rows;
   const ownerIds = Array.from(new Set(scoped.map((r) => r.user_id).filter(Boolean)));
-  const workspaceId =
-    activeWorkspaceId ?? scoped.find((r) => r.workspace_id)?.workspace_id ?? null;
+  const workspaceId = activeWorkspaceId ?? scoped.find((r) => r.workspace_id)?.workspace_id ?? null;
 
   const names = new Map<string, string>();
   if (workspaceId && ownerIds.length > 0) {

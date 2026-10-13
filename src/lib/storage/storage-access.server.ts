@@ -13,8 +13,7 @@ import { EVIDENCE_BUCKET } from "@/lib/storage/buckets";
 import { parseEvidencePath, signedUrlTtl } from "@/lib/storage/storage-policy";
 
 export type SignedUrlResult =
-  | { ok: true; url: string; expiresInSeconds: number }
-  | { ok: false; reason: string };
+  { ok: true; url: string; expiresInSeconds: number } | { ok: false; reason: string };
 
 /**
  * Issue a short-lived URL for an evidence object.

@@ -7,10 +7,7 @@
 
 import type { AiTask } from "./prompts";
 import type { ProviderAlias } from "./models";
-import {
-  AI_CONFIDENCE_CAVEAT,
-  TRAINING_POLICY,
-} from "./feedback";
+import { AI_CONFIDENCE_CAVEAT, TRAINING_POLICY } from "./feedback";
 
 export type AiErrorKind =
   | "not_configured"

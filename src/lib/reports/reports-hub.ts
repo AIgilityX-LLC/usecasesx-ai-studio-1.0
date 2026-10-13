@@ -54,8 +54,7 @@ export const REPORTS_HUB_ITEMS: readonly ReportHubItem[] = [
     id: "executive-summary",
     slug: "executive-summary",
     label: "Executive Summary",
-    summary:
-      "Department-oriented summary of selected AI use cases for leadership briefings.",
+    summary: "Department-oriented summary of selected AI use cases for leadership briefings.",
     audience: "Executives, AI leaders, department sponsors",
     capability: "report.read",
     generateCapability: "report.generate",

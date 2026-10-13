@@ -155,10 +155,7 @@ export async function listFoundingAccessRequests(
   return (data ?? []) as FoundingAccessRequestRow[];
 }
 
-async function findAuthUserIdByEmail(
-  admin: AdminClient,
-  email: string,
-): Promise<string | null> {
+async function findAuthUserIdByEmail(admin: AdminClient, email: string): Promise<string | null> {
   // Paginate lightly — founding queue volume is low.
   for (let page = 1; page <= 5; page++) {
     const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 200 });

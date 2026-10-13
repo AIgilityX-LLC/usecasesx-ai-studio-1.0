@@ -9,13 +9,7 @@
 import type { WorkspaceRole } from "./roles";
 
 export type ScopedPermission =
-  | "view"
-  | "edit"
-  | "submit"
-  | "review"
-  | "decide"
-  | "export"
-  | "admin";
+  "view" | "edit" | "submit" | "review" | "decide" | "export" | "admin";
 
 export const SCOPED_PERMISSIONS: ScopedPermission[] = [
   "view",
@@ -64,10 +58,7 @@ export const ROLE_SCOPED_PERMISSIONS: Record<WorkspaceRole, readonly ScopedPermi
  * Enterprise bundles. Reviewers get review (+ decide for executive);
  * managers get portfolio/content edit paths without full workspace admin.
  */
-export const BUNDLE_SCOPED_PERMISSIONS: Record<
-  PermissionBundleId,
-  readonly ScopedPermission[]
-> = {
+export const BUNDLE_SCOPED_PERMISSIONS: Record<PermissionBundleId, readonly ScopedPermission[]> = {
   executive_reviewer: ["view", "review", "decide", "export"],
   technical_reviewer: ["view", "review", "export"],
   risk_reviewer: ["view", "review", "export"],

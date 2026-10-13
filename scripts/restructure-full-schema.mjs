@@ -189,7 +189,10 @@ function parseCreateTable(stmt) {
   const fks = [];
   const refs = []; // referenced tables for topo sort
   for (const p of parts) {
-    if (/^(CONSTRAINT\s+\S+\s+)?FOREIGN\s+KEY\b/i.test(p) || /\bREFERENCES\b/i.test(p) && /^CONSTRAINT\b/i.test(p)) {
+    if (
+      /^(CONSTRAINT\s+\S+\s+)?FOREIGN\s+KEY\b/i.test(p) ||
+      (/\bREFERENCES\b/i.test(p) && /^CONSTRAINT\b/i.test(p))
+    ) {
       // table-level FK
       const fk = p.replace(/,+\s*$/, "").trim();
       fks.push(fk);
@@ -198,7 +201,12 @@ function parseCreateTable(stmt) {
       continue;
     }
     // Column-level REFERENCES (rare in our file - we use CONSTRAINT form)
-    if (/\bREFERENCES\s+public\./i.test(p) && !/^PRIMARY\s+KEY\b/i.test(p) && !/^UNIQUE\b/i.test(p) && !/^CHECK\b/i.test(p)) {
+    if (
+      /\bREFERENCES\s+public\./i.test(p) &&
+      !/^PRIMARY\s+KEY\b/i.test(p) &&
+      !/^UNIQUE\b/i.test(p) &&
+      !/^CHECK\b/i.test(p)
+    ) {
       // Split into column def without REFERENCES + FK constraint
       const colMatch = p.match(
         /^([a-z0-9_]+)\s+([\s\S]*?)\s+REFERENCES\s+(public\.[a-z0-9_]+)\s*\(([^)]+)\)([\s\S]*)$/i,
@@ -286,9 +294,7 @@ const orderedTables = topoSort(tables, deps);
 // Generate DROP FUNCTION from CREATE FUNCTION signatures
 function functionDropFromCreate(stmt) {
   // CREATE OR REPLACE FUNCTION public.name(args...)
-  const m = stmt.match(
-    /^CREATE\s+(?:OR\s+REPLACE\s+)?FUNCTION\s+(public\.[a-z0-9_]+)\s*\(/i,
-  );
+  const m = stmt.match(/^CREATE\s+(?:OR\s+REPLACE\s+)?FUNCTION\s+(public\.[a-z0-9_]+)\s*\(/i);
   if (!m) return null;
   const name = m[1];
   // Extract argument types only for DROP FUNCTION name(type, type)
@@ -331,16 +337,15 @@ function functionDropFromCreate(stmt) {
       s = s.replace(/\s+DEFAULT\s+[\s\S]*$/i, "").trim();
       // remove arg name (first identifier) if followed by type
       const parts = s.split(/\s+/);
-      if (parts.length >= 2 && !/^(public\.|[a-z_]+\.)?[a-z0-9_]+(\[\])?$/i.test(parts[0]) === false) {
+      if (
+        parts.length >= 2 &&
+        !/^(public\.|[a-z_]+\.)?[a-z0-9_]+(\[\])?$/i.test(parts[0]) === false
+      ) {
         // If first token looks like a name and second like a type, drop name
         // Heuristic: types often contain (), [], or are known keywords / schema.qualified
         const maybeName = parts[0];
         const rest = parts.slice(1).join(" ");
-        if (
-          /^[a-z_][a-z0-9_]*$/i.test(maybeName) &&
-          rest &&
-          !/^(DEFAULT)$/i.test(rest)
-        ) {
+        if (/^[a-z_][a-z0-9_]*$/i.test(maybeName) && rest && !/^(DEFAULT)$/i.test(rest)) {
           return rest.replace(/\s*=\s*[\s\S]*$/, "").trim();
         }
       }
@@ -389,9 +394,7 @@ function triggerDropCreate(stmt) {
 
 // Views: DROP VIEW IF EXISTS before CREATE
 function viewDropCreate(stmt) {
-  const m = stmt.match(
-    /^CREATE\s+(?:OR\s+REPLACE\s+)?VIEW\s+(public\.[a-z0-9_]+)/i,
-  );
+  const m = stmt.match(/^CREATE\s+(?:OR\s+REPLACE\s+)?VIEW\s+(public\.[a-z0-9_]+)/i);
   if (!m) return [stmt];
   const create = stmt.replace(/^CREATE\s+VIEW\b/i, "CREATE OR REPLACE VIEW");
   return [`DROP VIEW IF EXISTS ${m[1]} CASCADE;`, create];
@@ -460,9 +463,8 @@ const createTypes = dedupeKeepOrder(buckets.create_type, (s) =>
 
 // Ensure DROP TYPE exists for every CREATE TYPE
 const dropTypeNames = new Set(
-  dropTypes.map(
-    (s) =>
-      (s.match(/DROP\s+TYPE\s+IF\s+EXISTS\s+(public\.[a-z0-9_]+)/i) || [])[1]?.toLowerCase(),
+  dropTypes.map((s) =>
+    (s.match(/DROP\s+TYPE\s+IF\s+EXISTS\s+(public\.[a-z0-9_]+)/i) || [])[1]?.toLowerCase(),
   ),
 );
 for (const ct of createTypes) {
@@ -488,7 +490,14 @@ for (const t of orderedTables) {
       clause = `CONSTRAINT ${t.name.replace("public.", "")}_fkey ${clause}`;
     }
     fkAlters.push(
-      `ALTER TABLE ${t.name} ADD CONSTRAINT ${clause.replace(/^CONSTRAINT\s+/i, "").replace(/^([a-z0-9_]+)\s+/i, (_, n) => `${n} `).includes("FOREIGN") ? "" : ""}`.length > 0
+      `ALTER TABLE ${t.name} ADD CONSTRAINT ${
+        clause
+          .replace(/^CONSTRAINT\s+/i, "")
+          .replace(/^([a-z0-9_]+)\s+/i, (_, n) => `${n} `)
+          .includes("FOREIGN")
+          ? ""
+          : ""
+      }`.length > 0
         ? `ALTER TABLE ${t.name} ADD ${clause};`
         : `ALTER TABLE ${t.name} ADD ${clause};`,
     );
@@ -515,11 +524,13 @@ const policiesLatest = [];
   for (const v of map.values()) policiesLatest.push(v);
 }
 // DROP POLICY for each create
-const policyDrops = policiesLatest.map((p) => {
-  const m = p.match(/POLICY\s+"([^"]+)"\s+ON\s+(public\.[a-z0-9_]+|storage\.[a-z0-9_]+)/i);
-  if (!m) return null;
-  return `DROP POLICY IF EXISTS "${m[1]}" ON ${m[2]};`;
-}).filter(Boolean);
+const policyDrops = policiesLatest
+  .map((p) => {
+    const m = p.match(/POLICY\s+"([^"]+)"\s+ON\s+(public\.[a-z0-9_]+|storage\.[a-z0-9_]+)/i);
+    if (!m) return null;
+    return `DROP POLICY IF EXISTS "${m[1]}" ON ${m[2]};`;
+  })
+  .filter(Boolean);
 
 // GRANT/REVOKE chronological: grants then... user wants phase 10 all GRANT/REVOKE
 // Keep original order from file: buckets.grant and buckets.revoke were separated.
@@ -539,9 +550,8 @@ const rls = dedupeKeepOrder(buckets.enable_rls, (s) =>
 );
 // Ensure every table has RLS enable
 const rlsTables = new Set(
-  rls.map(
-    (s) =>
-      (s.match(/ALTER\s+TABLE\s+(?:IF\s+EXISTS\s+)?(public\.[a-z0-9_]+)/i) || [])[1]?.toLowerCase(),
+  rls.map((s) =>
+    (s.match(/ALTER\s+TABLE\s+(?:IF\s+EXISTS\s+)?(public\.[a-z0-9_]+)/i) || [])[1]?.toLowerCase(),
   ),
 );
 for (const t of orderedTables) {
@@ -579,7 +589,9 @@ w(`-- Phase 11: Storage bucket creation`);
 w(`--`);
 w(`-- DOCUMENTATION ARTIFACT ONLY - do not execute blindly against a live DB.`);
 w(`-- Generated: ${new Date().toISOString().slice(0, 10)}`);
-w(`-- Tables: ${orderedTables.length} | Enums: ${createTypes.length} | Functions: ${functions.length}`);
+w(
+  `-- Tables: ${orderedTables.length} | Enums: ${createTypes.length} | Functions: ${functions.length}`,
+);
 w(`-- =============================================================================`);
 
 section("Extensions");

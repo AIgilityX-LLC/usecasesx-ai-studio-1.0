@@ -45,8 +45,20 @@ export const FIVE_PILLAR_SCORECARD: ScorecardDefinition = {
       intent: "Whether users and stakeholders want this outcome.",
       weight: 20,
       criteria: [
-        c("des_user_need", "Clear user or citizen need", 3, EXTENT, "Problem is felt by a named group."),
-        c("des_demand", "Demand / willingness to adopt", 2, EXTENT, "Signals that adoption is likely."),
+        c(
+          "des_user_need",
+          "Clear user or citizen need",
+          3,
+          EXTENT,
+          "Problem is felt by a named group.",
+        ),
+        c(
+          "des_demand",
+          "Demand / willingness to adopt",
+          2,
+          EXTENT,
+          "Signals that adoption is likely.",
+        ),
         c(
           "des_experience",
           "Experience improvement",
@@ -63,7 +75,13 @@ export const FIVE_PILLAR_SCORECARD: ScorecardDefinition = {
       weight: 20,
       criteria: [
         c("via_funding", "Funding / budget path", 3, EXTENT, "A realistic funding source exists."),
-        c("via_sponsor", "Sustained sponsorship", 2, EXTENT, "Sponsor will stay engaged past pilot."),
+        c(
+          "via_sponsor",
+          "Sustained sponsorship",
+          2,
+          EXTENT,
+          "Sponsor will stay engaged past pilot.",
+        ),
         c(
           "via_ops",
           "Operating model fit",
@@ -76,12 +94,31 @@ export const FIVE_PILLAR_SCORECARD: ScorecardDefinition = {
     {
       id: "feasibility",
       label: "Feasibility",
-      intent: "Whether the solution can realistically be built and run with available data and skills.",
+      intent:
+        "Whether the solution can realistically be built and run with available data and skills.",
       weight: 20,
       criteria: [
-        c("fea_technique", "Technique maturity", 3, EXTENT, "Proven approach versus research novelty."),
-        c("fea_data", "Data availability", 3, CONFIDENCE, "Required data is obtainable and usable."),
-        c("fea_skills", "Skills and capacity", 2, EXTENT, "Delivery capacity exists or can be hired."),
+        c(
+          "fea_technique",
+          "Technique maturity",
+          3,
+          EXTENT,
+          "Proven approach versus research novelty.",
+        ),
+        c(
+          "fea_data",
+          "Data availability",
+          3,
+          CONFIDENCE,
+          "Required data is obtainable and usable.",
+        ),
+        c(
+          "fea_skills",
+          "Skills and capacity",
+          2,
+          EXTENT,
+          "Delivery capacity exists or can be hired.",
+        ),
       ],
     },
     {
@@ -121,8 +158,20 @@ export const FIVE_PILLAR_SCORECARD: ScorecardDefinition = {
       intent: "How much measurable value this use case creates if it succeeds.",
       weight: 20,
       criteria: [
-        c("val_size", "Size of the benefit", 3, EXTENT, "Scale of cost, revenue or public-value improvement."),
-        c("val_evidence", "Evidence for the benefit", 2, CONFIDENCE, "Benefit is quantified and sourced."),
+        c(
+          "val_size",
+          "Size of the benefit",
+          3,
+          EXTENT,
+          "Scale of cost, revenue or public-value improvement.",
+        ),
+        c(
+          "val_evidence",
+          "Evidence for the benefit",
+          2,
+          CONFIDENCE,
+          "Benefit is quantified and sourced.",
+        ),
         c("val_kpis", "Measurable KPIs", 2, EXTENT, "Success can be proven with metrics."),
       ],
     },

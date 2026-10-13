@@ -125,8 +125,7 @@ export const OWASP_GENAI_PROMPTS: readonly OwaspPrompt[] = [
   {
     id: "excessive_agency",
     theme: "Excessive agency",
-    prompt:
-      "What actions can the system take without a human, and how are those actions bounded?",
+    prompt: "What actions can the system take without a human, and how are those actions bounded?",
     disclaimer: "Informational readiness prompt — not a compliance determination.",
   },
   {
@@ -153,15 +152,13 @@ export const OWASP_GENAI_PROMPTS: readonly OwaspPrompt[] = [
   {
     id: "denial_cost_abuse",
     theme: "Denial of service / cost abuse",
-    prompt:
-      "How could runaway prompts, loops or tool calls create cost or availability abuse?",
+    prompt: "How could runaway prompts, loops or tool calls create cost or availability abuse?",
     disclaimer: "Informational readiness prompt — not a compliance determination.",
   },
   {
     id: "unbounded_consumption",
     theme: "Unbounded consumption",
-    prompt:
-      "What rate limits, token budgets and recursion caps prevent unbounded resource use?",
+    prompt: "What rate limits, token budgets and recursion caps prevent unbounded resource use?",
     disclaimer: "Informational readiness prompt — not a compliance determination.",
   },
 ] as const;
@@ -260,16 +257,28 @@ export const solutionDesignDraftSchema = z.object({
   killSwitch: trimmed(4000).optional().default(""),
   observability: trimmed(4000).optional().default(""),
   fallback: trimmed(4000).optional().default(""),
-  fieldMeta: z.record(z.string(), z.object({
-    status: z.enum(FIELD_STATUSES),
-    note: z.string().trim().max(500).nullable().optional(),
-    source: z.string().trim().max(200).nullable().optional(),
-  })).optional().default({}),
-  owaspResponses: z.record(z.string(), z.object({
-    response: trimmed(4000),
-    status: z.enum(FIELD_STATUSES),
-    reviewedAt: z.string().nullable().optional(),
-  })).optional().default({}),
+  fieldMeta: z
+    .record(
+      z.string(),
+      z.object({
+        status: z.enum(FIELD_STATUSES),
+        note: z.string().trim().max(500).nullable().optional(),
+        source: z.string().trim().max(200).nullable().optional(),
+      }),
+    )
+    .optional()
+    .default({}),
+  owaspResponses: z
+    .record(
+      z.string(),
+      z.object({
+        response: trimmed(4000),
+        status: z.enum(FIELD_STATUSES),
+        reviewedAt: z.string().nullable().optional(),
+      }),
+    )
+    .optional()
+    .default({}),
 });
 
 /* ----------------------------------------------- pilot authorization */
@@ -414,11 +423,7 @@ function displayValue(draft: SolutionDesignDraft, key: keyof SolutionDesignDraft
   return null;
 }
 
-function statusFor(
-  draft: SolutionDesignDraft,
-  key: string,
-  value: string | null,
-): FieldStatus {
+function statusFor(draft: SolutionDesignDraft, key: string, value: string | null): FieldStatus {
   const meta = draft.fieldMeta[key];
   if (meta?.status === "ai_draft") return "ai_draft";
   if (meta?.status === "confirmed" && value) return "confirmed";

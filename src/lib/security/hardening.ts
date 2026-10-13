@@ -42,18 +42,25 @@ export function withSecurityHeaders(response: Response, opts?: { html?: boolean 
  * `*` is only allowed when `PUBLIC_API_CORS_ORIGINS` is unset or equals `*`.
  * Otherwise the Origin must be on the allow-list.
  */
-export function publicCorsHeaders(request: Request, methods = "GET, OPTIONS"): Record<string, string> {
+export function publicCorsHeaders(
+  request: Request,
+  methods = "GET, OPTIONS",
+): Record<string, string> {
   const configured = (process.env["PUBLIC_API_CORS_ORIGINS"] ?? "*").trim();
   const origin = request.headers.get("Origin");
   let allowOrigin = "*";
   if (configured !== "*") {
-    const list = configured.split(",").map((s) => s.trim()).filter(Boolean);
-    allowOrigin = origin && list.includes(origin) ? origin : list[0] ?? "null";
+    const list = configured
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    allowOrigin = origin && list.includes(origin) ? origin : (list[0] ?? "null");
   }
   return {
     "Access-Control-Allow-Origin": allowOrigin,
     "Access-Control-Allow-Methods": methods,
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Request-Id, X-Webhook-Timestamp, X-Webhook-Id",
+    "Access-Control-Allow-Headers":
+      "Content-Type, Authorization, X-Request-Id, X-Webhook-Timestamp, X-Webhook-Id",
     Vary: "Origin",
   };
 }

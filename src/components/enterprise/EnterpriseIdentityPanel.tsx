@@ -30,7 +30,11 @@ import {
   grantSupportAccessFn,
   revokeSupportAccessFn,
 } from "@/lib/enterprise/enterprise.functions";
-import { DATA_REGIONS, DATA_REGION_LABEL, AI_PROVIDER_ROUTES } from "@/lib/enterprise/tenant-policy";
+import {
+  DATA_REGIONS,
+  DATA_REGION_LABEL,
+  AI_PROVIDER_ROUTES,
+} from "@/lib/enterprise/tenant-policy";
 import { SCIM_STATUS } from "@/lib/enterprise/sso";
 import { IMPERSONATION_PROHIBITED } from "@/lib/enterprise/support-access";
 import { CLIENT_CAPABILITY_FLAGS } from "@/lib/feature-flags";
@@ -205,10 +209,15 @@ export function EnterpriseIdentityPanel() {
               placeholder={AI_PROVIDER_ROUTES.join(", ")}
             />
             <p className="text-xs text-muted-foreground">
-              Comma-separated allow-list. Declared region does not move infrastructure automatically.
+              Comma-separated allow-list. Declared region does not move infrastructure
+              automatically.
             </p>
           </div>
-          <Button size="sm" onClick={() => savePolicyMut.mutate()} disabled={savePolicyMut.isPending}>
+          <Button
+            size="sm"
+            onClick={() => savePolicyMut.mutate()}
+            disabled={savePolicyMut.isPending}
+          >
             Save policy
           </Button>
         </CardContent>
@@ -235,10 +244,7 @@ export function EnterpriseIdentityPanel() {
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Protocol</Label>
-                  <Select
-                    value={protocol}
-                    onValueChange={(v) => setProtocol(v as "oidc" | "saml")}
-                  >
+                  <Select value={protocol} onValueChange={(v) => setProtocol(v as "oidc" | "saml")}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>

@@ -38,9 +38,12 @@ jobs:
       - name: Install Playwright browsers
         run: bunx playwright install --with-deps chromium
       - name: Run navbar + hero-tone Playwright suite
-        run: bun run test:navbar 2>&1 | tee navbar-run.log
+        run: |
+          set -o pipefail
+          bun run test:navbar 2>&1 | tee navbar-run.log
       - name: Upload Playwright diagnostics
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: navbar-playwright-diagnostics
@@ -48,5 +51,5 @@ jobs:
             playwright-report/**
             test-results/**
             navbar-run.log
-          retention-days: 7
+          retention-days: 3
           if-no-files-found: ignore

@@ -6,10 +6,7 @@ import { createFileRoute, Navigate, Outlet, useChildMatches } from "@tanstack/re
  */
 export const Route = createFileRoute("/_app/administration")({
   head: () => ({
-    meta: [
-      { title: "Redirecting…" },
-      { name: "robots", content: "noindex, nofollow" },
-    ],
+    meta: [{ title: "Redirecting…" }, { name: "robots", content: "noindex, nofollow" }],
   }),
   component: AdministrationCompat,
 });

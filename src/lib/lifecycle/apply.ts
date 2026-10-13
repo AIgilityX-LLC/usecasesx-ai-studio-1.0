@@ -10,11 +10,7 @@ import {
   type PermissionSubject,
   type ScopedPermission,
 } from "@/lib/authz/scoped-permissions";
-import {
-  assertTransition,
-  MissingPermissionError,
-  permissionForTransition,
-} from "./transitions";
+import { assertTransition, MissingPermissionError, permissionForTransition } from "./transitions";
 import type { CanonicalState } from "./states";
 import { lifecycleTransitionAuditInput, permissionSensitiveAuditInput } from "./audit";
 import type { AuditEventInput } from "@/lib/telemetry/events";

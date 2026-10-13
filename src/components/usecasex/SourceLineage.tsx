@@ -1,9 +1,6 @@
 import { BadgeCheck, Users, Bot, Building2 } from "lucide-react";
 import { EvidenceClassBadge } from "@/components/usecasex/EvidenceClassBadge";
-import {
-  EVIDENCE_CLASS_DISCLAIMER,
-  type EvidenceClass,
-} from "@/lib/content-governance/model";
+import { EVIDENCE_CLASS_DISCLAIMER, type EvidenceClass } from "@/lib/content-governance/model";
 
 export type LineageKind = "curated" | "community" | "workspace" | "ai_generated";
 

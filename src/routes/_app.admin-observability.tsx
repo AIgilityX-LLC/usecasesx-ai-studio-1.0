@@ -40,10 +40,7 @@ export const Route = createFileRoute("/_app/admin-observability")({
     ],
   }),
   component: () => (
-    <RequireCapability
-      capability="workspace.manage"
-      action="view export and AI activity trails"
-    >
+    <RequireCapability capability="workspace.manage" action="view export and AI activity trails">
       <Observability />
     </RequireCapability>
   ),

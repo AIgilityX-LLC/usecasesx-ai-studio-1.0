@@ -13,10 +13,7 @@ import {
 } from "./model";
 import { AUDIT_EVENTS } from "@/lib/telemetry/events";
 import { writeAuditEvent } from "@/lib/telemetry/recorder.server";
-import {
-  parseEvidenceItemsPath,
-  signedUrlTtl,
-} from "@/lib/storage/storage-policy";
+import { parseEvidenceItemsPath, signedUrlTtl } from "@/lib/storage/storage-policy";
 import { EVIDENCE_ITEMS_BUCKET } from "@/lib/storage/buckets";
 
 type Client = SupabaseClient<any, any, any>;
@@ -72,7 +69,7 @@ export async function createEvidenceItem(
       kind: input.kind,
       label: input.label,
       url: input.kind === "link" ? input.url : null,
-      note: input.kind === "note" ? input.note : input.note ?? null,
+      note: input.kind === "note" ? input.note : (input.note ?? null),
       storage_path: input.kind === "file" ? input.storagePath : null,
       mime_type: input.mimeType ?? null,
       size_bytes: input.sizeBytes ?? null,
@@ -139,8 +136,7 @@ export async function setEvidenceStatus(
       tenant: { organizationId: item.organizationId, workspaceId: item.workspaceId },
     },
     {
-      event:
-        status === "revoked" ? AUDIT_EVENTS.evidenceRevoked : AUDIT_EVENTS.evidenceUpdated,
+      event: status === "revoked" ? AUDIT_EVENTS.evidenceRevoked : AUDIT_EVENTS.evidenceUpdated,
       entity: { type: "evidence_item", id: item.id },
       next: evidenceAuditMetadata(item),
       severity: status === "conflict" || status === "revoked" ? "warning" : "notice",

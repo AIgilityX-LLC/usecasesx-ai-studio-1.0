@@ -116,11 +116,12 @@ export function GovernanceReadinessPanel({ useCaseId }: Props) {
   const set = <K extends keyof GovernanceFacts>(key: K, value: GovernanceFacts[K]) =>
     setFacts((prev) => (prev ? { ...prev, [key]: value } : prev));
 
-  const byFramework = (FRAMEWORK_META &&
-    Object.keys(FRAMEWORK_META).map((fid) => ({
-      id: fid as keyof typeof FRAMEWORK_META,
-      themes: mappings.filter((m) => m.framework === fid),
-    }))) ||
+  const byFramework =
+    (FRAMEWORK_META &&
+      Object.keys(FRAMEWORK_META).map((fid) => ({
+        id: fid as keyof typeof FRAMEWORK_META,
+        themes: mappings.filter((m) => m.framework === fid),
+      }))) ||
     [];
 
   return (
@@ -221,10 +222,7 @@ export function GovernanceReadinessPanel({ useCaseId }: Props) {
             ).map(([key, label]) => (
               <div key={key} className="space-y-2">
                 <Label>{label}</Label>
-                <Select
-                  value={facts[key]}
-                  onValueChange={(v) => set(key, v as TriState)}
-                >
+                <Select value={facts[key]} onValueChange={(v) => set(key, v as TriState)}>
                   <SelectTrigger aria-label={label}>
                     <SelectValue />
                   </SelectTrigger>

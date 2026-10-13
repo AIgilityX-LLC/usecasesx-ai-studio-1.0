@@ -8,13 +8,7 @@
 
 export * from "./models";
 export * from "./types";
-export {
-  AI_TASKS,
-  PROMPT_REGISTRY,
-  FR14_PURPOSE_OPS,
-  promptFor,
-  type AiTask,
-} from "./prompts";
+export { AI_TASKS, PROMPT_REGISTRY, FR14_PURPOSE_OPS, promptFor, type AiTask } from "./prompts";
 export * from "./schemas";
 export {
   limitsForEdition,

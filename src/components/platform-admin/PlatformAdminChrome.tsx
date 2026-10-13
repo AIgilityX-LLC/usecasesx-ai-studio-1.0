@@ -5,19 +5,10 @@ import { cn } from "@/lib/utils";
 /**
  * Persistent context strip so operators always know they left the customer app.
  */
-export function PlatformAdminChrome({
-  className,
-  title,
-}: {
-  className?: string;
-  title?: string;
-}) {
+export function PlatformAdminChrome({ className, title }: { className?: string; title?: string }) {
   return (
     <div
-      className={cn(
-        "border-b border-primary/30 bg-primary/10 px-4 py-2.5 text-sm",
-        className,
-      )}
+      className={cn("border-b border-primary/30 bg-primary/10 px-4 py-2.5 text-sm", className)}
       role="status"
       aria-label="Platform Administration context"
     >

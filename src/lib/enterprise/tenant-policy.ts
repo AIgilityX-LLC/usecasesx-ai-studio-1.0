@@ -41,10 +41,7 @@ export type TenantSovereigntyPolicy = {
 
 export const tenantPolicyInputSchema = z.object({
   dataRegion: z.enum(DATA_REGIONS),
-  allowedAiProviderRoutes: z
-    .array(z.enum(AI_PROVIDER_ROUTES))
-    .min(1)
-    .max(20),
+  allowedAiProviderRoutes: z.array(z.enum(AI_PROVIDER_ROUTES)).min(1).max(20),
   preferredLocale: z.enum(["en", "ar"]).default("en"),
 });
 
@@ -67,8 +64,7 @@ export function assertAiRouteAllowed(
   alias: ProviderAlias | null | undefined,
 ): { allowed: true } | { allowed: false; reason: string; route: string } {
   const route = routeKeyForAlias(alias);
-  const list =
-    !allowed || allowed.length === 0 ? (["default"] as string[]) : [...allowed];
+  const list = !allowed || allowed.length === 0 ? (["default"] as string[]) : [...allowed];
   if (list.includes(route)) return { allowed: true };
   return { allowed: false, reason: "ai_provider_route_denied", route };
 }

@@ -75,9 +75,7 @@ function UseCaseSolutionDesignPage() {
           </p>
         )}
 
-        {uc?.workspace_id && (
-          <SolutionDesignPanel useCaseId={uc.id} useCaseTitle={uc.title} />
-        )}
+        {uc?.workspace_id && <SolutionDesignPanel useCaseId={uc.id} useCaseTitle={uc.title} />}
       </div>
     </section>
   );

@@ -39,11 +39,5 @@ function ReportSlugPage() {
     return <ReportPlanned item={item} />;
   }
 
-  return (
-    <ReportsGenerator
-      initialType={item.generatorType}
-      hubLabel={item.label}
-      lockType
-    />
-  );
+  return <ReportsGenerator initialType={item.generatorType} hubLabel={item.label} lockType />;
 }

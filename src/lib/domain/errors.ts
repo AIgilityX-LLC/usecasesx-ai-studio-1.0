@@ -7,13 +7,7 @@
  */
 
 export type DomainErrorKind =
-  | "unauthenticated"
-  | "forbidden"
-  | "not_found"
-  | "conflict"
-  | "validation"
-  | "network"
-  | "unknown";
+  "unauthenticated" | "forbidden" | "not_found" | "conflict" | "validation" | "network" | "unknown";
 
 const USER_MESSAGES: Record<DomainErrorKind, string> = {
   unauthenticated: "Please sign in to continue.",

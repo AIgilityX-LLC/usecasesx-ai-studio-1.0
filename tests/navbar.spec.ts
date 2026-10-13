@@ -43,7 +43,7 @@ async function countNavbars(page: Page): Promise<number> {
 test.describe("single navbar — signed out", () => {
   for (const route of PUBLIC_ROUTES) {
     test(`exactly one navbar on ${route}`, async ({ page }) => {
-      await page.goto(`${BASE}${route}`, { waitUntil: "networkidle" });
+      await page.goto(`${BASE}${route}`, { waitUntil: "domcontentloaded" });
       const count = await countNavbars(page);
       expect(count, `route ${route} should render exactly one navbar`).toBeLessThanOrEqual(1);
     });
@@ -52,7 +52,7 @@ test.describe("single navbar — signed out", () => {
 
 test.describe("skip-to-content link", () => {
   test("home page exposes a skip link and main landmark", async ({ page }) => {
-    await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
     await expect(page.locator("a[href='#main-content']")).toHaveCount(1);
     await expect(page.locator("main#main-content")).toHaveCount(1);
   });
@@ -123,7 +123,7 @@ test.describe("page hero tone + main landmark", () => {
 
   for (const route of HERO_PAGES) {
     test(`${route} has exactly one main landmark`, async ({ page }) => {
-      await page.goto(`${BASE}${route}`, { waitUntil: "networkidle" });
+      await page.goto(`${BASE}${route}`, { waitUntil: "domcontentloaded" });
       await expect(page.locator("main#main-content")).toHaveCount(1);
     });
   }
@@ -136,14 +136,14 @@ test.describe("page hero tone + main landmark", () => {
 
   for (const route of DARK_HERO_PAGES) {
     test(`${route} renders a dark hero as the first content band`, async ({ page }) => {
-      await page.goto(`${BASE}${route}`, { waitUntil: "networkidle" });
+      await page.goto(`${BASE}${route}`, { waitUntil: "domcontentloaded" });
       const hero = await sectionLuminance(page, 0);
       expect(hero, `${route} hero luminance should be measurable`).not.toBeNull();
       expect(hero as number, `${route} hero should be a dark band`).toBeLessThan(0.5);
     });
 
     test(`${route} alternates to a lighter major section after the hero`, async ({ page }) => {
-      await page.goto(`${BASE}${route}`, { waitUntil: "networkidle" });
+      await page.goto(`${BASE}${route}`, { waitUntil: "domcontentloaded" });
       const hero = await sectionLuminance(page, 0);
       const next = await sectionLuminance(page, 1);
       if (next === null || hero === null) test.skip(true, `${route} has no second section`);
@@ -154,7 +154,7 @@ test.describe("page hero tone + main landmark", () => {
   }
 
   test("Home exposes a hero section inside the main landmark", async ({ page }) => {
-    await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
     await expect(page.locator("main#main-content section").first()).toBeVisible();
   });
 });

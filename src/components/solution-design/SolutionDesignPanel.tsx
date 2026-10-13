@@ -144,7 +144,12 @@ export function SolutionDesignPanel({
   function set<K extends keyof SolutionDesignDraft>(key: K, value: SolutionDesignDraft[K]) {
     setDraft((prev) => {
       const next = { ...prev, [key]: value };
-      if (typeof value === "string" && value.trim() && key !== "fieldMeta" && key !== "owaspResponses") {
+      if (
+        typeof value === "string" &&
+        value.trim() &&
+        key !== "fieldMeta" &&
+        key !== "owaspResponses"
+      ) {
         const metaKey = key as string;
         if (!prev.fieldMeta[metaKey] || prev.fieldMeta[metaKey]?.status === "missing") {
           next.fieldMeta = markField(prev.fieldMeta, metaKey, "confirmed");
@@ -316,17 +321,9 @@ export function SolutionDesignPanel({
                     "Action limits *",
                     "Allowed / prohibited actions and rate bounds",
                   ],
-                  [
-                    "transactionLimits",
-                    "Transaction limits",
-                    "Monetary, volume or scope caps",
-                  ],
+                  ["transactionLimits", "Transaction limits", "Monetary, volume or scope caps"],
                   ["sandbox", "Sandbox", "Isolation, dry-run, environment boundaries"],
-                  [
-                    "killSwitch",
-                    "Kill switch *",
-                    "How the agent is stopped and by whom",
-                  ],
+                  ["killSwitch", "Kill switch *", "How the agent is stopped and by whom"],
                   ["observability", "Observability", "Logs, traces, eval hooks"],
                   ["fallback", "Fallback", "Safe degradation when the agent fails"],
                 ] as const

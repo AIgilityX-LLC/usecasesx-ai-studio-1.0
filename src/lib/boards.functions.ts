@@ -8,8 +8,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type BoardAccessError =
-  | { kind: "not_found"; message: string }
-  | { kind: "forbidden"; message: string };
+  { kind: "not_found"; message: string } | { kind: "forbidden"; message: string };
 
 export interface LoadedBoard {
   id: string;

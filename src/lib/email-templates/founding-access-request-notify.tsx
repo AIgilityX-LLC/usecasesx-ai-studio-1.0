@@ -22,14 +22,7 @@ interface Props {
   adminUrl?: string | null;
 }
 
-const Email = ({
-  fullName,
-  workEmail,
-  organization,
-  roleTitle,
-  requestedAt,
-  adminUrl,
-}: Props) => (
+const Email = ({ fullName, workEmail, organization, roleTitle, requestedAt, adminUrl }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>New Founding Access request — review required</Preview>

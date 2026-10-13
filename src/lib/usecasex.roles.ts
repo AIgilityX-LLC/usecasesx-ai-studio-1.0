@@ -101,7 +101,6 @@ export function useRoles(): RoleState {
     };
   }, []);
 
-
   const has = (role: AppRole) => roles.includes(role);
   const hasAny = (rs: AppRole[]) => rs.some((r) => roles.includes(r));
   const isAdmin =

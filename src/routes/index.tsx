@@ -749,7 +749,9 @@ function LandingPage() {
             <Reveal className="ux-board-mock" variant="left" delay={60}>
               <div className="ux-board-top">
                 <span>Portfolio board · illustrative view</span>
-                <Link to="/portfoliox" className="ux-add-case">View portfolios <ArrowRight size={13} aria-hidden /></Link>
+                <Link to="/portfoliox" className="ux-add-case">
+                  View portfolios <ArrowRight size={13} aria-hidden />
+                </Link>
               </div>
               <div className="ux-board-columns">
                 {BOARD_COLUMNS.map((col) => (
@@ -852,7 +854,7 @@ function LandingPage() {
         <section id="sovereign" className="ux-section-light ux-sovereign-section">
           <div className="ux-container ux-sovereign-layout">
             <div>
-            <SectionHeading anim="ux-heading-up">
+              <SectionHeading anim="ux-heading-up">
                 Built For Ministries, Regulators
                 <br />
                 &amp; Sovereign AI Programs.

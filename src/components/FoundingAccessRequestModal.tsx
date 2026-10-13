@@ -118,7 +118,9 @@ export function FoundingAccessRequestModal({ open, onClose }: FoundingAccessRequ
             role="status"
             className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-foreground"
           >
-            <p className="font-semibold">Thanks — our team will review your request and email you shortly.</p>
+            <p className="font-semibold">
+              Thanks — our team will review your request and email you shortly.
+            </p>
             <p className="mt-2 text-muted-foreground">
               You will receive an invitation link at your work email if approved. No password is
               sent by email.

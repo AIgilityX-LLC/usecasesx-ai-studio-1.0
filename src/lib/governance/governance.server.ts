@@ -61,9 +61,7 @@ export type GovernancePreview = {
 };
 
 function rowToPreview(row: Record<string, unknown>): GovernancePreview {
-  const facts = emptyGovernanceFacts(
-    governanceFactsSchema.partial().parse(row.facts ?? {}),
-  );
+  const facts = emptyGovernanceFacts(governanceFactsSchema.partial().parse(row.facts ?? {}));
   return {
     id: String(row.id),
     useCaseId: String(row.use_case_id),

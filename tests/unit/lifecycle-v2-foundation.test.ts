@@ -43,9 +43,9 @@ describe("canonical transition table", () => {
   });
 
   it("rejects a viewer attempting a decide transition", () => {
-    expect(() =>
-      assertTransition("under_review", "rejected", (p) => p === "view"),
-    ).toThrow(MissingPermissionError);
+    expect(() => assertTransition("under_review", "rejected", (p) => p === "view")).toThrow(
+      MissingPermissionError,
+    );
   });
 });
 
@@ -149,15 +149,15 @@ describe("self-approval restriction", () => {
 
 describe("cross-tenant access", () => {
   it("denies when workspace ids differ", () => {
-    expect(() =>
-      assertSameTenantMembership({ workspaceRole: "admin" }, "ws-a", "ws-b"),
-    ).toThrow(/Cross-tenant/);
+    expect(() => assertSameTenantMembership({ workspaceRole: "admin" }, "ws-a", "ws-b")).toThrow(
+      /Cross-tenant/,
+    );
   });
 
   it("denies when the actor has no membership", () => {
-    expect(() =>
-      assertSameTenantMembership({ workspaceRole: null }, "ws-a", "ws-a"),
-    ).toThrow(/membership/);
+    expect(() => assertSameTenantMembership({ workspaceRole: null }, "ws-a", "ws-a")).toThrow(
+      /membership/,
+    );
   });
 
   it("blocks prepareLifecycleTransition across tenants", () => {

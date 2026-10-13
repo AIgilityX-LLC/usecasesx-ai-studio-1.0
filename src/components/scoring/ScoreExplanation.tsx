@@ -81,9 +81,7 @@ export function ScoreExplanation({
         <Metric
           label="Uncertainty band"
           value={result.uncertainty ? result.uncertainty.low : null}
-          suffix={
-            result.uncertainty ? `–${result.uncertainty.high}` : "/100"
-          }
+          suffix={result.uncertainty ? `–${result.uncertainty.high}` : "/100"}
           hint={
             result.uncertainty
               ? `Method: ${result.uncertainty.method.replace(/_/g, " ")}`
@@ -165,9 +163,7 @@ export function ScoreExplanation({
                 >
                   <span>
                     {s.dimensionLabel}{" "}
-                    <span className="text-muted-foreground">
-                      ×{s.weightMultiplier}
-                    </span>
+                    <span className="text-muted-foreground">×{s.weightMultiplier}</span>
                   </span>
                   <span className="tabular-nums text-muted-foreground">
                     {s.riskAdjusted === null ? "—" : `${s.riskAdjusted}/100`}
