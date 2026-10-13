@@ -130,7 +130,9 @@ test.describe("page hero tone + main landmark", () => {
 
   // Pages built on the PageHero primitive: first band must be dark, and the
   // following major section must be lighter (the alternating tone contract).
-  const DARK_HERO_PAGES = ["/resources", "/pricing", "/insights", "/patterns"];
+  // /patterns has no PageHero band — keep it in HERO_PAGES for the landmark
+  // check above, but exclude it from the dark-hero luminance contract.
+  const DARK_HERO_PAGES = ["/resources", "/pricing", "/insights"];
 
   for (const route of DARK_HERO_PAGES) {
     test(`${route} renders a dark hero as the first content band`, async ({ page }) => {

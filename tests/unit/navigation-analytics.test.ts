@@ -80,13 +80,13 @@ describe("property allow-list", () => {
       surface: "sidebar",
       resultCount: 3.9,
       openVia: "shortcut",
-      // @ts-expect-error intentional forbidden keys
+      // @ts-expect-error intentional forbidden keys — must be stripped at runtime
       title: "Secret use case title",
-      // @ts-expect-error
+      // @ts-expect-error intentional forbidden key
       search_query: "payroll fraud detection",
-      // @ts-expect-error
+      // @ts-expect-error intentional forbidden key
       email: "a@b.com",
-      // @ts-expect-error
+      // @ts-expect-error intentional forbidden key
       roi: 120000,
     } as never);
 

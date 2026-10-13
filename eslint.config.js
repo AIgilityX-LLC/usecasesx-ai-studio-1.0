@@ -13,6 +13,11 @@ export default tseslint.config(
       "dist",
       ".output",
       ".vinxi",
+      ".playwright-browsers/**",
+      ".pw-browsers/**",
+      // Vendored / reference trees — not part of the product lint surface.
+      "docs/reference/**",
+      "**/docs/reference/**",
       "src/routeTree.gen.ts",
       "src/integrations/supabase/types.ts",
       "src/integrations/supabase/client.ts",
