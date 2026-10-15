@@ -60,8 +60,9 @@ export type SubmitFoundingAccessInput = {
 };
 
 /**
- * Insert or refresh a pending request for this email, then notify info@.
- * Duplicate pending emails update the existing row (no second pending row).
+ * Insert a pending request for this email, then notify info@.
+ * A duplicate pending email returns the existing row unchanged — an
+ * unauthenticated caller must never overwrite another person's request.
  */
 export async function submitFoundingAccessRequest(
   admin: AdminClient,
