@@ -98,6 +98,7 @@
     "recharts": "^2.15.4",
     "satori": "^0.29.0",
     "sonner": "^2.0.7",
+    "source-map-js": "^1.2.2",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.1",
     "tw-animate-css": "^1.3.4",
@@ -130,5 +131,8 @@
     "overrides": {
       "entities": "4.5.0"
     }
+  },
+  "overrides": {
+    "source-map-js": "^1.2.2"
   }
 }
