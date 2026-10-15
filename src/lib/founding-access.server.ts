@@ -87,17 +87,9 @@ export async function submitFoundingAccessRequest(
   let updatedExisting = false;
 
   if (existing?.id) {
-    const { error } = await admin
-      .from(TABLE)
-      .update({
-        full_name: fullName,
-        work_email: workEmail,
-        organization,
-        role_title: roleTitle,
-        requested_at: now,
-      })
-      .eq("id", existing.id);
-    if (error) throw new Error(error.message);
+    // Do NOT overwrite: this endpoint is public, so updating here would let
+    // anyone replace another person's pending request details. Return the
+    // existing row as-is; the original submitter's details stay authoritative.
     id = existing.id;
     updatedExisting = true;
   } else {
