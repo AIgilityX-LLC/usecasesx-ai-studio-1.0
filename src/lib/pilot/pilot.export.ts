@@ -25,7 +25,10 @@ import {
 
 export function toCsvCell(value: string | number | boolean | null | undefined): string {
   if (value === null || value === undefined) return "";
-  const text = typeof value === "boolean" ? (value ? "yes" : "no") : String(value);
+  let text = typeof value === "boolean" ? (value ? "yes" : "no") : String(value);
+  // Neutralize spreadsheet formula injection: a leading =, +, -, @ (or tab/CR
+  // smuggled before it) would execute when an admin opens the CSV.
+  if (/^[\s]*[=+\-@]/.test(text)) text = `'${text}`;
   return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 

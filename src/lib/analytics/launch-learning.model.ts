@@ -80,8 +80,15 @@ export function withConversion(
 
 export function launchLearningToCsv(data: LaunchLearning): string {
   const lines = ["section,key,metric,value"];
+  // Neutralize spreadsheet formula injection in caller-controlled keys
+  // (e.g. search terms): a leading =, +, -, @ would execute on open.
+  const safeKey = (key: string) => {
+    let text = String(key);
+    if (/^[\s]*[=+\-@]/.test(text)) text = `'${text}`;
+    return text.replace(/"/g, '""');
+  };
   const push = (section: string, key: string, metric: string, value: number | string) =>
-    lines.push(`${section},"${String(key).replace(/"/g, '""')}",${metric},${value}`);
+    lines.push(`${section},"${safeKey(key)}",${metric},${value}`);
   push("window", "visitors", "sessions", data.visitorSessions);
   for (const row of data.funnel) {
     push("funnel", row.stage, "users", row.users);

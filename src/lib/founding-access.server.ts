@@ -60,8 +60,9 @@ export type SubmitFoundingAccessInput = {
 };
 
 /**
- * Insert or refresh a pending request for this email, then notify info@.
- * Duplicate pending emails update the existing row (no second pending row).
+ * Insert a pending request for this email, then notify info@.
+ * A duplicate pending email returns the existing row unchanged — an
+ * unauthenticated caller must never overwrite another person's request.
  */
 export async function submitFoundingAccessRequest(
   admin: AdminClient,
@@ -86,17 +87,9 @@ export async function submitFoundingAccessRequest(
   let updatedExisting = false;
 
   if (existing?.id) {
-    const { error } = await admin
-      .from(TABLE)
-      .update({
-        full_name: fullName,
-        work_email: workEmail,
-        organization,
-        role_title: roleTitle,
-        requested_at: now,
-      })
-      .eq("id", existing.id);
-    if (error) throw new Error(error.message);
+    // Do NOT overwrite: this endpoint is public, so updating here would let
+    // anyone replace another person's pending request details. Return the
+    // existing row as-is; the original submitter's details stay authoritative.
     id = existing.id;
     updatedExisting = true;
   } else {
@@ -118,7 +111,10 @@ export async function submitFoundingAccessRequest(
 
   const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
   try {
-    await sendTemplateEmail("founding-access-request-notify", "info@aigilityx.com", {
+    // Only notify for genuinely new requests — a duplicate submission carries
+    // unverified caller-supplied details and must not trigger notifications.
+    if (!updatedExisting) {
+      await sendTemplateEmail("founding-access-request-notify", "info@aigilityx.com", {
       from: INFO_FROM,
       replyTo: workEmail,
       idempotencyKey: `founding-request-notify-${id}-${now.slice(0, 13)}`,
@@ -130,7 +126,8 @@ export async function submitFoundingAccessRequest(
         requestedAt: new Date(now).toUTCString(),
         adminUrl: `${APP_URL}/administration/founding-access`,
       },
-    });
+      });
+    }
   } catch (error) {
     console.warn("[founding-access] admin notify email failed", error);
   }
