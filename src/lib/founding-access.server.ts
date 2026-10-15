@@ -111,7 +111,10 @@ export async function submitFoundingAccessRequest(
 
   const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
   try {
-    await sendTemplateEmail("founding-access-request-notify", "info@aigilityx.com", {
+    // Only notify for genuinely new requests — a duplicate submission carries
+    // unverified caller-supplied details and must not trigger notifications.
+    if (!updatedExisting) {
+      await sendTemplateEmail("founding-access-request-notify", "info@aigilityx.com", {
       from: INFO_FROM,
       replyTo: workEmail,
       idempotencyKey: `founding-request-notify-${id}-${now.slice(0, 13)}`,
