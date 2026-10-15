@@ -126,7 +126,8 @@ export async function submitFoundingAccessRequest(
         requestedAt: new Date(now).toUTCString(),
         adminUrl: `${APP_URL}/administration/founding-access`,
       },
-    });
+      });
+    }
   } catch (error) {
     console.warn("[founding-access] admin notify email failed", error);
   }
