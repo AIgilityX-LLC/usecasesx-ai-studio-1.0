@@ -1,0 +1,52 @@
+name: Feature request
+description: Propose a product or engineering change with a requirement ID
+title: "[feat] "
+labels: ["enhancement"]
+body:
+  - type: input
+    id: requirement_id
+    attributes:
+      label: Requirement ID
+      description: Stable ID (e.g. FR-04, PROMPT-NN, NAV-1, V2-10). Required for traceability.
+      placeholder: FR-__ / PROMPT-__
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What should change and why (user outcome).
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Testable outcomes. Link SRS / docs/v2 where relevant.
+    validations:
+      required: true
+  - type: dropdown
+    id: edition
+    attributes:
+      label: Edition impact
+      options:
+        - Lite
+        - Pro Founding Access
+        - Enterprise (flag-gated)
+        - Platform admin only
+        - Cross-cutting / control plane
+    validations:
+      required: true
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals
+      description: What this issue explicitly will not do.
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Constraints acknowledged
+      options:
+        - label: No agent push to main; PR + human approval required
+        - label: Additive migrations only unless staged plan approved
+        - label: Nav via enterprise-nav.ts; permissions via scoped-permissions.ts

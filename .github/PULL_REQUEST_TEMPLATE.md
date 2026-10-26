@@ -5,6 +5,8 @@
 
 <!-- One paragraph: what and why. -->
 
+**Requirement ID**: <!-- FR-__ / PROMPT-__ / Phase-__ / chore-control-plane -->
+**Linked issue**: <!-- #NN or N/A -->
 **PROMPT**: PROMPT-NN
 **Risk ID** (if any): R-NN
 **Type**: feat | fix | chore | docs | refactor | test | perf | build | ci | revert
@@ -18,8 +20,13 @@
 
 - [ ] Screenshots (UI) — 360 / 768 / 1280 px
 - [ ] Playwright spec: `<name>` — green
+- [ ] Unit / script evidence: <!-- command + result -->
 - [ ] Migration diff (if any)
 - [ ] Lighthouse (if UI on core journey)
+
+## Independent review
+
+- [ ] Independent review done (Codex or other agent used `docs/process/independent-review-checklist.md`; comment linked)
 
 ## Definition of Done (AGENTS.md §6)
 
