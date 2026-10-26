@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability report
+    url: https://github.com/AIgilityX-LLC/usecasesx-ai-studio-1.0/security/advisories/new
+    about: Private reporting — see SECURITY.md. Do not file public issues for security findings.
+  - name: Security policy
+    url: https://github.com/AIgilityX-LLC/usecasesx-ai-studio-1.0/blob/main/SECURITY.md
+    about: Supported versions and intake expectations.

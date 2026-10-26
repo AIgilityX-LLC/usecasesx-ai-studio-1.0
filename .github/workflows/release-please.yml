@@ -1,0 +1,24 @@
+name: Release Please
+
+# Manual only — does not create tags from this workflow until a human runs it
+# and accepts the release PR. Agents must not create tags.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    name: release-please
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Run release-please
+        uses: googleapis/release-please-action@7987652d64b4581673a76e33ad5e98e3dd56832f # v4.1.3
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+          # Token defaults to GITHUB_TOKEN; human must merge the release PR.

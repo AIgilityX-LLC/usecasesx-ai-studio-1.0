@@ -141,3 +141,57 @@ Any plan check must resolve through `useEntitlement`/`usePlan`. Gate UI with `<R
 
 - `docs/security/security-baseline.md`
 - `docs/PRE_BETA_RELEASE_CHECKLIST.md`, `docs/PRE_BETA_TEST_PLAN.md`
+- `ARCHITECTURE.md`, `THREAT_MODEL.md`, `CONTRIBUTING.md`, `SECURITY.md`
+- `docs/process/source-control-workflow.md`, `docs/process/independent-review-checklist.md`
+
+---
+
+## Delivery pipeline
+
+Idea → Lovable prototype → feature / chore / fix branch → agent engineering → automated tests → independent review → human PR approval → staging → acceptance → production.
+
+**Agents never push to `main`.** Agents never create release tags or change GitHub repository settings. If this file conflicts with `CLAUDE.md` or `docs/process/source-control-workflow.md`, the stricter rule wins.
+
+---
+
+# UseCasesX Navigation Architecture Rules
+
+UseCasesX is an enterprise AI Use Case Management and AI Investment Decision platform.
+
+## Product lifecycle (canonical — SRS)
+
+The product lifecycle is defined by `docs/v2/srs-prd-v2.md` §6 and must not be shortened in navigation docs:
+
+Discover → Capture → Design → Evidence → Score → Review → Prioritize → Approve/Hold/Reject → Roadmap → Deliver → Measure → Scale/Retire
+
+Sidebar section labels (Discover, Design, Assess & Prioritize, Portfolio, Govern & Assure, Intelligence, Reports, Integrations, Administration, Help) are **navigation grouping only**. They organize destinations; they are not a substitute for the SRS lifecycle. Object-level stages (Evidence, Score, Deliver, Measure, etc.) belong in contextual navigation inside Use Case / Portfolio / Pilot surfaces.
+
+## Navigation registry and permissions
+
+- The only customer navigation registry is `src/lib/navigation/enterprise-nav.ts`.
+- Platform operations navigation is `src/lib/navigation/platform-admin-nav.ts`.
+- Do not create `src/config/navigation/*` or duplicate menu arrays in components (including classic chrome — consume the registries).
+- The only permission / action vocabulary source is `src/lib/authz/scoped-permissions.ts`. Nav visibility capabilities live in `src/lib/authz/nav-capabilities.ts`. Do not invent a third permission module.
+
+## Navigation Principles
+
+1. Do not add a global sidebar item simply because a new feature is created.
+2. Global sidebar items represent major user destinations, not individual functions.
+3. Prefer contextual navigation inside Use Cases, Portfolios, Pilots, and Opportunities.
+4. Customer-facing UseCasesX and AIgilityX platform administration must remain separated (`/platform-admin/*`).
+5. Navigation visibility must respect authentication, authorization, capability, workspace, subscription entitlement, and feature flags.
+6. UI visibility is never an authorization control.
+7. Backend authorization and Supabase RLS remain authoritative.
+8. Use stable navigation IDs rather than labels.
+9. Do not duplicate route definitions or menu registries.
+10. Do not hard-code role checks throughout UI components; prefer capabilities / scoped permissions.
+11. Preserve backward-compatible routes during refactoring wherever practical.
+12. Never weaken tenant data isolation.
+13. New modules must first choose a **navigation group** (Discover, Design, Assess & Prioritize, Portfolio, Govern & Assure, Intelligence, Reports, Integrations, Administration, Help) — without claiming that group is the full SRS lifecycle.
+14. AIgilityX operational tools belong in Platform Administration, not normal customer navigation.
+15. A feature inside a Use Case should normally become a contextual tab, not a global navigation item.
+16. Navigation must remain usable on desktop, tablet, and mobile.
+17. Follow existing project technologies and design-system components unless architectural change has been explicitly approved.
+18. Run type checking, linting, and relevant tests after material changes.
+19. Do not perform destructive database migrations without explicit approval.
+20. Enterprise vs classic chrome is controlled only by `VITE_ENTERPRISE_NAVIGATION_V2_ENABLED`; classic must consume the same registries until it is formally retired after soak.

@@ -1,0 +1,17 @@
+# Default owner — sole human author in git history (Mehtab19: 15 commits).
+# Bots (gpt-engineer-app[bot], Lovable) are not owners.
+* @Mehtab19
+
+# Database and generated Supabase surface
+/supabase/ @Mehtab19
+/src/integrations/supabase/ @Mehtab19
+
+# Authorization and navigation registries (single sources of truth)
+/src/lib/authz/ @Mehtab19
+/src/lib/navigation/ @Mehtab19
+
+# Engineering control plane
+/.github/ @Mehtab19
+/docs/security/ @Mehtab19
+/CLAUDE.md @Mehtab19
+/AGENTS.md @Mehtab19

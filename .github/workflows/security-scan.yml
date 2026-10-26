@@ -1,0 +1,81 @@
+name: Security scan (report-only)
+
+# Gitleaks (full history) + CodeQL JS/TS. Findings must not print secret values —
+# report finding type, file, and commit only. Non-blocking until a human promotes.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  gitleaks:
+    name: Gitleaks (report-only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    continue-on-error: true
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_COMMENTS: "false"
+        continue-on-error: true
+      - name: Summarize findings (no secret values)
+        if: always()
+        run: |
+          set -euo pipefail
+          echo "## Gitleaks summary (redacted)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Report-only. Values are never printed." >> "$GITHUB_STEP_SUMMARY"
+          if [ -f gitleaks-report.json ]; then
+            node -e '
+              const fs = require("fs");
+              let raw = "[]";
+              try { raw = fs.readFileSync("gitleaks-report.json","utf8"); } catch {}
+              let findings = [];
+              try { findings = JSON.parse(raw); } catch { findings = []; }
+              if (!Array.isArray(findings)) findings = findings.findings || [];
+              console.log(`Findings: ${findings.length}`);
+              for (const f of findings.slice(0, 50)) {
+                const rule = f.RuleID || f.Description || f.rule || "unknown";
+                const file = f.File || f.file || "(unknown file)";
+                const commit = f.Commit || f.commit || "(unknown commit)";
+                console.log(`- type=${rule} file=${file} commit=${commit}`);
+              }
+            ' | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No gitleaks-report.json produced (action may use SARIF/annotations only)." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  codeql:
+    name: CodeQL JS/TS (report-only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@9e8d0789d4a0fa9ceb6b1738f7e269594bdd67f0 # v3.28.9
+        with:
+          languages: javascript-typescript
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@9e8d0789d4a0fa9ceb6b1738f7e269594bdd67f0 # v3.28.9
+        continue-on-error: true
+      - name: Analyze
+        uses: github/codeql-action/analyze@9e8d0789d4a0fa9ceb6b1738f7e269594bdd67f0 # v3.28.9
+        with:
+          category: "/language:javascript-typescript"
+        continue-on-error: true

@@ -1,0 +1,47 @@
+name: Bug report
+description: Something broken in product, CI, or docs
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: input
+    id: requirement_id
+    attributes:
+      label: Requirement / risk ID (if any)
+      description: Optional link to FR, PROMPT, or risk register ID.
+      placeholder: R-SEC-01 / PROMPT-__
+  - type: textarea
+    id: symptoms
+    attributes:
+      label: Symptoms
+      description: What you saw vs what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Steps, environment (Lite/Pro, flag values), browser/device.
+    validations:
+      required: true
+  - type: input
+    id: commit
+    attributes:
+      label: Commit / deploy
+      description: SHA, preview URL, or release tag if known.
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - P0 — security / data loss / login broken
+        - P1 — core journey blocked
+        - P2 — degraded / workaround exists
+        - P3 — cosmetic / docs
+    validations:
+      required: true
+  - type: checkboxes
+    id: security
+    attributes:
+      label: Security
+      options:
+        - label: This is NOT a vulnerability (vulnerabilities go to SECURITY.md / private advisory — do not describe exploit details here)
