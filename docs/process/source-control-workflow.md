@@ -114,16 +114,23 @@ CI is expected to run on every PR against `main` (and `develop` once active). Na
 
 | Check             | Command                                                                                    | Blocking?                               |
 | ----------------- | ------------------------------------------------------------------------------------------ | --------------------------------------- |
+| Format            | `bun run format:check`                                                                     | Yes                                     |
 | Lint              | `bun run lint`                                                                             | Yes                                     |
 | Typecheck         | `tsgo`                                                                                     | Yes                                     |
+| Unit              | `bun run test:unit`                                                                        | Yes                                     |
+| Contracts         | `bun run test:contracts`                                                                   | Yes                                     |
+| Migrations        | `bun run test:migrations`                                                                  | Yes                                     |
+| Dep audit         | `bun run audit:deps`                                                                       | Yes (high+)                             |
 | Build             | `bun run build`                                                                            | Yes                                     |
-| Route tree verify | `bun run verify:routes` (already wired in `.github/workflows/route-tree-check.yml`)        | Yes                                     |
+| Route tree verify | `bun run verify:routes` (also `.github/workflows/route-tree-check.yml`)                    | Yes                                     |
 | Nav integrity     | `bun run check:nav-integrity`                                                              | Yes                                     |
-| Compare analytics | `bun run check:compare` (already wired in `.github/workflows/compare-analytics-check.yml`) | Yes                                     |
-| E2E (narrow)      | `bun run test:e2e` — spec relevant to change                                               | Yes for UI/data changes                 |
-| RLS isolation     | `bun run test:rls`                                                                         | Yes for any new/changed table or policy |
+| Compare analytics | `bun run check:compare` (`.github/workflows/compare-analytics-check.yml`)                  | Yes                                     |
+| Critical E2E      | `bun run test:critical`                                                                    | Yes                                     |
+| E2E / RLS         | Playwright + `test:rls` / tenancy when secrets present                                     | Yes when credentials configured         |
+| Secret scan       | Gitleaks PR range                                                                          | Yes                                     |
+| SAST              | CodeQL                                                                                     | Yes                                     |
 
-Adding new blocking checks or workflows requires a Decision Log entry.
+Full map: `docs/process/ci-cd-quality-gates.md`. Lovable preview is **not** a substitute for these checks.
 
 ---
 

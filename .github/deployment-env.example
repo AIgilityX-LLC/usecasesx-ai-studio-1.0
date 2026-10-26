@@ -6,7 +6,9 @@
 #   Repository VARIABLES  (Settings → Secrets and variables → Actions → Variables)
 #   Repository SECRETS    (Settings → Secrets and variables → Actions → Secrets)
 #
-# Environments used: `staging` (staging-deploy.yml) and preview (pr-preview.yml).
+# Environments: LOCAL → DEVELOPMENT (preview) → STAGING → PRODUCTION
+# See docs/process/ci-cd-quality-gates.md and docs/process/deployment-environment.md
+# GitHub Environments used: `staging`, `production` (approval-gated); preview via pr-preview.yml.
 
 # ---------------------------------------------------------------- VARIABLES
 # Staging — consumed by .github/workflows/staging-deploy.yml

@@ -1,5 +1,8 @@
 name: CI
 
+# Enterprise quality gates. Lovable preview is not a production gate.
+# See docs/process/ci-cd-quality-gates.md
+
 on:
   pull_request:
   push:
@@ -9,14 +12,44 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: read
+
 jobs:
-  quality:
-    name: Lint · typecheck · build
+  format:
+    name: Formatting
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: oven-sh/setup-bun@4bc047ad259df6fc24a6c9b0f9a0cb08cf17fbe5 # v2.0.1
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Prettier check (changed files on PRs; full tree on main)
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin "${{ github.base_ref }}" --depth=1
+            FILES=$(git diff --name-only --diff-filter=ACMR "origin/${{ github.base_ref }}...HEAD" | grep -E '\.(ts|tsx|js|jsx|mjs|cjs|json|css|md|yml|yaml)$' || true)
+            if [ -z "${FILES}" ]; then
+              echo "No Prettier-eligible files changed."
+              exit 0
+            fi
+            echo "$FILES" | tr '\n' '\0' | xargs -0 bunx prettier --check
+          else
+            bun run format:check
+          fi
+
+  quality:
+    name: Lint · typecheck · unit · contracts · migrations · build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: oven-sh/setup-bun@4bc047ad259df6fc24a6c9b0f9a0cb08cf17fbe5 # v2.0.1
         with:
           bun-version: latest
       - name: Install dependencies (frozen lockfile)
@@ -29,16 +62,24 @@ jobs:
         run: bun run lint
       - name: Typecheck
         run: bunx tsgo --noEmit || bunx tsc --noEmit
-      - name: Verify route tree
-        run: bun run verify:routes
-      - name: Build
-        run: bun run build
       - name: Unit tests
         run: bun run test:unit
+      - name: API contract tests
+        run: bun run test:contracts
+      - name: Database migration safety
+        run: bun run test:migrations
+      - name: Dependency vulnerability scan
+        run: bun run audit:deps
+      - name: Verify route tree
+        run: bun run verify:routes
+      - name: Nav integrity
+        run: bun run check:nav-integrity
+      - name: Build
+        run: bun run build
       - name: Upload build diagnostics
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: build-output
           path: |
@@ -47,26 +88,63 @@ jobs:
           retention-days: 3
           if-no-files-found: ignore
 
-  playwright:
-    name: Playwright UI specs
+  secret-scan:
+    name: Secret scan (PR range)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - name: Install gitleaks
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks_8.21.2_linux_x64.tar.gz \
+            | tar -xz -C /usr/local/bin gitleaks
+          gitleaks version
+      - name: Gitleaks on changed commits only
+        # Full-history findings (legacy .env) are documented separately; PR gate catches NEW leaks.
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            RANGE="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+          else
+            RANGE="${{ github.sha }}~10..${{ github.sha }}"
+          fi
+          echo "Scanning range: $RANGE"
+          gitleaks detect --source . --log-opts="$RANGE" --redact --no-banner --exit-code 1
+
+  sast:
+    name: SAST (CodeQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: github/codeql-action/init@9e8d0789d4a0fa9ceb6b1738f7e269594bdd67f0 # v3.28.9
+        with:
+          languages: javascript-typescript
+      - uses: github/codeql-action/autobuild@9e8d0789d4a0fa9ceb6b1738f7e269594bdd67f0 # v3.28.9
+        continue-on-error: true
+      - uses: github/codeql-action/analyze@9e8d0789d4a0fa9ceb6b1738f7e269594bdd67f0 # v3.28.9
+        with:
+          category: "/language:javascript-typescript"
+
+  playwright-critical:
+    name: Playwright critical workflows
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
     env:
       CI: "1"
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: oven-sh/setup-bun@4bc047ad259df6fc24a6c9b0f9a0cb08cf17fbe5 # v2.0.1
         with:
           bun-version: latest
-      - name: Install dependencies (frozen lockfile)
-        run: bun install --frozen-lockfile
-      - name: Prepare test-mode env
-        run: node scripts/ci-test-env.mjs
-      - name: Install Playwright browsers
-        run: bunx playwright install --with-deps chromium firefox webkit
+      - run: bun install --frozen-lockfile
+      - run: node scripts/ci-test-env.mjs
+      - run: bunx playwright install --with-deps chromium
       - name: Detect backend credentials
         id: creds
         run: |
@@ -74,14 +152,62 @@ jobs:
             echo "available=true" >> "$GITHUB_OUTPUT"
           else
             echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::No service-role secrets — running UI-only Playwright subset."
           fi
-      - name: Run Playwright specs (full suite)
+      - name: Critical workflows (full)
+        if: steps.creds.outputs.available == 'true'
+        run: bun run test:critical
+      - name: Critical workflows (report / nav subset without secrets)
+        if: steps.creds.outputs.available != 'true'
+        run: |
+          bunx playwright test \
+            tests/report-csv-export.spec.ts \
+            tests/report-export-receipt.spec.ts \
+            tests/nav-capabilities.spec.ts \
+            --project=chromium
+      - name: Upload Playwright diagnostics
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        with:
+          name: playwright-critical
+          path: |
+            playwright-report/**
+            test-results/**
+          retention-days: 3
+          if-no-files-found: ignore
+
+  playwright:
+    name: Playwright UI / integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      CI: "1"
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: oven-sh/setup-bun@4bc047ad259df6fc24a6c9b0f9a0cb08cf17fbe5 # v2.0.1
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: node scripts/ci-test-env.mjs
+      - run: bunx playwright install --with-deps chromium firefox webkit
+      - name: Detect backend credentials
+        id: creds
+        run: |
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::No service-role secrets — UI-only Playwright subset."
+          fi
+      - name: Playwright (full)
         if: steps.creds.outputs.available == 'true'
         run: |
           set -o pipefail
           bunx playwright test 2>&1 | tee playwright-run.log
-      - name: Run Playwright specs (UI-only subset)
+      - name: Playwright (UI-only subset)
         if: steps.creds.outputs.available != 'true'
         run: |
           set -o pipefail
@@ -94,10 +220,16 @@ jobs:
             tests/anonymous-access-sweep.spec.ts \
             --project=chromium \
             2>&1 | tee playwright-run.log
-      - name: Upload Playwright report, traces, screenshots & videos
+      - name: RLS / tenancy / cross-workspace
+        if: steps.creds.outputs.available == 'true'
+        run: |
+          bun run test:rls
+          bun run test:tenancy
+          bun run test:cross-workspace
+      - name: Upload Playwright report
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: playwright-diagnostics
           path: |
@@ -106,3 +238,28 @@ jobs:
             playwright-run.log
           retention-days: 3
           if-no-files-found: ignore
+
+  independent-review:
+    name: Independent review reminder
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 5
+    steps:
+      - name: Require checklist acknowledgment in PR body
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const body = context.payload.pull_request.body || "";
+            const checked = /-\s*\[x\]\s*Independent review done/i.test(body);
+            const mentioned = /independent-review-checklist/i.test(body) || /Independent review/i.test(body);
+            core.summary
+              .addHeading("Independent review (Codex or equivalent)")
+              .addRaw("Use `docs/process/independent-review-checklist.md`, then check **Independent review done** in the PR template before merge.")
+              .write();
+            if (!mentioned) {
+              core.warning("PR body should reference independent review / checklist.");
+            }
+            // Soft gate: warn only until Phase-1 template is universal; do not block on unchecked box yet.
+            if (!checked) {
+              core.warning("Independent review checkbox not checked yet — required before human merge.");
+            }

@@ -5,6 +5,8 @@
 
 <!-- One paragraph: what and why. -->
 
+**Requirement ID**: <!-- FR-__ / PROMPT-__ / Phase-2-quality-gates -->
+**Linked issue**: <!-- #NN or N/A -->
 **PROMPT**: PROMPT-NN
 **Risk ID** (if any): R-NN
 **Type**: feat | fix | chore | docs | refactor | test | perf | build | ci | revert
@@ -17,9 +19,19 @@
 ## Evidence
 
 - [ ] Screenshots (UI) — 360 / 768 / 1280 px
-- [ ] Playwright spec: `<name>` — green
+- [ ] Playwright critical / spec: `<name>` — green
+- [ ] Unit / contracts / migrations / audit:deps evidence
 - [ ] Migration diff (if any)
 - [ ] Lighthouse (if UI on core journey)
+
+## Independent review
+
+- [ ] Independent review done (Codex or other used `docs/process/independent-review-checklist.md`; comment linked)
+
+## Quality gates
+
+- [ ] CI quality gates green (`docs/process/ci-cd-quality-gates.md`) — Lovable preview alone is not sufficient
+- [ ] Target environment considered (LOCAL → DEVELOPMENT → STAGING → PRODUCTION)
 
 ## Definition of Done (AGENTS.md §6)
 
