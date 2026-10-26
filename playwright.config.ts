@@ -61,6 +61,25 @@ export default defineConfig({
           : undefined,
       },
     },
+    // Enterprise critical workflows — see docs/process/ci-cd-quality-gates.md
+    {
+      name: "critical",
+      testMatch: [
+        "**/journey-opportunity-to-portfolio.spec.ts",
+        "**/journey-private-report-access.spec.ts",
+        "**/report-csv-export.spec.ts",
+        "**/report-export-receipt.spec.ts",
+        "**/report-print-layout.spec.ts",
+        "**/handoff-lifecycle.spec.ts",
+        "**/nav-capabilities.spec.ts",
+      ],
+      use: {
+        ...devices["Desktop Chrome"],
+        launchOptions: process.env.PLAYWRIGHT_CHROMIUM_PATH
+          ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH }
+          : undefined,
+      },
+    },
     // Print/paper-fit checks are the only specs worth paying for in three
     // engines: page breaking and text metrics differ per engine, everything
     // else in this suite is engine-independent.
