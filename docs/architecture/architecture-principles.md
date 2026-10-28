@@ -9,12 +9,13 @@ Companion to `AGENTS.md` §2. These principles apply to every module and PR.
 - Single deployable app hosts Lite, Pro and Enterprise capability.
 - No forks per edition. No parallel apps. Differentiation happens through **entitlements** and **feature flags**, never through code duplication.
 - Modules have clear seams (see domain list below) but ship together.
+- **Not microservices.** Layering and ownership live in `src/lib/modules/` — see `docs/architecture/modular-monolith.md` and ADR 0005.
 
 ## 2. Domain modules
 
-Identity/access · Organization & workspaces · Repository · Opportunities · Studio · Scoring · Portfolios · Opportunity Map · Roadmap · Value · Workshops · Reporting · AI services · Integrations · Administration · Audit · Observability.
+Identity & Tenant · Discovery Studio · Use Case Management · Scoring · Portfolio · Value · KPI/Benefits · Workflow & Approvals · Collaboration · AI Matching · Reporting · Integrations · Audit (plus shared domain/policy and adapters).
 
-Cross-module calls go through explicit interfaces (typed server fns, shared hooks, or query keys) — never by reaching into another module's internals.
+Cross-module calls go through explicit interfaces (typed server fns, shared hooks, or query keys) — never by reaching into another module's internals. Catalogue: `src/lib/modules/catalogue.ts`.
 
 ## 3. Tenant & workspace ownership
 
@@ -85,6 +86,7 @@ Cross-module calls go through explicit interfaces (typed server fns, shared hook
 
 - Router other than TanStack Router.
 - Additional CSS framework or backend.
+- Microservices / per-domain databases without a superseding ADR (see ADR 0005).
 - Storing roles anywhere but `user_roles`.
 - Per-edition codebase forks.
 - Client-side admin decisions.

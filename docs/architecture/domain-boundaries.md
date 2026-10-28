@@ -1,13 +1,15 @@
 # Domain Boundaries — UseCasesX™
 
-Status: active (introduced 27 Jul 2026). Companion to `docs/architecture/architecture-principles.md`.
+Status: active (introduced 27 Jul 2026; Phase 5 modular-monolith alignment 28 Oct 2026).  
+Companions: `docs/architecture/architecture-principles.md`, `docs/architecture/modular-monolith.md`.
 
 ## Why
 
 Launch-critical surfaces were calling the browser Supabase client directly and
 re-implementing the same three things per call-site: "am I signed in", "is this
 mine", and "what do I show the user when it fails". That duplication is the main
-regression risk before 14 Aug 2026.
+regression risk. Phase 5 adds a **modular monolith** catalogue so those seams
+stay named without a microservices split.
 
 ## Layering
 
@@ -18,13 +20,42 @@ route / component        UI state, gating via useAuthz / RequirePlan
 hook (react-query)       caching, invalidation, optimistic surface
         │
         ▼
-src/lib/domain/*         validation → ownership → repository → error mapping
+API / BFF                createServerFn + /api/public/* (thin)
         │
         ▼
-Supabase (RLS)           the security boundary; never trusted to be bypassed
+Application services     Identity, Studio, Use Cases, Scoring, Portfolio, …
+        │                  (owned paths in src/lib/modules/catalogue.ts)
+        ▼
+Domain / Policy / Rules  src/lib/domain/* + authz + lifecycle + fair-use
+        │
+        ▼
+Adapters                 Supabase / storage / AI gateway
+        │
+        ▼
+Postgres RLS             the security boundary; never trusted to be bypassed
 ```
 
-## Modules
+## Application services (Phase 5)
+
+| Service | Catalogue id | Typical ownership |
+| ------- | ------------ | ----------------- |
+| Identity & Tenant | `identity_tenant` | `authz/`, workspace + organization fns, enterprise policy |
+| Discovery Studio | `discovery_studio` | repository services, studio wizard/repos |
+| Use Case Management | `use_case_management` | boards, drafts, deliverables, lifecycle |
+| Scoring Engine | `scoring_engine` | `src/lib/scoring*` |
+| Portfolio Management | `portfolio_management` | `portfolio/`, portfolio repositories |
+| Value Management | `value_management` | `src/lib/value/` |
+| KPI / Benefit Tracking | `kpi_benefit_tracking` | benefits + evidence repositories |
+| Workflow & Approvals | `workflow_approvals` | `gates/`, governance, handoffs |
+| Collaboration | `collaboration` | collab + workshops |
+| AI Matching | `ai_matching` | `src/lib/ai/`, AI server fns |
+| Reporting | `reporting` | `reports/`, roadmap export |
+| Integrations | `integrations` | `routes/api/public/*`, `lib/api/` |
+| Audit | `audit` | telemetry, observability, lifecycle audit |
+
+Full path lists and `dependsOn` edges: `src/lib/modules/catalogue.ts`.
+
+## Domain kernel modules
 
 | Module                                         | Owns                                                                                   |
 | ---------------------------------------------- | -------------------------------------------------------------------------------------- |
@@ -35,18 +66,22 @@ Supabase (RLS)           the security boundary; never trusted to be bypassed
 | `src/lib/domain/portfolios.repository.ts`      | `portfolios`, `portfolio_items`                                                        |
 
 Existing modules keep their boundaries: `src/lib/usecasex.services.ts` (public
-repository reads), `src/lib/boards.functions.ts` and `src/lib/*.functions.ts`
-(server functions), `src/lib/authz/*` (entitlements).
+repository reads), `src/lib/*.functions.ts` (BFF wrappers), `src/lib/authz/*`
+(entitlements / policy).
 
 ## Rules
 
 1. Components never import the Supabase client for launch-critical writes; they
-   go through a hook that calls a domain repository.
-2. Every mutation validates with a schema from `validation.ts` before touching
-   the database.
+   go through a hook that calls a domain repository or server fn.
+2. Every mutation validates with a schema from `validation.ts` (or the owning
+   module’s schema) before touching the database.
 3. Every failure surfaces `DomainError.userMessage`. Raw Postgres text — which
    can name tables and policies — must never reach the UI.
 4. Ownership checks in the client are defence in depth. RLS stays authoritative.
+5. Cross-application-service imports should use catalogue entry points; do not
+   reach into another module’s internals. Prefer declaring new `dependsOn` edges
+   intentionally.
+6. **No microservices split** for these domains without a new ADR.
 
 ## Post-launch extraction candidates
 
@@ -58,5 +93,5 @@ repository reads), `src/lib/boards.functions.ts` and `src/lib/*.functions.ts`
 | `_app.boards.collections.tsx`, `AddToCollectionButton.tsx`      | Collections repository (server functions already partially exist)    |
 | Reports                                                         | `generated_reports` repository once export formats freeze            |
 
-These are intentionally **not** refactored now: they are not on the critical
-Discover → … → Advisory path or they lack test coverage to protect behaviour.
+These are intentionally **not** mass-refactored in Phase 5: selective means
+catalogue + rules first; move code when coverage protects behaviour.
