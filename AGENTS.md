@@ -30,10 +30,10 @@ Discover → Capture Opportunity → Design → Score → Prioritize → Portfol
 
 ## 2. Architecture standard
 
-Enterprise-ready **modular monolith** on TanStack Start v1 (React 19, Vite 7) with Lovable Cloud (Supabase) as the backend. Cloudflare Workers runtime for SSR/server functions.
+Enterprise-ready **modular monolith** on TanStack Start v1 (React 19, Vite 7) with Lovable Cloud (Supabase) as the backend. Cloudflare Workers runtime for SSR/server functions. **Do not** split into microservices without a new ADR — see `docs/architecture/modular-monolith.md` and `src/lib/modules/`.
 
 **Modular domains** (do not collapse across boundaries without justification):
-identity/access · organization/workspaces · repository · opportunities · Studio · scoring · portfolios · Opportunity Map · roadmap · value · workshops · reporting · AI services · integrations · administration · audit · observability.
+Identity & Tenant · Discovery Studio · Use Case Management · Scoring · Portfolio · Value · KPI/Benefits · Workflow & Approvals · Collaboration · AI Matching · Reporting · Integrations · Audit (plus domain/policy kernel and data/AI/storage adapters). Path ownership: `src/lib/modules/catalogue.ts`.
 
 **Non-negotiable rules**:
 
@@ -121,6 +121,7 @@ Any plan check must resolve through `useEntitlement`/`usePlan`. Gate UI with `<R
 ## 9. Prohibited shortcuts
 
 - Introducing another router, another CSS framework, or another backend.
+- Splitting domains into networked microservices (or per-domain databases) without an accepted ADR — stay a modular monolith (`docs/architecture/modular-monolith.md`).
 - Dropping tables, weakening RLS, or bypassing entitlements for convenience.
 - Storing roles on `profiles`.
 - Hardcoding colors, secrets, or provider URLs in components.

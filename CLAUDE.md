@@ -48,7 +48,8 @@ src/
   routeTree.gen.ts           GENERATED — never edit.
   components/                UI + shadcn primitives under components/ui/.
   hooks/                     useSupabaseSession, useEntitlement, usePlan, etc.
-  lib/                       Domain logic. *.functions.ts = createServerFn wrappers.
+  lib/                       Domain logic. *.functions.ts = createServerFn wrappers (BFF).
+  lib/modules/               Modular monolith catalogue, layers, boundary rules.
   lib/*.server.ts            Server-only helpers. Never imported from client code.
   integrations/supabase/     GENERATED clients + auth middleware. Never edit.
   router.tsx, server.ts, start.ts, styles.css
@@ -120,6 +121,7 @@ Rules recap: no runtime helpers at module scope; never call a protected server f
 - Creating `src/pages/`, `src/routes/_app/index.tsx`, or an `App.tsx` route switcher.
 - Editing generated files listed above.
 - Adding a Supabase Edge Function for app-internal logic (use `createServerFn`).
+- Splitting into microservices / per-domain deployables without ADR 0005 superseded — use `src/lib/modules/`.
 - Storing user roles anywhere other than `user_roles`.
 - Inline plan/role checks — always go through `useEntitlement`/`usePlan`/`RequirePlan`/`Can`/`has_role`.
 - Hardcoded Tailwind color utilities in components.
