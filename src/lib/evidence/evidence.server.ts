@@ -219,7 +219,7 @@ export async function listEvidenceActivity(
     metadata: Record<string, unknown> | null;
   }>
 > {
-  let query = supabase
+  const query = supabase
     .from("audit_events")
     .select("id, event_type, entity_id, actor_id, created_at, request_id, new_value")
     .eq("workspace_id", input.workspaceId)

@@ -115,17 +115,17 @@ export async function submitFoundingAccessRequest(
     // unverified caller-supplied details and must not trigger notifications.
     if (!updatedExisting) {
       await sendTemplateEmail("founding-access-request-notify", "info@aigilityx.com", {
-      from: INFO_FROM,
-      replyTo: workEmail,
-      idempotencyKey: `founding-request-notify-${id}-${now.slice(0, 13)}`,
-      templateData: {
-        fullName,
-        workEmail,
-        organization,
-        roleTitle,
-        requestedAt: new Date(now).toUTCString(),
-        adminUrl: `${APP_URL}/administration/founding-access`,
-      },
+        from: INFO_FROM,
+        replyTo: workEmail,
+        idempotencyKey: `founding-request-notify-${id}-${now.slice(0, 13)}`,
+        templateData: {
+          fullName,
+          workEmail,
+          organization,
+          roleTitle,
+          requestedAt: new Date(now).toUTCString(),
+          adminUrl: `${APP_URL}/administration/founding-access`,
+        },
       });
     }
   } catch (error) {
