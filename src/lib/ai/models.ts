@@ -1,10 +1,9 @@
 /**
- * Provider-neutral model registry.
+ * Capability-tier / Studio alias registry (provider-neutral at the UI).
  *
- * The application never names a vendor model. It asks for a *capability tier*
- * ("fast", "balanced", "deep") or a brand alias, and this registry resolves it
- * to a Lovable AI Gateway model id. Swapping providers is a one-line change
- * here and requires no UI or call-site rewrite.
+ * UI selects *aliases* and *tiers* only. Concrete vendor model ids live here
+ * and in the active AIProvider adapter — never import gateway URLs or SDKs
+ * from components. Swap models by editing this file or AI_PROVIDER config.
  */
 
 /** Capability tiers the application may request. */
@@ -12,13 +11,23 @@ export const MODEL_TIERS = ["fast", "balanced", "deep"] as const;
 export type ModelTier = (typeof MODEL_TIERS)[number];
 
 /**
- * User-selectable aliases surfaced in the Studio. These stay stable even if
- * the underlying vendor model changes.
+ * Stable Studio research aliases. Labels are product names; they do not bind
+ * the UI to a vendor SDK.
  */
 export const PROVIDER_ALIASES = ["openai", "gemini", "conversx"] as const;
 export type ProviderAlias = (typeof PROVIDER_ALIASES)[number];
 
-/** Tier -> gateway model id. The only place vendor ids appear. */
+/** Display metadata for Studio — no vendor endpoints or keys. */
+export const PROVIDER_ALIAS_META: Record<
+  ProviderAlias,
+  { label: string; tagline: string }
+> = {
+  openai: { label: "Deep reasoning", tagline: "High-depth research alias" },
+  gemini: { label: "Fast research", tagline: "Balanced speed and quality" },
+  conversx: { label: "ConversX", tagline: "Conversational research engine" },
+};
+
+/** Tier -> gateway model id. The only place vendor ids appear (server registry). */
 const TIER_MODEL: Record<ModelTier, string> = {
   fast: "google/gemini-3.1-flash-lite",
   balanced: "google/gemini-3.6-flash",

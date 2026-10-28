@@ -41,6 +41,7 @@ import {
   type EngineSummary,
   type StudioBrief,
 } from "@/lib/ai/engines";
+import { PROVIDER_ALIAS_META } from "@/lib/ai/models";
 
 export const Route = createFileRoute("/_app/studio")({
   head: () => ({
@@ -50,18 +51,15 @@ export const Route = createFileRoute("/_app/studio")({
       {
         name: "description",
         content:
-          "Research and draft AI use cases for your organization using OpenAI, ConversX, or Gemini — and save them to your Pro workspace.",
+          "Research and draft AI use cases for your organization using provider-neutral research engines — and save them to your Pro workspace.",
       },
     ],
   }),
   component: StudioPage,
 });
 
-const PROVIDER_META: Record<StudioProvider, { label: string; tagline: string }> = {
-  openai: { label: "OpenAI", tagline: "GPT family · deep reasoning" },
-  gemini: { label: "Gemini", tagline: "Fast, multimodal research" },
-  conversx: { label: "ConversX", tagline: "Conversational research engine" },
-};
+const PROVIDER_META: Record<StudioProvider, { label: string; tagline: string }> =
+  PROVIDER_ALIAS_META;
 
 function StudioPage() {
   const navigate = useNavigate();
