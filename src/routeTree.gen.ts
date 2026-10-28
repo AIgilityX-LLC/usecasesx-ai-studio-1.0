@@ -42,6 +42,7 @@ import { Route as AppDemoScenariosRouteImport } from './routes/_app.demo-scenari
 import { Route as AppDiscoverRouteImport } from './routes/_app.discover'
 import { Route as AppEditionsRouteImport } from './routes/_app.editions'
 import { Route as AppEnterpriseRouteImport } from './routes/_app.enterprise'
+import { Route as AppEnterpriseAdminRouteImport } from './routes/_app.enterprise-admin'
 import { Route as AppEntitlementRouteImport } from './routes/_app.entitlement'
 import { Route as AppFaqRouteImport } from './routes/_app.faq'
 import { Route as AppFeasibilityRouteImport } from './routes/_app.feasibility'
@@ -107,6 +108,8 @@ import { Route as AppBoardsCollectionsRouteImport } from './routes/_app.boards.c
 import { Route as AppCategoriesIndexRouteImport } from './routes/_app.categories.index'
 import { Route as AppCollectionsIndexRouteImport } from './routes/_app.collections.index'
 import { Route as AppCollectionsSlugRouteImport } from './routes/_app.collections.$slug'
+import { Route as AppEnterpriseAdminIndexRouteImport } from './routes/_app.enterprise-admin.index'
+import { Route as AppEnterpriseAdminSectionRouteImport } from './routes/_app.enterprise-admin.$section'
 import { Route as AppInviteTokenRouteImport } from './routes/_app.invite.$token'
 import { Route as AppOpportunitiesIndexRouteImport } from './routes/_app.opportunities.index'
 import { Route as AppOpportunitiesIdRouteImport } from './routes/_app.opportunities.$id'
@@ -342,6 +345,11 @@ const AppEditionsRoute = AppEditionsRouteImport.update({
 const AppEnterpriseRoute = AppEnterpriseRouteImport.update({
   id: '/enterprise',
   path: '/enterprise',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEnterpriseAdminRoute = AppEnterpriseAdminRouteImport.update({
+  id: '/enterprise-admin',
+  path: '/enterprise-admin',
   getParentRoute: () => AppRoute,
 } as any)
 const AppEntitlementRoute = AppEntitlementRouteImport.update({
@@ -683,6 +691,17 @@ const AppCollectionsSlugRoute = AppCollectionsSlugRouteImport.update({
   path: '/collections/$slug',
   getParentRoute: () => AppRoute,
 } as any)
+const AppEnterpriseAdminIndexRoute = AppEnterpriseAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppEnterpriseAdminRoute,
+} as any)
+const AppEnterpriseAdminSectionRoute =
+  AppEnterpriseAdminSectionRouteImport.update({
+    id: '/$section',
+    path: '/$section',
+    getParentRoute: () => AppEnterpriseAdminRoute,
+  } as any)
 const AppInviteTokenRoute = AppInviteTokenRouteImport.update({
   id: '/invite/$token',
   path: '/invite/$token',
@@ -1119,6 +1138,7 @@ export interface FileRoutesByFullPath {
   '/discover': typeof AppDiscoverRoute
   '/editions': typeof AppEditionsRoute
   '/enterprise': typeof AppEnterpriseRoute
+  '/enterprise-admin': typeof AppEnterpriseAdminRouteWithChildren
   '/entitlement': typeof AppEntitlementRoute
   '/faq': typeof AppFaqRoute
   '/feasibility': typeof AppFeasibilityRoute
@@ -1180,6 +1200,7 @@ export interface FileRoutesByFullPath {
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
   '/collections/$slug': typeof AppCollectionsSlugRoute
+  '/enterprise-admin/$section': typeof AppEnterpriseAdminSectionRoute
   '/invite/$token': typeof AppInviteTokenRoute
   '/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/opportunities/new': typeof AppOpportunitiesNewRoute
@@ -1217,6 +1238,7 @@ export interface FileRoutesByFullPath {
   '/boards/': typeof AppBoardsIndexRoute
   '/categories/': typeof AppCategoriesIndexRoute
   '/collections/': typeof AppCollectionsIndexRoute
+  '/enterprise-admin/': typeof AppEnterpriseAdminIndexRoute
   '/opportunities/': typeof AppOpportunitiesIndexRoute
   '/platform-admin/': typeof AppPlatformAdminIndexRoute
   '/reports/': typeof AppReportsIndexRoute
@@ -1347,6 +1369,7 @@ export interface FileRoutesByTo {
   '/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/boards/collections': typeof AppBoardsCollectionsRoute
   '/collections/$slug': typeof AppCollectionsSlugRoute
+  '/enterprise-admin/$section': typeof AppEnterpriseAdminSectionRoute
   '/invite/$token': typeof AppInviteTokenRoute
   '/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/opportunities/new': typeof AppOpportunitiesNewRoute
@@ -1384,6 +1407,7 @@ export interface FileRoutesByTo {
   '/boards': typeof AppBoardsIndexRoute
   '/categories': typeof AppCategoriesIndexRoute
   '/collections': typeof AppCollectionsIndexRoute
+  '/enterprise-admin': typeof AppEnterpriseAdminIndexRoute
   '/opportunities': typeof AppOpportunitiesIndexRoute
   '/platform-admin': typeof AppPlatformAdminIndexRoute
   '/reports': typeof AppReportsIndexRoute
@@ -1459,6 +1483,7 @@ export interface FileRoutesById {
   '/_app/discover': typeof AppDiscoverRoute
   '/_app/editions': typeof AppEditionsRoute
   '/_app/enterprise': typeof AppEnterpriseRoute
+  '/_app/enterprise-admin': typeof AppEnterpriseAdminRouteWithChildren
   '/_app/entitlement': typeof AppEntitlementRoute
   '/_app/faq': typeof AppFaqRoute
   '/_app/feasibility': typeof AppFeasibilityRoute
@@ -1520,6 +1545,7 @@ export interface FileRoutesById {
   '/_app/boards/$boardId': typeof AppBoardsBoardIdRoute
   '/_app/boards/collections': typeof AppBoardsCollectionsRoute
   '/_app/collections/$slug': typeof AppCollectionsSlugRoute
+  '/_app/enterprise-admin/$section': typeof AppEnterpriseAdminSectionRoute
   '/_app/invite/$token': typeof AppInviteTokenRoute
   '/_app/opportunities/$id': typeof AppOpportunitiesIdRoute
   '/_app/opportunities/new': typeof AppOpportunitiesNewRoute
@@ -1557,6 +1583,7 @@ export interface FileRoutesById {
   '/_app/boards/': typeof AppBoardsIndexRoute
   '/_app/categories/': typeof AppCategoriesIndexRoute
   '/_app/collections/': typeof AppCollectionsIndexRoute
+  '/_app/enterprise-admin/': typeof AppEnterpriseAdminIndexRoute
   '/_app/opportunities/': typeof AppOpportunitiesIndexRoute
   '/_app/platform-admin/': typeof AppPlatformAdminIndexRoute
   '/_app/reports/': typeof AppReportsIndexRoute
@@ -1632,6 +1659,7 @@ export interface FileRouteTypes {
     | '/discover'
     | '/editions'
     | '/enterprise'
+    | '/enterprise-admin'
     | '/entitlement'
     | '/faq'
     | '/feasibility'
@@ -1693,6 +1721,7 @@ export interface FileRouteTypes {
     | '/boards/$boardId'
     | '/boards/collections'
     | '/collections/$slug'
+    | '/enterprise-admin/$section'
     | '/invite/$token'
     | '/opportunities/$id'
     | '/opportunities/new'
@@ -1730,6 +1759,7 @@ export interface FileRouteTypes {
     | '/boards/'
     | '/categories/'
     | '/collections/'
+    | '/enterprise-admin/'
     | '/opportunities/'
     | '/platform-admin/'
     | '/reports/'
@@ -1860,6 +1890,7 @@ export interface FileRouteTypes {
     | '/boards/$boardId'
     | '/boards/collections'
     | '/collections/$slug'
+    | '/enterprise-admin/$section'
     | '/invite/$token'
     | '/opportunities/$id'
     | '/opportunities/new'
@@ -1897,6 +1928,7 @@ export interface FileRouteTypes {
     | '/boards'
     | '/categories'
     | '/collections'
+    | '/enterprise-admin'
     | '/opportunities'
     | '/platform-admin'
     | '/reports'
@@ -1971,6 +2003,7 @@ export interface FileRouteTypes {
     | '/_app/discover'
     | '/_app/editions'
     | '/_app/enterprise'
+    | '/_app/enterprise-admin'
     | '/_app/entitlement'
     | '/_app/faq'
     | '/_app/feasibility'
@@ -2032,6 +2065,7 @@ export interface FileRouteTypes {
     | '/_app/boards/$boardId'
     | '/_app/boards/collections'
     | '/_app/collections/$slug'
+    | '/_app/enterprise-admin/$section'
     | '/_app/invite/$token'
     | '/_app/opportunities/$id'
     | '/_app/opportunities/new'
@@ -2069,6 +2103,7 @@ export interface FileRouteTypes {
     | '/_app/boards/'
     | '/_app/categories/'
     | '/_app/collections/'
+    | '/_app/enterprise-admin/'
     | '/_app/opportunities/'
     | '/_app/platform-admin/'
     | '/_app/reports/'
@@ -2368,6 +2403,13 @@ declare module '@tanstack/react-router' {
       path: '/enterprise'
       fullPath: '/enterprise'
       preLoaderRoute: typeof AppEnterpriseRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/enterprise-admin': {
+      id: '/_app/enterprise-admin'
+      path: '/enterprise-admin'
+      fullPath: '/enterprise-admin'
+      preLoaderRoute: typeof AppEnterpriseAdminRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/entitlement': {
@@ -2824,6 +2866,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/collections/$slug'
       preLoaderRoute: typeof AppCollectionsSlugRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/_app/enterprise-admin/': {
+      id: '/_app/enterprise-admin/'
+      path: '/'
+      fullPath: '/enterprise-admin/'
+      preLoaderRoute: typeof AppEnterpriseAdminIndexRouteImport
+      parentRoute: typeof AppEnterpriseAdminRoute
+    }
+    '/_app/enterprise-admin/$section': {
+      id: '/_app/enterprise-admin/$section'
+      path: '/$section'
+      fullPath: '/enterprise-admin/$section'
+      preLoaderRoute: typeof AppEnterpriseAdminSectionRouteImport
+      parentRoute: typeof AppEnterpriseAdminRoute
     }
     '/_app/invite/$token': {
       id: '/_app/invite/$token'
@@ -3416,6 +3472,19 @@ const AppBoardsRouteWithChildren = AppBoardsRoute._addFileChildren(
   AppBoardsRouteChildren,
 )
 
+interface AppEnterpriseAdminRouteChildren {
+  AppEnterpriseAdminSectionRoute: typeof AppEnterpriseAdminSectionRoute
+  AppEnterpriseAdminIndexRoute: typeof AppEnterpriseAdminIndexRoute
+}
+
+const AppEnterpriseAdminRouteChildren: AppEnterpriseAdminRouteChildren = {
+  AppEnterpriseAdminSectionRoute: AppEnterpriseAdminSectionRoute,
+  AppEnterpriseAdminIndexRoute: AppEnterpriseAdminIndexRoute,
+}
+
+const AppEnterpriseAdminRouteWithChildren =
+  AppEnterpriseAdminRoute._addFileChildren(AppEnterpriseAdminRouteChildren)
+
 interface AppPlatformAdminRouteChildren {
   AppPlatformAdminAiEnginesRoute: typeof AppPlatformAdminAiEnginesRoute
   AppPlatformAdminAnalyticsRoute: typeof AppPlatformAdminAnalyticsRoute
@@ -3556,6 +3625,7 @@ interface AppRouteChildren {
   AppDiscoverRoute: typeof AppDiscoverRoute
   AppEditionsRoute: typeof AppEditionsRoute
   AppEnterpriseRoute: typeof AppEnterpriseRoute
+  AppEnterpriseAdminRoute: typeof AppEnterpriseAdminRouteWithChildren
   AppEntitlementRoute: typeof AppEntitlementRoute
   AppFaqRoute: typeof AppFaqRoute
   AppFeasibilityRoute: typeof AppFeasibilityRoute
@@ -3637,6 +3707,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDiscoverRoute: AppDiscoverRoute,
   AppEditionsRoute: AppEditionsRoute,
   AppEnterpriseRoute: AppEnterpriseRoute,
+  AppEnterpriseAdminRoute: AppEnterpriseAdminRouteWithChildren,
   AppEntitlementRoute: AppEntitlementRoute,
   AppFaqRoute: AppFaqRoute,
   AppFeasibilityRoute: AppFeasibilityRoute,

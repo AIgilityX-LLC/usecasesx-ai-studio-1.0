@@ -27,6 +27,7 @@ import {
   HelpCircle,
   Blocks,
   Search,
+  Building2,
 } from "lucide-react";
 import { PUBLIC_LAUNCH_FEATURES, CLIENT_CAPABILITY_FLAGS } from "@/lib/feature-flags";
 import { DEFAULT_CAPABILITY_FLAGS } from "@/lib/authz/flags";
@@ -248,6 +249,13 @@ export const ENTERPRISE_NAV_SECTIONS: EnterpriseNavSection[] = [
     zone: "bottom",
     requireCapability: "workspace.manage",
     items: [
+      item({
+        id: "enterprise-admin",
+        to: "/enterprise-admin",
+        label: "Enterprise Admin",
+        icon: Building2,
+        pro: true,
+      }),
       item({
         id: "observability",
         to: "/admin-observability",
