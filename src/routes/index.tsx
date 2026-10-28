@@ -459,11 +459,16 @@ function LandingPage() {
               <span className="ux-eyebrow-dot" /> Enterprise AI portfolio management
             </div>
             <h1 className="ux-hero-heading">
-              Operationalize <span className="is-accent">high-value</span> AI use cases.
+              Build A Validated AI Use Case
+              <br />
+              <span className="is-accent">Before You Spend A Dollar Building It.</span>
             </h1>
-            <p className="ux-hero-lead">
-              UseCasesX brings discovery, design, scoring and portfolio decisions into one
-              evidence-led workspace.
+            <p className="ux-hero-lead">Turn any AI idea into a Value-Driven Use Case</p>
+            <p className="ux-hero-lead" style={{ marginTop: "1.25rem" }}>
+              <strong>Discovery · Design · Prioritize · Manage.</strong>
+              <br />
+              UseCasesX Studio helps ambitious leaders and teams move from curiosity to governed,
+              measurable action — without the guesswork.
             </p>
             <div className="ux-hero-actions">
               <Link
