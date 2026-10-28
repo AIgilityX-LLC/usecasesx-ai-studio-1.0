@@ -113,6 +113,26 @@ async function main() {
     throw new Error("User A DELETE succeeded on user B's board (RLS bypass)");
   console.log("✓ cross-tenant DELETE blocked");
 
+  // Telemetry: cannot insert a view row forged as the other user (requires migration applied).
+  const { data: forgedView, error: forgedViewErr } = await a.client
+    .from("use_case_views")
+    .insert({ use_case_id: bData.useCaseId, user_id: b.userId })
+    .select("id");
+  if (!forgedViewErr && forgedView && forgedView.length > 0) {
+    throw new Error("User A inserted use_case_views as user B (telemetry RLS leak)");
+  }
+  console.log("✓ forged use_case_views insert blocked (or table unavailable)");
+
+  // user_roles: non-super-admin must not grant themselves admin (requires migration applied).
+  const { data: roleGrant, error: roleErr } = await a.client
+    .from("user_roles")
+    .insert({ user_id: a.userId, role: "admin" })
+    .select("id");
+  if (!roleErr && roleGrant && roleGrant.length > 0) {
+    throw new Error("Non-super-admin INSERT into user_roles succeeded (role RLS leak)");
+  }
+  console.log("✓ user_roles self-grant blocked (or policy not yet applied on target)");
+
   // Cleanup — each user removes their own rows
   await a.client.from("ai_use_cases").delete().eq("id", aData.useCaseId);
   await a.client.from("use_case_boards").delete().eq("id", aData.boardId);
