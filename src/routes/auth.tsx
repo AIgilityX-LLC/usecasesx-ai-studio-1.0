@@ -33,7 +33,7 @@ const SIGNUPS_ENABLED = false;
 const authSearchSchema = z.object({
   redirect: z.string().optional().catch(undefined),
   intent: z.string().optional().catch(undefined),
-  mode: fallback(z.enum(["signin", "signup"]).optional(), undefined),
+  mode: z.enum(["signin", "signup"]).optional().catch(undefined),
 });
 
 export const Route = createFileRoute("/auth")({
