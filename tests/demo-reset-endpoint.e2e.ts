@@ -49,12 +49,28 @@ async function main() {
   /* ---------------- role / credential checks ---------------- */
   check("password-gated reset rejects a wrong password", !demoResetAuthorized("not-the-password"));
   check(
-    "password-gated reset rejects a non-demo caller with no password",
-    !demoResetAuthorized(undefined, "someone@example.com"),
+    "password-gated reset rejects missing password",
+    !demoResetAuthorized(undefined),
   );
   check(
-    "demo persona email is accepted by the password gate",
-    demoResetAuthorized(undefined, "pro@demo.usecasex.app"),
+    "demo persona email alone is never accepted by the password gate",
+    !demoResetAuthorized(undefined),
+  );
+  check(
+    "production without DEMO_RESET_ENABLED denies even a matching password",
+    !demoResetAuthorized("any-secret", {
+      DEMO_PERSONA_PASSWORD: "any-secret",
+      NODE_ENV: "production",
+      DEMO_RESET_ENABLED: "false",
+    }),
+  );
+  check(
+    "matching password authorized when reset is enabled",
+    demoResetAuthorized("any-secret", {
+      DEMO_PERSONA_PASSWORD: "any-secret",
+      NODE_ENV: "production",
+      DEMO_RESET_ENABLED: "true",
+    }),
   );
 
   const { data: anonLog, error: anonError } = await anon

@@ -103,6 +103,15 @@ export async function listUsableEngines(
 }
 
 export async function upsertEngine(input: EngineUpsertInput, actorId: string) {
+  const { assertSafeOutboundUrl } = await import("@/lib/security/outbound-url");
+  let baseUrl = input.baseUrl ?? null;
+  if (baseUrl) {
+    const safe = assertSafeOutboundUrl(baseUrl);
+    if (!safe.ok) {
+      throw new Error(`Engine base URL rejected: ${safe.reason}`);
+    }
+    baseUrl = safe.href;
+  }
   const db = await admin();
   const { error } = await db.from("ai_engines").upsert(
     {
@@ -112,7 +121,7 @@ export async function upsertEngine(input: EngineUpsertInput, actorId: string) {
       tagline: input.tagline ?? null,
       route: input.route,
       model_id: input.modelId,
-      base_url: input.baseUrl ?? null,
+      base_url: baseUrl,
       tier: input.tier,
       enabled: input.enabled,
       allow_workspace_keys: input.allowWorkspaceKeys,
@@ -345,8 +354,14 @@ export async function testEngine(
     return { ok: false, latencyMs: 0, message: "No API key stored for this engine." };
   if (!row.base_url) return { ok: false, latencyMs: 0, message: "No endpoint configured." };
 
+  const { assertSafeOutboundUrl } = await import("@/lib/security/outbound-url");
+  const safeUrl = assertSafeOutboundUrl(row.base_url);
+  if (!safeUrl.ok) {
+    return { ok: false, latencyMs: 0, message: "Engine endpoint is not allowed (SSRF policy)." };
+  }
+
   try {
-    const res = await fetch(`${row.base_url.replace(/\/$/, "")}/chat/completions`, {
+    const res = await fetch(`${safeUrl.href}/chat/completions`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${credential.key}`,

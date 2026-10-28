@@ -152,7 +152,11 @@ function DemoLoginPage() {
 
   const loadArtifacts = useCallback(async () => {
     try {
-      setArtifacts(await listDemoArtifactsFn());
+      if (!DEMO_PASSWORD) {
+        setArtifacts([]);
+        return;
+      }
+      setArtifacts(await listDemoArtifactsFn({ data: { password: DEMO_PASSWORD } }));
     } catch {
       setArtifacts([]);
     }
