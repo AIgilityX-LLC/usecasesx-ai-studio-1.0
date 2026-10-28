@@ -1,0 +1,32 @@
+name: Security hardening
+
+# Phase 3 gates that do not require Supabase demo credentials.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-hardening-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  client-secrets-and-authz:
+    name: Client secrets · ABAC unit · tenant column inventory
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: oven-sh/setup-bun@4bc047ad259df6fc24a6c9b0f9a0cb08cf17fbe5 # v2.0.1
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Client secret boundary
+        run: bun run check:client-secrets
+      - name: ABAC / enterprise role unit tests
+        run: bun test tests/unit/abac.test.ts
+      - name: Tenant column inventory (report)
+        run: bun run audit:tenant-columns

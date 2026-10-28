@@ -5,3 +5,6 @@ export * from "./catalogue";
 export * from "./permission-service";
 export * from "./scoped-permissions";
 export * from "./nav-capabilities";
+export * from "./enterprise-roles";
+export * from "./abac";
+
