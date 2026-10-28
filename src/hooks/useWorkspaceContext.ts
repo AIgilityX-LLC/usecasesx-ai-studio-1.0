@@ -19,6 +19,10 @@ export type WorkspaceContext = Awaited<ReturnType<typeof getWorkspaceContextFn>>
  *
  * Active workspace is a client preference validated on the server. RLS remains
  * the authority for data access; this context scopes UX and writes.
+ *
+ * Phase 4: prefer `useTenantContext` for the full TenantContext (hierarchy,
+ * subscription, derivedFrom). Never filter by a client-supplied tenant_id —
+ * see `src/lib/tenancy/`.
  */
 export function useWorkspaceContext() {
   const session = useSupabaseSession();

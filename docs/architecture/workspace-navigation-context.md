@@ -4,6 +4,8 @@ How UseCasesX surfaces **organization** and **workspace** context in the signed-
 
 **Do not add a `tenants` table.** `organizations` is the tenant. `workspaces` are portfolios of work inside an organization.
 
+**Phase 4:** Full hierarchy + central services (`TenantContext`, `AuthorizationService`, `PolicyService`, `EntitlementService`) live in `src/lib/tenancy/` — see `docs/architecture/enterprise-multi-tenancy.md`. Prefer `useTenantContext` for new UI; never filter by a client-supplied `tenant_id`.
+
 ---
 
 ## Concepts
