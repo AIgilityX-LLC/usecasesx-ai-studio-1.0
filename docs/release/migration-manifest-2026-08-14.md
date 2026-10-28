@@ -38,6 +38,7 @@ Properties enforced for every entry:
 | 16  | `20260923360100_v2_19_pattern_template_seed.sql`        | Reviewed pattern-template rows (no client names / ROI) — **recorded exception**                                                         | Seed                |
 | 17  | `20260929120000_v2_19_anon_use_cases_column_grants.sql` | Extend anon column-level SELECT after content-governance columns                                                                        | Grant               |
 | 18  | `20260929180000_founding_access_requests.sql`           | Founding Access request → review → invite flow                                                                                          | Tables + RLS        |
+| 19  | `20261028180000_rls_telemetry_and_role_hardening.sql`   | Restrict `user_roles` writes to `super_admin`; scope telemetry inserts (`use_case_views` / downloads / `integration_events`)            | RLS only            |
 
 ### Recorded exceptions for entries 3 and 16
 
@@ -67,9 +68,10 @@ Content is applied separately so a schema apply never writes rows beyond the exc
 
 - **Backup before apply** — Lovable Cloud takes automatic daily backups; request an on-demand
   data export from Cloud → Advanced settings immediately before applying to production.
-- **Rollback posture** — all 18 migrations are additive (entries 3 and 16 are recorded seed
+- **Rollback posture** — all 19 migrations are additive (entries 3 and 16 are recorded seed
   exceptions), so the safe rollback for the _application_ is to revert the app to the previous
-  version; the schema can stay ahead. No `DROP` is required and none is authorised.
+  version; the schema can stay ahead. No `DROP` is required and none is authorised. Entry 19
+  rollback SQL (policy restore) lives in `docs/security/rls-fix-rollback.md`.
 - **Forward-fix** — defects in a policy or routine are corrected with a new additive migration
   (`CREATE OR REPLACE FUNCTION`, `DROP POLICY IF EXISTS` + `CREATE POLICY`), never by editing an
   applied file. Editing an applied migration file breaks repeatability and is treated as a P0
