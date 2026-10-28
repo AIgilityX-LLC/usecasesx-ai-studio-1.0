@@ -59,10 +59,19 @@ export function documentsBySection(
   );
 }
 
-const csvCell = (value: string | number): string => {
-  const text = String(value ?? "");
+/**
+ * CSV cell encoder shared by canvas exports. Text that a spreadsheet would read
+ * as a formula (leading =, +, -, @, optionally after whitespace/tab/CR) is
+ * prefixed with an apostrophe so it renders as literal text. Numeric values are
+ * emitted unchanged so negative numbers stay numbers.
+ */
+export const canvasCsvCell = (value: string | number | null | undefined): string => {
+  let text = String(value ?? "");
+  if (typeof value !== "number" && /^\s*[=+\-@]/.test(text)) text = `'${text}`;
   return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 };
+
+const csvCell = canvasCsvCell;
 
 export function canvasDocumentsToCsv(
   documents: readonly CanvasDocument[],
