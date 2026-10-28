@@ -103,3 +103,4 @@ Air-gap exit criteria remain in `docs/v2/sovereignty-abstractions.md`.
 | Phase 7 | Security events, audit correlation, health |
 | **Phase 8** | Product sovereignty model + posture + Zero Trust alignment |
 | **Phase 9** | Four deployment profiles (operating planes) — `docs/architecture/deployment-profiles.md` |
+| **Control plane** | Configurable `SovereigntyPolicy` + `SovereigntyControlPlane` — `docs/sovereignty/` |

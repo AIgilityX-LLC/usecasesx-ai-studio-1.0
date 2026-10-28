@@ -11,3 +11,4 @@ export * from "./maturity";
 export * from "./posture";
 export * from "./zero-trust";
 export * from "./service";
+export * from "./control-plane";
