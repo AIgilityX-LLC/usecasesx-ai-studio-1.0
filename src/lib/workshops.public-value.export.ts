@@ -18,12 +18,14 @@ import {
   reportStrings,
   type ReportLanguage,
 } from "@/lib/i18n/report-language";
-import { canvasDocumentsToCsv, type CanvasDocument } from "@/lib/workshops.canvas-evidence";
+import {
+  canvasCsvCell,
+  canvasDocumentsToCsv,
+  type CanvasDocument,
+} from "@/lib/workshops.canvas-evidence";
 
-const csvCell = (value: string | number): string => {
-  const text = String(value ?? "");
-  return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
-};
+// Formula-neutralizing encoder: canvas answers are user-entered text.
+const csvCell = (value: string | number): string => canvasCsvCell(value);
 
 export type CanvasExportInput = {
   workshopTitle: string;
