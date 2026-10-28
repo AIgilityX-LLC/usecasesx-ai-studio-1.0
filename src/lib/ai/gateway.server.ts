@@ -1,5 +1,8 @@
 /**
- * Gateway transport — the ONLY place the app talks to an AI provider.
+ * Gateway transport — Lovable AI Gateway implementation of the AIProvider port.
+ *
+ * Prefer `resolveAiProvider()` from `src/lib/ports/resolve.server.ts` for new
+ * call sites. This module remains the active adapter body (Phase 6).
  *
  * Server-only (`.server.ts` is blocked from client bundles). Owns the API key,
  * timeout, bounded retry for transient failures, and normalisation of every

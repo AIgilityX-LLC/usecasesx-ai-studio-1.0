@@ -311,8 +311,8 @@ export async function testEngine(
 
   const startedAt = Date.now();
   if (row.route === "gateway") {
-    const { callGateway } = await import("./gateway.server");
-    const res = await callGateway({
+    const { resolveAiProvider } = await import("@/lib/ports/resolve.server");
+    const res = await resolveAiProvider().complete({
       model: row.model_id,
       system: "Reply by calling the tool with ok set to true.",
       user: "Connection test.",

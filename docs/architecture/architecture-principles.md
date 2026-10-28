@@ -53,6 +53,7 @@ Cross-module calls go through explicit interfaces (typed server fns, shared hook
 - No provider secret in the browser bundle, in logs, or in public config.
 - Prompts, model IDs and defaults live in server-side modules.
 - Every AI call is auditable (input hash, model, cost class, workspace).
+- Transport resolves through the **AIProvider port** (`src/lib/ports/`) so vendors can be swapped without UI rewrites — see `docs/architecture/ports-and-adapters.md`.
 
 ## 9. Auditability
 
@@ -85,6 +86,7 @@ Cross-module calls go through explicit interfaces (typed server fns, shared hook
 
 - Router other than TanStack Router.
 - Additional CSS framework or backend.
+- Vendor SDK imports from UI/domain code (use `src/lib/ports/` adapters).
 - Storing roles anywhere but `user_roles`.
 - Per-edition codebase forks.
 - Client-side admin decisions.

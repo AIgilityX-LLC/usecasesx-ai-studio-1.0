@@ -18,7 +18,7 @@ import type { z } from "zod";
 
 import { evaluate } from "@/lib/authz/permission-service";
 import { resolveSubject } from "@/lib/authz.server";
-import { callGateway } from "./gateway.server";
+import { resolveAiProvider } from "@/lib/ports/resolve.server";
 import { sharedGatewayCircuit } from "./circuit-breaker";
 import {
   BURST_WINDOW_MS,
@@ -278,7 +278,7 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
   // 3. Provider call.
   const startedAt = Date.now();
   const grounded = ctx.groundedPromptBlock?.trim() ? `\n\n${ctx.groundedPromptBlock.trim()}` : "";
-  const response = await callGateway({
+  const response = await resolveAiProvider().complete({
     model,
     system: `${prompt.system}\n\n${FENCE_NOTICE}`,
     user: `${fenceUntrusted(userPrompt)}${grounded}`,
@@ -300,16 +300,17 @@ async function run<T>(task: AiTask, ctx: AiCallContext, userPrompt: string): Pro
     ) {
       circuit.recordFailure();
     }
+    const errorKind = response.kind === "not_implemented" ? "not_configured" : response.kind;
     await recordUsage(ctx, subject, {
       task,
       model,
       providerAlias: engineSlug ?? alias ?? prompt.tier,
       status: "error",
-      errorKind: response.kind,
+      errorKind,
       durationMs,
       promptVersion: prompt.version,
     });
-    return aiFailure(response.kind, fairUse);
+    return aiFailure(errorKind, fairUse);
   }
 
   circuit.recordSuccess();
