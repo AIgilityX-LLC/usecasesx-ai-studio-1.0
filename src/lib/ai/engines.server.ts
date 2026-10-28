@@ -320,8 +320,9 @@ export async function testEngine(
 
   const startedAt = Date.now();
   if (row.route === "gateway") {
-    const { callGateway } = await import("./gateway.server");
-    const res = await callGateway({
+    const { resolveAiProviderForCall } = await import("./provider/resolve.server");
+    const { provider } = await resolveAiProviderForCall({});
+    const res = await provider.extractStructuredData({
       model: row.model_id,
       system: "Reply by calling the tool with ok set to true.",
       user: "Connection test.",

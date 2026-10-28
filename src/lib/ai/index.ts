@@ -33,3 +33,5 @@ export {
 } from "./eval/dataset";
 export { createCircuit, DEFAULT_CIRCUIT, type CircuitState } from "./circuit-breaker";
 export { sanitizeUntrusted, fenceUntrusted, FENCE_NOTICE } from "./sanitize";
+/** Provider plane (client-safe): types, config, catalogue, AIProviderPolicy. */
+export * from "./provider";

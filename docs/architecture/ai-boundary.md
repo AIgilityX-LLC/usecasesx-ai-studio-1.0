@@ -22,9 +22,12 @@ src/lib/ai/
   schemas.ts          Zod output schema + JSON tool schema per task
   types.ts            AiResult envelope, AiProvenance, user-safe error copy
   fair-use.ts         pure limit policy (per user / per workspace / per edition)
-  gateway.server.ts   the ONLY provider transport: key, timeout, retry, mapping
-  service.server.ts   AIService — entitlement, fair use, validation, logging
+  provider/           AIProvider interface, config, AIProviderPolicy, adapters
+  gateway.server.ts   Lovable gateway HTTP transport (active adapters only)
+  service.server.ts   AIService — entitlement, fair use → AIProvider → validation
   index.ts            client-safe barrel (no transport, no service, no key)
+
+See docs/architecture/ai-provider-abstraction.md.
 
 src/lib/ai.functions.ts        thin createServerFn wrappers (6 methods)
 src/lib/usecasex.studio.functions.ts  Studio compatibility layer, delegates here
