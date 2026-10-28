@@ -32,14 +32,16 @@ export const listReviewsForUseCaseFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ useCaseId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { listReviewsForUseCase, listOpenItems } = await import("./gates.server");
+    const { listReviewsForUseCase, listOpenItemsForReviews } = await import("./gates.server");
     const reviews = await listReviewsForUseCase(context.supabase, data.useCaseId);
-    return Promise.all(
-      reviews.map(async (r) => ({
-        ...r,
-        openItems: await listOpenItems(context.supabase, r.id),
-      })),
+    const openByReview = await listOpenItemsForReviews(
+      context.supabase,
+      reviews.map((r) => r.id),
     );
+    return reviews.map((r) => ({
+      ...r,
+      openItems: openByReview.get(r.id) ?? [],
+    }));
   });
 
 export const listReviewInboxFn = createServerFn({ method: "GET" })
@@ -108,10 +110,15 @@ export const decideGateReviewFn = createServerFn({ method: "POST" })
     const workspaceId = (review as { workspace_id?: string } | null)?.workspace_id ?? null;
     const authz = await resolveSubject(context.supabase, context.userId, workspaceId);
 
-    return decideGateReview(context.supabase, context.userId, {
-      workspaceRole: authz.workspaceRole,
-      isPlatformAdmin: authz.isPlatformAdmin,
-    }, data);
+    return decideGateReview(
+      context.supabase,
+      context.userId,
+      {
+        workspaceRole: authz.workspaceRole,
+        isPlatformAdmin: authz.isPlatformAdmin,
+      },
+      data,
+    );
   });
 
 export const closeGateOpenItemFn = createServerFn({ method: "POST" })
@@ -130,10 +137,15 @@ export const closeGateOpenItemFn = createServerFn({ method: "POST" })
     const workspaceId = (item as { workspace_id?: string } | null)?.workspace_id ?? null;
     const authz = await resolveSubject(context.supabase, context.userId, workspaceId);
 
-    return closeOpenItem(context.supabase, context.userId, {
-      workspaceRole: authz.workspaceRole,
-      isPlatformAdmin: authz.isPlatformAdmin,
-    }, data);
+    return closeOpenItem(
+      context.supabase,
+      context.userId,
+      {
+        workspaceRole: authz.workspaceRole,
+        isPlatformAdmin: authz.isPlatformAdmin,
+      },
+      data,
+    );
   });
 
 export const listGateEventsFn = createServerFn({ method: "GET" })

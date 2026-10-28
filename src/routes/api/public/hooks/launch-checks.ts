@@ -73,34 +73,53 @@ export const Route = createFileRoute("/api/public/hooks/launch-checks")({
         const userId = signIn.data.user.id;
 
         try {
-          const { runLaunchChecks } = await import("@/lib/qa/harness.server");
-          const { recordLaunchCheckRun } = await import("@/lib/qa/launch-runs.server");
-          const { data: isAdmin } = await supabase.rpc("is_admin_tier", { _user_id: userId });
+          const { monitorJob } = await import("@/lib/ops/control-plane/jobs");
+          const { correlationFromRequest } = await import("@/lib/ops/control-plane/correlation");
+          const { correlationId } = correlationFromRequest(request);
 
-          const run = await runLaunchChecks(supabase, {
-            userId,
-            email,
-            isAdmin: Boolean(isAdmin),
-          });
+          const { result: payload } = await monitorJob(
+            "launch-checks",
+            async () => {
+              const { runLaunchChecks } = await import("@/lib/qa/harness.server");
+              const { recordLaunchCheckRun } = await import("@/lib/qa/launch-runs.server");
+              const { data: isAdmin } = await supabase.rpc("is_admin_tier", { _user_id: userId });
 
-          const recorded = await recordLaunchCheckRun(supabase, {
-            cohort,
-            trigger: "scheduled",
-            triggerDetail: "Automated daily run",
-            actorId: userId,
-            actorEmail: email,
-            results: run.results,
-            summary: run.summary,
-          });
+              const run = await runLaunchChecks(supabase, {
+                userId,
+                email,
+                isAdmin: Boolean(isAdmin),
+              });
 
-          return Response.json({
-            ok: true,
-            runId: recorded.id,
-            summary: run.summary,
-          });
+              const recorded = await recordLaunchCheckRun(supabase, {
+                cohort,
+                trigger: "scheduled",
+                triggerDetail: "Automated daily run",
+                actorId: userId,
+                actorEmail: email,
+                results: run.results,
+                summary: run.summary,
+              });
+
+              return {
+                ok: true as const,
+                runId: recorded.id,
+                summary: run.summary,
+              };
+            },
+            correlationId,
+          );
+
+          return Response.json(payload);
         } catch (error) {
-          console.error("[launch-checks] run failed", error);
-          return Response.json({ ok: false, error: "Launch checks failed" }, { status: 500 });
+          const { handleUnexpectedError, errorJsonResponse } =
+            await import("@/lib/ops/control-plane/errors");
+          return errorJsonResponse(
+            handleUnexpectedError(error, {
+              scope: "hooks.launch-checks",
+              request,
+              publicMessage: "Launch checks failed",
+            }),
+          );
         } finally {
           await supabase.auth.signOut();
         }

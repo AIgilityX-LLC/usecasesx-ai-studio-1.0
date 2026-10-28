@@ -93,6 +93,10 @@ pass it into `recordProductEvent`). `logAppError` / `logServerError` print the
 same id, so a support question can be traced from a console line to the exact
 governance record without a log aggregation product.
 
+**Phase 7:** Prefer `src/lib/ops/control-plane/` for new server paths — structured
+JSON logs, `x-correlation-id`, SLOs, health, and justified spans. See
+`docs/architecture/reliability-observability.md`.
+
 ## Privacy rules (enforced in code, not by policy text)
 
 `redact()` / `redactRecord()` run on every payload before it is written:

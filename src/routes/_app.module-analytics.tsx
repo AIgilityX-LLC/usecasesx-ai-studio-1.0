@@ -48,7 +48,7 @@ function ModuleAnalyticsPage() {
       .from("module_events_reportable" as never)
       .select("module_key, event_type, created_at, metadata")
       .order("created_at", { ascending: false })
-      .limit(5000);
+      .limit(1000);
     setEvents((data as Ev[]) ?? []);
     setLoading(false);
   };

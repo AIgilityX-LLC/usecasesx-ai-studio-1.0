@@ -99,17 +99,30 @@ function PortfolioRoadmapPage() {
     }
     (async () => {
       setLoading(true);
-      const { data: ucs } = await supabase.from("ai_use_cases").select("*");
+      const { data: ucs } = await supabase
+        .from("ai_use_cases")
+        .select(
+          "id, title, status, ai_type, risk_level, priority_score, created_by, board_id, problem_statement, mvp_scope, created_at, source_use_case_id",
+        )
+        .order("created_at", { ascending: false })
+        .limit(500);
       const ids = (ucs ?? []).map((u: any) => u.id);
       const [{ data: sc }, { data: lk }] = await Promise.all([
         ids.length
-          ? supabase.from("feasibility_scores").select("*").in("use_case_id", ids)
+          ? supabase
+              .from("feasibility_scores")
+              .select(
+                "use_case_id, feasibility_score, viability_score, desirability_score, total_score, recommendation",
+              )
+              .in("use_case_id", ids)
+              .limit(500)
           : Promise.resolve({ data: [] as any[] }),
         ids.length
           ? supabase
               .from("integration_links")
               .select("use_case_id, integration_type, status")
               .in("use_case_id", ids)
+              .limit(500)
           : Promise.resolve({ data: [] as any[] }),
       ]);
       setUseCases((ucs ?? []) as UseCase[]);

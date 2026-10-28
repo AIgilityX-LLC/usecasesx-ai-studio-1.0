@@ -139,6 +139,9 @@ Any plan check must resolve through `useEntitlement`/`usePlan`. Gate UI with `<R
 - `docs/architecture/ai-boundary.md` — provider-neutral AI services & fair use
 - `docs/architecture/auditability-and-instrumentation.md` — audit events, product/activation events, privacy redaction
 - `docs/architecture/audit-event-architecture.md` — immutable AuditEvent model, filter/export APIs, separation from debug logs
+- `docs/architecture/reliability-observability.md` — SLOs, health, metrics, PITR, alerts (Phase 7)
+- `docs/runbooks/` — production incident runbooks
+- `docs/operations/slo.md` — measurable production SLO contracts
 
 - `docs/security/security-baseline.md`
 - `docs/PRE_BETA_RELEASE_CHECKLIST.md`, `docs/PRE_BETA_TEST_PLAN.md`
