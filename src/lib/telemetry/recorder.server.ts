@@ -1,8 +1,9 @@
 /**
  * Server-side telemetry recorder.
  *
- * Used by server functions and the AI boundary. Writes through the caller's
- * RLS-scoped Supabase client so records stay attributable and append-only.
+ * Audit writes go through the centralized `src/lib/audit` append path.
+ * Product / activation events stay on `product_events` — never mixed with
+ * compliance audit rows. Debugging logs use ops/control-plane structuredLog.
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -22,28 +23,24 @@ export type ServerTelemetryContext = {
   userId: string;
   tenant?: TelemetryTenant;
   requestId?: string | null;
+  sessionId?: string | null;
 };
 
 export async function writeAuditEvent(
   ctx: ServerTelemetryContext,
   input: AuditEventInput,
 ): Promise<string> {
-  const requestId = input.requestId ?? ctx.requestId ?? newRequestId();
-  const { error } = await ctx.supabase.from("audit_events").insert({
-    actor_id: ctx.userId,
-    entity_type: input.entity.type,
-    entity_id: input.entity.id ?? null,
-    event_type: input.event,
-    previous_value: input.previous ? redactRecord(input.previous) : null,
-    new_value: input.next ? redactRecord(input.next) : null,
-    organization_id: ctx.tenant?.organizationId ?? null,
-    workspace_id: ctx.tenant?.workspaceId ?? null,
-    request_id: requestId,
-    severity: input.severity ?? "info",
-    source: input.source ?? "server",
-  });
-  if (error) console.warn("[telemetry] audit rejected", { event: input.event, code: error.code });
-  return requestId;
+  const { appendAuditEventFromLegacy } = await import("@/lib/audit/write.server");
+  return appendAuditEventFromLegacy(
+    {
+      supabase: ctx.supabase,
+      userId: ctx.userId,
+      tenant: ctx.tenant,
+      requestId: ctx.requestId,
+      sessionId: ctx.sessionId,
+    },
+    input,
+  );
 }
 
 export async function writeProductEvent(

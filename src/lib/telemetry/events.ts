@@ -75,6 +75,18 @@ export type AuditEventInput = {
    */
   workspaceId?: string | null;
   organizationId?: string | null;
+  /** Optional compliance fields — see `src/lib/audit` (AuditEvent). */
+  actorType?: "user" | "system" | "service" | "support";
+  sessionId?: string | null;
+  result?: "success" | "failure" | "denied" | "partial";
+  metadata?: Record<string, unknown> | null;
+  context?: {
+    ip?: string | null;
+    userAgent?: string | null;
+    path?: string | null;
+    method?: string | null;
+    region?: string | null;
+  } | null;
 };
 
 /* --------------------------------------------------------- product events */

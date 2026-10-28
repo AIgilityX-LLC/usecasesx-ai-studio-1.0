@@ -1,35 +1,43 @@
 # Auditability & Launch Instrumentation
 
-Status: implemented (PROMPT-15). Applies to Lite, Pro Founding Access and
+Status: implemented (PROMPT-15 + ADR 0011). Applies to Lite, Pro Founding Access and
 Enterprise — one codebase, one event vocabulary.
+
+Canonical compliance model: `docs/architecture/audit-event-architecture.md`
+and `src/lib/audit/`.
 
 ## Why
 
-Two different questions need answering after launch, and they must not be
+Three different questions need answering after launch, and they must not be
 mixed:
 
-| Question                                           | Surface                          | Table            |
-| -------------------------------------------------- | -------------------------------- | ---------------- |
-| "Who changed what, when, in which workspace?"      | governance / enterprise evidence | `audit_events`   |
-| "Are people actually getting through the journey?" | launch learning                  | `product_events` |
+| Question                                           | Surface                          | Store / module |
+| -------------------------------------------------- | -------------------------------- | -------------- |
+| "Who changed what, when, in which workspace?"      | governance / enterprise evidence | `audit_events` · `src/lib/audit` |
+| "Are people actually getting through the journey?" | launch learning                  | `product_events` · `src/lib/telemetry` |
+| "What failed in this request?"                     | ops debugging                    | structured logs · `ops/control-plane` |
 
-Both are **append-only**, **tenant-scoped** and **attributable**. Neither ever
-stores secrets, prompt text or personal data.
+Audit and product streams are **append-only**, **tenant-scoped** and
+**attributable**. Neither ever stores secrets, prompt text or personal data.
+Debug logs never land in `audit_events`.
 
 ## Data model
 
 ### `audit_events` (extended, additive)
 
-Existing columns kept. Added: `organization_id`, `workspace_id`, `request_id`,
-`severity` (`info` | `notice` | `warning` | `critical`), `source`.
+Canonical **AuditEvent** fields (see ADR 0011). Stable DB names alias to the
+domain model (`organization_id` → `tenant_id`, `entity_*` → `resource_*`,
+`previous_value`/`new_value` → `before_state`/`after_state`, `created_at` →
+`timestamp`). Compliance columns: `actor_type`, `session_id`, `context`,
+`result`, `metadata`, plus earlier `request_id`, `severity`, `source`.
 
 Access:
 
 - **insert** — authenticated caller, only with `actor_id = auth.uid()`.
-- **select** — own records; workspace owners/admins see their workspace;
-  platform admins (`is_admin_tier`) see all.
-- **update / delete** — denied to every application role. Immutability is
-  enforced by the absence of policies, not by convention.
+- **select** — own records; tenant org owners/admins for their
+  `organization_id`; platform admins (`is_admin_tier`) see all.
+- **update / delete** — denied to application roles via missing policies,
+  `REVOKE`, and `audit_events_deny_mutation` trigger.
 
 ### `product_events` (new)
 
@@ -65,8 +73,10 @@ are not allowed anywhere in the codebase.
 
 | Module                                 | Runtime            | Use from                         |
 | -------------------------------------- | ------------------ | -------------------------------- |
+| `src/lib/audit/write.server.ts`        | server only        | preferred append for new paths   |
+| `src/lib/audit/audit.functions.ts`     | server fn wrappers | tenant admin filter + export     |
 | `src/lib/telemetry/recorder.ts`        | browser            | domain repositories, UI handlers |
-| `src/lib/telemetry/recorder.server.ts` | server only        | server functions, `AIService`    |
+| `src/lib/telemetry/recorder.server.ts` | server only        | bridges to `appendAuditEvent`    |
 | `src/lib/telemetry.functions.ts`       | server fn wrappers | activation + entity audit reads  |
 
 Both recorders write through an RLS-scoped client, so a caller can only write
@@ -110,11 +120,13 @@ Error logging uses `safeErrorShape()`, which keeps only `name` and `message`.
 
 ## Reading the data
 
-`getActivationFunnelFn` (daily activation, optional date range and workspace)
-and `getEntityAuditTrailFn` (last 100 records for one entity) in
-`src/lib/telemetry.functions.ts`. Both are `requireSupabaseAuth`-protected and
-return a typed `{ rows, error }` shape rather than throwing, so a reporting
-surface degrades to an empty state instead of an error screen.
+- `queryAuditEventsFn` / `exportAuditEventsFn` — authorized tenant admins and
+  platform auditors (`src/lib/audit/audit.functions.ts`).
+- `getActivationFunnelFn` / `getEntityAuditTrailFn` — activation rollup and
+  entity trail (`src/lib/telemetry.functions.ts`).
+
+All are `requireSupabaseAuth`-protected and return a typed `{ …, error }` shape
+rather than throwing, so reporting surfaces degrade to empty states.
 
 ## Tests
 
@@ -126,10 +138,12 @@ surface degrades to an empty state instead of an error screen.
 
 ## Rules for new code
 
-1. Never insert into `audit_events` / `product_events` directly — go through a
-   recorder.
+1. Never insert into `audit_events` / `product_events` directly — go through
+   `appendAuditEvent` / a telemetry recorder.
 2. Never invent an event name — extend the catalogue.
 3. Never pass raw request bodies, prompts or user text as `properties`.
 4. Never make a user-facing action depend on a telemetry write succeeding.
 5. Governance-relevant mutations (ownership, membership, roles, entitlements,
    exports, admin actions) MUST emit an audit event in the same code path.
+6. Never write debug / structured ops logs into `audit_events`.
+7. Never UPDATE or DELETE audit history from application code (including demos).
