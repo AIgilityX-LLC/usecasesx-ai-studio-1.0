@@ -49,6 +49,7 @@ src/
   components/                UI + shadcn primitives under components/ui/.
   hooks/                     useSupabaseSession, useEntitlement, usePlan, etc.
   lib/                       Domain logic. *.functions.ts = createServerFn wrappers.
+  lib/audit/                 Immutable AuditEvent model, append, filter/export APIs.
   lib/*.server.ts            Server-only helpers. Never imported from client code.
   integrations/supabase/     GENERATED clients + auth middleware. Never edit.
   router.tsx, server.ts, start.ts, styles.css

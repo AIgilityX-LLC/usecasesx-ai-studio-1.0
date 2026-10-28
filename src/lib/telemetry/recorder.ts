@@ -57,20 +57,25 @@ export async function recordAuditEventDetailed(input: AuditEventInput): Promise<
   try {
     const actorId = await currentUserId();
     if (!actorId) return miss("not_signed_in"); // anonymous actions are not auditable subjects
+    const { prepareAuditInsert, fromLegacyAuditInput } = await import("@/lib/audit/write");
+    const { requestId: corr, row } = prepareAuditInsert(
+      {
+        ...fromLegacyAuditInput({ ...input, requestId }),
+        actorType: input.actorType ?? "user",
+        sessionId: input.sessionId ?? null,
+        result: input.result ?? "success",
+        metadata: input.metadata ?? {},
+        context: input.context ?? null,
+      },
+      { actorId, requestId, source: input.source ?? "web" },
+    );
     const { data, error } = await supabase
       .from("audit_events")
       .insert({
-        actor_id: actorId,
-        entity_type: input.entity.type,
-        entity_id: input.entity.id ?? null,
-        event_type: input.event,
-        previous_value: input.previous ? (redactRecord(input.previous) as never) : null,
-        new_value: input.next ? (redactRecord(input.next) as never) : null,
-        organization_id: input.organizationId ?? tenant.organizationId,
-        workspace_id: input.workspaceId ?? tenant.workspaceId,
-        request_id: requestId,
-        severity: input.severity ?? "info",
-        source: input.source ?? "web",
+        ...row,
+        organization_id: input.organizationId ?? tenant.organizationId ?? row.organization_id,
+        workspace_id: input.workspaceId ?? tenant.workspaceId ?? row.workspace_id,
+        request_id: corr,
       } as never)
       .select("id, created_at")
       .maybeSingle();
@@ -78,11 +83,11 @@ export async function recordAuditEventDetailed(input: AuditEventInput): Promise<
       console.warn("[telemetry] audit rejected", input.event, error.message);
       return miss(error.message);
     }
-    const row = data as { id?: string; created_at?: string } | null;
+    const written = data as { id?: string; created_at?: string } | null;
     return {
-      requestId,
-      auditEventId: row?.id ?? null,
-      recordedAt: row?.created_at ?? null,
+      requestId: corr,
+      auditEventId: written?.id ?? null,
+      recordedAt: written?.created_at ?? null,
       error: null,
     };
   } catch (error) {

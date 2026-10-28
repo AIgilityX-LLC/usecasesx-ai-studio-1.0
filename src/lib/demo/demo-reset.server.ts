@@ -87,11 +87,8 @@ async function purge(tenant: Tenant) {
     "delete reports",
     (await supabaseAdmin.from("generated_reports").delete().eq("workspace_id", ws)).error,
   );
-  await supabaseAdmin
-    .from("audit_events")
-    .delete()
-    .eq("workspace_id", ws)
-    .eq("event_type", "report.exported");
+  // audit_events are immutable — never delete on demo reset. New seed rows
+  // append; listDemoArtifacts reads the latest report.exported for the workspace.
 }
 
 async function seed(tenant: Tenant, spec: DemoContentSpec) {
