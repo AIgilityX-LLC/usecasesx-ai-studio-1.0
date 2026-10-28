@@ -52,6 +52,8 @@ src/
   lib/audit/                 Immutable AuditEvent model, append, filter/export APIs.
   lib/ops/control-plane/     Reliability SLOs, health, metrics, structured logging.
   lib/*.server.ts            Server-only helpers. Never imported from client code.
+config/environments/         Non-secret development/staging/production templates.
+.github/workflows/           CI Critical gates, staging, production (authorized), release.
   integrations/supabase/     GENERATED clients + auth middleware. Never edit.
   router.tsx, server.ts, start.ts, styles.css
 docs/                        Product/architecture/security/test docs.

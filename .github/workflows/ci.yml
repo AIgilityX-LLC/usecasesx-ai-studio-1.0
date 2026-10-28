@@ -1,5 +1,8 @@
 name: CI
 
+# Enterprise PR / main quality gate. Job "Critical gates" is the single
+# required status check for branch protection (see docs/cicd/README.md).
+
 on:
   pull_request:
   push:
@@ -9,11 +12,19 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  pull-requests: read
+
+env:
+  CI: "1"
+
 jobs:
-  quality:
-    name: Lint · typecheck · build
+  # ------------------------------------------------------------------ install + static quality
+  critical-quality:
+    name: Install · typecheck · lint · unit · build
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -25,16 +36,20 @@ jobs:
         run: node scripts/ci-test-env.mjs
       - name: Verify release candidate integrity
         run: bun run verify:release
-      - name: Lint
-        run: bun run lint
       - name: Typecheck
         run: bunx tsgo --noEmit || bunx tsc --noEmit
+      - name: Lint
+        run: bun run lint
       - name: Verify route tree
         run: bun run verify:routes
-      - name: Build
-        run: bun run build
+      - name: Nav integrity
+        run: bun run check:nav-integrity
       - name: Unit tests
         run: bun run test:unit
+      - name: Build
+        run: bun run build
+      - name: Migration path guard
+        run: node scripts/ci-migration-guard.mjs
       - name: Upload build diagnostics
         if: always()
         uses: actions/upload-artifact@v4
@@ -46,12 +61,33 @@ jobs:
           retention-days: 5
           if-no-files-found: ignore
 
-  playwright:
-    name: Playwright UI specs
+  # ------------------------------------------------------------------ dependency / security scan
+  critical-security:
+    name: Dependency / security scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies (frozen lockfile)
+        run: bun install --frozen-lockfile
+      - name: Security scan (Critical/High fail the gate)
+        run: bun run ci:security
+
+  # ------------------------------------------------------------------ integration
+  critical-integration:
+    name: Integration tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      CI: "1"
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      SMOKE_DEMO_EMAIL: ${{ secrets.SMOKE_DEMO_EMAIL }}
+      SMOKE_DEMO_PASSWORD: ${{ secrets.SMOKE_DEMO_PASSWORD }}
+      GITHUB_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -61,18 +97,93 @@ jobs:
         run: bun install --frozen-lockfile
       - name: Prepare test-mode env
         run: node scripts/ci-test-env.mjs
-      - name: Install Playwright browsers
-        run: bunx playwright install --with-deps chromium firefox webkit
-      - name: Run Playwright specs
-        run: bunx playwright test 2>&1 | tee playwright-run.log
-      - name: Upload Playwright report, traces, screenshots & videos
+      - name: Require backend credentials (same-repo PRs)
+        id: creds
+        run: node scripts/ci-require-backend-creds.mjs
+      - name: Integration suites
+        if: steps.creds.outputs.available == 'true'
+        run: bun run test:integration 2>&1 | tee integration-run.log
+      - name: Upload integration evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-diagnostics
+          name: evidence-integration
           path: |
-            playwright-report/**
+            integration-run.log
+            test-evidence/**
             test-results/**
-            playwright-run.log
-          retention-days: 7
+          retention-days: 14
           if-no-files-found: ignore
+
+  # ------------------------------------------------------------------ tenant isolation + RLS
+  critical-isolation:
+    name: Tenant-isolation · RLS
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      SMOKE_DEMO_EMAIL: ${{ secrets.SMOKE_DEMO_EMAIL }}
+      SMOKE_DEMO_PASSWORD: ${{ secrets.SMOKE_DEMO_PASSWORD }}
+      GITHUB_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies (frozen lockfile)
+        run: bun install --frozen-lockfile
+      - name: Prepare test-mode env
+        run: node scripts/ci-test-env.mjs
+      - name: Require backend credentials (same-repo PRs)
+        id: creds
+        run: node scripts/ci-require-backend-creds.mjs
+      - name: Tenant isolation + RLS suites
+        if: steps.creds.outputs.available == 'true'
+        run: bun run test:isolation 2>&1 | tee isolation-run.log
+      - name: Upload isolation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-isolation
+          path: |
+            isolation-run.log
+            test-evidence/**
+          retention-days: 14
+          if-no-files-found: ignore
+
+  # ------------------------------------------------------------------ aggregate required check
+  critical-gates:
+    name: Critical gates
+    runs-on: ubuntu-latest
+    needs:
+      - critical-quality
+      - critical-security
+      - critical-integration
+      - critical-isolation
+    if: always()
+    steps:
+      - name: Enforce all critical jobs passed
+        run: |
+          set -euo pipefail
+          echo "quality=${{ needs.critical-quality.result }}"
+          echo "security=${{ needs.critical-security.result }}"
+          echo "integration=${{ needs.critical-integration.result }}"
+          echo "isolation=${{ needs.critical-isolation.result }}"
+          fail=0
+          for r in \
+            "${{ needs.critical-quality.result }}" \
+            "${{ needs.critical-security.result }}" \
+            "${{ needs.critical-integration.result }}" \
+            "${{ needs.critical-isolation.result }}"
+          do
+            if [ "$r" != "success" ]; then
+              fail=1
+            fi
+          done
+          if [ "$fail" -ne 0 ]; then
+            echo "::error::Critical gates failed — merge is blocked."
+            exit 1
+          fi
+          echo "All critical gates passed."

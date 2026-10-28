@@ -8,20 +8,20 @@ Per-release detail lives in `docs/releases/<date>-<slug>.md` using `docs/process
 
 ### Added
 
-- `docs/process/source-control-workflow.md` — branch model, PR/commit conventions, required checks.
-- `docs/process/release-branch-plan.md` — 2026-08-14 launch branch choreography and activation gates.
-- `docs/process/pr-and-migration-checklist.md` — reviewer checklist.
-- `docs/process/release-notes-template.md` — release-note scaffold.
-- `.github/PULL_REQUEST_TEMPLATE.md` — PR template enforcing Definition of Done.
-- `CHANGELOG.md` (this file).
+- Enterprise CI Critical gates (install, typecheck, lint, unit, integration, tenant-isolation, RLS, build, security scan) — `.github/workflows/ci.yml`.
+- Separate development / staging / production config templates under `config/environments/`.
+- Production deploy workflow with explicit authorization — `.github/workflows/production-deploy.yml`.
+- Release tagging + CHANGELOG generation — `scripts/generate-changelog.mjs`, updated `release.yml`.
+- CI/CD docs: `docs/cicd/README.md`, `production-authorization.md`, `rollback.md`.
 
 ### Changed
 
-- None (documentation-only).
+- Branch protection required check documented as aggregate **Critical gates**.
+- `.github/deployment-env.example` extended with production + CI secret names.
 
 ### Migrations
 
-- None.
+- None in this change (CI enforces migrations remain under `supabase/migrations/`).
 
 ---
 

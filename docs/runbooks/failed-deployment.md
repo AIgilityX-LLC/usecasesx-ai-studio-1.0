@@ -19,7 +19,9 @@
 
 ## Rollback steps
 
-1. Redeploy previous green Worker / Lovable publish.
+Full playbooks: `docs/cicd/rollback.md` (frontend · backend · database).
+
+1. Redeploy previous green tag via **Production deploy** (explicit authorization) or Lovable publish.
 2. Confirm health + ready 200 and a smoke sign-in.
 3. Leave additive DB migrations in place unless they are unsafe (additive-only policy — do not drop).
 

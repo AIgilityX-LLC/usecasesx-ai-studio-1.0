@@ -5,35 +5,44 @@
 #
 #   Repository VARIABLES  (Settings → Secrets and variables → Actions → Variables)
 #   Repository SECRETS    (Settings → Secrets and variables → Actions → Secrets)
+#   Environment secrets   (Settings → Environments → staging | production)
 #
-# Environments used: `staging` (staging-deploy.yml) and preview (pr-preview.yml).
+# Environments: development (local), staging, production, preview (PRs).
+# Non-secret templates also live under config/environments/*.env.example.
 
 # ---------------------------------------------------------------- VARIABLES
-# Staging — consumed by .github/workflows/staging-deploy.yml
+# Staging — staging-deploy.yml / Environment "staging"
 STAGING_SUPABASE_URL=https://your-staging-project.supabase.co
 STAGING_SUPABASE_PUBLISHABLE_KEY=sb_publishable_xxxxxxxxxxxxxxxxxxxx
 STAGING_SUPABASE_PROJECT_ID=your-staging-project-ref
 
-# Preview — consumed by .github/workflows/pr-preview.yml
+# Preview — pr-preview.yml
 PREVIEW_SUPABASE_URL=https://your-preview-project.supabase.co
 PREVIEW_SUPABASE_PUBLISHABLE_KEY=sb_publishable_xxxxxxxxxxxxxxxxxxxx
 PREVIEW_SUPABASE_PROJECT_ID=your-preview-project-ref
 
-# Production monitoring — consumed by .github/workflows/monitoring.yml
+# Production — production-deploy.yml / Environment "production"
+PRODUCTION_SUPABASE_URL=https://your-production-project.supabase.co
+PRODUCTION_SUPABASE_PUBLISHABLE_KEY=sb_publishable_xxxxxxxxxxxxxxxxxxxx
+PRODUCTION_SUPABASE_PROJECT_ID=your-production-project-ref
 PRODUCTION_BASE_URL=https://your-production-domain
 
+# CI backend suites (repository secrets — Critical gates)
+# SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY / SUPABASE_SERVICE_ROLE_KEY
+
 # ------------------------------------------------------------------ SECRETS
-# Never expose these to the browser; they are injected at deploy time only.
+# Never expose these to the browser; inject at deploy / CI time only.
 STAGING_SUPABASE_SERVICE_ROLE_KEY=<service role key for the staging project>
 PREVIEW_SUPABASE_SERVICE_ROLE_KEY=<service role key for the preview project>
+PRODUCTION_SUPABASE_SERVICE_ROLE_KEY=<service role key for the production project>
 
-# Cloudflare Workers deploy credentials (shared by staging and preview)
+SUPABASE_URL=<ci/integration project url>
+SUPABASE_PUBLISHABLE_KEY=<ci publishable key>
+SUPABASE_SERVICE_ROLE_KEY=<ci service role key>
+SMOKE_DEMO_EMAIL=<optional demo user for smoke suites>
+SMOKE_DEMO_PASSWORD=<optional demo password>
+
 CLOUDFLARE_API_TOKEN=<API token with Workers Scripts:Edit>
 CLOUDFLARE_ACCOUNT_ID=<32-character account id>
-
-# Optional — AI Gateway key when server functions call models during build/QA
 LOVABLE_API_KEY=<gateway key>
-
-# Optional — alerting sink for monitoring.yml (Slack/Teams/webhook URL).
-# When unset, monitoring still runs and simply skips the notification step.
 ALERT_WEBHOOK_URL=<https://hooks.example.com/...>

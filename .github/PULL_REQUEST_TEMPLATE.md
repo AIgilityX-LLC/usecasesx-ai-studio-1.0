@@ -23,14 +23,13 @@
 
 ## Definition of Done (AGENTS.md §6)
 
-- [ ] `bun run lint` green
-- [ ] `tsgo` typecheck green
-- [ ] `bun run build` green
+- [ ] GitHub check **Critical gates** green (or local: lint, typecheck, unit, build, `ci:security`)
 - [ ] `bun run check:nav-integrity` green
-- [ ] Narrow test suite green (`test:e2e` / `test:smoke` / `test:navbar` / `test:mobile` / `test:rls`)
+- [ ] Isolation/RLS green when touching tenancy (`bun run test:isolation`)
+- [ ] Narrow test suite green (`test:e2e` / `test:smoke` / `test:navbar` / `test:mobile`)
 - [ ] Responsive + a11y verified for UI changes
 - [ ] No new dead CTA / no false Enterprise claim
-- [ ] No secret in source / `.env` / client bundle
+- [ ] No secret in source / `.env` / client bundle / production keys
 
 ## Migration (if applicable)
 

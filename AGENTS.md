@@ -142,6 +142,9 @@ Any plan check must resolve through `useEntitlement`/`usePlan`. Gate UI with `<R
 - `docs/architecture/reliability-observability.md` — SLOs, health, metrics, PITR, alerts (Phase 7)
 - `docs/runbooks/` — production incident runbooks
 - `docs/operations/slo.md` — measurable production SLO contracts
+- `docs/cicd/README.md` — enterprise CI/CD critical gates, envs, release tagging
+- `docs/cicd/production-authorization.md` — explicit production deploy authorization
+- `docs/cicd/rollback.md` — frontend / backend / migration rollback
 
 - `docs/security/security-baseline.md`
 - `docs/PRE_BETA_RELEASE_CHECKLIST.md`, `docs/PRE_BETA_TEST_PLAN.md`

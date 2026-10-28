@@ -110,20 +110,19 @@ Lovable-authored commits keep their default subject; contributors squashing Lova
 
 ## 6. Required checks
 
-CI is expected to run on every PR against `main` (and `develop` once active). Names must match the workflow job names.
+CI runs on every PR against `main` (and `develop` once active). Branch protection must require the aggregate check **`Critical gates`** (see `docs/cicd/README.md`).
 
-| Check             | Command                                                                                    | Blocking?                               |
-| ----------------- | ------------------------------------------------------------------------------------------ | --------------------------------------- |
-| Lint              | `bun run lint`                                                                             | Yes                                     |
-| Typecheck         | `tsgo`                                                                                     | Yes                                     |
-| Build             | `bun run build`                                                                            | Yes                                     |
-| Route tree verify | `bun run verify:routes` (already wired in `.github/workflows/route-tree-check.yml`)        | Yes                                     |
-| Nav integrity     | `bun run check:nav-integrity`                                                              | Yes                                     |
-| Compare analytics | `bun run check:compare` (already wired in `.github/workflows/compare-analytics-check.yml`) | Yes                                     |
-| E2E (narrow)      | `bun run test:e2e` — spec relevant to change                                               | Yes for UI/data changes                 |
-| RLS isolation     | `bun run test:rls`                                                                         | Yes for any new/changed table or policy |
+| Check | Command / job | Blocking? |
+| ----- | ------------- | --------- |
+| **Critical gates** (required status) | Aggregates jobs below | **Yes — merge blocker** |
+| Install · typecheck · lint · unit · build | `critical-quality` in `ci.yml` | Yes |
+| Dependency / security scan | `bun run ci:security` | Yes (Critical/High) |
+| Integration tests | `bun run test:integration` | Yes (same-repo; needs secrets) |
+| Tenant-isolation · RLS | `bun run test:isolation` | Yes (same-repo; needs secrets) |
+| Route tree / nav | included in critical-quality | Yes |
+| Compare analytics | `compare-analytics-check.yml` | Yes (existing workflow) |
 
-Adding new blocking checks or workflows requires a Decision Log entry.
+Production deploy is **not** automatic on merge — see `docs/cicd/production-authorization.md`.
 
 ---
 

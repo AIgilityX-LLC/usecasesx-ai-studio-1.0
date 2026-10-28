@@ -1,22 +1,85 @@
 name: Release
 
-# Cuts a tagged release with generated notes. The release checklist in
-# docs/RELEASE_CHECKLIST.md is the human gate; this automates the notes.
+# Cuts a version tag, refreshes CHANGELOG, and opens a draft GitHub Release.
+# Production deploy remains a separate explicitly-authorized workflow.
+
 on:
   push:
     tags: ["v*"]
   workflow_dispatch:
     inputs:
-      tag:
-        description: "Tag to release (e.g. v1.0.0)"
+      version:
+        description: "Semver tag to cut (e.g. v1.2.0)"
         required: true
+        type: string
+      dry_run:
+        description: "If true, generate notes only — do not push tag or create release"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
-  release:
-    name: Generate release notes
+  cut-release:
+    name: Tag · changelog · draft release
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Validate version
+        run: |
+          if ! echo "${{ inputs.version }}" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?$'; then
+            echo "::error::version must look like v1.2.0"
+            exit 1
+          fi
+      - name: Generate changelog section
+        run: node scripts/generate-changelog.mjs --version "${{ inputs.version }}" --write
+      - name: Generate release notes
+        id: notes
+        run: node scripts/release-notes.mjs
+      - name: Commit changelog (unless dry-run)
+        if: ${{ inputs.dry_run == false }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          if git diff --cached --quiet; then
+            echo "No CHANGELOG changes to commit."
+          else
+            git commit -m "chore(release): ${{ inputs.version }} changelog"
+            git push
+          fi
+      - name: Create and push tag
+        if: ${{ inputs.dry_run == false }}
+        run: |
+          git tag -a "${{ inputs.version }}" -m "Release ${{ inputs.version }}"
+          git push origin "${{ inputs.version }}"
+      - name: Publish draft GitHub release
+        if: ${{ inputs.dry_run == false }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.version }}
+          name: ${{ inputs.version }}
+          body: ${{ steps.notes.outputs.notes }}
+          draft: true
+          generate_release_notes: false
+
+  notes-on-tag:
+    name: Release notes for pushed tag
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -26,10 +89,10 @@ jobs:
       - name: Generate notes
         id: notes
         run: node scripts/release-notes.mjs
-      - name: Publish GitHub release
+      - name: Publish draft GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
-          name: ${{ github.event.inputs.tag || github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
           body: ${{ steps.notes.outputs.notes }}
           draft: true
