@@ -361,6 +361,7 @@ export const NAV_ROUTE_CAPABILITIES: Record<string, NavCapability> = {
   "/reports": "report.read",
   "/reports/export-center": "report.read",
   "/admin-observability": "workspace.manage",
+  "/enterprise-admin": "workspace.manage",
   "/module-analytics": "analytics.read",
   "/pilot": "pilot.read",
   "/support": "security.manage",
