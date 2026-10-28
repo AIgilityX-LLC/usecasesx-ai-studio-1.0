@@ -3,6 +3,8 @@
 **Status:** Design documentation only.  
 **Do not claim air-gapped or private-cloud support until a deployment is built and tested offline.**
 
+**Phase 8:** Product sovereignty model (eight dimensions, maturity, posture) lives in `src/lib/sovereignty/` — see `docs/architecture/sovereignty-architecture.md` and ADR 0008. This note remains the **air-gap / private-pack exit criteria**; the Sovereignty Architecture owns customer-facing posture and claim gates.
+
 This note names the seams the application already (or should) depend on so a future private/air-gapped pack can swap implementations without forking product code.
 
 ## Seams

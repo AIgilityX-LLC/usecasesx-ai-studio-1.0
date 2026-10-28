@@ -50,6 +50,7 @@ src/
   hooks/                     useSupabaseSession, useEntitlement, usePlan, etc.
   lib/                       Domain logic. *.functions.ts = createServerFn wrappers.
   lib/ops/control-plane/     Reliability SLOs, health, metrics, structured logging.
+  lib/sovereignty/           Sovereignty Architecture™ (8 dimensions, posture, Zero Trust).
   lib/*.server.ts            Server-only helpers. Never imported from client code.
   integrations/supabase/     GENERATED clients + auth middleware. Never edit.
   router.tsx, server.ts, start.ts, styles.css
