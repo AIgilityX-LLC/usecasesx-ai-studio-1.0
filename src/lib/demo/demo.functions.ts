@@ -14,10 +14,15 @@ export const resetDemoTenantsFn = createServerFn({ method: "POST" })
     return resetDemoTenants();
   });
 
-export const listDemoArtifactsFn = createServerFn({ method: "GET" }).handler(async () => {
-  const { listDemoArtifacts } = await import("@/lib/demo/demo-reset.server");
-  return listDemoArtifacts();
-});
+export const listDemoArtifactsFn = createServerFn({ method: "POST" })
+  .inputValidator((data) => z.object({ password: z.string().min(1) }).parse(data))
+  .handler(async ({ data }) => {
+    const { listDemoArtifacts, demoResetAuthorized } = await import("@/lib/demo/demo-reset.server");
+    if (!demoResetAuthorized(data.password)) {
+      throw new Error("Demonstration artifact inventory is not authorized in this environment.");
+    }
+    return listDemoArtifacts();
+  });
 
 /** Personas that actually exist in this environment (demonstration accounts only). */
 export const listSeededPersonasFn = createServerFn({ method: "POST" })

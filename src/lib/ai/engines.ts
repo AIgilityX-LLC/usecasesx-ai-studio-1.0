@@ -50,7 +50,44 @@ export const engineUpsertSchema = z.object({
   tagline: z.string().trim().max(160).optional().nullable(),
   route: z.enum(ENGINE_ROUTES),
   modelId: z.string().trim().min(1).max(160),
-  baseUrl: z.string().trim().url().max(300).optional().nullable(),
+  baseUrl: z
+    .string()
+    .trim()
+    .url()
+    .max(300)
+    .optional()
+    .nullable()
+    .superRefine((value, ctx) => {
+      if (value == null || value === "") return;
+      // Lazy import avoided — pure SSRF check inlined via dynamic require pattern
+      // is awkward in zod; validate in save handler too. This catches obvious cases.
+      try {
+        const u = new URL(value);
+        if (u.protocol !== "https:") {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Engine base URL must use HTTPS." });
+        }
+        const host = u.hostname.toLowerCase();
+        if (
+          host === "localhost" ||
+          host.endsWith(".localhost") ||
+          host.endsWith(".local") ||
+          host.endsWith(".internal") ||
+          host === "metadata.google.internal" ||
+          /^127\./.test(host) ||
+          /^10\./.test(host) ||
+          /^192\.168\./.test(host) ||
+          /^169\.254\./.test(host) ||
+          /^172\.(1[6-9]|2\d|3[0-1])\./.test(host)
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Engine base URL must not target private or metadata hosts.",
+          });
+        }
+      } catch {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Engine base URL is invalid." });
+      }
+    }),
   tier: z.enum(["fast", "balanced", "deep"]),
   enabled: z.boolean(),
   allowWorkspaceKeys: z.boolean(),

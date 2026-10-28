@@ -47,7 +47,16 @@ async function once(req: GatewayRequest, apiKey: string): Promise<GatewayRespons
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), req.timeoutMs);
   try {
-    const url = req.endpoint ? `${req.endpoint.replace(/\/$/, "")}/chat/completions` : GATEWAY_URL;
+    let url = GATEWAY_URL;
+    if (req.endpoint) {
+      const { assertSafeOutboundUrl } = await import("@/lib/security/outbound-url");
+      const safe = assertSafeOutboundUrl(req.endpoint);
+      if (!safe.ok) {
+        console.error("[ai] outbound endpoint blocked", { reason: safe.reason });
+        return { ok: false, kind: "upstream" };
+      }
+      url = `${safe.href}/chat/completions`;
+    }
     const res = await fetch(url, {
       method: "POST",
       signal: controller.signal,

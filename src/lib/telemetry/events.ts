@@ -180,6 +180,13 @@ const SENSITIVE_KEY_PATTERNS = [
   "phone",
   "address",
   "service_role",
+  "ciphertext",
+  "bearer",
+  "private_key",
+  "privatekey",
+  "refresh_token",
+  "access_token",
+  "client_secret",
 ];
 
 const MAX_STRING = 500;

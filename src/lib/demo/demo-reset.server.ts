@@ -11,6 +11,8 @@ import {
   type DemoContentSpec,
 } from "./demo-content";
 
+export { demoResetAuthorized } from "./demo-auth";
+
 type OpportunityInsert = Database["public"]["Tables"]["opportunities"]["Insert"];
 type UseCaseInsert = Database["public"]["Tables"]["ai_use_cases"]["Insert"];
 
@@ -23,12 +25,6 @@ interface Tenant {
   orgId: string;
   workspaceId: string;
   label: string;
-}
-
-export function demoResetAuthorized(password: string | undefined, callerEmail?: string | null) {
-  const expected = process.env["DEMO_PERSONA_PASSWORD"];
-  if (expected && password && password === expected) return true;
-  return Boolean(callerEmail?.toLowerCase().endsWith("@demo.usecasex.app"));
 }
 
 async function resolveTenant(edition: DemoEdition): Promise<Tenant | null> {

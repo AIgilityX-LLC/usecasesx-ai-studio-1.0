@@ -57,7 +57,7 @@ export function ComingSoonGate({
                 {features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
                     <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <span dangerouslySetInnerHTML={{ __html: f }} />
+                    <span>{f}</span>
                   </li>
                 ))}
               </ul>

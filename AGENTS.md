@@ -144,4 +144,5 @@ Any plan check must resolve through `useEntitlement`/`usePlan`. Gate UI with `<R
 - `docs/sovereignty/` — Sovereignty Control Plane (configurable policies + evaluation; no statute hardcoding)
 
 - `docs/security/security-baseline.md`
+- `docs/security/threat-model.md` · `security-controls.md` · `security-test-cases.md` — attacker threat model + controls + tests
 - `docs/PRE_BETA_RELEASE_CHECKLIST.md`, `docs/PRE_BETA_TEST_PLAN.md`
