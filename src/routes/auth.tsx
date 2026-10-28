@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -32,13 +31,13 @@ const SIGNUPS_ENABLED = false;
 
 /** `redirect` + `intent` let a signed-out action resume after sign-in. */
 const authSearchSchema = z.object({
-  redirect: fallback(z.string().optional(), undefined),
-  intent: fallback(z.string().optional(), undefined),
-  mode: fallback(z.enum(["signin", "signup"]).optional(), undefined),
+  redirect: z.string().optional().catch(undefined),
+  intent: z.string().optional().catch(undefined),
+  mode: z.enum(["signin", "signup"]).optional().catch(undefined),
 });
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: zodValidator(authSearchSchema),
+  validateSearch: authSearchSchema,
   head: () => ({
     meta: [
       { title: "Sign In — UseCasesX™" },
