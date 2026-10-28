@@ -5,6 +5,8 @@
 
 **Phase 8:** Product sovereignty model (eight dimensions, maturity, posture) lives in `src/lib/sovereignty/` — see `docs/architecture/sovereignty-architecture.md` and ADR 0008. This note remains the **air-gap / private-pack exit criteria**; the Sovereignty Architecture owns customer-facing posture and claim gates.
 
+**Phase 9:** Four deployment profiles (Cloud SaaS → Dedicated → Sovereign VPC → Sovereign Private) live in `src/lib/deployment/`. Self-hosted Supabase is **one backend option** for customer-controlled profiles, not the sole sovereignty architecture — see `docs/architecture/deployment-profiles.md` and ADR 0009.
+
 This note names the seams the application already (or should) depend on so a future private/air-gapped pack can swap implementations without forking product code.
 
 ## Seams
