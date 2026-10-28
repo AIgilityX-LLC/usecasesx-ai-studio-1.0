@@ -42,7 +42,7 @@ identity/access · organization/workspaces · repository · opportunities · Stu
 3. **Additive migrations only** at this stage. No destructive drops, destructive renames, or ownership reassignments without an approved staged migration + rollback plan.
 4. **Centralized entitlements** — never inline plan checks; go through `useEntitlement`/`usePlan`/`RequirePlan`/`Can`.
 5. **Secure server boundaries** — internal logic via `createServerFn` from `@tanstack/react-start`; external HTTP under `src/routes/api/public/*` with signature verification.
-6. **Provider-neutral AI services** — prefer the Lovable AI Gateway. No provider secrets in the browser.
+6. **Provider-neutral AI services** — prefer the Lovable AI Gateway. No provider secrets in the browser. New vendor integrations go through **ports & adapters** (`src/lib/ports/`, `docs/architecture/ports-and-adapters.md`) — do not couple React or domain code to Supabase/OpenAI/S3 SDKs directly.
 7. **Append-only audit events** for governance-relevant actions.
 8. **No separate edition codebases.** Ever.
 
@@ -121,6 +121,7 @@ Any plan check must resolve through `useEntitlement`/`usePlan`. Gate UI with `<R
 ## 9. Prohibited shortcuts
 
 - Introducing another router, another CSS framework, or another backend.
+- Importing vendor SDKs (OpenAI, S3, …) from UI or domain modules — use `src/lib/ports/` adapters.
 - Dropping tables, weakening RLS, or bypassing entitlements for convenience.
 - Storing roles on `profiles`.
 - Hardcoding colors, secrets, or provider URLs in components.
@@ -136,6 +137,7 @@ Any plan check must resolve through `useEntitlement`/`usePlan`. Gate UI with `<R
 - `docs/product/release-2026-08-14.md` — launch scope
 - `docs/architecture/architecture-principles.md`
 - `docs/architecture/domain-boundaries.md` — domain/repository layer
+- `docs/architecture/ports-and-adapters.md` — provider ports for sovereignty
 - `docs/architecture/ai-boundary.md` — provider-neutral AI services & fair use
 - `docs/architecture/auditability-and-instrumentation.md` — audit events, product/activation events, privacy redaction
 
