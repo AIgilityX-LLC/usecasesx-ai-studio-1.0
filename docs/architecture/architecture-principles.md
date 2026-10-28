@@ -69,9 +69,10 @@ Cross-module calls go through explicit interfaces (typed server fns, shared hook
 
 ## 11. Observability
 
-- Structured logs in server handlers (no secrets).
+- Structured logs in server handlers (no secrets) via `src/lib/ops/control-plane/` (correlation IDs, JSON lines).
 - Client analytics through `module-analytics` / `usecasex.tracking`; opt-out respected.
-- P95 route load target < 2 s on the core journey.
+- P95 route load target < 2 s on the core journey; API P95 SLO &lt; 500 ms (`docs/architecture/reliability-observability.md`).
+- Public health: `GET /api/public/health` for uptime checks. SLOs, alerts, PITR checklist in the control plane.
 
 ## 12. Future SovereignX integration
 
