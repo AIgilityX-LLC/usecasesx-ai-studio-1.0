@@ -28,6 +28,7 @@ import {
   hasScopedPermission,
   type PermissionSubject,
 } from "@/lib/authz/scoped-permissions";
+import { assertCanApproveUseCase } from "@/lib/authz/abac";
 import { AUDIT_EVENTS } from "@/lib/telemetry/events";
 import { writeAuditEvent } from "@/lib/telemetry/recorder.server";
 
@@ -409,6 +410,18 @@ export async function decideGateReview(
     conditions?: string[];
     changeRequests?: { fieldKey: string; message: string }[];
     actorKind?: GateActorKind;
+    /**
+     * Optional ABAC attributes (Phase 3). When present, approval also requires
+     * same-tenant + business-unit + value-limit checks. Omitted = RBAC/SoD only
+     * (backward compatible).
+     */
+    abac?: {
+      actorWorkspaceId: string;
+      authorizedBusinessUnitIds?: readonly string[] | null;
+      approvalValueLimit?: number | null;
+      businessUnitId?: string | null;
+      estimatedValue?: number | null;
+    };
   },
 ): Promise<{ review: GateReview; event: GateEvent; openItems: GateOpenItem[] }> {
   const actorKind = input.actorKind ?? "human";
@@ -429,6 +442,21 @@ export async function decideGateReview(
 
   const gate = gateDefinition(review.gateKey);
   assertScopedPermission(subject, gate.decidePermission);
+  if (input.abac) {
+    assertCanApproveUseCase(
+      {
+        ...subject,
+        actorWorkspaceId: input.abac.actorWorkspaceId,
+        authorizedBusinessUnitIds: input.abac.authorizedBusinessUnitIds,
+        approvalValueLimit: input.abac.approvalValueLimit,
+      },
+      {
+        workspaceId: review.workspaceId,
+        businessUnitId: input.abac.businessUnitId,
+        estimatedValue: input.abac.estimatedValue,
+      },
+    );
+  }
   assertGateSod({
     sodEnabled: review.sodEnabled,
     submittedBy: review.submittedBy,

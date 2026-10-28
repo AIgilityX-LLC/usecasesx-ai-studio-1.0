@@ -76,3 +76,11 @@ Before shipping any security-relevant change:
 - Rotate keys via Lovable Cloud tools; never fabricate placeholder secret values.
 - On suspected leak: revoke, rotate, audit access logs, notify per engagement contract.
 - Rollback path must accompany every migration and security-relevant change.
+
+## 12. Phase 3 hardening pointers
+
+- Multi-tenant attack matrix + ABAC / enterprise role catalogue: `docs/security/phase-3-hardening.md`
+- Authn roadmap (MFA, login history, IdP): `docs/security/enterprise-authn-roadmap.md`
+- Client secret scan: `bun run check:client-secrets`
+- Cross-tenant IDOR suite: `bun run test:cross-tenant` (plus existing `test:cross-workspace` / `test:rls`)
+
