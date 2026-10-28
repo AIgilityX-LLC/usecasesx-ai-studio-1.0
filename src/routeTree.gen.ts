@@ -141,6 +141,7 @@ import { Route as AppStudioPortfolioRouteImport } from './routes/_app.studio.por
 import { Route as AppUseCasesSlugRouteImport } from './routes/_app.use-cases.$slug'
 import { Route as AppWorkshopsIndexRouteImport } from './routes/_app.workshops.index'
 import { Route as AppWorkshopsIdRouteImport } from './routes/_app.workshops.$id'
+import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as OgUseCaseSlugRouteImport } from './routes/og.use-case.$slug'
 import { Route as AppAdministrationReadinessIndexRouteImport } from './routes/_app.administration.readiness.index'
@@ -869,6 +870,11 @@ const AppWorkshopsIdRoute = AppWorkshopsIdRouteImport.update({
   path: '/workshops/$id',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
+  id: '/api/public/health',
+  path: '/api/public/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailEventsRoute = LovableEmailEventsRouteImport.update({
   id: '/lovable/email/events',
   path: '/lovable/email/events',
@@ -1204,6 +1210,7 @@ export interface FileRoutesByFullPath {
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/workshops/$id': typeof AppWorkshopsIdRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/og/use-case/$slug': typeof OgUseCaseSlugRoute
   '/account/': typeof AppAccountIndexRoute
@@ -1370,6 +1377,7 @@ export interface FileRoutesByTo {
   '/studio/portfolio': typeof AppStudioPortfolioRoute
   '/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/workshops/$id': typeof AppWorkshopsIdRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/og/use-case/$slug': typeof OgUseCaseSlugRoute
   '/account': typeof AppAccountIndexRoute
@@ -1542,6 +1550,7 @@ export interface FileRoutesById {
   '/_app/studio/portfolio': typeof AppStudioPortfolioRoute
   '/_app/use-cases/$slug': typeof AppUseCasesSlugRoute
   '/_app/workshops/$id': typeof AppWorkshopsIdRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/og/use-case/$slug': typeof OgUseCaseSlugRoute
   '/_app/account/': typeof AppAccountIndexRoute
@@ -1714,6 +1723,7 @@ export interface FileRouteTypes {
     | '/studio/portfolio'
     | '/use-cases/$slug'
     | '/workshops/$id'
+    | '/api/public/health'
     | '/lovable/email/events'
     | '/og/use-case/$slug'
     | '/account/'
@@ -1880,6 +1890,7 @@ export interface FileRouteTypes {
     | '/studio/portfolio'
     | '/use-cases/$slug'
     | '/workshops/$id'
+    | '/api/public/health'
     | '/lovable/email/events'
     | '/og/use-case/$slug'
     | '/account'
@@ -2051,6 +2062,7 @@ export interface FileRouteTypes {
     | '/_app/studio/portfolio'
     | '/_app/use-cases/$slug'
     | '/_app/workshops/$id'
+    | '/api/public/health'
     | '/lovable/email/events'
     | '/og/use-case/$slug'
     | '/_app/account/'
@@ -2109,6 +2121,7 @@ export interface RootRouteChildren {
   SsoRoute: typeof SsoRoute
   CTokenRoute: typeof CTokenRoute
   PTokenRoute: typeof PTokenRoute
+  ApiPublicHealthRoute: typeof ApiPublicHealthRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   OgUseCaseSlugRoute: typeof OgUseCaseSlugRoute
   ApiPublicHooksEmailDeliveryAlertsRoute: typeof ApiPublicHooksEmailDeliveryAlertsRoute
@@ -3050,6 +3063,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWorkshopsIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/public/health': {
+      id: '/api/public/health'
+      path: '/api/public/health'
+      fullPath: '/api/public/health'
+      preLoaderRoute: typeof ApiPublicHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/events': {
       id: '/lovable/email/events'
       path: '/lovable/email/events'
@@ -3699,6 +3719,7 @@ const rootRouteChildren: RootRouteChildren = {
   SsoRoute: SsoRoute,
   CTokenRoute: CTokenRoute,
   PTokenRoute: PTokenRoute,
+  ApiPublicHealthRoute: ApiPublicHealthRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,
   OgUseCaseSlugRoute: OgUseCaseSlugRoute,
   ApiPublicHooksEmailDeliveryAlertsRoute:
