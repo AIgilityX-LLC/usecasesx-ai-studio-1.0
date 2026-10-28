@@ -51,6 +51,7 @@ src/
   lib/                       Domain logic. *.functions.ts = createServerFn wrappers.
   lib/ops/control-plane/     Reliability SLOs, health, metrics, structured logging.
   lib/sovereignty/           Sovereignty Architecture™ (8 dimensions, posture, Zero Trust).
+  lib/sovereignty/control-plane/  Configurable SovereigntyPolicy + evaluation service.
   lib/deployment/            Four deployment profiles + operator responsibility matrix.
   lib/*.server.ts            Server-only helpers. Never imported from client code.
   integrations/supabase/     GENERATED clients + auth middleware. Never edit.
