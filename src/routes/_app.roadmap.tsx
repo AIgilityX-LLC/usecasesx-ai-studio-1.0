@@ -1,5 +1,4 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -61,13 +60,13 @@ import { RoadmapItemDialog } from "@/components/roadmap/RoadmapItemDialog";
 import { PortfolioValueSummary } from "@/components/value/PortfolioValueSummary";
 
 const roadmapSearchSchema = z.object({
-  portfolio: fallback(z.string(), "").default(""),
-  period: fallback(z.string(), "").default(""),
-  tab: fallback(z.string(), "stages").default("stages"),
+  portfolio: z.string().default("").catch(""),
+  period: z.string().default("").catch(""),
+  tab: z.string().default("stages").catch("stages"),
 });
 
 export const Route = createFileRoute("/_app/roadmap")({
-  validateSearch: zodValidator(roadmapSearchSchema),
+  validateSearch: roadmapSearchSchema,
   head: () => ({
     meta: [
       { name: "robots", content: "noindex, nofollow" },

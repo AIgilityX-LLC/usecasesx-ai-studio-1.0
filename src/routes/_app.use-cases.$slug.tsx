@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-ro
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
-import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import { LeadCaptureModal } from "@/components/LeadCaptureModal";
 import { MissingDataFallback } from "@/components/MissingDataFallback";
@@ -118,14 +117,14 @@ async function logIntegrationEvent(input: {
 // the active Department / Business-Function slug, so breadcrumbs and back
 // links can restore the user's filter context.
 const detailSearchSchema = z.object({
-  dept: fallback(z.string().optional(), undefined),
-  func: fallback(z.string().optional(), undefined),
+  dept: z.string().optional().catch(undefined),
+  func: z.string().optional().catch(undefined),
   /** Action to resume after a sign-in round trip ("save" | "customize"). */
-  intent: fallback(z.string().optional(), undefined),
+  intent: z.string().optional().catch(undefined),
 });
 
 export const Route = createFileRoute("/_app/use-cases/$slug")({
-  validateSearch: zodValidator(detailSearchSchema),
+  validateSearch: detailSearchSchema,
   // Published, publicly readable data only — no workspace or account data is
   // ever exposed through the loader or the share/SEO metadata below.
   loader: async ({ params }) => {

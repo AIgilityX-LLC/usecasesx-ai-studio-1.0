@@ -125,7 +125,7 @@ const Schema = z.object({
   industry: z.string().trim().max(120).optional(),
   interestArea: z.enum(INTEREST_AREAS).optional(),
   message: z.string().trim().max(2000).optional(),
-  consent: z.literal(true, { errorMap: () => ({ message: "Consent is required" }) }),
+  consent: z.literal(true, { error: "Consent is required" }),
 });
 type FormState = z.input<typeof Schema>;
 
