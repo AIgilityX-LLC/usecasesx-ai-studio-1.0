@@ -37,7 +37,7 @@ identity/access · organization/workspaces · repository · opportunities · Stu
 
 **Non-negotiable rules**:
 
-1. **Tenant/workspace ownership** on every row of tenant data. RLS is mandatory; policies + `GRANT`s in the same migration.
+1. **Tenant/workspace ownership** on every row of tenant data. RLS is mandatory; policies + `GRANT`s in the same migration. Tenant context is membership-derived (`src/lib/tenancy/`) — never from a client-supplied `tenant_id`.
 2. **One codebase for Lite/Pro/Enterprise.** No forks, no per-edition apps. Differentiate via entitlements (`useEntitlement`, `usePlan`, `RequirePlan`) and feature flags (`src/lib/feature-flags.ts`).
 3. **Additive migrations only** at this stage. No destructive drops, destructive renames, or ownership reassignments without an approved staged migration + rollback plan.
 4. **Centralized entitlements** — never inline plan checks; go through `useEntitlement`/`usePlan`/`RequirePlan`/`Can`.

@@ -47,8 +47,9 @@ src/
   routes/api/public/*        External HTTP surface (webhooks, cron, public reads).
   routeTree.gen.ts           GENERATED — never edit.
   components/                UI + shadcn primitives under components/ui/.
-  hooks/                     useSupabaseSession, useEntitlement, usePlan, etc.
+  hooks/                     useSupabaseSession, useEntitlement, usePlan, useTenantContext, etc.
   lib/                       Domain logic. *.functions.ts = createServerFn wrappers.
+  lib/tenancy/               Enterprise multi-tenancy plane (TenantContext + services).
   lib/*.server.ts            Server-only helpers. Never imported from client code.
   integrations/supabase/     GENERATED clients + auth middleware. Never edit.
   router.tsx, server.ts, start.ts, styles.css
@@ -122,6 +123,7 @@ Rules recap: no runtime helpers at module scope; never call a protected server f
 - Adding a Supabase Edge Function for app-internal logic (use `createServerFn`).
 - Storing user roles anywhere other than `user_roles`.
 - Inline plan/role checks — always go through `useEntitlement`/`usePlan`/`RequirePlan`/`Can`/`has_role`.
+- Client-supplied `tenant_id` / `organization_id` as scoping authority — derive via `src/lib/tenancy/` / membership.
 - Hardcoded Tailwind color utilities in components.
 
 ---

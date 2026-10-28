@@ -21,6 +21,7 @@ Cross-module calls go through explicit interfaces (typed server fns, shared hook
 - Every row of tenant data carries workspace/org identifiers.
 - RLS enforces isolation. Application code never assumes RLS; it re-checks scope in server-fn handlers.
 - Workspace provisioning is centralized (`ensureUserWorkspaceFn`).
+- **Tenant context is membership-derived** (`src/lib/tenancy/`) — never from a client-supplied `tenant_id`. Central facades: `TenantContext`, `AuthorizationService`, `PolicyService`, `EntitlementService`. See `docs/architecture/enterprise-multi-tenancy.md`.
 
 ## 4. Additive evolution
 

@@ -4,17 +4,8 @@
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-export const ORG_UNIT_TYPES = [
-  "group",
-  "company",
-  "business_unit",
-  "department",
-  "team",
-  "program",
-  "project",
-] as const;
-
-export type OrgUnitType = (typeof ORG_UNIT_TYPES)[number];
+/** Re-export shared vocabulary — SoT for clients is `src/lib/tenancy/models.ts`. */
+export { ORG_UNIT_TYPES, type OrgUnitType } from "@/lib/tenancy/models";
 
 /** Taxonomy dimensions that support tenant-private entries. */
 export const TENANT_TAXONOMY_TABLES = [
