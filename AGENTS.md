@@ -140,6 +140,7 @@ Any plan check must resolve through `useEntitlement`/`usePlan`. Gate UI with `<R
 - `docs/architecture/auditability-and-instrumentation.md` — audit events, product/activation events, privacy redaction
 - `docs/architecture/reliability-observability.md` — SLOs, health, metrics, PITR, alerts (Phase 7)
 - `docs/architecture/sovereignty-architecture.md` — UseCasesX Sovereignty Architecture™ (eight dimensions, posture, Zero Trust; Phase 8)
+- `docs/architecture/deployment-profiles.md` — four deployment profiles (SaaS → Dedicated → Sovereign VPC → Sovereign Private; Phase 9)
 
 - `docs/security/security-baseline.md`
 - `docs/PRE_BETA_RELEASE_CHECKLIST.md`, `docs/PRE_BETA_TEST_PLAN.md`
