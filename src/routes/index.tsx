@@ -189,7 +189,7 @@ const OS_AUDIENCES = [
   {
     title: "Governments & Regulators",
     copy: "Build with public trust.",
-    detail: "Evidence trails, approval workflows, and sovereign controls by design.",
+    detail: "Evidence trails, approval workflows, and deployment policy controls by design.",
     featured: false,
   },
 ];
@@ -219,7 +219,7 @@ const PRICING = [
     features: [
       "Everything in Pro",
       "Portfolio intelligence",
-      "Sovereign deployment options",
+      "Managed-cloud design-partner pilots",
       "Advanced controls & support",
     ],
     featured: false,
@@ -250,7 +250,7 @@ const FOOTER_COLS: { title: string; links: { label: string; to?: string; href?: 
     links: [
       { label: "Methodology", to: "/resources" },
       { label: "Evidence Guide", to: "/resources" },
-      { label: "Sovereign AI", href: "#sovereign" },
+      { label: "Enterprise AI", href: "#sovereign" },
       { label: "Contact Studio", to: "/contact" },
     ],
   },
@@ -857,11 +857,12 @@ function LandingPage() {
               <SectionHeading anim="ux-heading-up">
                 Built For Ministries, Regulators
                 <br />
-                &amp; Sovereign AI Programs.
+                &amp; Public-Sector AI Programs.
               </SectionHeading>
               <p className="ux-lead">
                 Move at the speed of innovation without losing the transparency, control, and public
-                accountability your mandate requires.
+                accountability your mandate requires. Regional and sovereign deployment remain on
+                the roadmap; current pilots run as managed-cloud design-partner engagements.
               </p>
               <ul className="ux-checklist">
                 <li>
@@ -871,15 +872,16 @@ function LandingPage() {
                   <Check size={15} aria-hidden /> Evidence trails built for audit and review.
                 </li>
                 <li>
-                  <Check size={15} aria-hidden /> Sovereign deployment and data controls.
+                  <Check size={15} aria-hidden /> Deployment policy controls for design-partner
+                  pilots.
                 </li>
               </ul>
               <Link className="ux-under-link" to="/enterprise">
-                Explore sovereign AI <ArrowRight size={15} aria-hidden />
+                Explore enterprise AI <ArrowRight size={15} aria-hidden />
               </Link>
             </div>
             <Reveal className="ux-sovereign-visual" variant="scale" delay={100}>
-              <img src={sovereignImage} alt="Secure sovereign infrastructure visual" />
+              <img src={sovereignImage} alt="Secure managed-cloud infrastructure visual" />
               <div className="ux-sovereign-caption">
                 <Lock size={14} aria-hidden /> Secure infrastructure
                 <span>
