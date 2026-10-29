@@ -459,11 +459,10 @@ function LandingPage() {
               <span className="ux-eyebrow-dot" /> Enterprise AI portfolio management
             </div>
             <h1 className="ux-hero-heading">
-              Build A Validated AI Use Case
-              <br />
-              <span className="is-accent">Before You Spend A Dollar Building It.</span>
+              <span className="ux-hero-line">Build A Validated AI Use Case</span>
+              <span className="ux-hero-line is-accent">Before You Spend A Dollar Building It.</span>
             </h1>
-            <p className="ux-hero-lead">Turn any AI idea into a Value-Driven Use Case</p>
+            <p className="ux-hero-lead ux-hero-sub">Turn any AI idea into a Value-Driven Use Case.</p>
             <p className="ux-hero-lead" style={{ marginTop: "1.25rem" }}>
               <strong>Discovery · Design · Prioritize · Manage.</strong>
               <br />

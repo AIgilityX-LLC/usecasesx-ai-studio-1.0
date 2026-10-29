@@ -1850,3 +1850,11 @@
     gap: 6px;
   }
 }
+
+.ux-landing .ux-hero-heading { font-size: clamp(26px, 2.7vw, 40px); max-width: none; }
+.ux-landing .ux-hero-heading .ux-hero-line { display: block; white-space: nowrap; }
+.ux-landing .ux-hero-sub { font-size: clamp(16px, 1.5vw, 21px); font-weight: 600; white-space: nowrap; max-width: none; }
+@media (max-width: 720px) {
+  .ux-landing .ux-hero-heading { font-size: clamp(22px, 6vw, 32px); }
+  .ux-landing .ux-hero-heading .ux-hero-line, .ux-landing .ux-hero-sub { white-space: normal; }
+}
