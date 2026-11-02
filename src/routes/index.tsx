@@ -11,6 +11,7 @@ import {
   Lightbulb,
   Lock,
   Menu,
+  Play,
   Scale,
   ShieldCheck,
   Target,
@@ -81,6 +82,18 @@ const MARQUEE = [
   "Public sector",
   "Healthcare",
   "Finance",
+];
+
+const HERO_LINES: { text: string; accent?: boolean }[][] = [
+  [{ text: "Build" }, { text: "A" }, { text: "Validated" }],
+  [
+    { text: "AI", accent: true },
+    { text: "Use", accent: true },
+    { text: "Case", accent: true },
+    { text: "Before" },
+  ],
+  [{ text: "You" }, { text: "Spend" }, { text: "A" }, { text: "Dollar" }],
+  [{ text: "Building" }, { text: "It." }],
 ];
 
 const ORG_TYPES = [
@@ -311,6 +324,36 @@ function animClass(base: string, ready: boolean, visible: boolean) {
   return `${base}${ready ? " is-ready" : ""}${visible ? " is-visible" : ""}`;
 }
 
+function HeroHeading() {
+  const { ref, ready, visible } = useInViewOnce<HTMLHeadingElement>({ immediate: true });
+  let wordIndex = 0;
+  return (
+    <h1
+      ref={ref}
+      className={animClass("ux-hero-heading", ready, visible)}
+      aria-label="Build a validated AI use case before you spend a dollar building it."
+    >
+      {HERO_LINES.map((line, lineIndex) => (
+        <span key={`line-${lineIndex}`} className="ux-hero-line">
+          {line.map((word, i) => {
+            const delay = wordIndex++ * 50;
+            return (
+              <span
+                key={`${word.text}-${lineIndex}-${i}`}
+                className={`ux-hero-word${word.accent ? " is-accent" : ""}`}
+                style={{ transitionDelay: `${delay}ms` }}
+              >
+                {word.text}
+                {i < line.length - 1 ? "\u00a0" : ""}
+              </span>
+            );
+          })}
+        </span>
+      ))}
+    </h1>
+  );
+}
+
 function Reveal({
   children,
   className = "",
@@ -456,18 +499,15 @@ function LandingPage() {
           <div className="ux-hero-overlay" aria-hidden />
           <div className="ux-hero-content">
             <div className="ux-eyebrow">
-              <span className="ux-eyebrow-dot" /> Enterprise AI portfolio management
+              <span className="ux-eyebrow-dot" /> AI use cases, made operational
             </div>
-            <h1 className="ux-hero-heading">
-              <span className="ux-hero-line">Build A Validated AI Use Case</span>
-              <span className="ux-hero-line is-accent">Before You Spend A Dollar Building It.</span>
-            </h1>
-            <p className="ux-hero-lead ux-hero-sub">Turn any AI idea into a Value-Driven Use Case.</p>
-            <p className="ux-hero-lead" style={{ marginTop: "1.25rem" }}>
-              <strong>Discovery · Design · Prioritize · Manage.</strong>
-              <br />
-              UseCasesX Studio helps ambitious leaders and teams move from curiosity to governed,
-              measurable action — without the guesswork.
+            <HeroHeading />
+            <p className="ux-hero-lead">
+              Turn any AI idea into a Value-Driven AI Discovery · Design · Prioritize · Manage.
+            </p>
+            <p className="ux-hero-copy">
+              UseCasesX Studio helps ambitious teams move from curiosity to governed, measurable
+              action — without the guesswork.
             </p>
             <div className="ux-hero-actions">
               <Link
@@ -483,11 +523,19 @@ function LandingPage() {
               >
                 Explore the studio <ArrowRight size={17} aria-hidden />
               </Link>
-              <Link className="ux-button ux-button-ghost" to="/enterprise">
-                Explore Enterprise <ArrowRight size={17} aria-hidden />
-              </Link>
+              <a className="ux-text-link" href="#platform">
+                <span className="ux-play-icon">
+                  <Play size={12} fill="currentColor" aria-hidden />
+                </span>{" "}
+                See how it works
+              </a>
             </div>
-            <p className="ux-hero-proof">From opportunity to a decision you can defend.</p>
+            <div className="ux-hero-proof">
+              <span>Trusted thinking for</span>
+              <b>Strategy teams</b>
+              <b>Innovation leaders</b>
+              <b>Risk &amp; governance</b>
+            </div>
           </div>
           <div className="ux-hero-scroll" aria-hidden="true">
             <span>Scroll to explore</span>
