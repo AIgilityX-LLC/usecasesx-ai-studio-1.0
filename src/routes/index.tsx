@@ -6,6 +6,7 @@ import {
   Check,
   Compass,
   Database,
+  FileCheck2,
   Globe2,
   Layers3,
   Lightbulb,
@@ -15,6 +16,7 @@ import {
   Scale,
   ShieldCheck,
   Target,
+  Users,
   Workflow,
   X,
 } from "lucide-react";
@@ -22,15 +24,16 @@ import { SITE_NAME, SITE_URL } from "@/lib/seo";
 import { useReveal } from "@/hooks/useReveal";
 import { trackCTAEvent } from "@/lib/usecasex.tracking";
 import { LandingAuthActions } from "@/components/AuthNavActions";
+import { PilotLeadForm } from "@/components/landing/PilotLeadForm";
 import heroImage from "@/assets/usecasesx-hero-background.png";
 import architectureImage from "@/assets/landing-studio.jpg";
 import sovereignImage from "@/assets/landing-sovereign.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => {
-    const title = "UseCasesX™ — Enterprise AI Use Case Operating System";
+    const title = "UseCasesX™ — Validate AI Use Cases Before You Build";
     const description =
-      "Discover, design, score and prioritize AI use cases in one evidence-led enterprise workspace. Pro Founding Access is complimentary through 2026.";
+      "Discover, design, score and prioritise AI use cases with evidence. Apply for the Founding Access pilot — complimentary through 31 December 2026.";
     return {
       meta: [
         { title },
@@ -278,6 +281,34 @@ const FOOTER_COLS: { title: string; links: { label: string; to?: string; href?: 
   },
 ];
 
+const PILOT_BENEFITS = [
+  {
+    title: "Full Pro workspace",
+    copy: "Studio, scoring, portfolio and roadmap for your own use cases.",
+    icon: Layers3,
+  },
+  {
+    title: "Guided by our team",
+    copy: "Onboarding plus milestone check-ins as you move through the journey.",
+    icon: Users,
+  },
+  {
+    title: "A board-ready output",
+    copy: "Export a prioritised portfolio your leadership can review and fund.",
+    icon: FileCheck2,
+  },
+];
+
+const PILOT_STEPS = [
+  "Apply in about two minutes with your work email.",
+  "We review your application and email your seat invitation.",
+  "Design, score and prioritise your first validated use case.",
+];
+
+function trackPilotCta(location: string) {
+  trackCTAEvent("cta_clicked", { source_page: "/", target_route: "/#pilot", location });
+}
+
 function useInViewOnce<T extends HTMLElement>(opts?: { immediate?: boolean }) {
   const ref = useRef<T | null>(null);
   const [ready, setReady] = useState(false);
@@ -434,20 +465,14 @@ function LandingPage() {
     <div className="ux-landing" id="top">
       <div className="ux-announce">
         <div className="ux-container ux-announce-inner">
-          <span>New: The UseCasesX AI use-case operating system</span>
-          <Link
+          <span>Founding Access pilot now open — limited cohort, complimentary through 2026</span>
+          <a
             className="ux-announce-link"
-            to="/ai-use-case-studio"
-            onClick={() =>
-              trackCTAEvent("cta_clicked", {
-                source_page: "/",
-                target_route: "/ai-use-case-studio",
-                location: "landing_announce_explore",
-              })
-            }
+            href="#pilot"
+            onClick={() => trackPilotCta("landing_announce_apply")}
           >
-            Explore the studio <ArrowRight size={12} aria-hidden />
-          </Link>
+            Apply for a seat <ArrowRight size={12} aria-hidden />
+          </a>
         </div>
       </div>
 
@@ -502,16 +527,22 @@ function LandingPage() {
               <span className="ux-eyebrow-dot" /> AI use cases, made operational
             </div>
             <HeroHeading />
-            <p className="ux-hero-lead">
-              Turn any AI idea into a Value-Driven AI Discovery · Design · Prioritize · Manage.
-            </p>
+            <p className="ux-hero-lead">Turn any AI idea into a Value-Driven Use Case.</p>
             <p className="ux-hero-copy">
-              UseCasesX Studio helps ambitious teams move from curiosity to governed, measurable
-              action — without the guesswork.
+              <strong>Discovery · Design · Prioritize · Manage.</strong> UseCasesX Studio helps
+              ambitious leaders and teams move from curiosity to governed, measurable action —
+              without the guesswork.
             </p>
             <div className="ux-hero-actions">
-              <Link
+              <a
                 className="ux-button ux-button-gold"
+                href="#pilot"
+                onClick={() => trackPilotCta("landing_hero_apply_pilot")}
+              >
+                Apply for the founding pilot <ArrowRight size={17} aria-hidden />
+              </a>
+              <Link
+                className="ux-button ux-button-ghost"
                 to="/ai-use-case-studio"
                 onClick={() =>
                   trackCTAEvent("cta_clicked", {
@@ -521,21 +552,20 @@ function LandingPage() {
                   })
                 }
               >
-                Explore the studio <ArrowRight size={17} aria-hidden />
+                <Play size={13} fill="currentColor" aria-hidden /> Explore the studio
               </Link>
-              <a className="ux-text-link" href="#platform">
-                <span className="ux-play-icon">
-                  <Play size={12} fill="currentColor" aria-hidden />
-                </span>{" "}
-                See how it works
-              </a>
             </div>
-            <div className="ux-hero-proof">
-              <span>Trusted thinking for</span>
-              <b>Strategy teams</b>
-              <b>Innovation leaders</b>
-              <b>Risk &amp; governance</b>
-            </div>
+            <ul className="ux-hero-proof" aria-label="Pilot highlights">
+              <li>
+                <b>Complimentary through 31 Dec 2026</b>
+              </li>
+              <li>
+                <b>Seats reviewed by our team</b>
+              </li>
+              <li>
+                <b>No payment details</b>
+              </li>
+            </ul>
           </div>
           <div className="ux-hero-scroll" aria-hidden="true">
             <span>Scroll to explore</span>
@@ -644,6 +674,19 @@ function LandingPage() {
                 </Reveal>
               ))}
             </div>
+            <Reveal className="ux-pilot-band" variant="up">
+              <div>
+                <strong>Validate your first use case with us.</strong>
+                <span>Founding Access pilot · complimentary through 31 December 2026</span>
+              </div>
+              <a
+                className="ux-button ux-button-dark"
+                href="#pilot"
+                onClick={() => trackPilotCta("landing_os_band")}
+              >
+                Apply for the pilot <ArrowRight size={16} aria-hidden />
+              </a>
+            </Reveal>
           </div>
         </section>
 
@@ -889,13 +932,23 @@ function LandingPage() {
                       </li>
                     ))}
                   </ul>
-                  <Link
-                    className={`ux-button ux-button-small${tier.featured ? " ux-button-gold" : " ux-button-ghost"}`}
-                    to={tier.name === "Enterprise" ? "/enterprise" : "/auth"}
-                  >
-                    {tier.name === "Enterprise" ? "Talk to sales" : "Get started"}{" "}
-                    <ArrowRight size={14} aria-hidden />
-                  </Link>
+                  {tier.name === "Pro" ? (
+                    <a
+                      className="ux-button ux-button-small ux-button-gold"
+                      href="#pilot"
+                      onClick={() => trackPilotCta("landing_pricing_pro")}
+                    >
+                      Join the founding pilot <ArrowRight size={14} aria-hidden />
+                    </a>
+                  ) : (
+                    <Link
+                      className="ux-button ux-button-small ux-button-ghost"
+                      to={tier.name === "Enterprise" ? "/enterprise" : "/auth"}
+                    >
+                      {tier.name === "Enterprise" ? "Talk to sales" : "Get started"}{" "}
+                      <ArrowRight size={14} aria-hidden />
+                    </Link>
+                  )}
                 </Reveal>
               ))}
             </div>
@@ -944,29 +997,62 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* 21. Final CTA */}
-        <section className="ux-section-light ux-cta-section" id="contact">
+        {/* 21. Pilot lead capture */}
+        <section className="ux-section-dark ux-pilot-section" id="pilot">
           <div className="ux-cta-orb" aria-hidden />
-          <div className="ux-container ux-cta-content">
-            <SectionHeading anim="ux-heading-scale">
-              Your Next AI Decision <span className="ux-accent">Deserves Evidence,</span>
-              <br />
-              Not Opinion.
-            </SectionHeading>
-            <p>Start with one use case. Leave with a clearer path to value.</p>
-            <Link
-              className="ux-button ux-button-dark"
-              to="/contact"
-              onClick={() =>
-                trackCTAEvent("cta_clicked", {
-                  source_page: "/",
-                  target_route: "/contact",
-                  location: "landing_final_talk_studio",
-                })
-              }
-            >
-              Talk to the studio <ArrowRight size={17} aria-hidden />
-            </Link>
+          <div className="ux-container ux-pilot-layout">
+            <div className="ux-pilot-copy">
+              <Reveal className="ux-section-kicker" variant="up">
+                Founding Access pilot · now open
+              </Reveal>
+              <SectionHeading anim="ux-heading-up">
+                Your Next AI Decision <span className="ux-accent">Deserves Evidence,</span> Not
+                Opinion.
+              </SectionHeading>
+              <p className="ux-pilot-lead">
+                Join a small founding cohort and take one real AI idea from first signal to a
+                board-ready, prioritised recommendation — with our team alongside you.
+              </p>
+              <ul className="ux-pilot-benefits">
+                {PILOT_BENEFITS.map(({ title, copy, icon: Icon }) => (
+                  <li key={title}>
+                    <span className="ux-pilot-benefit-icon">
+                      <Icon size={17} strokeWidth={1.6} aria-hidden />
+                    </span>
+                    <div>
+                      <strong>{title}</strong>
+                      <span>{copy}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <ol className="ux-pilot-steps" aria-label="How the pilot works">
+                {PILOT_STEPS.map((step, i) => (
+                  <li key={step}>
+                    <b>{String(i + 1).padStart(2, "0")}</b>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+              <p className="ux-pilot-alt">
+                Prefer a conversation first?{" "}
+                <Link
+                  to="/contact"
+                  onClick={() =>
+                    trackCTAEvent("cta_clicked", {
+                      source_page: "/",
+                      target_route: "/contact",
+                      location: "landing_pilot_talk_studio",
+                    })
+                  }
+                >
+                  Talk to the studio <ArrowRight size={13} aria-hidden />
+                </Link>
+              </p>
+            </div>
+            <div className="ux-pilot-form-wrap">
+              <PilotLeadForm />
+            </div>
           </div>
         </section>
       </main>
