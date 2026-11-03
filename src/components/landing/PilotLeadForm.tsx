@@ -109,7 +109,12 @@ export function PilotLeadForm() {
   const err = (key: keyof FormState) => errors[key] || undefined;
 
   return (
-    <form className="ux-lead-card" onSubmit={onSubmit} noValidate aria-labelledby="pilot-form-title">
+    <form
+      className="ux-lead-card"
+      onSubmit={onSubmit}
+      noValidate
+      aria-labelledby="pilot-form-title"
+    >
       <div className="ux-lead-head">
         <h3 id="pilot-form-title">Apply for a founding seat</h3>
         <span>Takes about 2 minutes</span>
