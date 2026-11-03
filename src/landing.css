@@ -1688,7 +1688,7 @@
   font-size: 14px;
   color: var(--ux-ink);
   background: var(--ux-paper);
-  border: 1px solid var(--ux-line);
+  border: 1px solid color-mix(in oklab, var(--ux-ink) 22%, transparent);
   border-radius: 7px;
   padding: 10px 12px;
   min-height: 44px;
@@ -1736,14 +1736,15 @@
   transform: none;
 }
 .ux-landing .ux-lead-fine {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px;
   margin: 12px 0 0;
   font-size: 11px;
   line-height: 1.5;
   color: var(--ux-ink-muted);
+}
+.ux-landing .ux-lead-fine svg {
+  display: inline;
+  vertical-align: -1px;
+  margin-right: 4px;
 }
 .ux-landing .ux-lead-link {
   text-decoration: underline;
