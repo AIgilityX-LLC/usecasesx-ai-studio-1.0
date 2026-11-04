@@ -11,6 +11,7 @@ import {
   PILOT_MILESTONES,
   evidenceCount,
   isEvidenced,
+  resolveMilestoneStatus,
   type PilotMilestoneKey,
   type PilotMilestoneView,
   type PilotProgressSummary,
@@ -80,17 +81,7 @@ function toView(
   progress: PilotProgressSummary,
   row: ApprovalRow | undefined,
 ): PilotMilestoneView {
-  const evidenced = isEvidenced(key, progress);
-  const status: PilotMilestoneView["status"] =
-    row?.status === "approved"
-      ? "approved"
-      : row?.status === "changes_requested"
-        ? "changes_requested"
-        : row?.status === "submitted"
-          ? "submitted"
-          : evidenced
-            ? "ready"
-            : "locked";
+  const status = resolveMilestoneStatus(isEvidenced(key, progress), row?.status);
 
   return {
     key,

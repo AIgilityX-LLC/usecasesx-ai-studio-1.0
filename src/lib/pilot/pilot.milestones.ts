@@ -97,6 +97,20 @@ export type PilotProgressSummary = {
   onboarded: boolean;
 };
 
+/**
+ * One rule for every surface: an admin decision wins, then a pending
+ * submission, then measured evidence, otherwise the step is not started.
+ */
+export function resolveMilestoneStatus(
+  evidenced: boolean,
+  approvalStatus: string | null | undefined,
+): PilotMilestoneStatus {
+  if (approvalStatus === "approved") return "approved";
+  if (approvalStatus === "changes_requested") return "changes_requested";
+  if (approvalStatus === "submitted") return "submitted";
+  return evidenced ? "ready" : "locked";
+}
+
 /** Percentage of milestones an admin has approved. */
 export function approvedPercent(milestones: PilotMilestoneView[]): number {
   if (milestones.length === 0) return 0;
