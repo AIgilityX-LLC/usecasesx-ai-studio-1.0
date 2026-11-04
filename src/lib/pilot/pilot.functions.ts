@@ -717,6 +717,17 @@ export const listPilotApplicationsFn = createServerFn({ method: "GET" })
     return listPilotApplications(context.supabase, settings.cohort);
   });
 
+/** Every seat in the current cohort with measured progress on the six pilot steps. */
+export const getPilotCohortProgressFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { getPilotSettings } = await import("@/lib/pilot/pilot.server");
+    const { listCohortProgress } = await import("@/lib/pilot/pilot.tracking.server");
+    const settings = await getPilotSettings(context.supabase);
+    return { cohort: settings.cohort, members: await listCohortProgress(settings.cohort) };
+  });
+
 /** Approve (creating a real seat), decline or merge an application. */
 export const decidePilotApplicationFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
