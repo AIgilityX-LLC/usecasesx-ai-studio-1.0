@@ -155,6 +155,12 @@ const ADMIN_GROUPS: AdminGroup[] = [
       { to: "/admin-waitlist", label: "Free Pro Waitlist", icon: Users, admin: true },
       { to: "/administration/pilot", label: "Pilot Programme", icon: Rocket, admin: true },
       {
+        to: "/administration/pilot-tracking",
+        label: "Pilot Tracking",
+        icon: Rocket,
+        admin: true,
+      },
+      {
         to: "/administration/pilot-milestones",
         label: "Pilot Milestones",
         icon: Rocket,

@@ -84,6 +84,12 @@ export const PLATFORM_ADMIN_NAV_SECTIONS: PlatformAdminNavSection[] = [
     items: [
       { id: "pilot", to: "/platform-admin/pilot", label: "Pilot Programme", icon: Rocket },
       {
+        id: "pilot-tracking",
+        to: "/platform-admin/pilot-tracking",
+        label: "Pilot Tracking",
+        icon: Rocket,
+      },
+      {
         id: "pilot-milestones",
         to: "/platform-admin/pilot-milestones",
         label: "Pilot Milestones",
@@ -176,6 +182,7 @@ export const PLATFORM_ADMIN_REDIRECTS: Record<string, string> = {
   "/administration/leads": "/platform-admin/leads",
   "/administration/pilot": "/platform-admin/pilot",
   "/administration/pilot-milestones": "/platform-admin/pilot-milestones",
+  "/administration/pilot-tracking": "/platform-admin/pilot-tracking",
   "/administration/ai-engines": "/platform-admin/ai-engines",
   "/administration/email-delivery": "/platform-admin/email-delivery",
   "/administration/platform-admins": "/platform-admin/platform-admins",

@@ -373,6 +373,7 @@ export const NAV_ROUTE_CAPABILITIES: Record<string, NavCapability> = {
   "/platform-admin/leads": "platform.manage",
   "/platform-admin/pilot": "platform.manage",
   "/platform-admin/pilot-milestones": "platform.manage",
+  "/platform-admin/pilot-tracking": "platform.manage",
   "/platform-admin/ai-engines": "platform.manage",
   "/platform-admin/email-delivery": "platform.manage",
   "/platform-admin/platform-admins": "platform.manage",
