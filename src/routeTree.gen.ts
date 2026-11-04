@@ -96,6 +96,7 @@ import { Route as AppAdministrationLaunchReadinessRouteImport } from './routes/_
 import { Route as AppAdministrationLeadsRouteImport } from './routes/_app.administration.leads'
 import { Route as AppAdministrationPilotRouteImport } from './routes/_app.administration.pilot'
 import { Route as AppAdministrationPilotMilestonesRouteImport } from './routes/_app.administration.pilot-milestones'
+import { Route as AppAdministrationPilotTrackingRouteImport } from './routes/_app.administration.pilot-tracking'
 import { Route as AppAdministrationPlatformAdminsRouteImport } from './routes/_app.administration.platform-admins'
 import { Route as AppAdministrationProductionDataRouteImport } from './routes/_app.administration.production-data'
 import { Route as AppAdministrationProductionReadinessRouteImport } from './routes/_app.administration.production-readiness'
@@ -125,6 +126,7 @@ import { Route as AppPlatformAdminLaunchReadinessRouteImport } from './routes/_a
 import { Route as AppPlatformAdminLeadsRouteImport } from './routes/_app.platform-admin.leads'
 import { Route as AppPlatformAdminPilotRouteImport } from './routes/_app.platform-admin.pilot'
 import { Route as AppPlatformAdminPilotMilestonesRouteImport } from './routes/_app.platform-admin.pilot-milestones'
+import { Route as AppPlatformAdminPilotTrackingRouteImport } from './routes/_app.platform-admin.pilot-tracking'
 import { Route as AppPlatformAdminPlatformAdminsRouteImport } from './routes/_app.platform-admin.platform-admins'
 import { Route as AppPlatformAdminProductionDataRouteImport } from './routes/_app.platform-admin.production-data'
 import { Route as AppPlatformAdminProductionReadinessRouteImport } from './routes/_app.platform-admin.production-readiness'
@@ -622,6 +624,12 @@ const AppAdministrationPilotMilestonesRoute =
     path: '/pilot-milestones',
     getParentRoute: () => AppAdministrationRoute,
   } as any)
+const AppAdministrationPilotTrackingRoute =
+  AppAdministrationPilotTrackingRouteImport.update({
+    id: '/pilot-tracking',
+    path: '/pilot-tracking',
+    getParentRoute: () => AppAdministrationRoute,
+  } as any)
 const AppAdministrationPlatformAdminsRoute =
   AppAdministrationPlatformAdminsRouteImport.update({
     id: '/platform-admins',
@@ -779,6 +787,12 @@ const AppPlatformAdminPilotMilestonesRoute =
   AppPlatformAdminPilotMilestonesRouteImport.update({
     id: '/pilot-milestones',
     path: '/pilot-milestones',
+    getParentRoute: () => AppPlatformAdminRoute,
+  } as any)
+const AppPlatformAdminPilotTrackingRoute =
+  AppPlatformAdminPilotTrackingRouteImport.update({
+    id: '/pilot-tracking',
+    path: '/pilot-tracking',
     getParentRoute: () => AppPlatformAdminRoute,
   } as any)
 const AppPlatformAdminPlatformAdminsRoute =
@@ -1166,6 +1180,7 @@ export interface FileRoutesByFullPath {
   '/administration/leads': typeof AppAdministrationLeadsRoute
   '/administration/pilot': typeof AppAdministrationPilotRoute
   '/administration/pilot-milestones': typeof AppAdministrationPilotMilestonesRoute
+  '/administration/pilot-tracking': typeof AppAdministrationPilotTrackingRoute
   '/administration/platform-admins': typeof AppAdministrationPlatformAdminsRoute
   '/administration/production-data': typeof AppAdministrationProductionDataRoute
   '/administration/production-readiness': typeof AppAdministrationProductionReadinessRoute
@@ -1190,6 +1205,7 @@ export interface FileRoutesByFullPath {
   '/platform-admin/leads': typeof AppPlatformAdminLeadsRoute
   '/platform-admin/pilot': typeof AppPlatformAdminPilotRoute
   '/platform-admin/pilot-milestones': typeof AppPlatformAdminPilotMilestonesRoute
+  '/platform-admin/pilot-tracking': typeof AppPlatformAdminPilotTrackingRoute
   '/platform-admin/platform-admins': typeof AppPlatformAdminPlatformAdminsRoute
   '/platform-admin/production-data': typeof AppPlatformAdminProductionDataRoute
   '/platform-admin/production-readiness': typeof AppPlatformAdminProductionReadinessRoute
@@ -1332,6 +1348,7 @@ export interface FileRoutesByTo {
   '/administration/leads': typeof AppAdministrationLeadsRoute
   '/administration/pilot': typeof AppAdministrationPilotRoute
   '/administration/pilot-milestones': typeof AppAdministrationPilotMilestonesRoute
+  '/administration/pilot-tracking': typeof AppAdministrationPilotTrackingRoute
   '/administration/platform-admins': typeof AppAdministrationPlatformAdminsRoute
   '/administration/production-data': typeof AppAdministrationProductionDataRoute
   '/administration/production-readiness': typeof AppAdministrationProductionReadinessRoute
@@ -1356,6 +1373,7 @@ export interface FileRoutesByTo {
   '/platform-admin/leads': typeof AppPlatformAdminLeadsRoute
   '/platform-admin/pilot': typeof AppPlatformAdminPilotRoute
   '/platform-admin/pilot-milestones': typeof AppPlatformAdminPilotMilestonesRoute
+  '/platform-admin/pilot-tracking': typeof AppPlatformAdminPilotTrackingRoute
   '/platform-admin/platform-admins': typeof AppPlatformAdminPlatformAdminsRoute
   '/platform-admin/production-data': typeof AppPlatformAdminProductionDataRoute
   '/platform-admin/production-readiness': typeof AppPlatformAdminProductionReadinessRoute
@@ -1504,6 +1522,7 @@ export interface FileRoutesById {
   '/_app/administration/leads': typeof AppAdministrationLeadsRoute
   '/_app/administration/pilot': typeof AppAdministrationPilotRoute
   '/_app/administration/pilot-milestones': typeof AppAdministrationPilotMilestonesRoute
+  '/_app/administration/pilot-tracking': typeof AppAdministrationPilotTrackingRoute
   '/_app/administration/platform-admins': typeof AppAdministrationPlatformAdminsRoute
   '/_app/administration/production-data': typeof AppAdministrationProductionDataRoute
   '/_app/administration/production-readiness': typeof AppAdministrationProductionReadinessRoute
@@ -1528,6 +1547,7 @@ export interface FileRoutesById {
   '/_app/platform-admin/leads': typeof AppPlatformAdminLeadsRoute
   '/_app/platform-admin/pilot': typeof AppPlatformAdminPilotRoute
   '/_app/platform-admin/pilot-milestones': typeof AppPlatformAdminPilotMilestonesRoute
+  '/_app/platform-admin/pilot-tracking': typeof AppPlatformAdminPilotTrackingRoute
   '/_app/platform-admin/platform-admins': typeof AppPlatformAdminPlatformAdminsRoute
   '/_app/platform-admin/production-data': typeof AppPlatformAdminProductionDataRoute
   '/_app/platform-admin/production-readiness': typeof AppPlatformAdminProductionReadinessRoute
@@ -1676,6 +1696,7 @@ export interface FileRouteTypes {
     | '/administration/leads'
     | '/administration/pilot'
     | '/administration/pilot-milestones'
+    | '/administration/pilot-tracking'
     | '/administration/platform-admins'
     | '/administration/production-data'
     | '/administration/production-readiness'
@@ -1700,6 +1721,7 @@ export interface FileRouteTypes {
     | '/platform-admin/leads'
     | '/platform-admin/pilot'
     | '/platform-admin/pilot-milestones'
+    | '/platform-admin/pilot-tracking'
     | '/platform-admin/platform-admins'
     | '/platform-admin/production-data'
     | '/platform-admin/production-readiness'
@@ -1842,6 +1864,7 @@ export interface FileRouteTypes {
     | '/administration/leads'
     | '/administration/pilot'
     | '/administration/pilot-milestones'
+    | '/administration/pilot-tracking'
     | '/administration/platform-admins'
     | '/administration/production-data'
     | '/administration/production-readiness'
@@ -1866,6 +1889,7 @@ export interface FileRouteTypes {
     | '/platform-admin/leads'
     | '/platform-admin/pilot'
     | '/platform-admin/pilot-milestones'
+    | '/platform-admin/pilot-tracking'
     | '/platform-admin/platform-admins'
     | '/platform-admin/production-data'
     | '/platform-admin/production-readiness'
@@ -2013,6 +2037,7 @@ export interface FileRouteTypes {
     | '/_app/administration/leads'
     | '/_app/administration/pilot'
     | '/_app/administration/pilot-milestones'
+    | '/_app/administration/pilot-tracking'
     | '/_app/administration/platform-admins'
     | '/_app/administration/production-data'
     | '/_app/administration/production-readiness'
@@ -2037,6 +2062,7 @@ export interface FileRouteTypes {
     | '/_app/platform-admin/leads'
     | '/_app/platform-admin/pilot'
     | '/_app/platform-admin/pilot-milestones'
+    | '/_app/platform-admin/pilot-tracking'
     | '/_app/platform-admin/platform-admins'
     | '/_app/platform-admin/production-data'
     | '/_app/platform-admin/production-readiness'
@@ -2735,6 +2761,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdministrationPilotMilestonesRouteImport
       parentRoute: typeof AppAdministrationRoute
     }
+    '/_app/administration/pilot-tracking': {
+      id: '/_app/administration/pilot-tracking'
+      path: '/pilot-tracking'
+      fullPath: '/administration/pilot-tracking'
+      preLoaderRoute: typeof AppAdministrationPilotTrackingRouteImport
+      parentRoute: typeof AppAdministrationRoute
+    }
     '/_app/administration/platform-admins': {
       id: '/_app/administration/platform-admins'
       path: '/platform-admins'
@@ -2936,6 +2969,13 @@ declare module '@tanstack/react-router' {
       path: '/pilot-milestones'
       fullPath: '/platform-admin/pilot-milestones'
       preLoaderRoute: typeof AppPlatformAdminPilotMilestonesRouteImport
+      parentRoute: typeof AppPlatformAdminRoute
+    }
+    '/_app/platform-admin/pilot-tracking': {
+      id: '/_app/platform-admin/pilot-tracking'
+      path: '/pilot-tracking'
+      fullPath: '/platform-admin/pilot-tracking'
+      preLoaderRoute: typeof AppPlatformAdminPilotTrackingRouteImport
       parentRoute: typeof AppPlatformAdminRoute
     }
     '/_app/platform-admin/platform-admins': {
@@ -3344,6 +3384,7 @@ interface AppAdministrationRouteChildren {
   AppAdministrationLeadsRoute: typeof AppAdministrationLeadsRoute
   AppAdministrationPilotRoute: typeof AppAdministrationPilotRoute
   AppAdministrationPilotMilestonesRoute: typeof AppAdministrationPilotMilestonesRoute
+  AppAdministrationPilotTrackingRoute: typeof AppAdministrationPilotTrackingRoute
   AppAdministrationPlatformAdminsRoute: typeof AppAdministrationPlatformAdminsRoute
   AppAdministrationProductionDataRoute: typeof AppAdministrationProductionDataRoute
   AppAdministrationProductionReadinessRoute: typeof AppAdministrationProductionReadinessRoute
@@ -3365,6 +3406,7 @@ const AppAdministrationRouteChildren: AppAdministrationRouteChildren = {
   AppAdministrationLeadsRoute: AppAdministrationLeadsRoute,
   AppAdministrationPilotRoute: AppAdministrationPilotRoute,
   AppAdministrationPilotMilestonesRoute: AppAdministrationPilotMilestonesRoute,
+  AppAdministrationPilotTrackingRoute: AppAdministrationPilotTrackingRoute,
   AppAdministrationPlatformAdminsRoute: AppAdministrationPlatformAdminsRoute,
   AppAdministrationProductionDataRoute: AppAdministrationProductionDataRoute,
   AppAdministrationProductionReadinessRoute:
@@ -3408,6 +3450,7 @@ interface AppPlatformAdminRouteChildren {
   AppPlatformAdminLeadsRoute: typeof AppPlatformAdminLeadsRoute
   AppPlatformAdminPilotRoute: typeof AppPlatformAdminPilotRoute
   AppPlatformAdminPilotMilestonesRoute: typeof AppPlatformAdminPilotMilestonesRoute
+  AppPlatformAdminPilotTrackingRoute: typeof AppPlatformAdminPilotTrackingRoute
   AppPlatformAdminPlatformAdminsRoute: typeof AppPlatformAdminPlatformAdminsRoute
   AppPlatformAdminProductionDataRoute: typeof AppPlatformAdminProductionDataRoute
   AppPlatformAdminProductionReadinessRoute: typeof AppPlatformAdminProductionReadinessRoute
@@ -3433,6 +3476,7 @@ const AppPlatformAdminRouteChildren: AppPlatformAdminRouteChildren = {
   AppPlatformAdminLeadsRoute: AppPlatformAdminLeadsRoute,
   AppPlatformAdminPilotRoute: AppPlatformAdminPilotRoute,
   AppPlatformAdminPilotMilestonesRoute: AppPlatformAdminPilotMilestonesRoute,
+  AppPlatformAdminPilotTrackingRoute: AppPlatformAdminPilotTrackingRoute,
   AppPlatformAdminPlatformAdminsRoute: AppPlatformAdminPlatformAdminsRoute,
   AppPlatformAdminProductionDataRoute: AppPlatformAdminProductionDataRoute,
   AppPlatformAdminProductionReadinessRoute:

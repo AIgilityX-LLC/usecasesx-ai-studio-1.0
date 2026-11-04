@@ -24,9 +24,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 type Tab = "leads" | "cohort";
 
 export const Route = createFileRoute("/_app/platform-admin/pilot-tracking")({
-  validateSearch: (search: Record<string, unknown>): { tab: Tab } => ({
-    tab: search.tab === "cohort" ? "cohort" : "leads",
-  }),
+  validateSearch: (search: Record<string, unknown>): { tab?: Tab } =>
+    search.tab === "cohort" ? { tab: "cohort" } : {},
   head: () => privateHead("Pilot tracking"),
   component: () => (
     <RequireRoles anyOf={PLATFORM_ADMIN_ROLES}>
@@ -45,7 +44,7 @@ function LoadError({ what }: { what: string }) {
 }
 
 function PilotTracking() {
-  const { tab } = Route.useSearch();
+  const tab: Tab = Route.useSearch().tab ?? "leads";
   const navigate = useNavigate({ from: Route.fullPath });
   const listApplications = useServerFn(listPilotApplicationsFn);
   const getProgress = useServerFn(getPilotCohortProgressFn);
@@ -90,7 +89,7 @@ function PilotTracking() {
 
       <Tabs
         value={tab}
-        onValueChange={(v) => void navigate({ search: { tab: v as Tab }, replace: true })}
+        onValueChange={(v) => void navigate({ search: v === "cohort" ? { tab: "cohort" } : {}, replace: true })}
       >
         <TabsList>
           <TabsTrigger value="leads">Leads</TabsTrigger>
