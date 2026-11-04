@@ -37,7 +37,7 @@ export function roleLevel(roleTitle: string | null | undefined): RoleLevel {
   const t = (roleTitle ?? "").trim().toLowerCase();
   if (!t) return NOT_GIVEN;
   if (
-    /\b(ceo|cto|cio|cdo|cfo|coo|caio|cmo|chief|founder|co-founder|president|owner|managing director|partner)\b/.test(
+    /\b(ceo|cto|cio|cdo|cfo|coo|caio|cmo|chief|founder|co-founder|president|managing director|partner)\b/.test(
       t,
     )
   )
