@@ -88,15 +88,23 @@ const MARQUEE = [
 ];
 
 const HERO_LINES: { text: string; accent?: boolean }[][] = [
-  [{ text: "Build" }, { text: "A" }, { text: "Validated" }],
   [
+    { text: "Build" },
+    { text: "A" },
+    { text: "Validated" },
     { text: "AI", accent: true },
     { text: "Use", accent: true },
     { text: "Case", accent: true },
-    { text: "Before" },
   ],
-  [{ text: "You" }, { text: "Spend" }, { text: "A" }, { text: "Dollar" }],
-  [{ text: "Building" }, { text: "It." }],
+  [
+    { text: "Before" },
+    { text: "You" },
+    { text: "Spend" },
+    { text: "A" },
+    { text: "Dollar" },
+    { text: "Building" },
+    { text: "It." },
+  ],
 ];
 
 const ORG_TYPES = [

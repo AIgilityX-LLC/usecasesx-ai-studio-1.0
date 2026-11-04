@@ -474,8 +474,8 @@
 }
 .ux-landing .ux-hero-heading {
   font-family: var(--ux-font-display);
-  font-size: clamp(42px, 5.8vw, 78px);
-  line-height: 0.98;
+  font-size: clamp(20px, 3.3vw, 32px);
+  line-height: 1.05;
   letter-spacing: -0.07em;
   font-weight: 800;
   color: var(--ux-fg-on-dark);
