@@ -89,7 +89,9 @@ function PilotTracking() {
 
       <Tabs
         value={tab}
-        onValueChange={(v) => void navigate({ search: v === "cohort" ? { tab: "cohort" } : {}, replace: true })}
+        onValueChange={(v) =>
+          void navigate({ search: v === "cohort" ? { tab: "cohort" } : {}, replace: true })
+        }
       >
         <TabsList>
           <TabsTrigger value="leads">Leads</TabsTrigger>
