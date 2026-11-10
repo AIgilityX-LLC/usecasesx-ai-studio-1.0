@@ -110,6 +110,28 @@ export async function submitPilotApplication(
     throw new Error(error.message);
   }
 
+  // Best-effort admin alert for genuinely new leads; never blocks the applicant.
+  try {
+    const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+    await sendTemplateEmail("pilot-application-notify", "info@aigilityx.com", {
+      from: "UseCasesX <info@aigilityx.com>",
+      replyTo: input.email,
+      idempotencyKey: `pilot-application-notify-${input.cohort}-${input.email.toLowerCase()}`,
+      templateData: {
+        fullName: input.fullName,
+        workEmail: input.email,
+        organization: input.organization,
+        roleTitle: input.roleTitle?.trim() || null,
+        sector: input.sector?.trim() || null,
+        goals: input.goals?.slice(0, 600) || null,
+        requestedAt: new Date().toUTCString(),
+        adminUrl: "https://usecasesx.aigilityx.com/platform-admin/pilot",
+      },
+    } as never);
+  } catch (notifyError) {
+    console.warn("[pilot] admin lead notify email failed", notifyError);
+  }
+
   return {
     status: "received",
     message:
