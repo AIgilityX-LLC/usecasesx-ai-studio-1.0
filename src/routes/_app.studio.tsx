@@ -28,6 +28,7 @@ import { Separator } from "@/components/ui/separator";
 import { Loader2, Sparkles, Save, Trash2, Wand2, Lightbulb } from "lucide-react";
 import { BlankDraftButton } from "@/components/studio/BlankDraftButton";
 import { PilotMilestoneBoard } from "@/components/pilot/PilotMilestoneBoard";
+import { StudioWorkspaceSnapshot } from "@/components/pilot/StudioWorkspaceSnapshot";
 import { listStudioEnginesFn } from "@/lib/ai/engines.functions";
 import {
   AUDIENCES,
@@ -218,33 +219,10 @@ function StudioPage() {
 
       {session ? (
         <section
-          aria-labelledby="studio-member-portal"
+          aria-label="My workspace and pilot progress"
           className="mx-auto max-w-6xl px-6 pt-10 grid gap-6 lg:grid-cols-[1fr_1.4fr]"
         >
-          <Card>
-            <CardHeader>
-              <CardTitle id="studio-member-portal" className="text-base">
-                My workspace
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Only your own use cases, scores and roadmap appear here.
-              </p>
-            </CardHeader>
-            <CardContent className="grid gap-2 text-sm">
-              <Link to="/my-use-cases" className="rounded-md border border-border px-3 py-2 hover:bg-muted">
-                My use cases — create, edit and export
-              </Link>
-              <Link to="/feasibility" className="rounded-md border border-border px-3 py-2 hover:bg-muted">
-                Score my use cases
-              </Link>
-              <Link to="/studio/portfolio" className="rounded-md border border-border px-3 py-2 hover:bg-muted">
-                My portfolio
-              </Link>
-              <Link to="/roadmap" className="rounded-md border border-border px-3 py-2 hover:bg-muted">
-                My roadmap
-              </Link>
-            </CardContent>
-          </Card>
+          <StudioWorkspaceSnapshot enabled={Boolean(session)} />
           <PilotMilestoneBoard enabled={Boolean(session)} />
         </section>
       ) : null}
