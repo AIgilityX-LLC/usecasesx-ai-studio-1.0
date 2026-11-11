@@ -95,7 +95,7 @@ export async function discoverSsoByEmail(
   const { data, error } = await admin
     .from("organization_sso_configs")
     .select(
-      "organization_id, protocol, provider_slug, metadata_url, entity_id, jit_enabled, allowed_domains, enabled, organizations(name)",
+      "organization_id, protocol, provider_slug, allowed_domains, organizations(name)",
     )
     .eq("enabled", true)
     .is("deleted_at", null)
@@ -112,9 +112,10 @@ export async function discoverSsoByEmail(
     organizationName: hit.organizations?.name ?? "Organization",
     protocol: hit.protocol,
     providerSlug: hit.provider_slug ?? null,
-    metadataUrl: hit.metadata_url ?? null,
-    entityId: hit.entity_id ?? null,
-    jitEnabled: hit.jit_enabled !== false,
+    // IdP metadata/entity IDs and JIT policy are never returned to anonymous callers.
+    metadataUrl: null,
+    entityId: null,
+    jitEnabled: false,
   };
 }
 

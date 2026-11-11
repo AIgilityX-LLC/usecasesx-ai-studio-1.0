@@ -146,16 +146,11 @@ export const listDemoActivityFn = createServerFn({ method: "POST" })
     z.object({ limit: z.number().int().min(1).max(100).optional() }).parse(data ?? {}),
   )
   .handler(async ({ data, context }) => {
-    const { data: profile } = await context.supabase
-      .from("profiles")
-      .select("email")
-      .eq("user_id", context.userId)
-      .maybeSingle();
     const { data: isAdmin } = await context.supabase.rpc("is_admin_tier", {
       _user_id: context.userId,
     });
-    const isDemoPersona = (profile?.email ?? "").toLowerCase().endsWith("@demo.usecasex.app");
-    if (!isAdmin && !isDemoPersona) return [];
+    // Only platform admins; profile email is user-editable and unverified.
+    if (!isAdmin) return [];
 
     const { listDemoActivity } = await import("@/lib/demo/demo-scenarios.server");
     try {

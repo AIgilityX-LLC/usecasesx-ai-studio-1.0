@@ -108,8 +108,10 @@ export const decideGateReviewFn = createServerFn({ method: "POST" })
     const workspaceId = (review as { workspace_id?: string } | null)?.workspace_id ?? null;
     const authz = await resolveSubject(context.supabase, context.userId, workspaceId);
 
+    // Authorized above; decision writes are server-only under RLS.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     return decideGateReview(
-      context.supabase,
+      supabaseAdmin as any,
       context.userId,
       {
         workspaceRole: authz.workspaceRole,
@@ -135,8 +137,10 @@ export const closeGateOpenItemFn = createServerFn({ method: "POST" })
     const workspaceId = (item as { workspace_id?: string } | null)?.workspace_id ?? null;
     const authz = await resolveSubject(context.supabase, context.userId, workspaceId);
 
+    // Authorized above; decision writes are server-only under RLS.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     return closeOpenItem(
-      context.supabase,
+      supabaseAdmin as any,
       context.userId,
       {
         workspaceRole: authz.workspaceRole,
